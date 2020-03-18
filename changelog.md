@@ -2,6 +2,8 @@
 
 *	2020.3.18
 
+	+	index.vue: ly text load from drag-drop added.
+
 	+	Favicon created.
 
 	+	Vue cli config setup.
