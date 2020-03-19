@@ -1,5 +1,11 @@
 
 
+
+*	2020.3.19
+
+	+	Component of source-editor created.
+
+
 *	2020.3.18
 
 	+	App view of playground added.

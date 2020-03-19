@@ -6,7 +6,7 @@
 		@drop.prevent="onDropFile"
 	>
 		<main>
-
+			<SourceEditor :source="lilySource" />
 		</main>
 	</div>
 </template>
@@ -14,15 +14,23 @@
 <script>
 	import "../utils.js";
 
+	import SourceEditor from "../components/source-editor.vue";
+
 
 
 	export default {
 		name: "playground",
 
 
+		components: {
+			SourceEditor,
+		},
+
+
 		data () {
 			return {
 				dragHover: false,
+				lilySource: null,
 			};
 		},
 
@@ -36,8 +44,8 @@
 				if (file) {
 					switch (file.type) {
 					case "text/x-lilypond":
-						const content = await file.readAs("Text");
-						console.log("content:", content);
+						this.lilySource = await file.readAs("Text");
+						//console.log("content:", content);
 
 						break;
 					}
@@ -52,6 +60,11 @@
 	{
 		outline: 4px #4f4 dashed;
 		background-color: #cfc;
+
+		textarea, input
+		{
+			background-color: #cfc;
+		}
 	}
 
 	.playground
@@ -67,6 +80,11 @@
 		{
 			width: 100%;
 			height: 100%;
+
+			.source-editor
+			{
+				height: 100%;
+			}
 		}
 	}
 </style>
