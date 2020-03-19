@@ -7,7 +7,7 @@
 		@drop.prevent="onDropFile"
 	>
 		<main>
-			<SourceEditor :source="lilySource" />
+			<SourceEditor :source="lilySource" :disabled="converting" />
 		</main>
 	</div>
 </template>
@@ -32,6 +32,7 @@
 			return {
 				dragHover: null,
 				lilySource: null,
+				converting: false,
 			};
 		},
 
@@ -59,24 +60,36 @@
 					case "text/xml":
 						const xml = await file.readAs("Text");
 						//console.log("xml:", xml);
-
-						const body = new FormData();
-						body.append("xml", xml);
-
-						const response = await fetch("/musicxml2ly", {
-							method: "POST",
-							body,
-						});
-						if (!response.ok)
-							console.warn("musicxml2ly failed:", await response.text());
-						else  {
-							this.lilySource = await response.text();
-							console.log("musicxml2ly accomplished.");
-						}
+						this.lilySource = await this.musicxml2ly(xml);
 
 						break;
 					}
 				}
+			},
+
+
+			async musicxml2ly (xml) {
+				this.converting = true;
+
+				const body = new FormData();
+				body.append("xml", xml);
+
+				const response = await fetch("/musicxml2ly", {
+					method: "POST",
+					body,
+				});
+				if (!response.ok)
+					console.warn("musicxml2ly failed:", await response.text());
+				else  {
+					const result = await response.text();
+					console.log("musicxml2ly accomplished.");
+
+					this.converting = false;
+
+					return result;
+				}
+
+				this.converting = false;
 			},
 		},
 	};

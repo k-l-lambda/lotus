@@ -1,6 +1,6 @@
 <template>
 	<div class="source-editor">
-		<textarea v-model="editText" cols="70"></textarea>
+		<textarea v-model="editText" cols="80" :disabled="disabled"></textarea>
 	</div>
 </template>
 
@@ -11,6 +11,7 @@
 
 		props: {
 			source: String,
+			disabled: Boolean,
 		},
 
 
