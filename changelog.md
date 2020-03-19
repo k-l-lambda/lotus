@@ -6,6 +6,8 @@ TODO:
 
 *	2020.3.19
 
+	+	backend: handle of musicxml2ly added.
+
 	+	Nodejs server added.
 
 	+	playground.vue: multiple drag types supported.

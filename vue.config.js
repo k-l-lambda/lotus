@@ -30,7 +30,7 @@ module.exports = {
 			.end();*/
 	},
 	devServer: {
-		//proxy: `http://localhost:${process.env.PORT}`,
+		proxy: `http://localhost:${process.env.PORT}`,
 		https: !!process.env.HTTPS,
 	},
 };

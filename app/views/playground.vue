@@ -58,9 +58,21 @@
 						break;
 					case "text/xml":
 						const xml = await file.readAs("Text");
-						console.log("xml:", xml);
+						//console.log("xml:", xml);
 
-						// TODO: translate xml to ly
+						const body = new FormData();
+						body.append("xml", xml);
+
+						const response = await fetch("/musicxml2ly", {
+							method: "POST",
+							body,
+						});
+						if (!response.ok)
+							console.warn("musicxml2ly failed:", await response.text());
+						else  {
+							this.lilySource = await response.text();
+							console.log("musicxml2ly accomplished.");
+						}
 
 						break;
 					}
