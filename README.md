@@ -9,4 +9,5 @@ Edit local enviroment variables in file `.env.local`.
 
 Variable Name			| Default Value
 :--						| :--
+HOST					| *127.0.0.1*
 PORT					| *8080*

@@ -1,7 +1,12 @@
 
+TODO:
+	command line backend
+
 
 
 *	2020.3.19
+
+	+	Nodejs server added.
 
 	+	playground.vue: multiple drag types supported.
 

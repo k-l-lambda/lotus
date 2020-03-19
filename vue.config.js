@@ -5,7 +5,7 @@ const htmlCommonTemplate = "./app/html/CommonTemplate.html";
 
 module.exports = {
 	publicPath: "./",
-	outputDir: "docs",
+	outputDir: "dist",
 	pages: {
 		index: {
 			entry: "./app/index.ts",
