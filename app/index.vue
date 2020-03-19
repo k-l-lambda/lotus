@@ -20,12 +20,6 @@
 </script>
 
 <style lang="scss">
-	.drag-hover
-	{
-		outline: 4px #4f4 dashed;
-		background-color: #cfc;
-	}
-
 	body
 	{
 		margin: 0;

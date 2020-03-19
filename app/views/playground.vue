@@ -1,8 +1,9 @@
 <template>
 	<div class="playground"
 		:class="{'drag-hover': dragHover}"
-		@dragover.prevent="dragHover = true"
-		@dragleave="dragHover = false"
+		:data-hover-type="dragHover"
+		@dragover.prevent="onDragOver"
+		@dragleave="dragHover = null"
 		@drop.prevent="onDropFile"
 	>
 		<main>
@@ -29,15 +30,22 @@
 
 		data () {
 			return {
-				dragHover: false,
+				dragHover: null,
 				lilySource: null,
 			};
 		},
 
 
 		methods: {
+			onDragOver (event) {
+				const item = event.dataTransfer.items[0];
+				if (item)
+					this.dragHover = item.type;
+			},
+
+
 			async onDropFile (event) {
-				this.dragHover = false;
+				this.dragHover = null;
 				//console.log("onDropFile:", event.dataTransfer.files[0]);
 
 				const file = event.dataTransfer.files[0];
@@ -46,6 +54,13 @@
 					case "text/x-lilypond":
 						this.lilySource = await file.readAs("Text");
 						//console.log("content:", content);
+
+						break;
+					case "text/xml":
+						const xml = await file.readAs("Text");
+						console.log("xml:", xml);
+
+						// TODO: translate xml to ly
 
 						break;
 					}
@@ -59,11 +74,15 @@
 	.drag-hover
 	{
 		outline: 4px #4f4 dashed;
-		background-color: #cfc;
 
-		textarea, input
+		&[data-hover-type="text/x-lilypond"]
 		{
 			background-color: #cfc;
+		}
+
+		&[data-hover-type="text/xml"]
+		{
+			background-color: #ffc;
 		}
 	}
 

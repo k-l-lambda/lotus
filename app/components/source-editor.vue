@@ -40,5 +40,6 @@
 	{
 		resize: horizontal;
 		height: 100%;
+		background-color: #fffa;
 	}
 </style>

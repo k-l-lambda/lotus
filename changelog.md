@@ -3,6 +3,8 @@
 
 *	2020.3.19
 
+	+	playground.vue: multiple drag types supported.
+
 	+	Component of source-editor created.
 
 
