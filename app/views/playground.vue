@@ -10,8 +10,14 @@
 			<button @click="engrave">Engrave</button>
 		</header>
 		<main>
-			<SourceEditor :source.sync="lilySource" :disabled="converting" />
-			<Sheet :staff="svgDocument" />
+			<div class="source-container">
+				<SourceEditor :source.sync="lilySource" :disabled="converting" />
+				<Loading v-show="converting" />
+			</div>
+			<div class="sheet-container">
+				<Sheet :staff="svgDocument" />
+				<Loading v-show="engraving" />
+			</div>
 		</main>
 	</div>
 </template>
@@ -21,6 +27,7 @@
 
 	import SourceEditor from "../components/source-editor.vue";
 	import Sheet from "../components/sheet.vue";
+	import Loading from "../components/loading-dots.vue";
 
 
 
@@ -31,6 +38,7 @@
 		components: {
 			SourceEditor,
 			Sheet,
+			Loading,
 		},
 
 
@@ -169,11 +177,22 @@
 			& > *
 			{
 				height: 100%;
+				position: relative;
 			}
 
-			.sheet
+			.source-container > *
+			{
+				height: 100%;
+			}
+
+			.sheet-container
 			{
 				flex-grow: 1;
+
+				& > *
+				{
+					width: 100%;
+				}
 			}
 		}
 	}

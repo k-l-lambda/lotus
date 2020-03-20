@@ -6,6 +6,8 @@ TODO:
 
 *	2020.3.20
 
+	+	playground.vue: dots loading animation added.
+
 	+	Vue component of sheet created.
 
 	+	backend: handle of engrave added.
