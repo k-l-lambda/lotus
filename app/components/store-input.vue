@@ -1,15 +1,13 @@
 <template>
-	<span>
-		<input
-			:type="type"
-			v-model.lazy="innerValue"
-			:style="styleObj"
-			:placeholder="placeholder"
-			:min="range && range.min"
-			:max="range && range.max"
-			:step="range && range.step"
-		/>
-	</span>
+	<input
+		:type="type"
+		v-model.lazy="innerValue"
+		:style="styleObj"
+		:placeholder="placeholder"
+		:min="range && range.min"
+		:max="range && range.max"
+		:step="range && range.step"
+	/>
 </template>
 
 <script>

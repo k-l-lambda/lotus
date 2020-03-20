@@ -4,3 +4,23 @@ button.working
 	background-color: #dfd;
 	font-weight: bold;
 }
+
+
+.controls
+{
+	fieldset
+	{
+		display: inline-block;
+		border: 0;
+
+		& > span
+		{
+			display: inline-block;
+		}
+
+		& > *
+		{
+			margin: 0 .2em;
+		}
+	}
+}

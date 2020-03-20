@@ -6,6 +6,8 @@ TODO:
 
 *	2020.3.20
 
+	+	playground.vue: auto engraving added.
+
 	+	playground.vue: display multiple svg pages for original staff document.
 
 	+	playground.vue: source store in browser added.

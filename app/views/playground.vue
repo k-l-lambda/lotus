@@ -6,10 +6,18 @@
 		@dragleave="dragHover = null"
 		@drop.prevent="onDropFile"
 	>
-		<header>
+		<header class="controls">
 			<StoreInput v-show="false" v-model="lilySource" sessionKey="lotus-lilySource" />
-			<button @click="saveSource" title="save source">&#x1f4be;</button>
-			<button @click="engrave" :class="{working: engraving}" title="engrave">&#x1f3bc;</button>
+			<fieldset>
+				<button @click="saveSource" title="save source">&#x1f4be;</button>
+			</fieldset>
+			<fieldset>
+				<span>
+					<BoolStoreInput v-model="autoEngrave" sessionKey="lotus-autoEngrave" />auto
+				</span>
+				<span class="dirty-badge" :class="{dirty: engraverDirty}"></span>
+				<button @click="engrave" :class="{working: engraving}" title="engrave">&#x1f3bc;</button>
+			</fieldset>
 		</header>
 		<main>
 			<div class="source-container" :class="{loading: converting}">
@@ -26,11 +34,13 @@
 
 <script>
 	import "../utils.js";
+	import {mutexDelay} from "../delay.js";
 
 	import SourceEditor from "../components/source-editor.vue";
 	import SheetSimple from "../components/sheet-simple.vue";
 	import Loading from "../components/loading-dots.vue";
-	import StoreInput from "../components/storeInput.vue";
+	import StoreInput from "../components/store-input.vue";
+	import BoolStoreInput from "../components/bool-store-input.vue";
 
 
 
@@ -43,6 +53,7 @@
 			SheetSimple,
 			Loading,
 			StoreInput,
+			BoolStoreInput,
 		},
 
 
@@ -54,12 +65,21 @@
 				engraving: false,
 				svgDocuments: null,
 				engraverLogs: null,
+				engraverDirty: false,
+				autoEngrave: true,
 			};
 		},
 
 
 		created () {
 			window.$main = this;
+		},
+
+
+		async mounted () {
+			await this.$nextTick();
+
+			this.watchEngrave();
 		},
 
 
@@ -143,6 +163,7 @@
 					this.engraving = false;
 				}
 
+				this.engraverDirty = false;
 				this.engraving = false;
 			},
 
@@ -159,6 +180,28 @@
 					link.click();
 				}
 			},
+
+
+			watchEngrave () {
+				if (this.autoEngrave && this.engraverDirty && !this.engraving) 
+					this.engrave();
+			},
+		},
+
+
+		watch: {
+			lilySource () {
+				this.engraverDirty = true;
+			},
+
+
+			engraverDirty (value) {
+				if (value && this.autoEngrave)
+					mutexDelay("autoEngrave", 5e+3).then(valid => !valid || this.watchEngrave());
+			},
+
+
+			autoEngrave: "watchEngrave",
 		},
 	};
 </script>
@@ -205,6 +248,16 @@
 			button
 			{
 				font-size: 24px;
+			}
+
+			.dirty-badge
+			{
+				width: 1em;
+
+				&.dirty::before
+				{
+					content: "*";
+				}
 			}
 		}
 
