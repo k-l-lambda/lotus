@@ -162,10 +162,15 @@
 				}
 				else  {
 					const result = await response.json();
-					console.log("Engraving accomplished.", result);
+					console.log("Engraving accomplished.");
 
 					this.engraverLogs = result.logs;
 					this.svgDocuments = result.svgs;
+
+					if (this.tokenizeStaff) 
+						console.log("pages:", result.pages);
+					// TODO: show live sheet
+					
 
 					this.engraving = false;
 				}

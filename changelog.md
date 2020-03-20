@@ -1,6 +1,6 @@
 
 TODO:
-	merge multiple svg files
+	debug measure parsing errors
 
 
 
