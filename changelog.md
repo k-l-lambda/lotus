@@ -6,6 +6,8 @@ TODO:
 
 *	2020.3.20
 
+	+	backend/lilyCommands.ts created.
+
 	+	inc/staffSvg added.
 
 	+	playground.vue: auto engraving added.
