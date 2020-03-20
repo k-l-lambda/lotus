@@ -91,13 +91,9 @@ export default {
 				await asyncCall(fs.writeFile, sourceFilename, source);
 
 				const result = await child_process.exec(`cd ${TEMP_DIR} && lilypond -dbackend=svg .${sourceFilename}`);
-				//console.log("engrave:", result.stdout);
-				//console.log("engrave:", result.stderr);
-				//return result.stderr;
 
 				const svgFiles: string[] = await asyncCall(glob, `${TEMP_DIR}engrave-${hash}*.svg`);
 				svgFiles.sort();
-				//console.log("svgFiles:", svgFiles);
 
 				const svgs = await Promise.all(svgFiles.map(filename => asyncCall(fs.readFile, filename)));
 

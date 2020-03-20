@@ -6,6 +6,8 @@ TODO:
 
 *	2020.3.20
 
+	+	inc/staffSvg added.
+
 	+	playground.vue: auto engraving added.
 
 	+	playground.vue: display multiple svg pages for original staff document.

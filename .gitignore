@@ -3,6 +3,7 @@ footages/
 dist/
 yarn.lock
 *.local
+*.log
 
 # command line temporary directory
 temp/
