@@ -6,8 +6,11 @@
 		@dragleave="dragHover = null"
 		@drop.prevent="onDropFile"
 	>
+		<header>
+			<button @click="engrave">Engrave</button>
+		</header>
 		<main>
-			<SourceEditor :source="lilySource" :disabled="converting" />
+			<SourceEditor :source.sync="lilySource" :disabled="converting" />
 		</main>
 	</div>
 </template>
@@ -33,7 +36,13 @@
 				dragHover: null,
 				lilySource: null,
 				converting: false,
+				engraving: false,
 			};
+		},
+
+
+		created () {
+			window.$main = this;
 		},
 
 
@@ -91,6 +100,31 @@
 
 				this.converting = false;
 			},
+
+
+			async engrave () {
+				this.engraving = true;
+
+				const body = new FormData();
+				body.append("source", this.lilySource);
+
+				const response = await fetch("/engrave", {
+					method: "POST",
+					body,
+				});
+				if (!response.ok)
+					console.warn("engrave failed:", await response.text());
+				else  {
+					const result = await response.text();
+					console.log("engrave accomplished.");
+
+					this.engraving = false;
+
+					return result;
+				}
+
+				this.engraving = false;
+			},
 		},
 	};
 </script>
@@ -114,6 +148,8 @@
 	.playground
 	{
 		position: absolute;
+		display: flex;
+		flex-direction: column;
 		top: 0;
 		left: 0;
 		width: 100%;
@@ -122,8 +158,9 @@
 
 		& > main
 		{
+			flex-grow: 1;
+			position: relative;
 			width: 100%;
-			height: 100%;
 
 			.source-editor
 			{

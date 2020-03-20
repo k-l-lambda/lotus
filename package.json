@@ -6,6 +6,7 @@
   "scripts": {
     "start": "ts-node --project ./tsconfig.node.json ./main.ts",
     "dev": "ts-node-dev --project ./tsconfig.node.json ./main.ts",
+    "dev:inspect": "ts-node-dev --project ./tsconfig.node.json --inspect -- ./main.ts",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build"
   },

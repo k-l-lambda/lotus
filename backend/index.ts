@@ -1,5 +1,6 @@
 
 import * as fs from "fs";
+import * as glob from "glob";
 import * as formidable from "formidable";
 import * as child_process from "child-process-promise";
 
@@ -24,7 +25,7 @@ const formidableHandle = (name, req, res, handle) =>
 
 			const result = await handle(fields, files);
 
-			const resultObj = (result instanceof String || result instanceof Buffer) ? {body: result} : result;
+			const resultObj = (typeof result === "string" || result instanceof Buffer) ? {body: result} : result;
 
 			res.writeHead(resultObj.body ? 200 : 404, resultObj.header);
 			res.write(resultObj.body);
@@ -68,13 +69,43 @@ export default {
 
 				const lyFileName = `${TEMP_DIR}xml2ly-${hash}.ly`;
 
-				/*const result =*/ await child_process.exec(
-					`musicxml2ly ${xmlFileName} -o ${lyFileName}`);
+				await child_process.exec(`musicxml2ly ${xmlFileName} -o ${lyFileName}`);
 				//console.log("musicxml2ly:", result.stdout, result.stderr);
 
 				const ly = await asyncCall(fs.readFile, lyFileName);
 
 				return ly;
+			}),
+	},
+
+
+	"/engrave": {
+		post: (req, res) => formidableHandle("engrave", req, res,
+			async ({source}) => {
+				//console.log("files:", xml);
+
+				const hash = genHashString();
+				const sourceFilename = `${TEMP_DIR}engrave-${hash}.ly`;
+				//const outputFilename = `./engrave-${hash}`;
+
+				await asyncCall(fs.writeFile, sourceFilename, source);
+
+				const result = await child_process.exec(`cd ${TEMP_DIR} && lilypond -dbackend=svg .${sourceFilename}`);
+				//console.log("engrave:", result.stdout);
+				console.log("engrave:", result.stderr);
+				//return result.stderr;
+
+				const svgFiles : any = await asyncCall(glob, `${TEMP_DIR}engrave-${hash}*.svg`);
+				console.log("svgFiles:", svgFiles);
+
+				const svgs = await Promise.all(svgFiles.map(filename => asyncCall(fs.readFile, filename)));
+
+				return {
+					header: {
+						"Content-Type": "image/svg+xml",
+					},
+					body: svgs.join("\n\n"),
+				};
 			}),
 	},
 };
