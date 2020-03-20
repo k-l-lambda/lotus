@@ -7,16 +7,17 @@
 		@drop.prevent="onDropFile"
 	>
 		<header>
-			<button @click="engrave">Engrave</button>
 			<StoreInput v-show="false" v-model="lilySource" sessionKey="lotus-lilySource" />
+			<button @click="saveSource" title="save source">&#x1f4be;</button>
+			<button @click="engrave" :class="{working: engraving}" title="engrave">&#x1f3bc;</button>
 		</header>
 		<main>
-			<div class="source-container">
+			<div class="source-container" :class="{loading: converting}">
 				<SourceEditor :source.sync="lilySource" :disabled="converting" />
 				<Loading v-show="converting" />
 			</div>
-			<div class="sheet-container">
-				<Sheet :staff="svgDocument" />
+			<div class="sheet-container" :class="{loading: engraving}">
+				<SheetSimple v-if="svgDocuments" :staves="svgDocuments" />
 				<Loading v-show="engraving" />
 			</div>
 		</main>
@@ -27,7 +28,7 @@
 	import "../utils.js";
 
 	import SourceEditor from "../components/source-editor.vue";
-	import Sheet from "../components/sheet.vue";
+	import SheetSimple from "../components/sheet-simple.vue";
 	import Loading from "../components/loading-dots.vue";
 	import StoreInput from "../components/storeInput.vue";
 
@@ -39,7 +40,7 @@
 
 		components: {
 			SourceEditor,
-			Sheet,
+			SheetSimple,
 			Loading,
 			StoreInput,
 		},
@@ -51,7 +52,8 @@
 				lilySource: null,
 				converting: false,
 				engraving: false,
-				svgDocument: null,
+				svgDocuments: null,
+				engraverLogs: null,
 			};
 		},
 
@@ -127,25 +129,50 @@
 					method: "POST",
 					body,
 				});
-				if (!response.ok)
-					console.warn("engrave failed:", await response.text());
+				if (!response.ok) {
+					console.warn("Engraving failed:", await response.text());
+					this.svgDocuments = null;
+				}
 				else  {
-					this.svgDocument = await response.text();
-					console.log("engrave accomplished.");
+					const result = await response.json();
+					console.log("Engraving accomplished.");
+
+					this.engraverLogs = result.logs;
+					this.svgDocuments = result.svgs;
 
 					this.engraving = false;
 				}
 
 				this.engraving = false;
 			},
+
+
+			saveSource () {
+				const sourceFile = new Blob([this.lilySource], {type: "text/x-lilypond"});
+
+				const link = document.createElement("a");
+				link.href = URL.createObjectURL(sourceFile);
+
+				const filename = prompt("Input your file name:", "lotus-editor.ly");
+				if (filename) {
+					link.download = /\.\w+/.test(filename) ? filename : filename + ".ly";
+					link.click();
+				}
+			},
 		},
 	};
 </script>
 
 <style lang="scss">
+	@import "../css/common.scss";
+
+	
 	.drag-hover
 	{
-		outline: 4px #4f4 dashed;
+		.source-container
+		{
+			outline: 4px #4f4 dashed;
+		}
 
 		&[data-hover-type="text/x-lilypond"]
 		{
@@ -169,9 +196,22 @@
 		height: 100%;
 		overflow: hidden;
 
+		& > header
+		{
+			padding: 1em;
+			text-align: center;
+			background-color: #fffa;
+
+			button
+			{
+				font-size: 24px;
+			}
+		}
+
 		& > main
 		{
-			flex-grow: 1;
+			flex: 1 1 0;
+			min-height: 0;
 			position: relative;
 			width: 100%;
 			display: flex;
@@ -191,11 +231,12 @@
 			.sheet-container
 			{
 				flex-grow: 1;
+				overflow: auto;
+			}
 
-				& > *
-				{
-					width: 100%;
-				}
+			.sheet-container.loading > .sheet
+			{
+				filter: blur(8px);
 			}
 		}
 	}

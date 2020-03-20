@@ -46,6 +46,6 @@
 	{
 		resize: horizontal;
 		height: 100%;
-		background-color: #fffa;
+		background-color: transparent;
 	}
 </style>

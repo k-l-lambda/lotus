@@ -92,7 +92,7 @@ export default {
 
 				const result = await child_process.exec(`cd ${TEMP_DIR} && lilypond -dbackend=svg .${sourceFilename}`);
 				//console.log("engrave:", result.stdout);
-				console.log("engrave:", result.stderr);
+				//console.log("engrave:", result.stderr);
 				//return result.stderr;
 
 				const svgFiles: string[] = await asyncCall(glob, `${TEMP_DIR}engrave-${hash}*.svg`);
@@ -101,12 +101,10 @@ export default {
 
 				const svgs = await Promise.all(svgFiles.map(filename => asyncCall(fs.readFile, filename)));
 
-				return {
-					header: {
-						"Content-Type": "image/svg+xml",
-					},
-					body: svgs.join("\n\n"),
-				};
+				return JSON.stringify({
+					logs: result.stderr,
+					svgs: svgs.map(svg => svg.toString()),
+				});
 			}),
 	},
 };

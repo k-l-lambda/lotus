@@ -1,5 +1,5 @@
 <template>
-	<div class="loading" >
+	<div class="loading-dots" >
 		<div class="ellipsis">
 			<div></div>
 			<div></div>
@@ -16,7 +16,7 @@
 </script>
 
 <style scoped>
-	.loading
+	.loading-dots
 	{
 		position: absolute;
 		top: 0;

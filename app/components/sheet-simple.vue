@@ -1,12 +1,6 @@
 <template>
 	<div class="sheet" v-resize="onResize">
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			:width="size.width"
-			:viewBox="svgViewBox"
-		>
-			<g class="staff" v-html="staff"></g>
-		</svg>
+		<span class="page" v-for="(staff, i) of staves" :key="i" v-html="staff"></span>
 	</div>
 </template>
 
@@ -16,7 +10,7 @@
 
 
 	export default {
-		name: "sheet",
+		name: "sheet-simple",
 
 
 		directives: {
@@ -25,7 +19,7 @@
 
 
 		props: {
-			staff: String,
+			staves: Array,
 		},
 
 
@@ -61,8 +55,16 @@
 </script>
 
 <style scoped>
-	svg
+	.sheet
 	{
-		background-color: #f0f0f0;
+		white-space: nowrap;
+		display: inline-block;
+	}
+
+	.page
+	{
+		display: inline-block;
+		margin: 0 1em;
+		background-color: #f6faff;
 	}
 </style>
