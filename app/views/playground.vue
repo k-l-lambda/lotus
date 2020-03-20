@@ -24,7 +24,7 @@
 				<SourceEditor :source.sync="lilySource" :disabled="converting" />
 				<Loading v-show="converting" />
 			</div>
-			<div class="sheet-container" :class="{loading: engraving}">
+			<div class="sheet-container" :class="{loading: engraving, dirty: engraverDirty}">
 				<SheetSimple v-if="svgDocuments" :staves="svgDocuments" />
 				<Loading v-show="engraving" />
 			</div>
@@ -285,11 +285,17 @@
 			{
 				flex-grow: 1;
 				overflow: auto;
-			}
 
-			.sheet-container.loading > .sheet
-			{
-				filter: blur(8px);
+				&.loading > .sheet
+				{
+					filter: blur(8px);
+				}
+
+				&.dirty
+				{
+					outline: #fc0a 1px solid;
+					background-color: #fc01;
+				}
 			}
 		}
 	}
