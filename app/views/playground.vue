@@ -8,6 +8,7 @@
 	>
 		<header>
 			<button @click="engrave">Engrave</button>
+			<StoreInput v-show="false" v-model="lilySource" sessionKey="lotus-lilySource" />
 		</header>
 		<main>
 			<div class="source-container">
@@ -28,6 +29,7 @@
 	import SourceEditor from "../components/source-editor.vue";
 	import Sheet from "../components/sheet.vue";
 	import Loading from "../components/loading-dots.vue";
+	import StoreInput from "../components/storeInput.vue";
 
 
 
@@ -39,6 +41,7 @@
 			SourceEditor,
 			Sheet,
 			Loading,
+			StoreInput,
 		},
 
 
