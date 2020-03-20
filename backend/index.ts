@@ -9,7 +9,7 @@ import * as child_process from "child-process-promise";
 const TEMP_DIR = "./temp/";
 
 
-const asyncCall = (func, ...args) => new Promise((resolve, reject) => func(...args, (err, data) => {
+const asyncCall = (func, ...args): Promise<any> => new Promise((resolve, reject) => func(...args, (err, data) => {
 	if (err)
 		reject(err);
 	else
@@ -95,8 +95,9 @@ export default {
 				console.log("engrave:", result.stderr);
 				//return result.stderr;
 
-				const svgFiles : any = await asyncCall(glob, `${TEMP_DIR}engrave-${hash}*.svg`);
-				console.log("svgFiles:", svgFiles);
+				const svgFiles: string[] = await asyncCall(glob, `${TEMP_DIR}engrave-${hash}*.svg`);
+				svgFiles.sort();
+				//console.log("svgFiles:", svgFiles);
 
 				const svgs = await Promise.all(svgFiles.map(filename => asyncCall(fs.readFile, filename)));
 

@@ -11,6 +11,7 @@
 		</header>
 		<main>
 			<SourceEditor :source.sync="lilySource" :disabled="converting" />
+			<Sheet :staff="svgDocument" />
 		</main>
 	</div>
 </template>
@@ -19,6 +20,7 @@
 	import "../utils.js";
 
 	import SourceEditor from "../components/source-editor.vue";
+	import Sheet from "../components/sheet.vue";
 
 
 
@@ -28,6 +30,7 @@
 
 		components: {
 			SourceEditor,
+			Sheet,
 		},
 
 
@@ -37,6 +40,7 @@
 				lilySource: null,
 				converting: false,
 				engraving: false,
+				svgDocument: null,
 			};
 		},
 
@@ -115,12 +119,10 @@
 				if (!response.ok)
 					console.warn("engrave failed:", await response.text());
 				else  {
-					const result = await response.text();
+					this.svgDocument = await response.text();
 					console.log("engrave accomplished.");
 
 					this.engraving = false;
-
-					return result;
 				}
 
 				this.engraving = false;
@@ -161,10 +163,17 @@
 			flex-grow: 1;
 			position: relative;
 			width: 100%;
+			display: flex;
+			flex-direction: row;
 
-			.source-editor
+			& > *
 			{
 				height: 100%;
+			}
+
+			.sheet
+			{
+				flex-grow: 1;
 			}
 		}
 	}

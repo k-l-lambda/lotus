@@ -37,6 +37,11 @@
 </script>
 
 <style scoped>
+	.source-editor
+	{
+		display: inline-block;
+	}
+
 	textarea
 	{
 		resize: horizontal;

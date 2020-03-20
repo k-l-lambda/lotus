@@ -6,6 +6,8 @@ TODO:
 
 *	2020.3.20
 
+	+	Vue component of sheet created.
+
 	+	backend: handle of engrave added.
 
 

@@ -34,6 +34,7 @@
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.8.3",
     "vue": "^2.6.11",
+    "vue-resize-directive": "^1.2.0",
     "vue-template-compiler": "^2.6.11"
   }
 }
