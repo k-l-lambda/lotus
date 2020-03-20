@@ -18,6 +18,9 @@
 				<span class="dirty-badge" :class="{dirty: engraverDirty}"></span>
 				<button @click="engrave" :class="{working: engraving}" title="engrave">&#x1f3bc;</button>
 			</fieldset>
+			<fieldset>
+				<BoolStoreInput v-model="tokenizeStaff" sessionKey="lotus-tokenizeStaff" />&#x1f3b9;
+			</fieldset>
 		</header>
 		<main>
 			<div class="source-container" :class="{loading: converting}">
@@ -67,6 +70,7 @@
 				engraverLogs: null,
 				engraverDirty: false,
 				autoEngrave: true,
+				tokenizeStaff: true,
 			};
 		},
 
@@ -145,6 +149,9 @@
 				const body = new FormData();
 				body.append("source", this.lilySource);
 
+				if (this.tokenizeStaff)
+					body.append("tokenize", this.tokenizeStaff);
+
 				const response = await fetch("/engrave", {
 					method: "POST",
 					body,
@@ -155,7 +162,7 @@
 				}
 				else  {
 					const result = await response.json();
-					console.log("Engraving accomplished.");
+					console.log("Engraving accomplished.", result);
 
 					this.engraverLogs = result.logs;
 					this.svgDocuments = result.svgs;
@@ -202,6 +209,12 @@
 
 
 			autoEngrave: "watchEngrave",
+
+
+			tokenizeStaff (value) {
+				if (value && this.lilySource)
+					this.engraverDirty = true;
+			},
 		},
 	};
 </script>

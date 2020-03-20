@@ -6,6 +6,8 @@ TODO:
 
 *	2020.3.20
 
+	+	playground.vue: staff tokenize option added.
+
 	+	backend/lilyCommands.ts created.
 
 	+	inc/staffSvg added.

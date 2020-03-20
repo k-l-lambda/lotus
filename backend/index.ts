@@ -1,7 +1,9 @@
 
 import * as formidable from "formidable";
+import {DOMParser} from "xmldom";
 
 import * as lilyCommands from "./lilyCommands";
+import * as staffSvg from "../inc/staffSvg";
 
 
 
@@ -39,10 +41,17 @@ export default {
 
 	"/engrave": {
 		post: (req, res) => formidableHandle("engrave", req, res,
-			async ({source}) => {
+			async ({source, tokenize = false}) => {
 				const result = await lilyCommands.engraveSvg(source);
+				if (!tokenize)
+					return JSON.stringify(result);
 
-				return JSON.stringify(result);
+				const pages = result.svgs.map(svg => staffSvg.parseSvgPage(svg, {DOMParser}));
+
+				return JSON.stringify({
+					...result,
+					pages,
+				});
 			}),
 	},
 };
