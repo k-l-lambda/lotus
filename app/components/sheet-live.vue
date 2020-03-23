@@ -6,7 +6,7 @@
 			:viewBox="svgViewBox"
 		>
 			<defs>
-				<g v-for="sign of signs" :key="sign.id" :id="`sign-${sign.id}`"
+				<g class="sign" v-for="sign of signs" :key="sign.id" :id="`sign-${sign.id}`"
 					:transform="sign.def.scale && `scale(${sign.def.scale.x}, ${sign.def.scale.y})`"
 				>
 					<path v-if="sign.def.type === 'path'" :d="sign.def.d" />
@@ -37,6 +37,13 @@
 					<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
 						:transform="`translate(${staff.x}, ${staff.y})`"
 					>
+						<g>
+							<g class="token" v-for="(token, i5) of staff.tokens" :key="i5"
+								:transform="`translate(${token.x}, ${token.y})`"
+							>
+								<use :class="token.classes" :xlink:href="`#sign-${token.hash}`" />
+							</g>
+						</g>
 						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
 							<g class="token" v-for="(token, i5) of measure.tokens" :key="i5"
 								:transform="`translate(${token.x}, ${token.y})`"
@@ -112,16 +119,45 @@
 </script>
 
 <style lang="scss" scoped>
+	$sheet-color: black;
+
+
 	.sheet
 	{
 		white-space: nowrap;
 		display: inline-block;
+
+		.sign 
+		{
+			line, polygon
+			{
+				stroke: inherit;
+			}
+
+			polygon, rect
+			{
+				fill: inherit;
+			}
+		}
 
 		.page
 		{
 			.pad
 			{
 				fill: #f6fffa;
+			}
+		}
+
+		.token
+		{
+			.staff_line
+			{
+				stroke: $sheet-color;
+			}
+
+			use
+			{
+				fill: $sheet-color;
 			}
 		}
 	}

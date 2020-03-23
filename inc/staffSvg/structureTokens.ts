@@ -58,7 +58,7 @@ const tokensLinesSplit = tokens => {
 };
 
 
-const parseTokenRows = tokens => {
+const parseTokenRow = tokens => {
 	const separatorYs : Set<number> = new Set();
 	tokens.filter(token => token.is("MEASURE_SEPARATOR")).forEach(token => separatorYs.add(token.ry));
 	//console.log("separatorYs:", separatorYs);
@@ -127,6 +127,9 @@ const parseTokenRows = tokens => {
 };
 
 
+const isStaffToken = token => token.is("STAFF_LINE") || token.is("MEASURE_SEPARATOR");
+
+
 const parseTokenStaff = (tokens, x, y) => {
 	const localTokens = tokens.map(token => token.translate({x, y}));
 	const notes = localTokens.filter(token => token.is("NOTE"));
@@ -145,11 +148,12 @@ const parseTokenStaff = (tokens, x, y) => {
 	const measures = separatorXs.map((x, i) => {
 		const left = i > 0 ? separatorXs[i - 1] : -Infinity;
 
-		return localTokens.filter(token => token.x > left && token.x < x);
+		return localTokens.filter(token => !isStaffToken(token) && token.x > left && token.x < x);
 	}).map((tokens, i) => parseTokenMeasure(tokens, separatorXs[i]));
 
 	return {
 		x, y,
+		tokens: localTokens.filter(isStaffToken),
 		measures,
 	};
 };
@@ -173,7 +177,7 @@ const parseTokenMeasure = (tokens, endX) => {
 const structureTokens = tokens => {
 	const linedTokens = tokensLinesSplit(tokens);
 
-	const rows = linedTokens.map(line => parseTokenRows(line));
+	const rows = linedTokens.map(parseTokenRow);
 
 	return {
 		rows,

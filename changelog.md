@@ -1,10 +1,13 @@
 
 TODO:
+	row level tokens in parseTokenRow
 	staff svg parser debug page
 
 
 
 *	2020.3.23
+
+	+	structureTokens.ts: added staff level tokens in parseTokenStaff.
 
 	+	jsonRecovery.ts created.
 
