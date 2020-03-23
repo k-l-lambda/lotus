@@ -6,6 +6,8 @@ TODO:
 
 *	2020.3.23
 
+	+	tokenizeElements.ts: separated token x, y from rounded x, y.
+
 	+	staffSvg: fixed some parsing issues.
 
 

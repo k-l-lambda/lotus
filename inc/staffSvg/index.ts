@@ -7,9 +7,12 @@ import structureTokens from "./structureTokens";
 
 const parseSvgPage = (dom, options) => {
 	const elem = svgToElements(dom, options);
-	const {tokens} = tokenizeElements(elem.children);
+	const {tokens, hashTable} = tokenizeElements(elem.children);
 
-	return structureTokens(tokens);
+	return {
+		structure: structureTokens(tokens),
+		hashTable,
+	};
 };
 
 

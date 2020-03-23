@@ -2,6 +2,8 @@
 export default class StaffToken {
 	x: Number;
 	y: Number;
+	rx: Number;
+	ry: Number;
 	symbol: String;
 	symbols = new Set();
 
@@ -28,10 +30,14 @@ export default class StaffToken {
 
 	translate (options) {
 		const data : any = {...this};
-		if (options.x)
+		if (options.x) {
 			data.x -= options.x;
-		if (options.y)
+			data.rx -= options.x;
+		}
+		if (options.y) {
 			data.y -= options.y;
+			data.ry -= options.y;
+		}
 
 		return new StaffToken(data);
 	}

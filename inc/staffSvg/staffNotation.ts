@@ -125,31 +125,31 @@ const parseNotationInMeasure = (context : StaffContext, measure) => {
 
 		if (token.is("ALTER")) {
 			if (token.x < measure.headX)
-				context.setKeyAlter(token.y, token.alterValue);
+				context.setKeyAlter(token.ry, token.alterValue);
 			else
-				context.setAlter(token.y, token.alterValue);
+				context.setAlter(token.ry, token.alterValue);
 		}
 		else if (token.is("CLEF")) 
-			context.setClef(token.y, token.clefValue);
+			context.setClef(token.ry, token.clefValue);
 		
 		else if (token.is("OCTAVE")) 
 			context.setOctaveShift(token.octaveShiftValue);
 		
 		else if (token.is("TIME_SIG")) {
-			if (token.y === 0)
+			if (token.ry === 0)
 				context.setBeatsPerMeasure(token.timeSignatureValue);
 		}
 		else if (token.is("NOTEHEAD")) {
 			const note = {
-				x: token.x - measure.noteRange.begin,
-				y: token.y,
-				pitch: context.yToPitch(token.y),
+				x: token.rx - measure.noteRange.begin,
+				y: token.ry,
+				pitch: context.yToPitch(token.ry),
 				id: token.href,
 			};
 			notes.push(note);
 
 			xs[note.x] = xs[note.x] || new Set();
-			xs[note.x].add(token.y);
+			xs[note.x].add(token.ry);
 		}
 	}
 

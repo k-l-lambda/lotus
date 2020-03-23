@@ -168,7 +168,7 @@
 					this.svgDocuments = result.svgs;
 
 					if (this.tokenizeStaff) 
-						console.log("pages:", result.pages);
+						console.log("structure:", result.structure, result.hashTable);
 					// TODO: show live sheet
 					
 

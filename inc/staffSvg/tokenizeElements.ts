@@ -59,7 +59,8 @@ const normalizeElement = elem => {
 		data.y = elem.transform.translate.y;
 		data.href = elem.href;
 		data.identity.scale = elem.transform.scale;
-		data.identity.points = elem.points.split(" ").map(x => roundNumber(Number(x), TOKEN_PRECISION)).join(" ");
+		//data.identity.points = elem.points.split(" ").map(x => roundNumber(Number(x), TOKEN_PRECISION)).join(" ");
+		data.identity.points = elem.points;
 		data.identity["stroke-width"] = elem["stroke-width"];
 
 		break;
@@ -69,8 +70,8 @@ const normalizeElement = elem => {
 	}
 
 	// round position
-	data.x = roundNumber(data.x, TOKEN_PRECISION);
-	data.y = roundNumber(data.y, TOKEN_PRECISION);
+	data.rx = roundNumber(data.x, TOKEN_PRECISION);
+	data.ry = roundNumber(data.y, TOKEN_PRECISION);
 
 	data.hash = identityHash(data.identity);
 
@@ -80,17 +81,16 @@ const normalizeElement = elem => {
 
 // TODO: consider split arc linking line into 2 parts
 const tokenizeElements = elements => {
-	const es = elements.map(normalizeElement).filter(x => x);
+	const es = elements.map(normalizeElement).filter(e => e);
 
 	const hashTable = {};
 	for (const elem of es) 
 		hashTable[elem.hash] = elem.identity;
-	
 
 	const tokens = es.map(elem => {
-		const {x, y, href, hash} = elem;
+		const {x, y, rx, ry, href, hash} = elem;
 		return new StaffToken({
-			x, y, href, hash,
+			x, y, rx, ry, href, hash,
 			...symbolize(elem),
 		});
 	});

@@ -60,11 +60,11 @@ const tokensLinesSplit = tokens => {
 
 const parseTokenLines = tokens => {
 	const separatorYs : Set<number> = new Set();
-	tokens.filter(token => token.is("MEASURE_SEPARATOR")).forEach(token => separatorYs.add(token.y));
+	tokens.filter(token => token.is("MEASURE_SEPARATOR")).forEach(token => separatorYs.add(token.ry));
 	//console.log("separatorYs:", separatorYs);
 
 	const staffLines = tokens.filter(token => token.is("STAFF_LINE")).reduce((lines, token) => {
-		lines[token.y] = token;
+		lines[token.ry] = token;
 		return lines;
 	}, {});
 	//console.log("staffLines:", staffLines);
@@ -74,7 +74,7 @@ const parseTokenLines = tokens => {
 		.sort();
 
 	const additionalLinesYs = tokens.filter(token => token.is("ADDITIONAL_LINE")).reduce((ys, token) => {
-		ys.add(token.y);
+		ys.add(token.ry);
 		return ys;
 	}, new Set());
 
@@ -84,7 +84,7 @@ const parseTokenLines = tokens => {
 	}
 
 	const lineY = staffYs[0] - 2;
-	const lineX = staffLines[lineY] && staffLines[lineY].x;
+	const lineX = staffLines[lineY] && staffLines[lineY].rx;
 
 	//console.log("additionalLinesYs:", additionalLinesYs);
 	const splitters = [];
@@ -108,7 +108,7 @@ const parseTokenLines = tokens => {
 	//console.log("splitters:", splitters);
 	const appendToken = token => {
 		let index = 0;
-		while (token.y > splitters[index])
+		while (token.ry > splitters[index])
 			++index;
 
 		staffTokens[index] = staffTokens[index] || [];
@@ -140,7 +140,7 @@ const parseTokenStaff = (tokens, x, y) => {
 
 		return notes.filter(note => note.x > left && note.x < x).length > 0;
 	});
-	console.log("separatorXs:", separatorXs, separatorXsRaw);
+	//console.log("separatorXs:", separatorXs, separatorXsRaw);
 
 	const measures = separatorXs.map((x, i) => {
 		const left = i > 0 ? separatorXs[i - 1] : -Infinity;
