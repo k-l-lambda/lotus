@@ -60,6 +60,9 @@
 
 <script>
 	import resize from "vue-resize-directive";
+	import {MusicNotation} from "@k-l-lambda/web-widgets";
+
+	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 
 
 
@@ -75,6 +78,7 @@
 		props: {
 			content: Object,
 			hashTable: Object,
+			midi: Object,
 		},
 
 
@@ -120,6 +124,12 @@
 		},
 
 
+		created () {
+			this.updateSheetNotation();
+			this.updateMidiNotation();
+		},
+
+
 		mounted () {
 			this.onResize();
 		},
@@ -130,6 +140,38 @@
 				this.size.width = this.$el.clientWidth;
 				this.size.height = this.$el.clientHeight;
 			},
+
+
+			updateSheetNotation () {
+				this.sheetNotation = null;
+				if (this.content)
+					this.sheetNotation = StaffNotation.parseNotationFromStructure(this.content);
+			},
+
+
+			async updateMidiNotation () {
+				this.midiNotation = null;
+				if (this.midi) {
+					this.midiNotation = MusicNotation.Notation.parseMidi(this.midi);
+
+					await this.$nextTick();
+					if (this.midiNotation && this.sheetNotation)
+						this.matchNotations();
+				}
+			},
+
+
+			matchNotations () {
+				//if (this.sheetNotation && this.midiNotation) 
+				console.log("notations:", this.sheetNotation, this.midiNotation);
+				
+			},
+		},
+
+
+		watch: {
+			content: "updateSheetNotation",
+			midi: "updateMidiNotation",
 		},
 	};
 </script>

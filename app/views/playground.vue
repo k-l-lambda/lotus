@@ -32,6 +32,7 @@
 				<SheetLive v-if="tokenizeStaff && sheetContent"
 					:content="sheetContent"
 					:hashTable="svgHashTable"
+					:midi="midi"
 				/>
 				<Loading v-show="engraving" />
 			</div>
@@ -81,6 +82,7 @@
 				tokenizeStaff: true,
 				sheetContent: null,
 				svgHashTable: null,
+				midi: null,
 			};
 		},
 
@@ -181,6 +183,7 @@
 						//console.log("structure:", result.structure, result.hashTable);
 						this.sheetContent = recoverJSON(result.structure, {StaffToken});
 						this.svgHashTable = result.hashTable;
+						this.midi = result.midi;
 					}
 
 					this.engraving = false;

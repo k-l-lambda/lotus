@@ -1,11 +1,15 @@
 
 TODO:
+	half notehead symbol identify failure
+	sheet-live.vue: MIDI player
 	row level tokens in parseTokenRow
 	staff svg parser debug page
 
 
 
 *	2020.3.23
+
+	+	sheet-live.vue: notations loading added.
 
 	+	sheet-live.vue: added linkedTokens.
 
