@@ -182,8 +182,10 @@ const parseNotationInStaff = (context : StaffContext, staff) => {
 	//console.log("parseNotationInStaff:", staff);
 	context.resetKeyAlters();
 
-	for (const measure of staff.measures)
-		parseNotationInMeasure(context, measure);
+	if (staff) {
+		for (const measure of staff.measures)
+			parseNotationInMeasure(context, measure);
+	}
 };
 
 

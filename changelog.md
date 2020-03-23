@@ -1,7 +1,12 @@
 
 TODO:
-	debug measure parsing errors
+	staff svg parser debug page
 
+
+
+*	2020.3.23
+
+	+	staffSvg: fixed some parsing issues.
 
 
 *	2020.3.20

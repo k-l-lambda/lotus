@@ -28,13 +28,13 @@ const tokensLinesSplit = tokens => {
 	for (const token of linkedTokens) {
 		if (lastToken) {
 			// detect next voice
-			if (token.y - lastToken.y < -10 && token.x - lastToken.x < -10)
+			if (token.y - lastToken.y < -4 && token.x - lastToken.x < -10)
 				break;
 
 			// detect next line
 			if (token.href !== lastToken.href && (
 				(token.y - lastToken.y > 24 && token.x - lastToken.x < -10)
-				|| (token.y - lastToken.y > 4 && token.x - lastToken.x < -40)
+				|| (token.y - lastToken.y > 4 && token.x - lastToken.x < -20)
 			)) {
 				//console.log("y plus:", token.y - lastToken.y);
 				++line;
@@ -69,7 +69,9 @@ const parseTokenLines = tokens => {
 	}, {});
 	//console.log("staffLines:", staffLines);
 
-	const staffYs = Array.from(separatorYs).sort().map(y => staffLines[y] ? y : y + TOKEN_PRECISION).map(y => y + 2);
+	const staffYs = Array.from(separatorYs)
+		.map(y => staffLines[y] ? y : y + TOKEN_PRECISION).map(y => y + 2)
+		.sort();
 
 	const additionalLinesYs = tokens.filter(token => token.is("ADDITIONAL_LINE")).reduce((ys, token) => {
 		ys.add(token.y);
@@ -120,7 +122,7 @@ const parseTokenLines = tokens => {
 	return {
 		x: lineX,
 		y: lineY,
-		staves: staffYs.map((y, i) => parseTokenStaff(staffTokens[i], lineX, y)),
+		staves: staffYs.map((y, i) => staffTokens[i] && parseTokenStaff(staffTokens[i], lineX, y)),
 	};
 };
 
@@ -138,6 +140,7 @@ const parseTokenStaff = (tokens, x, y) => {
 
 		return notes.filter(note => note.x > left && note.x < x).length > 0;
 	});
+	console.log("separatorXs:", separatorXs, separatorXsRaw);
 
 	const measures = separatorXs.map((x, i) => {
 		const left = i > 0 ? separatorXs[i - 1] : -Infinity;

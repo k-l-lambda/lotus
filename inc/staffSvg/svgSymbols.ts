@@ -38,21 +38,9 @@ const conditionSymbol = (symbol, condition) => elem => {
 
 
 const symbolRules = [
-	identitySymbol("NOTE NOTEHEAD SOLID", {
-		type: "path",
-		scale: {x: 0.004, y: -0.004},
-		d: "M222 137c54 0 107 -28 107 -89c0 -72 -57 -121 -104 -149c-36 -22 -76 -36 -118 -36c-54 0 -107 28 -107 89c0 72 57 121 104 149c36 22 76 36 118 36z",
-	}),
-	identitySymbol("NOTE NOTEHEAD HALF", {
-		type: "path",
-		scale: {x: 0.004, y: -0.004},
-		d: "M316 66c0 24 -20 42 -42 42c-4 0 -8 -1 -12 -2c-31 -9 -79 -40 -116 -64s-84 -55 -105 -80c-7 -8 -11 -18 -11 -28c0 -24 20 -42 42 -42c4 0 9 1 13 2c31 9 79 40 116 64s84 55 105 80c7 8 10 18 10 28zM266 137c45 0 81 -21 81 -70c0 -19 -6 -38 -12 -57 c-12 -37 -31 -73 -64 -95c-54 -36 -115 -52 -190 -52c-45 0 -81 21 -81 70c0 19 5 38 11 57c12 37 32 73 65 95c54 36 115 52 190 52z",
-	}),
-	identitySymbol("NOTE NOTEHEAD WHOLE", {
-		type: "path",
-		scale: {x: 0.004, y: -0.004},
-		d: "M216 113c-50 0 -70 -42 -70 -87c0 -78 59 -139 137 -139c50 0 69 42 69 87c0 78 -58 139 -136 139zM498 0c0 -43 -34 -76 -73 -97c-54 -29 -115 -40 -176 -40s-122 11 -176 40c-39 21 -73 54 -73 97s34 76 73 97c54 29 115 40 176 40s122 -11 176 -40 c39 -21 73 -54 73 -97z",
-	}),
+	pathFrameSymbol("NOTE NOTEHEAD SOLID", "M c   -  -c - - - - -c- - - - - -c-  -  - c     c     z"),
+	pathFrameSymbol("NOTE NOTEHEAD HALF", "M c  -  - c-  - - - -c- - - - - -s- - - -c- - - - - -c -  -  -c     c     s   c     zM c   -  -c - - - - - c- - - - - -c- - - - - -c-  -  - c     c     c     z"),
+	pathFrameSymbol("NOTE NOTEHEAD WHOLE", "M c-  - - - -c -  -  -c     c  -  - zM c - - - - -c- - - - - -s-  - c-  -  - s   c     s -  - c -  -  -z"),
 
 	//pathSymbol("NOTE REST WHOLE", ),
 	//pathSymbol("NOTE REST HALF", ),
