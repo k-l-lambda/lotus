@@ -3,6 +3,7 @@
 import * as fs from "fs";
 import * as glob from "glob";
 import * as child_process from "child-process-promise";
+import {MIDI} from "@k-l-lambda/web-widgets";
 
 
 
@@ -52,6 +53,7 @@ const engraveSvg = async source => {
 	const hash = genHashString();
 	const sourceFilename = `${TEMP_DIR}engrave-${hash}.ly`;
 	//const outputFilename = `./engrave-${hash}`;
+	const midiFilename = `${TEMP_DIR}engrave-${hash}.midi`;
 
 	await asyncCall(fs.writeFile, sourceFilename, source);
 
@@ -62,9 +64,19 @@ const engraveSvg = async source => {
 
 	const svgs = await Promise.all(svgFiles.map(filename => asyncCall(fs.readFile, filename)));
 
+	let midi = null;
+	try {
+		await asyncCall(fs.access, midiFilename, fs.constants.F_OK);
+
+		const buffer = await asyncCall(fs.readFile, midiFilename);
+		midi = MIDI.parseMidiData(buffer);
+	}
+	catch (_) {}
+
 	return {
 		logs: result.stderr,
 		svgs: svgs.map(svg => svg.toString()),
+		midi,
 	};
 };
 
