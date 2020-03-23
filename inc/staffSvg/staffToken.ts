@@ -11,6 +11,7 @@ export default class StaffToken {
 	symbol: String;
 	symbols = new Set();
 	hash: String;
+	href: String;
 
 
 	constructor (data) {
@@ -25,7 +26,7 @@ export default class StaffToken {
 	toJSON () {
 		return {
 			__prototype: "StaffToken",
-			..._.pick(this, ["x", "y", "rx", "ry", "symbol", "hash"]),
+			..._.pick(this, ["x", "y", "rx", "ry", "symbol", "hash", "href"]),
 		};
 	}
 

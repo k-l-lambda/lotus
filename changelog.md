@@ -7,6 +7,8 @@ TODO:
 
 *	2020.3.23
 
+	+	sheet-live.vue: added linkedTokens.
+
 	+	structureTokens.ts: added staff level tokens in parseTokenStaff.
 
 	+	jsonRecovery.ts created.

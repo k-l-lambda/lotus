@@ -101,6 +101,22 @@
 
 				return Object.entries(this.hashTable).map(([id, def]) => ({id, def}));
 			},
+
+
+			linkedTokens () {
+				if (!this.content)
+					return null;
+
+				const tokens = new Map();
+				this.content.pages.forEach(
+					page => page.rows.forEach(
+						row => row.staves.forEach(
+							staff => staff.measures.forEach(
+								measure => measure.tokens.forEach(
+									token => !token.href || tokens.set(token.href, token))))));
+
+				return tokens;
+			},
 		},
 
 
