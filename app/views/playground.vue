@@ -42,6 +42,8 @@
 <script>
 	import "../utils.js";
 	import {mutexDelay} from "../delay.js";
+	import {recoverJSON} from "../../inc/jsonRecovery.ts";
+	import StaffToken from "../../inc/staffSvg/staffToken.ts";
 
 	import SourceEditor from "../components/source-editor.vue";
 	import SheetSimple from "../components/sheet-simple.vue";
@@ -177,7 +179,7 @@
 
 					if (this.tokenizeStaff) {
 						//console.log("structure:", result.structure, result.hashTable);
-						this.sheetContent = result.structure;
+						this.sheetContent = recoverJSON(result.structure, {StaffToken});
 						this.svgHashTable = result.hashTable;
 					}
 
