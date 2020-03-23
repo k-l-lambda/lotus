@@ -6,6 +6,8 @@ TODO:
 
 *	2020.3.23
 
+	+	app/components/sheet-live.vue created.
+
 	+	lilyCommands.ts: load MIDI data in engraveSvg.
 
 	+	tokenizeElements.ts: separated token x, y from rounded x, y.

@@ -47,7 +47,9 @@ export default {
 					return JSON.stringify(result);
 
 				const pages = result.svgs.map(svg => staffSvg.parseSvgPage(svg, {DOMParser}));
-				const structure = pages.map(page => page.structure);
+				const structure = {
+					pages: pages.map(page => page.structure),
+				};
 				const hashTable = pages.reduce((sum, item) => ({...sum, ...item.hashTable}), {});
 
 				return JSON.stringify({

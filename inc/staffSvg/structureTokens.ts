@@ -177,6 +177,10 @@ const structureTokens = tokens => {
 
 	return {
 		lines,
+
+		// TODO:
+		width: 620,
+		height: 1000,
 	};
 };
 

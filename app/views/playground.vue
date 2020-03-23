@@ -28,7 +28,11 @@
 				<Loading v-show="converting" />
 			</div>
 			<div class="sheet-container" :class="{loading: engraving, dirty: engraverDirty}">
-				<SheetSimple v-if="svgDocuments" :staves="svgDocuments" />
+				<SheetSimple v-if="svgDocuments && !tokenizeStaff" :documents="svgDocuments" />
+				<SheetLive v-if="tokenizeStaff && sheetContent"
+					:content="sheetContent"
+					:hashTable="svgHashTable"
+				/>
 				<Loading v-show="engraving" />
 			</div>
 		</main>
@@ -41,6 +45,7 @@
 
 	import SourceEditor from "../components/source-editor.vue";
 	import SheetSimple from "../components/sheet-simple.vue";
+	import SheetLive from "../components/sheet-live.vue";
 	import Loading from "../components/loading-dots.vue";
 	import StoreInput from "../components/store-input.vue";
 	import BoolStoreInput from "../components/bool-store-input.vue";
@@ -54,6 +59,7 @@
 		components: {
 			SourceEditor,
 			SheetSimple,
+			SheetLive,
 			Loading,
 			StoreInput,
 			BoolStoreInput,
@@ -71,6 +77,8 @@
 				engraverDirty: false,
 				autoEngrave: true,
 				tokenizeStaff: true,
+				sheetContent: null,
+				svgHashTable: null,
 			};
 		},
 
@@ -167,10 +175,11 @@
 					this.engraverLogs = result.logs;
 					this.svgDocuments = result.svgs;
 
-					if (this.tokenizeStaff) 
-						console.log("structure:", result.structure, result.hashTable);
-					// TODO: show live sheet
-					
+					if (this.tokenizeStaff) {
+						//console.log("structure:", result.structure, result.hashTable);
+						this.sheetContent = result.structure;
+						this.svgHashTable = result.hashTable;
+					}
 
 					this.engraving = false;
 				}
