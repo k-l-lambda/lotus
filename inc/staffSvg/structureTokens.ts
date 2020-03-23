@@ -58,7 +58,7 @@ const tokensLinesSplit = tokens => {
 };
 
 
-const parseTokenLines = tokens => {
+const parseTokenRows = tokens => {
 	const separatorYs : Set<number> = new Set();
 	tokens.filter(token => token.is("MEASURE_SEPARATOR")).forEach(token => separatorYs.add(token.ry));
 	//console.log("separatorYs:", separatorYs);
@@ -173,10 +173,10 @@ const parseTokenMeasure = (tokens, endX) => {
 const structureTokens = tokens => {
 	const linedTokens = tokensLinesSplit(tokens);
 
-	const lines = linedTokens.map(line => parseTokenLines(line));
+	const rows = linedTokens.map(line => parseTokenRows(line));
 
 	return {
-		lines,
+		rows,
 
 		// TODO:
 		width: 620,

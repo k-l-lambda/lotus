@@ -226,7 +226,7 @@
 
 
 			tokenizeStaff (value) {
-				if (value && this.lilySource)
+				if (value && this.lilySource && !this.sheetContent)
 					this.engraverDirty = true;
 			},
 		},

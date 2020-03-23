@@ -6,6 +6,8 @@ TODO:
 
 *	2020.3.23
 
+	+	sheet-live.vue: svg document from token contents added.
+
 	+	app/components/sheet-live.vue created.
 
 	+	lilyCommands.ts: load MIDI data in engraveSvg.

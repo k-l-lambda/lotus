@@ -190,9 +190,9 @@ const parseNotationInStaff = (context : StaffContext, staff) => {
 
 
 const parseNotationFromStructure = structure => {
-	const contexts = Array(structure.lines[0].staves.length).fill(null).map(() => new StaffContext());
+	const contexts = Array(structure.rows[0].staves.length).fill(null).map(() => new StaffContext());
 
-	for (const line of structure.lines) {
+	for (const line of structure.rows) {
 		console.assert(line.staves.length === contexts.length, "staves size mismatched:", contexts.length, line.staves.length, structure);
 
 		line.staves.forEach((staff, i) => parseNotationInStaff(contexts[i], staff));

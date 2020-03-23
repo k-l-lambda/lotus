@@ -1,4 +1,8 @@
 
+import * as _ from "lodash";
+
+
+
 export default class StaffToken {
 	x: Number;
 	y: Number;
@@ -6,6 +10,7 @@ export default class StaffToken {
 	ry: Number;
 	symbol: String;
 	symbols = new Set();
+	hash: String;
 
 
 	constructor (data) {
@@ -14,6 +19,14 @@ export default class StaffToken {
 		if (this.symbol) 
 			this.symbol.split(" ").forEach(symbol => this.symbols.add(symbol));
 		
+	}
+
+
+	toJSON () {
+		return {
+			__prototype: "StaffToken",
+			..._.pick(this, ["x", "y", "rx", "ry", "symbol", "hash"]),
+		};
 	}
 
 
@@ -40,6 +53,11 @@ export default class StaffToken {
 		}
 
 		return new StaffToken(data);
+	}
+
+
+	get classes () {
+		return Array.from(this.symbols).map((s: string) => s.toLowerCase()).join(" ");
 	}
 
 
