@@ -9,6 +9,8 @@ TODO:
 
 *	2020.3.24
 
+	+	svgSymbols.ts: enhanced symbol identification.
+
 	+	playground.vue: added chromatic symbols switch.
 
 

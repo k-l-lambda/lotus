@@ -35,6 +35,13 @@
 				<g class="page" v-for="(page, i) of content.pages" :key="i">
 					<rect class="pad" x="0" y="0" :width="page.width" :height="page.height" />
 					<g class="row" v-for="(row, ii) of page.rows" :key="ii">
+						<g>
+							<g class="token" v-for="(token, i5) of row.tokens" :key="i5"
+								:transform="`translate(${token.x}, ${token.y})`"
+							>
+								<use :class="token.classes" :xlink:href="`#sign-${token.hash}`" />
+							</g>
+						</g>
 						<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
 							:transform="`translate(${staff.x}, ${staff.y})`"
 						>

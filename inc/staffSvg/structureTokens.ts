@@ -58,6 +58,9 @@ const tokensLinesSplit = tokens => {
 };
 
 
+const isRowToken = token => token.is("STAVES_CONNECTION") || token.is("BRACE");
+
+
 const parseTokenRow = tokens => {
 	const separatorYs : Set<number> = new Set();
 	tokens.filter(token => token.is("MEASURE_SEPARATOR")).forEach(token => separatorYs.add(token.ry));
@@ -116,12 +119,13 @@ const parseTokenRow = tokens => {
 	};
 
 	tokens
-		.filter(token => !token.is("STAVES_CONNECTION") && !token.is("BRACE"))
+		.filter(token => !isRowToken(token))
 		.forEach(appendToken);
 
 	return {
 		x: lineX,
 		y: lineY,
+		tokens: tokens.filter(isRowToken),
 		staves: staffYs.map((y, i) => staffTokens[i] && parseTokenStaff(staffTokens[i], lineX, y)),
 	};
 };
