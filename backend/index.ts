@@ -48,6 +48,7 @@ export default {
 
 				const pages = result.svgs.map(svg => staffSvg.parseSvgPage(svg, {DOMParser}));
 				const structure = {
+					__prototype: "SheetDocument",
 					pages: pages.map(page => page.structure),
 				};
 				const hashTable = pages.reduce((sum, item) => ({...sum, ...item.hashTable}), {});

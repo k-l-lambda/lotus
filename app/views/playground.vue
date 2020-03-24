@@ -53,6 +53,7 @@
 	import {mutexDelay} from "../delay.js";
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
 	import StaffToken from "../../inc/staffSvg/staffToken.ts";
+	import SheetDocument from "../../inc/staffSvg/sheetDocument.ts";
 	import {MidiAudio} from "@k-l-lambda/web-widgets";
 
 	import SourceEditor from "../components/source-editor.vue";
@@ -217,7 +218,7 @@
 
 					if (this.tokenizeStaff) {
 						//console.log("structure:", result.structure, result.hashTable);
-						this.sheetContent = recoverJSON(result.structure, {StaffToken});
+						this.sheetContent = recoverJSON(result.structure, {StaffToken, SheetDocument});
 						this.svgHashTable = result.hashTable;
 						this.midi = result.midi;
 					}

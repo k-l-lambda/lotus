@@ -8,6 +8,8 @@ TODO:
 
 *	2020.3.24
 
+	+	inc/staffSvg/SheetDocument.ts created.
+
 	+	structureToken.ts: added row relative coordinate.
 
 	+	playground.vue: added control of MIDI roll visible.
