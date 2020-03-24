@@ -20,7 +20,8 @@
 			</fieldset>
 			<fieldset>
 				<BoolStoreInput v-show="false" v-model="tokenizeStaff" sessionKey="lotus-tokenizeStaff" />
-				<CheckButton content="&#x1f3b9;" v-model="tokenizeStaff" />
+				<CheckButton content="&#x1f3b9;" v-model="tokenizeStaff" title="live staff" />
+				<CheckButton content="&#x1f3a8;" v-model="chromaticSymbols" title="chromatic symbols" />
 			</fieldset>
 		</header>
 		<main>
@@ -28,7 +29,7 @@
 				<SourceEditor :source.sync="lilySource" :disabled="converting" />
 				<Loading v-show="converting" />
 			</div>
-			<div class="sheet-container" :class="{loading: engraving, dirty: engraverDirty}">
+			<div class="sheet-container" :class="{loading: engraving, dirty: engraverDirty, chromatic: chromaticSymbols}">
 				<SheetSimple v-if="svgDocuments && !tokenizeStaff" :documents="svgDocuments" />
 				<SheetLive v-if="tokenizeStaff && sheetContent"
 					:content="sheetContent"
@@ -86,6 +87,7 @@
 				sheetContent: null,
 				svgHashTable: null,
 				midi: null,
+				chromaticSymbols: false,
 			};
 		},
 
@@ -250,6 +252,7 @@
 
 <style lang="scss">
 	@import "../css/common.scss";
+	@import "../css/chromaticSymbols.scss";
 
 	
 	.drag-hover

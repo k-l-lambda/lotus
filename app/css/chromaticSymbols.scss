@@ -1,0 +1,28 @@
+
+.chromatic .sheet .content
+{
+	.staff-line
+	{
+		stroke: lightgray;
+	}
+
+	.measure-separator, .additional-line
+	{
+		fill: lightgray;
+	}
+
+	.clef
+	{
+		fill: crimson;
+	}
+
+	.notehead
+	{
+		fill: royalblue;
+	}
+
+	.time-sig
+	{
+		fill: seagreen;
+	}
+}

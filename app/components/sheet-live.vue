@@ -31,24 +31,26 @@
 					</text>
 				</g>
 			</defs>
-			<g class="page" v-for="(page, i) of content.pages" :key="i">
-				<rect class="pad" x="0" y="0" :width="page.width" :height="page.height" />
-				<g class="row" v-for="(row, ii) of page.rows" :key="ii">
-					<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
-						:transform="`translate(${staff.x}, ${staff.y})`"
-					>
-						<g>
-							<g class="token" v-for="(token, i5) of staff.tokens" :key="i5"
-								:transform="`translate(${token.x}, ${token.y})`"
-							>
-								<use :class="token.classes" :xlink:href="`#sign-${token.hash}`" />
+			<g class="content">
+				<g class="page" v-for="(page, i) of content.pages" :key="i">
+					<rect class="pad" x="0" y="0" :width="page.width" :height="page.height" />
+					<g class="row" v-for="(row, ii) of page.rows" :key="ii">
+						<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
+							:transform="`translate(${staff.x}, ${staff.y})`"
+						>
+							<g>
+								<g class="token" v-for="(token, i5) of staff.tokens" :key="i5"
+									:transform="`translate(${token.x}, ${token.y})`"
+								>
+									<use :class="token.classes" :xlink:href="`#sign-${token.hash}`" />
+								</g>
 							</g>
-						</g>
-						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
-							<g class="token" v-for="(token, i5) of measure.tokens" :key="i5"
-								:transform="`translate(${token.x}, ${token.y})`"
-							>
-								<use :class="token.classes" :xlink:href="`#sign-${token.hash}`" />
+							<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
+								<g class="token" v-for="(token, i5) of measure.tokens" :key="i5"
+									:transform="`translate(${token.x}, ${token.y})`"
+								>
+									<use :class="token.classes" :xlink:href="`#sign-${token.hash}`" />
+								</g>
 							</g>
 						</g>
 					</g>
@@ -208,7 +210,7 @@
 
 		.token
 		{
-			.staff_line
+			.staff-line
 			{
 				stroke: $sheet-color;
 			}

@@ -58,7 +58,7 @@ export default class StaffToken {
 
 
 	get classes () {
-		return Array.from(this.symbols).map((s: string) => s.toLowerCase()).join(" ");
+		return Array.from(this.symbols).map((s: string) => s.toLowerCase().replace(/_/g, "-")).join(" ");
 	}
 
 

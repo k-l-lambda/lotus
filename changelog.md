@@ -7,6 +7,11 @@ TODO:
 
 
 
+*	2020.3.24
+
+	+	playground.vue: added chromatic symbols switch.
+
+
 *	2020.3.23
 
 	+	sheet-live.vue: notations loading added.
