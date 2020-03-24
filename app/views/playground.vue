@@ -19,7 +19,8 @@
 				<button @click="engrave" :class="{working: engraving}" title="engrave">&#x1f3bc;</button>
 			</fieldset>
 			<fieldset>
-				<BoolStoreInput v-model="tokenizeStaff" sessionKey="lotus-tokenizeStaff" />&#x1f3b9;
+				<BoolStoreInput v-show="false" v-model="tokenizeStaff" sessionKey="lotus-tokenizeStaff" />
+				<CheckButton content="&#x1f3b9;" v-model="tokenizeStaff" />
 			</fieldset>
 		</header>
 		<main>
@@ -52,6 +53,7 @@
 	import Loading from "../components/loading-dots.vue";
 	import StoreInput from "../components/store-input.vue";
 	import BoolStoreInput from "../components/bool-store-input.vue";
+	import CheckButton from "../components/check-button.vue";
 
 
 
@@ -66,6 +68,7 @@
 			Loading,
 			StoreInput,
 			BoolStoreInput,
+			CheckButton,
 		},
 
 

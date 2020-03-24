@@ -1,8 +1,23 @@
 
-button.working
+button
 {
-	background-color: #dfd;
-	font-weight: bold;
+	&.working
+	{
+		background-color: #dfd;
+		font-weight: bold;
+	}
+
+	&.on
+	{
+		background-color: #efe;
+		font-weight: bold;
+		border: 2px solid #555;
+	}
+
+	&.off
+	{
+		opacity: 0.7;
+	}
 }
 
 
