@@ -22,6 +22,7 @@
 				<BoolStoreInput v-show="false" v-model="tokenizeStaff" sessionKey="lotus-tokenizeStaff" />
 				<CheckButton content="&#x1f3b9;" v-model="tokenizeStaff" title="live staff" />
 				<CheckButton content="&#x1f3a8;" v-model="chromaticSymbols" title="chromatic symbols" />
+				<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "pause" : "play"}}</button>
 			</fieldset>
 		</header>
 		<main>
@@ -35,6 +36,8 @@
 					:content="sheetContent"
 					:hashTable="svgHashTable"
 					:midi="midi"
+					:midiPlayer.sync="midiPlayer"
+					@midi="onMidi"
 				/>
 				<Loading v-show="engraving" />
 			</div>
@@ -47,6 +50,7 @@
 	import {mutexDelay} from "../delay.js";
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
 	import StaffToken from "../../inc/staffSvg/staffToken.ts";
+	import {MidiAudio} from "@k-l-lambda/web-widgets";
 
 	import SourceEditor from "../components/source-editor.vue";
 	import SheetSimple from "../components/sheet-simple.vue";
@@ -88,12 +92,16 @@
 				svgHashTable: null,
 				midi: null,
 				chromaticSymbols: false,
+				midiPlayer: null,
 			};
 		},
 
 
 		created () {
 			window.$main = this;
+
+			if (MidiAudio.WebAudio.empty())
+				MidiAudio.loadPlugin({soundfontUrl: "/soundfont/", api: "webaudio"}).then(() => console.log("Soundfont loaded."));
 		},
 
 
@@ -131,6 +139,21 @@
 
 						break;
 					}
+				}
+			},
+
+
+			onMidi (data, timestamp) {
+				//console.log("onMidi:", data, timestamp);
+				switch (data.subtype) {
+				case "noteOn":
+					MidiAudio.noteOn(data.channel, data.noteNumber, data.velocity, timestamp);
+
+					break;
+				case "noteOff":
+					MidiAudio.noteOff(data.channel, data.noteNumber, timestamp);
+
+					break;
 				}
 			},
 
@@ -223,6 +246,16 @@
 			watchEngrave () {
 				if (this.autoEngrave && this.engraverDirty && !this.engraving) 
 					this.engrave();
+			},
+
+
+			togglePlayer () {
+				if (this.midiPlayer) {
+					if (this.midiPlayer.isPlaying)
+						this.midiPlayer.pause();
+					else
+						this.midiPlayer.play();
+				}
 			},
 		},
 

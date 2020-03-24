@@ -1,13 +1,14 @@
 
 TODO:
-	half notehead symbol identify failure
-	sheet-live.vue: MIDI player
+	sheet-live.vue: cursor
 	row level tokens in parseTokenRow
 	staff svg parser debug page
 
 
 
 *	2020.3.24
+
+	+	playground.vue: MIDI player added.
 
 	+	svgSymbols.ts: enhanced symbol identification.
 

@@ -36,28 +36,16 @@
 					<rect class="pad" x="0" y="0" :width="page.width" :height="page.height" />
 					<g class="row" v-for="(row, ii) of page.rows" :key="ii">
 						<g>
-							<g class="token" v-for="(token, i5) of row.tokens" :key="i5"
-								:transform="`translate(${token.x}, ${token.y})`"
-							>
-								<use :class="token.classes" :xlink:href="`#sign-${token.hash}`" />
-							</g>
+							<SheetToken v-for="(token, i5) of row.tokens" :key="i5" :token="token" />
 						</g>
 						<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
 							:transform="`translate(${staff.x}, ${staff.y})`"
 						>
 							<g>
-								<g class="token" v-for="(token, i5) of staff.tokens" :key="i5"
-									:transform="`translate(${token.x}, ${token.y})`"
-								>
-									<use :class="token.classes" :xlink:href="`#sign-${token.hash}`" />
-								</g>
+								<SheetToken v-for="(token, i5) of staff.tokens" :key="i5" :token="token" />
 							</g>
 							<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
-								<g class="token" v-for="(token, i5) of measure.tokens" :key="i5"
-									:transform="`translate(${token.x}, ${token.y})`"
-								>
-									<use :class="token.classes" :xlink:href="`#sign-${token.hash}`" />
-								</g>
+								<SheetToken v-for="(token, i5) of measure.tokens" :key="i5" :token="token" />
 							</g>
 						</g>
 					</g>
@@ -68,10 +56,13 @@
 </template>
 
 <script>
+	import Vue from "vue";
 	import resize from "vue-resize-directive";
-	import {MusicNotation} from "@k-l-lambda/web-widgets";
+	import {MusicNotation, MidiPlayer} from "@k-l-lambda/web-widgets";
 
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
+
+	import SheetToken from "./sheet-token.vue";
 
 
 
@@ -81,6 +72,11 @@
 
 		directives: {
 			resize,
+		},
+
+
+		components: {
+			SheetToken,
 		},
 
 
@@ -97,6 +93,7 @@
 					width: 100,
 					height: 100,
 				},
+				midiPlayer: null,
 			};
 		},
 
@@ -151,6 +148,40 @@
 			},
 
 
+			onMidi (data, timestamp) {
+				/*switch (data.subtype) {
+				case "noteOn":
+					MidiAudio.noteOn(data.channel, data.noteNumber, data.velocity, timestamp);
+
+					break;
+				case "noteOff":
+					MidiAudio.noteOff(data.channel, data.noteNumber, timestamp);
+
+					break;
+				}*/
+				this.$emit("midi", data, timestamp);
+
+				const delay = Math.max(timestamp - performance.now(), 0);
+				setTimeout(() => {
+					//console.log("midi event:", data);
+					if (data.ids) {
+						const tokens = data.ids.map(id => this.linkedTokens.get(id));
+
+						switch (data.subtype) {
+						case "noteOn":
+							tokens.forEach(token => Vue.set(token, "on", true));
+
+							break;
+						case "noteOff":
+							tokens.forEach(token => Vue.set(token, "on", false));
+
+							break;
+						}
+					}
+				}, delay);
+			},
+
+
 			updateSheetNotation () {
 				this.sheetNotation = null;
 				if (this.content)
@@ -162,18 +193,28 @@
 				this.midiNotation = null;
 				if (this.midi) {
 					this.midiNotation = MusicNotation.Notation.parseMidi(this.midi);
+					this.updateMidiPlayer();
 
 					await this.$nextTick();
-					if (this.midiNotation && this.sheetNotation)
+					if (this.midiNotation && this.sheetNotation) 
 						this.matchNotations();
 				}
 			},
 
 
-			matchNotations () {
-				//if (this.sheetNotation && this.midiNotation) 
-				console.log("notations:", this.sheetNotation, this.midiNotation);
-				
+			updateMidiPlayer () {
+				if (this.midiPlayer)
+					this.midiPlayer.dispose();
+
+				this.midiPlayer = new MidiPlayer(this.midiNotation, {
+					onMidi: (data, timestamp) => this.onMidi(data, timestamp),
+				});
+			},
+
+
+			async matchNotations () {
+				await StaffNotation.matchNotations(this.midiNotation, this.sheetNotation);
+				console.log("matching:", this.midiNotation.notes.map(n => n.ids && n.ids[0]));
 			},
 		},
 
@@ -181,14 +222,16 @@
 		watch: {
 			content: "updateSheetNotation",
 			midi: "updateMidiNotation",
+
+
+			midiPlayer (value) {
+				this.$emit("update:midiPlayer", value);
+			},
 		},
 	};
 </script>
 
 <style lang="scss" scoped>
-	$sheet-color: black;
-
-
 	.sheet
 	{
 		white-space: nowrap;
@@ -212,19 +255,6 @@
 			.pad
 			{
 				fill: #f6fffa;
-			}
-		}
-
-		.token
-		{
-			.staff-line
-			{
-				stroke: $sheet-color;
-			}
-
-			use
-			{
-				fill: $sheet-color;
 			}
 		}
 	}
