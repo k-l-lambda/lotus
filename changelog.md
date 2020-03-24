@@ -8,6 +8,8 @@ TODO:
 
 *	2020.3.24
 
+	+	playground.vue: MIDI roll view added.
+
 	+	playground.vue: MIDI player added.
 
 	+	svgSymbols.ts: enhanced symbol identification.

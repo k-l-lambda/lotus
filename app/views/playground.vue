@@ -22,7 +22,7 @@
 				<BoolStoreInput v-show="false" v-model="tokenizeStaff" sessionKey="lotus-tokenizeStaff" />
 				<CheckButton content="&#x1f3b9;" v-model="tokenizeStaff" title="live staff" />
 				<CheckButton content="&#x1f3a8;" v-model="chromaticSymbols" title="chromatic symbols" />
-				<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "pause" : "play"}}</button>
+				<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
 			</fieldset>
 		</header>
 		<main>
@@ -32,6 +32,7 @@
 			</div>
 			<div class="sheet-container" :class="{loading: engraving, dirty: engraverDirty, chromatic: chromaticSymbols}">
 				<SheetSimple v-if="svgDocuments && !tokenizeStaff" :documents="svgDocuments" />
+				<MidiRoll v-if="midiPlayer" :player="midiPlayer" :timeScale="4e-3" :height="120" />
 				<SheetLive v-if="tokenizeStaff && sheetContent"
 					:content="sheetContent"
 					:hashTable="svgHashTable"
@@ -59,6 +60,7 @@
 	import StoreInput from "../components/store-input.vue";
 	import BoolStoreInput from "../components/bool-store-input.vue";
 	import CheckButton from "../components/check-button.vue";
+	import {MidiRoll} from "@k-l-lambda/web-widgets";
 
 
 
@@ -74,6 +76,7 @@
 			StoreInput,
 			BoolStoreInput,
 			CheckButton,
+			MidiRoll,
 		},
 
 
@@ -219,6 +222,7 @@
 						this.sheetContent = null;
 						this.svgHashTable = null;
 						this.midi = null;
+						this.midiPlayer = null;
 					}
 
 					this.engraving = false;

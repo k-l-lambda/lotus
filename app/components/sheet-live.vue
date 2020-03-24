@@ -149,16 +149,6 @@
 
 
 			onMidi (data, timestamp) {
-				/*switch (data.subtype) {
-				case "noteOn":
-					MidiAudio.noteOn(data.channel, data.noteNumber, data.velocity, timestamp);
-
-					break;
-				case "noteOff":
-					MidiAudio.noteOff(data.channel, data.noteNumber, timestamp);
-
-					break;
-				}*/
 				this.$emit("midi", data, timestamp);
 
 				const delay = Math.max(timestamp - performance.now(), 0);
@@ -207,6 +197,7 @@
 					this.midiPlayer.dispose();
 
 				this.midiPlayer = new MidiPlayer(this.midiNotation, {
+					cacheSpan: 200,
 					onMidi: (data, timestamp) => this.onMidi(data, timestamp),
 				});
 			},
@@ -214,7 +205,7 @@
 
 			async matchNotations () {
 				await StaffNotation.matchNotations(this.midiNotation, this.sheetNotation);
-				console.log("matching:", this.midiNotation.notes.map(n => n.ids && n.ids[0]));
+				//console.log("matching:", this.midiNotation.notes.map(n => n.ids && n.ids[0]));
 			},
 		},
 
