@@ -8,6 +8,8 @@ TODO:
 
 *	2020.3.24
 
+	+	playground.vue: added control of MIDI roll visible.
+
 	+	playground.vue: MIDI roll view added.
 
 	+	playground.vue: MIDI player added.
