@@ -34,7 +34,9 @@
 			<g class="content">
 				<g class="page" v-for="(page, i) of content.pages" :key="i">
 					<rect class="pad" x="0" y="0" :width="page.width" :height="page.height" />
-					<g class="row" v-for="(row, ii) of page.rows" :key="ii">
+					<g class="row" v-for="(row, ii) of page.rows" :key="ii"
+						:transform="`translate(${row.x}, ${row.y})`"
+					>
 						<g>
 							<SheetToken v-for="(token, i5) of row.tokens" :key="i5" :token="token" />
 						</g>

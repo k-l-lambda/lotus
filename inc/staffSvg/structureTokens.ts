@@ -86,8 +86,8 @@ const parseTokenRow = tokens => {
 			"no corresponding staff lines for separator", y - 2, Object.keys(staffLines));
 	}
 
-	const lineY = staffYs[0] - 2;
-	const lineX = staffLines[lineY] && staffLines[lineY].rx;
+	const rowY = staffYs[0] - 2;
+	const rowX = staffLines[rowY] && staffLines[rowY].rx;
 
 	//console.log("additionalLinesYs:", additionalLinesYs);
 	const splitters = [];
@@ -100,7 +100,7 @@ const parseTokenRow = tokens => {
 		while (additionalLinesYs.has(down - 1) || additionalLinesYs.has(down - 1.25))
 			--down;
 
-		const splitter = Math.min(Math.max((staffYs[i] + staffYs[i + 1]) / 2, up + 1), down - 1);
+		const splitter = Math.min(Math.max((staffYs[i] + staffYs[i + 1]) / 2, up + 1), down - 1) - rowY;
 		splitters.push(splitter);
 
 		//console.log("splitters:", splitters, up, down);
@@ -118,15 +118,17 @@ const parseTokenRow = tokens => {
 		staffTokens[index].push(token);
 	};
 
-	tokens
+	const localTokens = tokens.map(token => token.translate({x: rowX, y: rowY}));
+
+	localTokens
 		.filter(token => !isRowToken(token))
 		.forEach(appendToken);
 
 	return {
-		x: lineX,
-		y: lineY,
-		tokens: tokens.filter(isRowToken),
-		staves: staffYs.map((y, i) => staffTokens[i] && parseTokenStaff(staffTokens[i], lineX, y)),
+		x: rowX,
+		y: rowY,
+		tokens: localTokens.filter(isRowToken),
+		staves: staffYs.map((y, i) => staffTokens[i] && parseTokenStaff(staffTokens[i], y - rowY)),
 	};
 };
 
@@ -134,8 +136,8 @@ const parseTokenRow = tokens => {
 const isStaffToken = token => token.is("STAFF_LINE") || token.is("MEASURE_SEPARATOR");
 
 
-const parseTokenStaff = (tokens, x, y) => {
-	const localTokens = tokens.map(token => token.translate({x, y}));
+const parseTokenStaff = (tokens, y) => {
+	const localTokens = tokens.map(token => token.translate({y}));
 	const notes = localTokens.filter(token => token.is("NOTE"));
 
 	const separatorXsRaw = localTokens
@@ -156,7 +158,7 @@ const parseTokenStaff = (tokens, x, y) => {
 	}).map((tokens, i) => parseTokenMeasure(tokens, separatorXs[i]));
 
 	return {
-		x, y,
+		x: 0, y,
 		tokens: localTokens.filter(isStaffToken),
 		measures,
 	};
