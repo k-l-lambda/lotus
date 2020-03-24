@@ -174,8 +174,10 @@
 				if (!response.ok) {
 					console.warn("Engraving failed:", await response.text());
 					this.svgDocuments = null;
+					this.sheetContent = null;
+					this.midi = null;
 				}
-				else  {
+				else {
 					const result = await response.json();
 					console.log("Engraving accomplished.");
 
@@ -187,6 +189,11 @@
 						this.sheetContent = recoverJSON(result.structure, {StaffToken});
 						this.svgHashTable = result.hashTable;
 						this.midi = result.midi;
+					}
+					else {
+						this.sheetContent = null;
+						this.svgHashTable = null;
+						this.midi = null;
 					}
 
 					this.engraving = false;
