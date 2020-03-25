@@ -1,6 +1,7 @@
 
 declare class StaffToken {
 	row?: number;
+	endX?: number;
 };
 
 

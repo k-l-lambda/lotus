@@ -8,9 +8,16 @@ declare class StaffToken {
 
 interface TickItem {
 	tick: number;
+	endTick?: number;
 	row: number;
 	x: number;
 	endX: number;
+};
+
+
+interface SheetPosition {
+	row: number,
+	x: number,
 };
 
 
@@ -29,7 +36,7 @@ export default class Scheduler {
 		});
 		//console.log("tokenTable:", tokenTable);
 	
-		const sequence = Object.entries(tokenTable).map(([tick, tokens]) => {
+		const tickTable: TickItem[] = Object.entries(tokenTable).map(([tick, tokens]) => {
 			if (!tokens.length)
 				return null;
 	
@@ -42,14 +49,57 @@ export default class Scheduler {
 				x: token.x,
 				endX: token.endX,
 			};
-		}).filter(item => item);
+		}).filter(item => item).sort((i1, i2) => i1.tick - i2.tick);
 		//console.log("sequence:", sequence);
 
-		return new Scheduler(sequence);
+		tickTable.forEach((item, i) => {
+			const nextItem = tickTable[i + 1];
+
+			item.endTick = nextItem ? nextItem.tick : midiNotation.endTick;
+
+			if (nextItem && item.row === nextItem.row)
+				item.endX = nextItem.x;
+		});
+
+		return new Scheduler({
+			tickTable,
+		});
 	}
 
 
-	constructor (tickTable) {
+	constructor ({tickTable}) {
+		console.assert(tickTable.length > 0, "invalid tick table:", this.tickTable);
+
 		this.tickTable = tickTable;
+	}
+
+
+	get startTick () {
+		if (!this.tickTable[0])
+			return null;
+
+		return this.tickTable[0].tick;
+	}
+
+
+	get endTick () {
+		if (!this.tickTable[0])
+			return null;
+
+		return this.tickTable[this.tickTable.length - 1].endTick;
+	}
+
+
+	lookupPosition (tick: number): SheetPosition {
+		tick = Math.max(Math.min(tick, this.endTick), this.startTick);
+
+		const item = this.tickTable.find(item => item.tick <= tick && item.endTick > tick) || this.tickTable[this.tickTable.length - 1];
+
+		const x = item.x + (tick - item.tick) * (item.endX - item.x) / (item.endTick - item.tick);
+
+		return {
+			row: item.row,
+			x,
+		};
 	}
 };
