@@ -37,6 +37,9 @@
 					<g class="row" v-for="(row, ii) of page.rows" :key="ii"
 						:transform="`translate(${row.x}, ${row.y})`"
 					>
+						<rect v-if="cursorPosition && cursorPosition.row === ii" class="cursor"
+							:x="cursorPosition.x" :y="-2" width="1" :height="16"
+						/>
 						<g>
 							<SheetToken v-for="(token, i5) of row.tokens" :key="i5" :token="token" />
 						</g>
@@ -97,6 +100,7 @@
 					height: 100,
 				},
 				midiPlayer: null,
+				scheduler: null,
 			};
 		},
 
@@ -129,6 +133,19 @@
 									token => !token.href || tokens.set(token.href, token))))));
 
 				return tokens;
+			},
+
+
+			progressTicks () {
+				return this.midiPlayer && this.midiPlayer.progressTicks;
+			},
+
+
+			cursorPosition () {
+				if (!this.midiPlayer || !this.scheduler)
+					return null;
+
+				return this.scheduler.lookupPosition(this.progressTicks);
 			},
 		},
 
@@ -254,6 +271,11 @@
 			{
 				fill: #f6fffa;
 			}
+		}
+
+		.cursor
+		{
+			fill: lightblue;
 		}
 	}
 </style>

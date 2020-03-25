@@ -1,12 +1,15 @@
 
 TODO:
 	sheet-live.vue: cursor
+		row height
 	row level tokens in parseTokenRow
 	staff svg parser debug page
 
 
 
 *	2020.3.25
+
+	+	sheet-live.vue: added cursor.
 
 	+	scheduler.ts: lookupPosition implemented.
 
