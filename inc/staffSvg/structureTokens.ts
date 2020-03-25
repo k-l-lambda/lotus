@@ -21,38 +21,41 @@ const tokensRowsSplit = tokens => {
 		.filter(token => token.href)
 		.sort((t1, t2) => compareLinks(t1.href, t2.href));
 
-	const lines = [];
+	const rows = [];
 
-	let line = 0;
-	let lastToken = null;
-	for (const token of linkedTokens) {
-		if (lastToken) {
-			// detect next voice
-			if (token.y - lastToken.y < -4 && token.x - lastToken.x < -10)
-				break;
-
-			// detect next line
-			if (token.href !== lastToken.href && (
-				(token.y - lastToken.y > 24 && token.x - lastToken.x < -10)
-				|| (token.y - lastToken.y > 4 && token.x - lastToken.x < -20)
-			)) {
-				//console.log("y plus:", token.y - lastToken.y);
-				++line;
+	const connectionCount = tokens.filter(token => token.is("STAVES_CONNECTION")).length;
+	if (connectionCount > 1) {
+		let row = 0;
+		let lastToken = null;
+		for (const token of linkedTokens) {
+			if (lastToken) {
+				// detect next voice
+				if (token.y - lastToken.y < -4 && token.x - lastToken.x < -10)
+					break;
+	
+				// detect next row
+				if (token.href !== lastToken.href && (
+					(token.y - lastToken.y > 24 && token.x - lastToken.x < -10)
+					|| (token.y - lastToken.y > 4 && token.x - lastToken.x < -20)
+				)) {
+					//console.log("y plus:", token.y - lastToken.y);
+					++row;
+				}
 			}
+	
+			rows[row] = rows[row] || [];
+			rows[row].push(token);
+	
+			lastToken = token;
 		}
-
-		lines[line] = lines[line] || [];
-		lines[line].push(token);
-
-		lastToken = token;
 	}
 
-	const lineBoundaries = lines.map(elems => Math.min(...elems.map(elem => elem.y)) - 1);
-	lineBoundaries[0] = -Infinity;
+	const rowBoundaries = rows.map(elems => Math.min(...elems.map(elem => elem.y)) - 1);
+	rowBoundaries[0] = -Infinity;
 
-	return Array(lineBoundaries.length).fill(null)
+	return Array(rowBoundaries.length).fill(null)
 		.map((_, i) => tokens
-			.filter(token => token.y >= lineBoundaries[i] && (i >= lineBoundaries.length - 1 || token.y < lineBoundaries[i + 1]))
+			.filter(token => token.y >= rowBoundaries[i] && (i >= rowBoundaries.length - 1 || token.y < rowBoundaries[i + 1]))
 			.sort((t1, t2) => t1.x - t2.x),
 		);
 };

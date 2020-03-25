@@ -6,6 +6,8 @@ TODO:
 
 *	2020.3.25
 
+	+	structureTokens.ts: fixed single row splitting.
+
 	+	sheet-live.vue: separated pages to multiple SVG.
 
 	+	staffSvg: parse svg viewBox.
