@@ -14,7 +14,7 @@ const parseSvgPage = (dom, options) => {
 	const viewBox = {x, y, width, height};
 
 	return {
-		structure: structureTokens(tokens, viewBox),
+		structure: structureTokens(tokens, {viewBox, width: elem.width, height: elem.height}),
 		hashTable,
 		
 	};

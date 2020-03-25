@@ -1,8 +1,8 @@
 <template>
 	<div class="sheet live" v-resize="onResize">
 		<svg
+			v-show="false"
 			xmlns="http://www.w3.org/2000/svg"
-			:width="600"
 			:viewBox="svgViewBox"
 		>
 			<defs>
@@ -31,28 +31,31 @@
 					</text>
 				</g>
 			</defs>
-			<g class="document">
-				<g class="page" v-for="(page, i) of doc.pages" :key="i">
-					<rect class="pad" x="0" y="0" :width="page.width" :height="page.height" />
-					<g class="row" v-for="(row, ii) of page.rows" :key="ii"
-						:transform="`translate(${row.x}, ${row.y})`"
-					>
-						<rect v-if="cursorPosition && cursorPosition.row === ii" class="cursor"
-							:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
-						/>
-						<g>
-							<SheetToken v-for="(token, i5) of row.tokens" :key="i5" :token="token" />
-						</g>
-						<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
-							:transform="`translate(${staff.x}, ${staff.y})`"
-						>
-							<g>
-								<SheetToken v-for="(token, i5) of staff.tokens" :key="i5" :token="token" />
-							</g>
-							<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
-								<SheetToken v-for="(token, i5) of measure.tokens" :key="i5" :token="token" />
-							</g>
-						</g>
+		</svg>
+		<svg v-for="(page, i) of doc.pages" :key="i"
+			class="page"
+			xmlns="http://www.w3.org/2000/svg"
+			:width="page.width"
+			:height="page.height"
+			:viewBox="`${page.viewBox.x} ${page.viewBox.y} ${page.viewBox.width} ${page.viewBox.height}`"
+		>
+			<g class="row" v-for="(row, ii) of page.rows" :key="ii"
+				:transform="`translate(${row.x}, ${row.y})`"
+			>
+				<rect v-if="cursorPosition && cursorPosition.row === row.index" class="cursor"
+					:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
+				/>
+				<g>
+					<SheetToken v-for="(token, i5) of row.tokens" :key="i5" :token="token" />
+				</g>
+				<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
+					:transform="`translate(${staff.x}, ${staff.y})`"
+				>
+					<g>
+						<SheetToken v-for="(token, i5) of staff.tokens" :key="i5" :token="token" />
+					</g>
+					<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
+						<SheetToken v-for="(token, i5) of measure.tokens" :key="i5" :token="token" />
 					</g>
 				</g>
 			</g>
@@ -284,10 +287,10 @@
 
 		.page
 		{
-			.pad
-			{
-				fill: #f6fffa;
-			}
+			display: inline-block;
+			margin: 1em;
+			background: #f6fffa;
+			border-radius: 1em;
 		}
 
 		.cursor

@@ -6,6 +6,8 @@ TODO:
 
 *	2020.3.25
 
+	+	sheet-live.vue: separated pages to multiple SVG.
+
 	+	staffSvg: parse svg viewBox.
 
 	+	sheet-live.vue: updated token status when cursor turned.

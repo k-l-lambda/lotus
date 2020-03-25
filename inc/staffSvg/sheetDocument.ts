@@ -16,6 +16,7 @@ interface SheetStaff {
 
 
 interface SheetRows {
+	index?: number;
 	staves: SheetStaff[];
 };
 
@@ -42,13 +43,16 @@ class SheetDocument {
 
 
 	updateTokenIndex () {
-		this.rows.forEach((row, index) =>
+		this.rows.forEach((row, index) => {
+			row.index = index;
+
 			row.staves.forEach(staff =>
 				staff.measures.forEach(measure =>
 					measure.tokens.forEach(token => {
 						token.row = index;
 						token.endX = measure.noteRange.end;
-					}))));
+					})));
+		});
 	}
 
 
