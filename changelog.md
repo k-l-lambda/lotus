@@ -6,6 +6,11 @@ TODO:
 
 
 
+*	2020.3.25
+
+	+	Renamed sheet content to sheet document.
+
+
 *	2020.3.24
 
 	+	inc/staffSvg/SheetDocument.ts created.

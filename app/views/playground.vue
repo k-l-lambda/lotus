@@ -35,8 +35,8 @@
 			<div class="sheet-container" :class="{loading: engraving, dirty: engraverDirty, chromatic: chromaticSymbols}">
 				<SheetSimple v-if="svgDocuments && !tokenizeStaff" :documents="svgDocuments" />
 				<MidiRoll v-if="midiPlayer" v-show="rollVisible" :player="midiPlayer" :timeScale="4e-3" :height="120" />
-				<SheetLive v-if="tokenizeStaff && sheetContent"
-					:content="sheetContent"
+				<SheetLive v-if="tokenizeStaff && sheetDocument"
+					:doc="sheetDocument"
 					:hashTable="svgHashTable"
 					:midi="midi"
 					:midiPlayer.sync="midiPlayer"
@@ -94,7 +94,7 @@
 				engraverDirty: false,
 				autoEngrave: true,
 				tokenizeStaff: true,
-				sheetContent: null,
+				sheetDocument: null,
 				svgHashTable: null,
 				midi: null,
 				chromaticSymbols: false,
@@ -206,7 +206,7 @@
 				if (!response.ok) {
 					console.warn("Engraving failed:", await response.text());
 					this.svgDocuments = null;
-					this.sheetContent = null;
+					this.sheetDocument = null;
 					this.midi = null;
 				}
 				else {
@@ -218,12 +218,12 @@
 
 					if (this.tokenizeStaff) {
 						//console.log("structure:", result.structure, result.hashTable);
-						this.sheetContent = recoverJSON(result.structure, {StaffToken, SheetDocument});
+						this.sheetDocument = recoverJSON(result.structure, {StaffToken, SheetDocument});
 						this.svgHashTable = result.hashTable;
 						this.midi = result.midi;
 					}
 					else {
-						this.sheetContent = null;
+						this.sheetDocument = null;
 						this.svgHashTable = null;
 						this.midi = null;
 						this.midiPlayer = null;
@@ -284,7 +284,7 @@
 
 
 			tokenizeStaff (value) {
-				if (value && this.lilySource && !this.sheetContent)
+				if (value && this.lilySource && !this.sheetDocument)
 					this.engraverDirty = true;
 			},
 		},

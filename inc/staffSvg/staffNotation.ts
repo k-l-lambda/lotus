@@ -189,7 +189,7 @@ const parseNotationInStaff = (context : StaffContext, staff) => {
 };
 
 
-const parseNotationFromStructure = structure => {
+const parseNotationFromSheetDocument = structure => {
 	const contexts = Array(structure.pages[0].rows[0].staves.length).fill(null).map(() => new StaffContext());
 
 	for (const page of structure.pages) {
@@ -288,8 +288,14 @@ const matchNotations = async (midiNotation, svgNotation) => {
 };
 
 
+const generateTicktable = (midiNotation, tokens) => {
+	// TODO:
+};
+
+
 
 export {
-	parseNotationFromStructure,
+	parseNotationFromSheetDocument,
 	matchNotations,
+	generateTicktable,
 };

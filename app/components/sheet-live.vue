@@ -31,8 +31,8 @@
 					</text>
 				</g>
 			</defs>
-			<g class="content">
-				<g class="page" v-for="(page, i) of content.pages" :key="i">
+			<g class="document">
+				<g class="page" v-for="(page, i) of doc.pages" :key="i">
 					<rect class="pad" x="0" y="0" :width="page.width" :height="page.height" />
 					<g class="row" v-for="(row, ii) of page.rows" :key="ii"
 						:transform="`translate(${row.x}, ${row.y})`"
@@ -83,7 +83,7 @@
 
 
 		props: {
-			content: Object,
+			doc: Object,
 			hashTable: Object,
 			midi: Object,
 		},
@@ -116,11 +116,11 @@
 
 
 			linkedTokens () {
-				if (!this.content)
+				if (!this.doc)
 					return null;
 
 				const tokens = new Map();
-				this.content.pages.forEach(
+				this.doc.pages.forEach(
 					page => page.rows.forEach(
 						row => row.staves.forEach(
 							staff => staff.measures.forEach(
@@ -176,8 +176,8 @@
 
 			updateSheetNotation () {
 				this.sheetNotation = null;
-				if (this.content)
-					this.sheetNotation = StaffNotation.parseNotationFromStructure(this.content);
+				if (this.doc)
+					this.sheetNotation = StaffNotation.parseNotationFromSheetDocument(this.doc);
 			},
 
 
@@ -213,7 +213,7 @@
 
 
 		watch: {
-			content: "updateSheetNotation",
+			doc: "updateSheetNotation",
 			midi: "updateMidiNotation",
 
 
