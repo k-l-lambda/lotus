@@ -187,7 +187,7 @@ const parseTokenMeasure = (tokens, endX) => {
 };
 
 
-const structureTokens = tokens => {
+const structureTokens = (tokens, viewBox) => {
 	const meaningfulTokens = tokens.filter(token => !token.is("NULL"));
 	const rowTokens = tokensRowsSplit(meaningfulTokens);
 
@@ -196,9 +196,8 @@ const structureTokens = tokens => {
 	return {
 		rows,
 
-		// TODO:
-		width: 620,
-		height: 1000,
+		width: viewBox.width,
+		height: viewBox.height,
 	};
 };
 

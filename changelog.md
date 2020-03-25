@@ -6,6 +6,8 @@ TODO:
 
 *	2020.3.25
 
+	+	staffSvg: parse svg viewBox.
+
 	+	sheet-live.vue: updated token status when cursor turned.
 
 	+	sheet-live.vue: set cursor height.

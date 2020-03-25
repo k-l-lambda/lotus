@@ -51,7 +51,7 @@ export default {
 					__prototype: "SheetDocument",
 					pages: pages.map(page => page.structure),
 				};
-				const hashTable = pages.reduce((sum, item) => ({...sum, ...item.hashTable}), {});
+				const hashTable = pages.reduce((sum, page) => ({...sum, ...page.hashTable}), {});
 
 				return JSON.stringify({
 					...result,

@@ -1,7 +1,7 @@
 
 const preservedAttributes = {
 	...[
-		"transform", "x", "y", "width", "height", "ry", "d", "x1", "y1", "x2", "y2",
+		"viewBox", "transform", "x", "y", "width", "height", "ry", "d", "x1", "y1", "x2", "y2",
 		"stroke-width", "points", "stroke-dasharray", "font-size",
 	].reduce((dict, key) => ({...dict, [key]: key}), {}),
 	"xlink:href": "href",
