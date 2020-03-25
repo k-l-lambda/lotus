@@ -36,7 +36,7 @@
 			</div>
 			<div class="sheet-container" :class="{loading: engraving, dirty: engraverDirty, chromatic: chromaticSymbols}">
 				<SheetSimple v-if="svgDocuments && !tokenizeStaff" :documents="svgDocuments" />
-				<MidiRoll v-if="midiPlayer" v-show="rollVisible" :player="midiPlayer" :timeScale="4e-3" :height="120" />
+				<MidiRoll v-if="tokenizeStaff && midiPlayer" v-show="rollVisible" :player="midiPlayer" :timeScale="4e-3" :height="120" />
 				<SheetLive v-if="tokenizeStaff && sheetDocument" ref="sheet"
 					:doc="sheetDocument"
 					:hashTable="svgHashTable"

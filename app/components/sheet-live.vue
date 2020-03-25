@@ -182,11 +182,11 @@
 
 						switch (data.subtype) {
 						case "noteOn":
-							tokens.forEach(token => Vue.set(token, "on", true));
+							tokens.forEach(token => token && Vue.set(token, "on", true));
 
 							break;
 						case "noteOff":
-							tokens.forEach(token => Vue.set(token, "on", false));
+							tokens.forEach(token => token && Vue.set(token, "on", false));
 
 							break;
 						}
@@ -221,6 +221,11 @@
 			async updateMidiNotation () {
 				this.midiNotation = null;
 				this.scheduler = null;
+
+				if (this.midiPlayer) {
+					this.midiPlayer.dispose();
+					this.midiPlayer = null;
+				}
 
 				if (this.midi) {
 					this.midiNotation = MusicNotation.Notation.parseMidi(this.midi);

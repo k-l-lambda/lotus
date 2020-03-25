@@ -1,6 +1,8 @@
 
 TODO:
+	MIDI roll view width
 	staff svg parser debug page
+	import MIDI for sheet
 
 
 
