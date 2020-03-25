@@ -13,7 +13,7 @@
   "author": "K.L. <k.l.lambda@gmail.com> (https://k-l-lambda.github.io)",
   "license": "ISC",
   "devDependencies": {
-    "@k-l-lambda/web-widgets": "^0.3.12",
+    "@k-l-lambda/web-widgets": "^0.3.13",
     "@types/express": "^4.17.3",
     "@typescript-eslint/eslint-plugin": "^2.24.0",
     "@typescript-eslint/parser": "^2.24.0",

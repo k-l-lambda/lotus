@@ -192,6 +192,22 @@
 			},
 
 
+			updateTokenStatus () {
+				if (this.midiNotation) {
+					for (const note of this.midiNotation.notes) {
+						const on = this.midiPlayer.progressTime >= note.start && this.midiPlayer.progressTime < note.start + note.duration;
+						if (note.ids) {
+							note.ids.forEach(id => {
+								const token = this.linkedTokens.get(id);
+								if (token)
+									Vue.set(token, "on", on);
+							});
+						}
+					}
+				}
+			},
+
+
 			updateSheetNotation () {
 				this.sheetNotation = null;
 				if (this.doc)
@@ -221,6 +237,7 @@
 				this.midiPlayer = new MidiPlayer(this.midiNotation, {
 					cacheSpan: 200,
 					onMidi: (data, timestamp) => this.onMidi(data, timestamp),
+					onTurnCursor: () => this.updateTokenStatus(),
 				});
 			},
 
