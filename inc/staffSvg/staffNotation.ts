@@ -288,14 +288,8 @@ const matchNotations = async (midiNotation, svgNotation) => {
 };
 
 
-const generateTicktable = (midiNotation, tokens) => {
-	// TODO:
-};
-
-
 
 export {
 	parseNotationFromSheetDocument,
 	matchNotations,
-	generateTicktable,
 };

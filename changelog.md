@@ -8,6 +8,8 @@ TODO:
 
 *	2020.3.25
 
+	+	inc/staffSvg/scheduler.ts created.
+
 	+	Renamed sheet content to sheet document.
 
 

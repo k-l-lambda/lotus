@@ -63,6 +63,7 @@
 	import {MusicNotation, MidiPlayer} from "@k-l-lambda/web-widgets";
 
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
+	import SheetScheduler from "../../inc/staffSvg/scheduler.ts";
 
 	import SheetToken from "./sheet-token.vue";
 
@@ -183,6 +184,8 @@
 
 			async updateMidiNotation () {
 				this.midiNotation = null;
+				this.scheduler = null;
+
 				if (this.midi) {
 					this.midiNotation = MusicNotation.Notation.parseMidi(this.midi);
 					this.updateMidiPlayer();
@@ -208,6 +211,8 @@
 			async matchNotations () {
 				await StaffNotation.matchNotations(this.midiNotation, this.sheetNotation);
 				//console.log("matching:", this.midiNotation.notes.map(n => n.ids && n.ids[0]));
+
+				this.scheduler = SheetScheduler.createFromNotation(this.midiNotation, this.linkedTokens);
 			},
 		},
 

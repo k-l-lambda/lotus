@@ -44,8 +44,10 @@ class SheetDocument {
 		this.rows.forEach((row, index) =>
 			row.staves.forEach(staff =>
 				staff.measures.forEach(measure =>
-					measure.tokens.forEach(token =>
-						token.row = index))));
+					measure.tokens.forEach(token => {
+						token.row = index;
+						token.endX = measure.noteRange.end;
+					}))));
 	}
 
 
