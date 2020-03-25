@@ -79,6 +79,9 @@ const symbolRules = [
 	conditionSymbol("STAVES_CONNECTION", elem => elem.identity.type === "rect"
 		&& (elem.identity.width === 0.25 || elem.identity.width === 0.1) && elem.identity.height >= 12),
 
+	conditionSymbol("VERTICAL_LINE", elem => elem.identity.type === "rect"
+		&& (elem.identity.width === 0.25 || elem.identity.width === 0.1) && elem.identity.height >= 1),
+
 	conditionSymbol("STAFF_LINE", elem => elem.identity.type === "line" && elem.identity.height === 0 && elem.identity.width > 10 && !elem.identity["stroke-dasharray"]),
 
 	conditionSymbol("ADDITIONAL_LINE", elem => elem.identity.type === "rect" && elem.identity.height === 0.25 && elem.identity.width >= 1.75 && elem.identity.width <= 2),
@@ -149,7 +152,8 @@ const symbolRules = [
 		"stroke-dasharray": "0.362351432995067,0.537648567004933",
 	}),
 
-	conditionSymbol("NULL", elem => elem.identity.type === "rect" && elem.identity.height === 2 && elem.identity.width >= 50 && elem.rx <= 0 && elem.ry <= 0),
+	conditionSymbol("NULL LARGE_RECT", elem => elem.identity.type === "rect" && elem.identity.height === 2 && elem.identity.width >= 50 && elem.rx <= 0 && elem.ry <= 0),
+	conditionSymbol("NULL COPYRIGHT", elem => elem.identity.type === "text" && /www\.lilypond\.org/.test(elem.identity.text)),
 ];
 
 

@@ -38,7 +38,7 @@
 						:transform="`translate(${row.x}, ${row.y})`"
 					>
 						<rect v-if="cursorPosition && cursorPosition.row === ii" class="cursor"
-							:x="cursorPosition.x" :y="-2" width="1" :height="16"
+							:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
 						/>
 						<g>
 							<SheetToken v-for="(token, i5) of row.tokens" :key="i5" :token="token" />

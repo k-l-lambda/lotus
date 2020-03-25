@@ -58,7 +58,7 @@ const tokensRowsSplit = tokens => {
 };
 
 
-const isRowToken = token => token.is("STAVES_CONNECTION") || token.is("BRACE");
+const isRowToken = token => token.is("STAVES_CONNECTION") || token.is("BRACE") || token.is("VERTICAL_LINE");
 
 
 const parseTokenRow = tokens => {
@@ -88,6 +88,11 @@ const parseTokenRow = tokens => {
 
 	const rowY = staffYs[0] - 2;
 	const rowX = staffLines[rowY] && staffLines[rowY].rx;
+
+	const symbolYs = tokens.filter(token => token.symbol).map(token => token.ry);
+
+	const top = Math.min(...symbolYs) - rowY;
+	const bottom = Math.max(...symbolYs) - rowY;
 
 	//console.log("additionalLinesYs:", additionalLinesYs);
 	const splitters = [];
@@ -127,6 +132,8 @@ const parseTokenRow = tokens => {
 	return {
 		x: rowX,
 		y: rowY,
+		top,
+		bottom,
 		tokens: localTokens.filter(isRowToken),
 		staves: staffYs.map((y, i) => staffTokens[i] && parseTokenStaff(staffTokens[i], y - rowY)),
 	};
