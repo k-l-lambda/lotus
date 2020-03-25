@@ -9,6 +9,8 @@ TODO:
 
 *	2020.3.25
 
+	+	structureTokens.ts: sift out null elements.
+
 	+	sheet-live.vue: added cursor.
 
 	+	scheduler.ts: lookupPosition implemented.

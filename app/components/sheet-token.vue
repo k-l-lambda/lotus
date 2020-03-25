@@ -20,7 +20,7 @@
 
 <style lang="scss" scoped>
 	$default-color: black;
-	$on-color: #0d0;
+	$on-color: #06f;
 
 
 	.token

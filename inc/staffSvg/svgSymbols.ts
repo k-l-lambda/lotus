@@ -148,6 +148,8 @@ const symbolRules = [
 		"stroke-width": 0.0924,
 		"stroke-dasharray": "0.362351432995067,0.537648567004933",
 	}),
+
+	conditionSymbol("NULL", elem => elem.identity.type === "rect" && elem.identity.height === 2 && elem.identity.width >= 50 && elem.rx <= 0 && elem.ry <= 0),
 ];
 
 

@@ -16,7 +16,7 @@ const compareLinks = (link1, link2) => {
 };
 
 
-const tokensLinesSplit = tokens => {
+const tokensRowsSplit = tokens => {
 	const linkedTokens = tokens
 		.filter(token => token.href)
 		.sort((t1, t2) => compareLinks(t1.href, t2.href));
@@ -181,9 +181,10 @@ const parseTokenMeasure = (tokens, endX) => {
 
 
 const structureTokens = tokens => {
-	const linedTokens = tokensLinesSplit(tokens);
+	const meaningfulTokens = tokens.filter(token => !token.is("NULL"));
+	const rowTokens = tokensRowsSplit(meaningfulTokens);
 
-	const rows = linedTokens.map(parseTokenRow);
+	const rows = rowTokens.map(parseTokenRow);
 
 	return {
 		rows,
