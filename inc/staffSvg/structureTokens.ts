@@ -74,7 +74,7 @@ const tokensRowsSplit = tokens => {
 		}
 	}
 
-	const rowBoundaries = rows.map(elems => Math.min(...elems.map(elem => elem.y)) - 1);
+	const rowBoundaries = rows.map(elems => Math.min(...elems.map(elem => elem.y)) - 2.5);
 	rowBoundaries[0] = -Infinity;
 
 	return Array(rowBoundaries.length).fill(null)
