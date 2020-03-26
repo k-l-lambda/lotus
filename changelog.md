@@ -2,11 +2,13 @@
 TODO:
 	symbols of NUMBER & TIME_SIG
 	staff svg parser debug page
-	import MIDI for sheet
+	import user MIDI for sheet
 
 
 
 *	2020.3.26
+
+	+	sheet-live.vue: added debug marks.
 
 	+	playground.vue: added width property for MIDI roll.
 

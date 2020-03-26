@@ -1,6 +1,13 @@
 
 .chromatic .sheet
 {
+	.page
+	{
+		background: white;
+		border: 1px black solid;
+	}
+
+
 	.staff-line
 	{
 		stroke: lightgray;
@@ -34,5 +41,23 @@
 	.slur
 	{
 		fill: pink;
+	}
+
+	.mark
+	{
+		visibility: visible;
+	}
+
+	.row > rect.mark
+	{
+		fill: #ffff0004;
+		stroke: #ff0;
+		stroke-width: 0.2;
+	}
+
+	.staff > circle.mark
+	{
+		r: 1;
+		fill: #4086;
 	}
 }

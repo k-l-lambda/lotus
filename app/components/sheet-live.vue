@@ -1,9 +1,8 @@
 <template>
 	<div class="sheet live">
-		<svg
+		<svg class="sign-prefabs"
 			v-show="false"
 			xmlns="http://www.w3.org/2000/svg"
-			:viewBox="svgViewBox"
 		>
 			<defs>
 				<g class="sign" v-for="sign of signs" :key="sign.id" :id="`sign-${sign.id}`"
@@ -42,7 +41,8 @@
 			<g class="row" v-for="(row, ii) of page.rows" :key="ii"
 				:transform="`translate(${row.x}, ${row.y})`"
 			>
-				<rect v-if="cursorPosition && cursorPosition.row === row.index" class="cursor"
+				<rect class="mark" :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top" />
+				<rect class="cursor" v-if="cursorPosition && cursorPosition.row === row.index"
 					:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
 				/>
 				<g>
@@ -51,6 +51,7 @@
 				<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
 					:transform="`translate(${staff.x}, ${staff.y})`"
 				>
+					<circle class="mark" />
 					<g>
 						<SheetToken v-for="(token, i5) of staff.tokens" :key="i5" :token="token" />
 					</g>
@@ -99,12 +100,6 @@
 
 
 		computed: {
-			svgViewBox () {
-				// TODO:
-				return "0 0 60 80";
-			},
-
-
 			signs () {
 				if (!this.hashTable)
 					return [];
@@ -280,6 +275,11 @@
 		.cursor
 		{
 			fill: lightblue;
+		}
+
+		.mark
+		{
+			visibility: hidden;
 		}
 	}
 </style>
