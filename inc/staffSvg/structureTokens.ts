@@ -77,7 +77,7 @@ const parseTokenRow = tokens => {
 
 	const staffYs = Array.from(separatorYs)
 		.map(y => staffLines[y] ? y : y + TOKEN_PRECISION).map(y => y + 2)
-		.sort();
+		.sort((y1, y2) => y1 - y2);
 
 	const additionalLinesYs = tokens.filter(token => token.is("ADDITIONAL_LINE")).reduce((ys, token) => {
 		ys.add(token.ry);
@@ -133,6 +133,7 @@ const parseTokenRow = tokens => {
 		.forEach(appendToken);
 
 	return {
+		staffYs,
 		x: rowX,
 		y: rowY,
 		top,

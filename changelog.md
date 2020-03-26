@@ -8,6 +8,8 @@ TODO:
 
 *	2020.3.26
 
+	+	structureTokens.ts: fixed bug of numbers sort.
+
 	+	sheet-live.vue: added debug marks.
 
 	+	playground.vue: added width property for MIDI roll.
