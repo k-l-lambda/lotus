@@ -60,4 +60,14 @@
 		r: 1;
 		fill: #4086;
 	}
+
+	.measure > .mark
+	{
+		text
+		{
+			font-size: 3px;
+			fill: #0f0a;
+			text-anchor: start;
+		}
+	}
 }
