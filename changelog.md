@@ -1,9 +1,15 @@
 
 TODO:
 	MIDI roll view width
+	symbols of NUMBER & TIME_SIG
 	staff svg parser debug page
 	import MIDI for sheet
 
+
+
+*	2020.3.26
+
+	+	svgSymbols.ts: added more symbol rules.
 
 
 *	2020.3.25

@@ -30,9 +30,11 @@ export default class Scheduler {
 		const tokenTable: {[key: number]: StaffToken[]} = {};
 
 		midiNotation.notes.forEach(note => {
-			tokenTable[note.startTick] = tokenTable[note.startTick] || [];
-			const tokens = note.ids.map(id => tokenMap.get(id)).filter(t => t);
-			tokenTable[note.startTick].push(...tokens);
+			if (note.ids) {
+				tokenTable[note.startTick] = tokenTable[note.startTick] || [];
+				const tokens = note.ids.map(id => tokenMap.get(id)).filter(t => t);
+				tokenTable[note.startTick].push(...tokens);
+			}
 		});
 		//console.log("tokenTable:", tokenTable);
 	
