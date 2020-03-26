@@ -1,6 +1,5 @@
 
 TODO:
-	MIDI roll view width
 	symbols of NUMBER & TIME_SIG
 	staff svg parser debug page
 	import MIDI for sheet
@@ -8,6 +7,11 @@ TODO:
 
 
 *	2020.3.26
+
+	+	playground.vue: added width property for MIDI roll.
+
+		CSS trick to prevent flex item overflow:
+			min-width: 0;
 
 	+	svgSymbols.ts: added more symbol rules.
 

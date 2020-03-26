@@ -34,16 +34,23 @@
 				<SourceEditor :source.sync="lilySource" :disabled="converting" />
 				<Loading v-show="converting" />
 			</div>
-			<div class="sheet-container" :class="{loading: engraving, dirty: engraverDirty, chromatic: chromaticSymbols}">
-				<SheetSimple v-if="svgDocuments && !tokenizeStaff" :documents="svgDocuments" />
-				<MidiRoll v-if="tokenizeStaff && midiPlayer" v-show="rollVisible" :player="midiPlayer" :timeScale="4e-3" :height="120" />
-				<SheetLive v-if="tokenizeStaff && sheetDocument" ref="sheet"
-					:doc="sheetDocument"
-					:hashTable="svgHashTable"
-					:midi="midi"
-					:midiPlayer.sync="midiPlayer"
-					@midi="onMidi"
+			<div class="build-container" ref="buildContainer" :class="{loading: engraving, dirty: engraverDirty, chromatic: chromaticSymbols}" v-resize="onResize">
+				<MidiRoll v-if="tokenizeStaff && midiPlayer" v-show="rollVisible"
+					:player="midiPlayer"
+					:timeScale="4e-3"
+					:height="120"
+					:width="buildContainerSize.width"
 				/>
+				<div class="sheet-container">
+					<SheetSimple v-if="svgDocuments && !tokenizeStaff" :documents="svgDocuments" />
+					<SheetLive v-if="tokenizeStaff && sheetDocument" ref="sheet"
+						:doc="sheetDocument"
+						:hashTable="svgHashTable"
+						:midi="midi"
+						:midiPlayer.sync="midiPlayer"
+						@midi="onMidi"
+					/>
+				</div>
 				<Loading v-show="engraving" />
 			</div>
 		</main>
@@ -51,6 +58,8 @@
 </template>
 
 <script>
+	import resize from "vue-resize-directive";
+
 	import "../utils.js";
 	import {mutexDelay} from "../delay.js";
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
@@ -73,6 +82,11 @@
 		name: "playground",
 
 
+		directives: {
+			resize,
+		},
+
+
 		components: {
 			SourceEditor,
 			SheetSimple,
@@ -87,6 +101,10 @@
 
 		data () {
 			return {
+				buildContainerSize: {
+					width: 100,
+					height: 100,
+				},
 				dragHover: null,
 				lilySource: null,
 				converting: false,
@@ -122,6 +140,12 @@
 
 
 		methods: {
+			onResize () {
+				this.buildContainerSize.width = this.$refs.buildContainer.clientWidth;
+				this.buildContainerSize.height = this.$refs.buildContainer.clientHeight;
+			},
+
+
 			onDragOver (event) {
 				const item = event.dataTransfer.items[0];
 				if (item)
@@ -369,10 +393,12 @@
 				height: 100%;
 			}
 
-			.sheet-container
+			.build-container
 			{
 				flex-grow: 1;
-				overflow: auto;
+				display: flex;
+				flex-direction: column;
+				min-width: 0;
 
 				&.loading > .sheet
 				{
@@ -383,6 +409,13 @@
 				{
 					outline: #fc0a 1px solid;
 					background-color: #fc01;
+				}
+
+				.sheet-container
+				{
+					flex: 1 1 0;
+					overflow: auto;
+					width: 100%;
 				}
 			}
 		}

@@ -1,5 +1,5 @@
 <template>
-	<div class="sheet live" v-resize="onResize">
+	<div class="sheet live">
 		<svg
 			v-show="false"
 			xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +65,6 @@
 
 <script>
 	import Vue from "vue";
-	import resize from "vue-resize-directive";
 	import {MusicNotation, MidiPlayer} from "@k-l-lambda/web-widgets";
 
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
@@ -77,11 +76,6 @@
 
 	export default {
 		name: "sheet-live",
-
-
-		directives: {
-			resize,
-		},
 
 
 		components: {
@@ -98,10 +92,6 @@
 
 		data () {
 			return {
-				size: {
-					width: 100,
-					height: 100,
-				},
 				midiPlayer: null,
 				scheduler: null,
 			};
@@ -159,18 +149,7 @@
 		},
 
 
-		mounted () {
-			this.onResize();
-		},
-
-
 		methods: {
-			onResize () {
-				this.size.width = this.$el.clientWidth;
-				this.size.height = this.$el.clientHeight;
-			},
-
-
 			onMidi (data, timestamp) {
 				this.$emit("midi", data, timestamp);
 
