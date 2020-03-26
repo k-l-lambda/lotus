@@ -9,6 +9,8 @@ TODO:
 
 *	2020.3.26
 
+	+	structureTokens.ts: refined tokensRowsSplit by row Y tile.
+
 	+	structureTokens.ts: fixed bug of numbers sort.
 
 	+	sheet-live.vue: added debug marks.

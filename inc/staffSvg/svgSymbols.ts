@@ -31,9 +31,9 @@ const pathFrameSymbol = (symbol, frame) => elem => {
 };
 
 
-const conditionSymbol = (symbol, condition) => elem => {
+const conditionSymbol = (symbol, condition, fields: (any) => object = () => ({})) => elem => {
 	if (condition(elem))
-		return {symbol};
+		return {symbol, ...fields(elem)};
 };
 
 
@@ -82,8 +82,9 @@ const symbolRules = [
 	pathFrameSymbol("SLUR", "M. -.C. -. . -. . -.C. -. . -. . -.z"),
 	pathFrameSymbol("SLUR", "M. .C. . . . . .C. . . . . .z"),
 
-	conditionSymbol("STAVES_CONNECTION", elem => elem.identity.type === "rect"
-		&& (elem.identity.width === 0.25 || elem.identity.width === 0.1) && elem.identity.height >= 12),
+	conditionSymbol("STAVES_CONNECTION",
+		elem => elem.identity.type === "rect" && (elem.identity.width === 0.25 || elem.identity.width === 0.1) && elem.identity.height >= 12,
+		elem => ({height: elem.identity.height})),
 
 	conditionSymbol("VERTICAL_LINE", elem => elem.identity.type === "rect"
 		&& (elem.identity.width === 0.25 || elem.identity.width === 0.75 || elem.identity.width === 0.1) && elem.identity.height >= 1),

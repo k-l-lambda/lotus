@@ -17,29 +17,53 @@ const compareLinks = (link1, link2) => {
 
 
 const tokensRowsSplit = tokens => {
+	const pageHeight = Math.max(...tokens.map(token => token.y));
+	const pageTile = Array(Math.round(pageHeight)).fill(-1);
+
+	const connections = tokens.filter(token => token.is("STAVES_CONNECTION"));
+	connections.forEach((connection, i) => {
+		for (let y = Math.round(connection.y) - 1; y <= Math.round(connection.y + connection.height) + 1; ++y) 
+			pageTile[y] = i;
+	});
+
+	const addlineYs = tokens.filter(token => token.is("ADDITIONAL_LINE")).map(token => Math.round(token.y)).sort((y1, y2) => y1 - y2);
+	addlineYs.forEach(y => {
+		if (pageTile[y] >= 0)
+			pageTile[y + 1] = pageTile[y];
+	});
+	addlineYs.reverse().forEach(y => {
+		if (pageTile[y] >= 0)
+			pageTile[y - 1] = pageTile[y];
+	});
+	//console.log("pageTile:", pageTile);
+
 	const linkedTokens = tokens
 		.filter(token => token.href)
 		.sort((t1, t2) => compareLinks(t1.href, t2.href));
 
 	const rows = [];
 
-	const connectionCount = tokens.filter(token => token.is("STAVES_CONNECTION")).length;
-	if (connectionCount > 1) {
+	if (connections.length > 1) {
 		let row = 0;
 		let lastToken = null;
+		let lastTileIndex = 0;
 		for (const token of linkedTokens) {
+			const tileIndex = pageTile[Math.round(token.y)];
+			//console.log("tileIndex:", tileIndex, lastTileIndex, row);
+
 			if (lastToken) {
 				// detect next voice
 				if (token.y - lastToken.y < -4 && token.x - lastToken.x < -10)
 					break;
-	
+
 				// detect next row
-				if (token.href !== lastToken.href && (
+				if (token.href !== lastToken.href && tileIndex > lastTileIndex /*(
 					(token.y - lastToken.y > 24 && token.x - lastToken.x < -10)
 					|| (token.y - lastToken.y > 4 && token.x - lastToken.x < -20)
-				)) {
+				)*/) {
 					//console.log("y plus:", token.y - lastToken.y);
 					++row;
+					lastTileIndex = Math.max(lastTileIndex, tileIndex);
 				}
 			}
 	
@@ -133,7 +157,7 @@ const parseTokenRow = tokens => {
 		.forEach(appendToken);
 
 	return {
-		staffYs,
+		//staffYs,
 		x: rowX,
 		y: rowY,
 		top,
