@@ -1,6 +1,5 @@
 
 TODO:
-	token organization issue: voice result new row
 	symbols of NUMBER & TIME_SIG
 	staff svg parser debug page
 	import user MIDI for sheet
