@@ -189,13 +189,13 @@ const parseNotationInStaff = (context : StaffContext, staff) => {
 };
 
 
-const parseNotationFromSheetDocument = structure => {
-	const contexts = Array(structure.pages[0].rows[0].staves.length).fill(null).map(() => new StaffContext());
+const parseNotationFromSheetDocument = document => {
+	const contexts = Array(document.pages[0].rows[0].staves.length).fill(null).map(() => new StaffContext());
 
-	for (const page of structure.pages) {
+	for (const page of document.pages) {
 		for (const row of page.rows) {
-			console.assert(row.staves.length === contexts.length, "staves size mismatched:", contexts.length, row.staves.length, structure);
-	
+			console.assert(row.staves.length === contexts.length, "staves size mismatched:", contexts.length, row.staves.length, row);
+
 			row.staves.forEach((staff, i) => parseNotationInStaff(contexts[i], staff));
 		}
 	}

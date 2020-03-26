@@ -23,7 +23,7 @@
 				<BoolStoreInput v-show="false" v-model="rollVisible" sessionKey="lotus-rollVisible" />
 				<CheckButton content="&#x1f3b9;" v-model="tokenizeStaff" title="live staff" />
 				<fieldset v-show="tokenizeStaff">
-					<CheckButton content="&#x1f3a8;" v-model="chromaticSymbols" title="chromatic symbols" />
+					<CheckButton content="&#x1f3a8;" v-model="chromaticSymbols" :disabled="!sheetDocument" title="chromatic symbols" />
 					<CheckButton content="&#x2633;" v-model="rollVisible" :disabled="!midiPlayer" title="show MIDI roll" />
 					<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
 				</fieldset>
@@ -234,6 +234,7 @@
 					this.svgDocuments = null;
 					this.sheetDocument = null;
 					this.midi = null;
+					this.midiPlayer = null;
 				}
 				else {
 					const result = await response.json();
