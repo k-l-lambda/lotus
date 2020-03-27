@@ -60,8 +60,8 @@ const symbolRules = [
 	pathFrameSymbol("NOTE NOTEHEAD HALF", "M c  -  - c-  - - - -c- - - - - -s- - - -c- - - - - -c -  -  -c     c     s   c     zM c   -  -c - - - - -c- - - - - -c- - - - - -c-  -  - c     c     c     z"),
 	pathFrameSymbol("NOTE NOTEHEAD WHOLE", "M c-  - - - -c -  -  -c     c  -  - zM c - - - - -c- - - - - -s-  - c-  -  - s   c     s -  - c -  -  -z"),
 
-	//pathSymbol("NOTE REST WHOLE", ),
-	//pathSymbol("NOTE REST HALF", ),
+	pathFrameSymbol("NOTE REST WHOLE", simplifyPath("M367 -156h-359c-4 0 -8 4 -8 8v140c0 4 4 8 8 8h359c4 0 8 -4 8 -8v-140c0 -4 -4 -8 -8 -8z")),
+	pathFrameSymbol("NOTE REST HALF", simplifyPath("M367 0h-359c-4 0 -8 4 -8 8v140c0 4 4 8 8 8h359c4 0 8 -4 8 -8v-140c0 -4 -4 -8 -8 -8z")),
 	pathFrameSymbol("NOTE REST QUARTER", simplifyPath("M-23 -114c0 27 11 41 38 41c34 0 82 -14 125 -34l-135 160c-7 9 -10 18 -10 26c0 33 49 64 86 97c25 22 39 53 39 84c0 24 -8 48 -25 68l-37 44c-3 3 -3 6 -3 9c0 8 7 15 15 15c4 0 8 -1 11 -5l151 -181c7 -9 10 -17 10 -25c0 -33 -49 -64 -86 -97 c-25 -22 -39 -54 -39 -85c0 -24 8 -47 25 -67l85 -102c3 -3 4 -6 4 -9c0 -8 -7 -15 -15 -15c-4 0 -8 1 -11 5c-18 22 -65 41 -100 41c-40 0 -53 -28 -53 -69c0 -35 12 -75 29 -95c6 -7 -6 -16 -12 -9c-46 54 -92 149 -92 203z")),
 	pathFrameSymbol("NOTE REST EIGHTH", simplifyPath("M74 -250l117 327c-34 -12 -70 -23 -106 -23c-46 0 -87 33 -87 79c0 39 32 72 72 72c25 0 48 -16 56 -40c10 -28 6 -59 35 -59c17 0 56 51 63 67c5 11 22 11 26 0l-125 -423c-7 -6 -16 -9 -25 -9s-19 3 -26 9z")),
 	pathFrameSymbol("NOTE REST SIXTEENTH", simplifyPath("M69 -500l100 327c-35 -12 -70 -23 -107 -23c-46 0 -87 33 -87 79c0 39 31 72 71 72c25 0 49 -16 57 -40c10 -28 6 -59 35 -59c17 0 56 52 61 69l46 152c-34 -12 -69 -23 -105 -23c-46 0 -87 33 -87 79c0 39 31 72 71 72c25 0 49 -16 57 -40c10 -28 6 -59 35 -59 c16 0 51 52 58 67c5 11 22 11 26 0l-180 -673c-7 -6 -17 -9 -26 -9s-18 3 -25 9z")),

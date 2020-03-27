@@ -196,7 +196,7 @@ const parseNotationFromSheetDocument = document => {
 		for (const row of page.rows) {
 			console.assert(row.staves.length === contexts.length, "staves size mismatched:", contexts.length, row.staves.length, row);
 
-			row.staves.forEach((staff, i) => parseNotationInStaff(contexts[i], staff));
+			row.staves.forEach((staff, i) => contexts[i] && parseNotationInStaff(contexts[i], staff));
 		}
 	}
 

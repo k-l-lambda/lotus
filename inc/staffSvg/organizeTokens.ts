@@ -38,7 +38,7 @@ const tokensRowsSplit = (tokens, logger) => {
 	logger.append("tokensRowsSplit.pageTile", pageTile);
 
 	const linkedTokens = tokens
-		.filter(token => token.href)
+		.filter(token => token.href && token.is("NOTE"))
 		.sort((t1, t2) => compareLinks(t1.href, t2.href));
 
 	const rows = [];
