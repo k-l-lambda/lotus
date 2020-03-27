@@ -70,7 +70,7 @@ export default class Scheduler {
 
 
 	constructor ({tickTable}) {
-		console.assert(tickTable.length > 0, "invalid tick table:", this.tickTable);
+		console.assert(tickTable.length > 0, "invalid tick table:", tickTable);
 
 		this.tickTable = tickTable;
 	}
@@ -96,6 +96,10 @@ export default class Scheduler {
 		tick = Math.max(Math.min(tick, this.endTick), this.startTick);
 
 		const item = this.tickTable.find(item => item.tick <= tick && item.endTick > tick) || this.tickTable[this.tickTable.length - 1];
+		if (!item) {
+			console.warn("cannot find tick item:", tick, this.tickTable);
+			return null;
+		}
 
 		const x = item.x + (tick - item.tick) * (item.endX - item.x) / (item.endTick - item.tick);
 
