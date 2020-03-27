@@ -4,6 +4,7 @@ import {DOMParser} from "xmldom";
 
 import * as lilyCommands from "./lilyCommands";
 import * as staffSvg from "../inc/staffSvg";
+import LogRecorder from "../inc/logRecorder";
 
 
 
@@ -41,13 +42,15 @@ export default {
 
 	"/engrave": {
 		post: (req, res) => formidableHandle("engrave", req, res,
-			async ({source, tokenize = false}) => {
+			async ({source, tokenize = false, log = false}) => {
 				const result = await lilyCommands.engraveSvg(source);
 				if (!tokenize)
 					return JSON.stringify(result);
 
-				const pages = result.svgs.map(svg => staffSvg.parseSvgPage(svg, {DOMParser}));
-				const structure = {
+				const logger = new LogRecorder({enabled: log});
+
+				const pages = result.svgs.map(svg => staffSvg.parseSvgPage(svg, {DOMParser, logger}));
+				const doc = {
 					__prototype: "SheetDocument",
 					pages: pages.map(page => page.structure),
 				};
@@ -55,8 +58,9 @@ export default {
 
 				return JSON.stringify({
 					...result,
-					structure,
+					doc,
 					hashTable,
+					logger,
 				});
 			}),
 	},

@@ -9,6 +9,8 @@ TODO:
 
 *	2020.3.27
 
+	+	inc/logRecorder.ts created.
+
 	+	playground.vue: MIDI import by drop added.
 
 	+	lilyCommands.ts: postProcessSvg added.

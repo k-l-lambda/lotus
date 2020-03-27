@@ -80,8 +80,10 @@ const normalizeElement = elem => {
 
 
 // TODO: consider split arc linking line into 2 parts
-const tokenizeElements = elements => {
+const tokenizeElements = (elements, logger) => {
 	const es = elements.map(normalizeElement).filter(e => e);
+
+	logger.append("tokenizeElements", {elementCount: es.length});
 
 	const hashTable = {};
 	for (const elem of es) 

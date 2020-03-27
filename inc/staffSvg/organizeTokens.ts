@@ -16,7 +16,7 @@ const compareLinks = (link1, link2) => {
 };
 
 
-const tokensRowsSplit = tokens => {
+const tokensRowsSplit = (tokens, logger) => {
 	const pageHeight = Math.max(...tokens.map(token => token.y));
 	const pageTile = Array(Math.round(pageHeight)).fill(-1);
 
@@ -35,7 +35,7 @@ const tokensRowsSplit = tokens => {
 		if (pageTile[y] >= 0)
 			pageTile[y - 1] = pageTile[y];
 	});
-	//console.log("pageTile:", pageTile);
+	logger.append("tokensRowsSplit.pageTile", pageTile);
 
 	const linkedTokens = tokens
 		.filter(token => token.href)
@@ -49,12 +49,14 @@ const tokensRowsSplit = tokens => {
 		let lastTileIndex = 0;
 		for (const token of linkedTokens) {
 			const tileIndex = pageTile[Math.round(token.y)];
-			//console.log("tileIndex:", tileIndex, lastTileIndex, row, token.href, token.symbol);
+			logger.append("tokensRowsSplit.token", {row, tileIndex, lastTileIndex, token});
 
 			if (lastToken) {
 				// detect next voice
-				if (token.y - lastToken.y < -4 && token.x - lastToken.x < -10)
+				if (token.y - lastToken.y < -4 && token.x - lastToken.x < -10) {
+					logger.append("tokensRowsSplit.nextVoice", {token, lastToken});
 					break;
+				}
 
 				// detect next row
 				if (token.href !== lastToken.href && tileIndex > lastTileIndex /*(
@@ -215,9 +217,9 @@ const parseTokenMeasure = (tokens, endX) => {
 };
 
 
-const organizeTokens = (tokens, {viewBox, width, height}: any = {}) => {
+const organizeTokens = (tokens, {logger, viewBox, width, height}: any = {}) => {
 	const meaningfulTokens = tokens.filter(token => !token.is("NULL"));
-	const rowTokens = tokensRowsSplit(meaningfulTokens);
+	const rowTokens = tokensRowsSplit(meaningfulTokens, logger);
 
 	const rows = rowTokens.map(parseTokenRow);
 

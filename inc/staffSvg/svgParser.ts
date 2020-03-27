@@ -102,9 +102,12 @@ const domNodeToElement = node => {
 };
 
 
-const svgToElements = (svgText, {DOMParser = null} = {}) => {
+const svgToElements = (svgText, {logger = null, DOMParser = null} = {}) => {
 	const dom = new DOMParser().parseFromString(svgText, "text/xml");
 	//console.log("dom:", dom);
+
+	if (logger)
+		logger.append("svgToElements.");
 
 	const svg : any = dom.childNodes[0];
 	console.assert(svg && svg.tagName === "svg");

@@ -242,6 +242,7 @@
 
 				const body = new FormData();
 				body.append("source", this.lilySource);
+				body.append("log", true);	// TODO: add control for log
 
 				if (this.tokenizeStaff)
 					body.append("tokenize", this.tokenizeStaff);
@@ -265,8 +266,8 @@
 					this.svgDocuments = result.svgs;
 
 					if (this.tokenizeStaff) {
-						//console.log("structure:", result.structure, result.hashTable);
-						this.sheetDocument = recoverJSON(result.structure, {StaffToken, SheetDocument});
+						//console.log("doc:", result.doc, result.hashTable);
+						this.sheetDocument = recoverJSON(result.doc, {StaffToken, SheetDocument});
 						this.svgHashTable = result.hashTable;
 						this.midi = result.midi;
 					}
