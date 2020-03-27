@@ -59,6 +59,7 @@
 
 <script>
 	import resize from "vue-resize-directive";
+	import {MIDI} from "@k-l-lambda/web-widgets";
 
 	import "../utils.js";
 	import {mutexDelay} from "../delay.js";
@@ -171,6 +172,14 @@
 						this.lilySource = await this.musicxml2ly(xml);
 
 						break;
+					case "audio/midi":
+					case "audio/mid":
+						const buffer = await file.readAs("ArrayBuffer");
+						this.midi = MIDI.parseMidiData(buffer);
+
+						break;
+					default:
+						console.warn("unsupported file type:", file.type);
 					}
 				}
 			},

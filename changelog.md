@@ -4,11 +4,12 @@ TODO:
 	octave dash line missing
 	symbols of NUMBER & TIME_SIG
 	staff svg parser debug page
-	import user MIDI for sheet
 
 
 
 *	2020.3.27
+
+	+	playground.vue: MIDI import by drop added.
 
 	+	lilyCommands.ts: postProcessSvg added.
 

@@ -50,7 +50,7 @@ const xml2ly = async xml => {
 
 
 const postProcessSvg = svg => {
-	return svg.replace(/textedit:[^"]+(\d+:\d+:\d+)/g, "textedit:$1");
+	return svg.replace(/textedit:[^"]+:(\d+:\d+:\d+)/g, "textedit:$1");
 };
 
 

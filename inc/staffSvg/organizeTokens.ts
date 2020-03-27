@@ -49,7 +49,7 @@ const tokensRowsSplit = tokens => {
 		let lastTileIndex = 0;
 		for (const token of linkedTokens) {
 			const tileIndex = pageTile[Math.round(token.y)];
-			//console.log("tileIndex:", tileIndex, lastTileIndex, row);
+			//console.log("tileIndex:", tileIndex, lastTileIndex, row, token.href, token.symbol);
 
 			if (lastToken) {
 				// detect next voice
