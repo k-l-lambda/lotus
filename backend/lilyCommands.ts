@@ -49,6 +49,11 @@ const xml2ly = async xml => {
 };
 
 
+const postProcessSvg = svg => {
+	return svg.replace(/textedit:[^"]+(\d+:\d+:\d+)/g, "textedit:$1");
+};
+
+
 const engraveSvg = async source => {
 	const hash = genHashString();
 	const sourceFilename = `${TEMP_DIR}engrave-${hash}.ly`;
@@ -75,7 +80,7 @@ const engraveSvg = async source => {
 
 	return {
 		logs: result.stderr,
-		svgs: svgs.map(svg => svg.toString()),
+		svgs: svgs.map(svg => postProcessSvg(svg.toString())),
 		midi,
 	};
 };

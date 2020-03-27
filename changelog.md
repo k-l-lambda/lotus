@@ -10,6 +10,8 @@ TODO:
 
 *	2020.3.27
 
+	+	lilyCommands.ts: postProcessSvg added.
+
 	+	Renamed: structureTokens -> organizeTokens.
 
 
