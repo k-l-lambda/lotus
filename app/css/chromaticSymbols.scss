@@ -13,9 +13,14 @@
 		stroke: lightgray;
 	}
 
-	.measure-separator, .additional-line, .brace, .staves-connection, .vertical-line
+	.measure-separator, .additional-line, .brace, .vertical-line
 	{
 		fill: lightgray;
+	}
+
+	.staves-connection
+	{
+		fill: darkred;
 	}
 
 	.clef

@@ -215,7 +215,7 @@ const parseTokenMeasure = (tokens, endX) => {
 };
 
 
-const structureTokens = (tokens, {viewBox, width, height}: any = {}) => {
+const organizeTokens = (tokens, {viewBox, width, height}: any = {}) => {
 	const meaningfulTokens = tokens.filter(token => !token.is("NULL"));
 	const rowTokens = tokensRowsSplit(meaningfulTokens);
 
@@ -232,4 +232,4 @@ const structureTokens = (tokens, {viewBox, width, height}: any = {}) => {
 
 
 
-export default structureTokens;
+export default organizeTokens;

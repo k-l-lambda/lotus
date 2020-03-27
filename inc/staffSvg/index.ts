@@ -1,7 +1,7 @@
 
 import {svgToElements} from "./svgParser";
 import tokenizeElements from "./tokenizeElements";
-import structureTokens from "./structureTokens";
+import organizeTokens from "./organizeTokens";
 
 
 
@@ -14,7 +14,7 @@ const parseSvgPage = (dom, options) => {
 	const viewBox = {x, y, width, height};
 
 	return {
-		structure: structureTokens(tokens, {viewBox, width: elem.width, height: elem.height}),
+		structure: organizeTokens(tokens, {viewBox, width: elem.width, height: elem.height}),
 		hashTable,
 		
 	};
@@ -25,6 +25,6 @@ const parseSvgPage = (dom, options) => {
 export {
 	svgToElements,
 	tokenizeElements,
-	structureTokens,
+	organizeTokens,
 	parseSvgPage,
 };

@@ -1,10 +1,16 @@
 
 TODO:
+	599 No 81.ly
 	octave dash line missing
 	symbols of NUMBER & TIME_SIG
 	staff svg parser debug page
 	import user MIDI for sheet
 
+
+
+*	2020.3.27
+
+	+	Renamed: structureTokens -> organizeTokens.
 
 
 *	2020.3.26
