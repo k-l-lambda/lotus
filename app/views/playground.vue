@@ -165,11 +165,15 @@
 						this.lilySource = await file.readAs("Text");
 						//console.log("content:", content);
 
+						this.clearSheet();
+
 						break;
 					case "text/xml":
 						const xml = await file.readAs("Text");
 						//console.log("xml:", xml);
 						this.lilySource = await this.musicxml2ly(xml);
+
+						this.clearSheet();
 
 						break;
 					case "audio/midi":
@@ -197,6 +201,14 @@
 
 					break;
 				}
+			},
+
+
+			clearSheet () {
+				this.sheetDocument = null;
+				this.svgHashTable = null;
+				this.midi = null;
+				this.midiPlayer = null;
 			},
 
 
@@ -258,12 +270,8 @@
 						this.svgHashTable = result.hashTable;
 						this.midi = result.midi;
 					}
-					else {
-						this.sheetDocument = null;
-						this.svgHashTable = null;
-						this.midi = null;
-						this.midiPlayer = null;
-					}
+					else
+						this.clearSheet();
 
 					this.engraving = false;
 				}
