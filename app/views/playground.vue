@@ -21,10 +21,12 @@
 			<fieldset>
 				<BoolStoreInput v-show="false" v-model="tokenizeStaff" sessionKey="lotus-tokenizeStaff" />
 				<BoolStoreInput v-show="false" v-model="rollVisible" sessionKey="lotus-rollVisible" />
+				<BoolStoreInput v-show="false" v-model="showNotationsMatcher" sessionKey="lotus-showNotationsMatcher" />
 				<CheckButton content="&#x1f3b9;" v-model="tokenizeStaff" title="live staff" />
 				<fieldset v-show="tokenizeStaff">
 					<CheckButton content="&#x1f3a8;" v-model="chromaticSymbols" :disabled="!sheetDocument" title="chromatic symbols" />
 					<CheckButton content="&#x2633;" v-model="rollVisible" :disabled="!midiPlayer" title="show MIDI roll" />
+					<CheckButton content="c|s" v-model="showNotationsMatcher" :disabled="!matcherNotations" title="show notations matcher" />
 					<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
 				</fieldset>
 			</fieldset>
@@ -41,6 +43,11 @@
 					:height="120"
 					:width="buildContainerSize.width"
 				/>
+				<NotationsMatcher v-if="showNotationsMatcher"
+					:criterion="matcherNotations && matcherNotations.criterion"
+					:sample="matcherNotations && matcherNotations.sample"
+					:path="matcherNotations && matcherNotations.path"
+				/>
 				<div class="sheet-container">
 					<SheetSimple v-if="svgDocuments && !tokenizeStaff" :documents="svgDocuments" />
 					<SheetLive v-if="tokenizeStaff && sheetDocument" ref="sheet"
@@ -48,6 +55,7 @@
 						:hashTable="svgHashTable"
 						:midi="midi"
 						:midiPlayer.sync="midiPlayer"
+						:matcherNotations.sync="matcherNotations"
 						@midi="onMidi"
 					/>
 				</div>
@@ -68,6 +76,7 @@
 	import SheetDocument from "../../inc/staffSvg/sheetDocument.ts";
 	import {MidiAudio} from "@k-l-lambda/web-widgets";
 
+	import {MidiRoll} from "@k-l-lambda/web-widgets";
 	import SourceEditor from "../components/source-editor.vue";
 	import SheetSimple from "../components/sheet-simple.vue";
 	import SheetLive from "../components/sheet-live.vue";
@@ -75,7 +84,7 @@
 	import StoreInput from "../components/store-input.vue";
 	import BoolStoreInput from "../components/bool-store-input.vue";
 	import CheckButton from "../components/check-button.vue";
-	import {MidiRoll} from "@k-l-lambda/web-widgets";
+	import NotationsMatcher from "../components/notations-matcher.vue";
 
 
 
@@ -97,6 +106,7 @@
 			BoolStoreInput,
 			CheckButton,
 			MidiRoll,
+			NotationsMatcher,
 		},
 
 
@@ -121,6 +131,8 @@
 				chromaticSymbols: false,
 				midiPlayer: null,
 				rollVisible: false,
+				matcherNotations: null,
+				showNotationsMatcher: false,
 			};
 		},
 

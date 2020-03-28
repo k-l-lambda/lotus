@@ -284,7 +284,7 @@ const matchNotations = async (midiNotation, svgNotation) => {
 	}
 	//console.log("midiNotation:", midiNotation);
 
-	return midiNotation;
+	return {criterion, sample, path};
 };
 
 

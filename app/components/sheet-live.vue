@@ -228,10 +228,12 @@
 
 
 			async matchNotations () {
-				await StaffNotation.matchNotations(this.midiNotation, this.sheetNotation);
+				const matcherNotations = await StaffNotation.matchNotations(this.midiNotation, this.sheetNotation);
 				//console.log("matching:", this.midiNotation.notes.map(n => n.ids && n.ids[0]));
 
 				this.scheduler = SheetScheduler.createFromNotation(this.midiNotation, this.linkedTokens);
+
+				this.$emit("update:matcherNotations", matcherNotations);
 			},
 		},
 
