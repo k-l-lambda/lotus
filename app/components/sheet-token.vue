@@ -20,7 +20,7 @@
 
 <style lang="scss" scoped>
 	$default-color: black;
-	$on-color: #06f;
+	$on-color: #0af;
 
 
 	.token
@@ -33,11 +33,14 @@
 		use
 		{
 			fill: $default-color;
+			stroke-width: 0;
 		}
 
 		&.on use
 		{
 			fill: $on-color;
+			stroke-width: 0.1;
+			stroke: $on-color;
 		}
 	}
 </style>

@@ -265,6 +265,13 @@
 			{
 				fill: inherit;
 			}
+
+			path
+			{
+				stroke: inherit;
+				stroke-width: inherit;
+				fill: inherit;
+			}
 		}
 
 		.page

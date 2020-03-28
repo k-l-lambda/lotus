@@ -1,6 +1,9 @@
 
 TODO:
-	599 No 81.ly
+	row splitting:
+		use octave shifts as boundary
+	notation accuracy
+		599 No 81.ly
 	octave dash line missing
 	symbols of NUMBER & TIME_SIG
 	staff svg parser debug page
