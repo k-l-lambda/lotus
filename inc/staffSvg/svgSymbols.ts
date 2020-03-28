@@ -193,6 +193,13 @@ const symbolRules = [
 		"stroke-width": 0.0924,
 		"stroke-dasharray": "0.362351432995067,0.537648567004933",
 	}),
+	identitySymbol("OCTAVE CLOSE", {
+		type: "line",
+		width: 0,
+		height: 0.8,
+		"stroke-width": 0.0940,
+		"stroke-dasharray": "1.0,0.0",
+	}),
 
 	pathFrameSymbol("DOT", "M c     s -  -s- - - -s-  - z"),
 

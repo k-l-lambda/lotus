@@ -1,7 +1,6 @@
 
 TODO:
-	row splitting:
-		use octave shifts as boundary
+	octave close
 	notation accuracy
 		599 No 81.ly
 	octave dash line missing
@@ -13,6 +12,8 @@ TODO:
 
 
 *	2020.3.28
+
+	+	staffNotation.ts: fixed octave shift missing.
 
 	+	organizeTokens.ts: refined tokensRowsSplit by page tile.
 

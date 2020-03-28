@@ -73,6 +73,7 @@
 
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import SheetScheduler from "../../inc/staffSvg/scheduler.ts";
+	import LogRecorder from "../../inc/logRecorder.ts";
 
 	import SheetToken from "./sheet-token.vue";
 
@@ -190,8 +191,12 @@
 
 			updateSheetNotation () {
 				this.sheetNotation = null;
-				if (this.doc)
-					this.sheetNotation = StaffNotation.parseNotationFromSheetDocument(this.doc);
+				if (this.doc) {
+					const logger = new LogRecorder({enabled: true});
+					this.sheetNotation = StaffNotation.parseNotationFromSheetDocument(this.doc, {logger});
+
+					console.log("sheet notation parsed:", logger.toJSON());
+				}
 			},
 
 

@@ -32,13 +32,25 @@ class NotationTrack {
 };
 
 
+declare class LogRecorder {
+	append (desc: string, data?: any);
+};
+
+
 class StaffContext {
+	logger: LogRecorder;
+
 	beatsPerMeasure = 4;
 	clef = -3;
 	keyAlters = [];
 	octaveShift = 0;
 	alters = [];
 	track = new NotationTrack();
+
+
+	constructor ({logger}) {
+		this.logger = logger;
+	}
 
 
 	resetKeyAlters () {
@@ -72,6 +84,8 @@ class StaffContext {
 
 	setOctaveShift (value) {
 		this.octaveShift = value;
+
+		this.logger.append("octaveShift", value);
 	}
 
 
@@ -98,7 +112,7 @@ class StaffContext {
 
 
 	noteToPitch (note) {
-		const group = Math.floor(note / 7);
+		const group = Math.floor(note / 7) - this.octaveShift;
 		const gn = mod7(note);
 
 		return (group + 5) * 12 + GROUP_N_TO_PITCH[gn] + this.alterOnNote(note);
@@ -131,10 +145,10 @@ const parseNotationInMeasure = (context : StaffContext, measure) => {
 		}
 		else if (token.is("CLEF")) 
 			context.setClef(token.ry, token.clefValue);
-		
+
 		else if (token.is("OCTAVE")) 
 			context.setOctaveShift(token.octaveShiftValue);
-		
+
 		else if (token.is("TIME_SIG")) {
 			if (token.ry === 0)
 				context.setBeatsPerMeasure(token.timeSignatureValue);
@@ -189,8 +203,8 @@ const parseNotationInStaff = (context : StaffContext, staff) => {
 };
 
 
-const parseNotationFromSheetDocument = document => {
-	const contexts = Array(document.pages[0].rows[0].staves.length).fill(null).map(() => new StaffContext());
+const parseNotationFromSheetDocument = (document, {logger}) => {
+	const contexts = Array(document.pages[0].rows[0].staves.length).fill(null).map(() => new StaffContext({logger}));
 
 	for (const page of document.pages) {
 		for (const row of page.rows) {
