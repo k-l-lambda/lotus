@@ -447,7 +447,7 @@
 				flex-direction: column;
 				min-width: 0;
 
-				&.loading > .sheet
+				&.loading > .sheet-container
 				{
 					filter: blur(8px);
 				}

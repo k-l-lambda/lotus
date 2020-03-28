@@ -39,7 +39,7 @@ const tokensRowsSplit = (tokens, logger) => {
 	const octaveAs = tokens.filter(token => token.is("OCTAVE A"));
 	octaveAs.forEach(token => {
 		const nextIndex = pageTile.find((index, y) => y > token.y && index >= 0);
-		for (let y = Math.floor(token.y); y < pageHeight; ++y)
+		for (let y = Math.floor(token.y) - 1; y < pageHeight; ++y)
 			pageTile[y] = nextIndex;
 	});
 	logger.append("tokensRowsSplit.octaveAs", octaveAs);
@@ -241,6 +241,8 @@ const parseTokenMeasure = (tokens, endX) => {
 
 
 const organizeTokens = (tokens, {logger, viewBox, width, height}: any = {}) => {
+	//logger.append("organizeTokens", tokens);
+
 	const meaningfulTokens = tokens.filter(token => !token.is("NULL"));
 	const rowTokens = tokensRowsSplit(meaningfulTokens, logger);
 

@@ -1,4 +1,6 @@
 
+import * as _ from "lodash";
+
 import {TOKEN_PRECISION, roundNumber} from "./utils";
 import {identityHash, symbolize} from "./svgSymbols";
 import StaffToken from "./staffToken";
@@ -97,6 +99,13 @@ const tokenizeElements = (elements, logger) => {
 			...symbolize(elem),
 		});
 	});
+
+	logger.append("tokenizeElements.nonsymbolTokens", tokens
+		.filter(token => !token.symbol)
+		.map(token => ({
+			..._.pick(token, ["x", "y", "rx", "ry", "href"]),
+			identity: hashTable[token.hash],
+		})));
 
 	return {tokens, hashTable};
 };

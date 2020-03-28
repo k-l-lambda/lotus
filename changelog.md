@@ -1,6 +1,6 @@
 
 TODO:
-	octave close
+	octave dash line rendering issue
 	notation accuracy
 		599 No 81.ly
 	octave dash line missing
