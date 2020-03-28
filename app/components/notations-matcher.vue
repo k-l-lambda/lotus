@@ -50,8 +50,8 @@
 
 
 		created () {
-			this.satisfyNotation(this.criterion);
-			this.satisfyNotation(this.sample);
+			this.satisfyNotation(this.criterion, "c");
+			this.satisfyNotation(this.sample, "s");
 		},
 
 
@@ -66,34 +66,28 @@
 
 
 		methods: {
-			/*async match () {
-				Matcher.genNotationContext(this.criterion);
-				Matcher.genNotationContext(this.sample);
+			satisfyNotation (notation, type) {
+				if (notation) {
+					notation.notes.forEach(note => {
+						note.duration = note.duration || 2000;
+						note.classes = note.classes || {};
 
-				for (const note of this.sample.notes)
-					Matcher.makeMatchNodes(note, this.criterion);
-
-				const navigator = await Matcher.runNavigation(this.criterion, this.sample);
-				this.path = navigator.path();
-				//console.log("path:", navigator.path());
-			},*/
-
-
-			satisfyNotation (notation) {
-				if (notation)
-					notation.notes.forEach(note => note.duration = note.duration || 2000);
+						const matched = this.links.find(item => item[type].index === note.index);
+						note.classes.missed = !matched;
+					});
+				}
 			},
 		},
 
 
 		watch: {
 			criterion () {
-				this.satisfyNotation(this.criterion);
+				this.satisfyNotation(this.criterion, "c");
 			},
 
 
 			sample () {
-				this.satisfyNotation(this.sample);
+				this.satisfyNotation(this.sample, "s");
 			},
 		},
 	};
@@ -102,7 +96,7 @@
 <style scoped>
 	.links line
 	{
-		stroke: black;
+		stroke: #000a;
 		stroke-width: 0.1px;
 	}
 </style>
@@ -116,5 +110,11 @@
 	.sample .note
 	{
 		fill: darkslategray;
+	}
+
+	.note.missed
+	{
+		stroke: red;
+		stroke-width: 0.2;
 	}
 </style>

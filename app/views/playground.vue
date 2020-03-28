@@ -43,7 +43,7 @@
 					:height="120"
 					:width="buildContainerSize.width"
 				/>
-				<NotationsMatcher v-if="showNotationsMatcher"
+				<NotationsMatcher v-if="showNotationsMatcher && matcherNotations"
 					:criterion="matcherNotations && matcherNotations.criterion"
 					:sample="matcherNotations && matcherNotations.sample"
 					:path="matcherNotations && matcherNotations.path"
@@ -221,6 +221,7 @@
 				this.svgHashTable = null;
 				this.midi = null;
 				this.midiPlayer = null;
+				this.matcherNotations = null;
 			},
 
 
