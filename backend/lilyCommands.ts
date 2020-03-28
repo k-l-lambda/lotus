@@ -34,7 +34,20 @@ const initialize = async () => {
 initialize();
 
 
-const xml2ly = async xml => {
+const postProcessLy = (ly, {pointClick = true, midi = true} = {}) => {
+	let result = ly;
+
+	if (pointClick)
+		result = result.replace(/\\pointAndClickOff\n/g, "");
+
+	if (midi)
+		result = result.replace(/%  \\midi/g, "\\midi");
+
+	return result;
+};
+
+
+const xml2ly = async (xml, options) => {
 	const hash = genHashString();
 	const xmlFileName = `${TEMP_DIR}xml2ly-${hash}.xml`;
 	await asyncCall(fs.writeFile, xmlFileName, xml);
@@ -46,7 +59,7 @@ const xml2ly = async xml => {
 
 	const ly = await asyncCall(fs.readFile, lyFileName);
 
-	return ly;
+	return postProcessLy(ly.toString(), options);
 };
 
 

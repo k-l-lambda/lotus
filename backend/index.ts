@@ -36,7 +36,7 @@ const formidableHandle = (name, req, res, handle) =>
 export default {
 	"/musicxml2ly": {
 		post: (req, res) => formidableHandle("musicxml2ly", req, res,
-			({xml}) => lilyCommands.xml2ly(xml)),
+			({xml, options}) => lilyCommands.xml2ly(xml, options && JSON.stringify(options))),
 	},
 
 

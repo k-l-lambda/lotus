@@ -190,6 +190,8 @@
 
 						this.clearSheet();
 
+						this.engrave();
+
 						break;
 					case "text/xml":
 						const xml = await file.readAs("Text");
@@ -197,6 +199,8 @@
 						this.lilySource = await this.musicxml2ly(xml);
 
 						this.clearSheet();
+
+						this.engrave();
 
 						break;
 					case "audio/midi":

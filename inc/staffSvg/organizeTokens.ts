@@ -47,6 +47,9 @@ const tokensRowsSplit = (tokens, logger) => {
 		let row = 0;
 		let lastToken = null;
 		let lastTileIndex = 0;
+
+		logger.append("tokensRowsSplit.linkedTokens", {linkedTokensCount: linkedTokens.length});
+
 		for (const token of linkedTokens) {
 			const tileIndex = pageTile[Math.round(token.y)];
 			logger.append("tokensRowsSplit.token", {row, tileIndex, lastTileIndex, token});
