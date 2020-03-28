@@ -8,6 +8,7 @@ import {MIDI} from "@k-l-lambda/web-widgets";
 
 
 const TEMP_DIR = process.env.TEMP_DIR;
+const LILYPOND_DIR = process.env.LILYPOND_DIR;
 
 
 const asyncCall = (func, ...args): Promise<any> => new Promise((resolve, reject) => func(...args, (err, data) => {
@@ -40,7 +41,7 @@ const xml2ly = async xml => {
 
 	const lyFileName = `${TEMP_DIR}xml2ly-${hash}.ly`;
 
-	await child_process.exec(`musicxml2ly ${xmlFileName} -o ${lyFileName}`);
+	await child_process.exec(`${LILYPOND_DIR}musicxml2ly ${xmlFileName} -o ${lyFileName}`);
 	//console.log("musicxml2ly:", result.stdout, result.stderr);
 
 	const ly = await asyncCall(fs.readFile, lyFileName);
@@ -62,7 +63,7 @@ const engraveSvg = async source => {
 
 	await asyncCall(fs.writeFile, sourceFilename, source);
 
-	const result = await child_process.exec(`cd ${TEMP_DIR} && lilypond -dbackend=svg .${sourceFilename}`);
+	const result = await child_process.exec(`cd ${TEMP_DIR} && ${LILYPOND_DIR}lilypond -dbackend=svg .${sourceFilename}`);
 
 	const svgFiles: string[] = await asyncCall(glob, `${TEMP_DIR}engrave-${hash}*.svg`);
 	svgFiles.sort();

@@ -14,6 +14,8 @@ TODO:
 
 *	2020.3.28
 
+	+	lilyCommands.ts: added env variable of LILYPOND_DIR.
+
 	+	playground.vue: added shortcut for engraving.
 
 	+	app/components/notations-matcher.vue: created.

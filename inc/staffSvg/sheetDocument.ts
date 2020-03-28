@@ -48,7 +48,7 @@ class SheetDocument {
 			row.width = row.tokens.reduce((max, token) => Math.max(max, token.x), 0);
 
 			row.staves.forEach(staff =>
-				staff.measures.forEach(measure =>
+				staff && staff.measures.forEach(measure =>
 					measure.tokens.forEach(token => {
 						token.row = index;
 						token.endX = measure.noteRange.end;
