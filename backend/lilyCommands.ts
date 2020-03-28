@@ -43,6 +43,8 @@ const postProcessLy = (ly, {pointClick = true, midi = true} = {}) => {
 	if (midi)
 		result = result.replace(/%  \\midi/g, "\\midi");
 
+	// TODO: remove breaks & page breaks
+
 	return result;
 };
 

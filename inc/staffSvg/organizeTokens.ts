@@ -35,9 +35,18 @@ const tokensRowsSplit = (tokens, logger) => {
 		if (pageTile[y] >= 0)
 			pageTile[y - 1] = pageTile[y];
 	});
+
+	const octaveAs = tokens.filter(token => token.is("OCTAVE A"));
+	octaveAs.forEach(token => {
+		const nextIndex = pageTile.find((index, y) => y > token.y && index >= 0);
+		for (let y = Math.floor(token.y); y < pageHeight; ++y)
+			pageTile[y] = nextIndex;
+	});
+	logger.append("tokensRowsSplit.octaveAs", octaveAs);
+
 	logger.append("tokensRowsSplit.pageTile", pageTile);
 
-	const linkedTokens = tokens
+	/*const linkedTokens = tokens
 		.filter(token => token.href && token.is("NOTE"))
 		.sort((t1, t2) => compareLinks(t1.href, t2.href));
 
@@ -65,7 +74,7 @@ const tokensRowsSplit = (tokens, logger) => {
 				if (token.href !== lastToken.href && tileIndex > lastTileIndex /*(
 					(token.y - lastToken.y > 24 && token.x - lastToken.x < -10)
 					|| (token.y - lastToken.y > 4 && token.x - lastToken.x < -20)
-				)*/) {
+				)*//*) {
 					//console.log("y plus:", token.y - lastToken.y);
 					++row;
 					lastTileIndex = Math.max(lastTileIndex, tileIndex);
@@ -79,8 +88,19 @@ const tokensRowsSplit = (tokens, logger) => {
 		}
 	}
 
-	const rowBoundaries = rows.map(elems => Math.min(...elems.map(elem => elem.y)) - 2.5);
+	const rowBoundaries = rows.map(elems => Math.min(...elems.map(elem => elem.y)) - 2.5);*/
+
+	const rowBoundaries = pageTile.reduce((boundaries, index, y) => {
+		if (index >= boundaries.length)
+			boundaries.push(y);
+
+		return boundaries;
+	}, []);
+
+	// TODO: use linkedTokens when single staff
+
 	rowBoundaries[0] = -Infinity;
+	logger.append("tokensRowsSplit.rowBoundaries", rowBoundaries);
 
 	return Array(rowBoundaries.length).fill(null)
 		.map((_, i) => tokens

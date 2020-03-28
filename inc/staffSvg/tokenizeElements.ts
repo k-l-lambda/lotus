@@ -10,6 +10,7 @@ const normalizeElement = elem => {
 
 	switch (elem.type) {
 	case "a":
+	case "style":
 		return null;
 	case "text":
 		data.x = elem.transform.translate.x;

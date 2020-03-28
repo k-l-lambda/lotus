@@ -184,16 +184,8 @@ const symbolRules = [
 		d: "M-7 375c7 4 16 6 24 6s17 -2 24 -6l-2 -179l108 19h3c9 0 17 -8 17 -17l7 -573c-7 -4 -16 -6 -24 -6s-17 2 -24 6l2 179l-108 -19h-3c-9 0 -17 8 -17 17zM132 113l-94 -16l-3 -210l94 16z",
 	}),
 
-	identitySymbol("OCTAVE A", {
-		type: "text",
-		text: "\n8va",
-		"font-size": 2.2003,
-	}),
-	identitySymbol("OCTAVE B", {
-		type: "text",
-		text: "\n8vb",
-		"font-size": 2.2003,
-	}),
+	conditionSymbol("OCTAVE A", elem => elem.identity.type === "text" && /8va/.test(elem.identity.text)),
+	conditionSymbol("OCTAVE B", elem => elem.identity.type === "text" && /8vb/.test(elem.identity.text)),
 	identitySymbol("OCTAVE CLOSE", {
 		type: "line",
 		width: 0,

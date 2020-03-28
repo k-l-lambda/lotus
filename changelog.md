@@ -14,6 +14,8 @@ TODO:
 
 *	2020.3.28
 
+	+	organizeTokens.ts: refined tokensRowsSplit by page tile.
+
 	+	lilyCommands.ts: added ly post processing.
 
 	+	lilyCommands.ts: added env variable of LILYPOND_DIR.
