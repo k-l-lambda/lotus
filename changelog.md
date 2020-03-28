@@ -6,11 +6,15 @@ TODO:
 		599 No 81.ly
 	octave dash line missing
 	symbols of NUMBER & TIME_SIG
-	staff svg parser debug page
+	source editor
+		cursor position
+		line numbers
 
 
 
 *	2020.3.28
+
+	+	playground.vue: added shortcut for engraving.
 
 	+	app/components/notations-matcher.vue: created.
 

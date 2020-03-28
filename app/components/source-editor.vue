@@ -1,6 +1,6 @@
 <template>
 	<div class="source-editor">
-		<textarea v-model="editText" cols="80" :disabled="disabled"></textarea>
+		<textarea v-model="editText" cols="80" autocorrect="off" spellcheck="false" :disabled="disabled"></textarea>
 	</div>
 </template>
 

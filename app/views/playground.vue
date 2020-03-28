@@ -146,8 +146,19 @@
 
 
 		async mounted () {
-			await this.$nextTick();
+			document.addEventListener("keydown", event => {
+				switch (event.code) {
+				case "F8":
+					this.engrave();
 
+					break;
+				}
+
+				//if (["INPUT", "TEXTAREA"].includes(document.activeElement.nodeName))
+				//	return;
+			});
+
+			await this.$nextTick();
 			this.watchEngrave();
 		},
 
