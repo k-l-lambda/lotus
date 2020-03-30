@@ -1,9 +1,29 @@
 
 const removeComments = source => source.replace(/%.*\n/g, "\n");
 
+const BRACKETS_BEGIN_PATTERNS = [
+	/^([^{]*\s+)?(\w+\s+=[^{]*)\{(.*)$/s,
+	/^([^{]*)(\\\w+[^\\]+)\{(.*)$/s,
+];
+
 
 class Block {
 	get isNull () {
+		return false;
+	}
+
+
+	get divided () {
+		return false;
+	}
+
+
+	get measures () {
+		return [];
+	}
+
+
+	get isDivider () {
 		return false;
 	}
 };
@@ -56,6 +76,33 @@ class ScopedBlock extends Block {
 		return null;
 	}
 
+
+	get divided () {
+		return this.instruction === "repeat";
+	}
+
+
+	get measures () {
+		const measures = [];
+		let measure = [];
+
+		for (const block of this.blocks) {
+			if (block.divided)
+				measures.push(...block.measures);
+			else if (block.isDivider && measure.length > 0) {
+				measures.push(measure);
+				measure = [];
+			}
+			else
+				measure.push(block);
+		}
+
+		if (measure.length > 0)
+			measures.push(measure);
+
+		return measures;
+	}
+
 	
 	parse (source: string): string {
 		let residual = source;
@@ -67,8 +114,6 @@ class ScopedBlock extends Block {
 
 			residual = this.parseSection(residual);
 		}
-
-		// TODO: mark measure block
 
 		this.blocks = this.blocks.filter(block => !block.isNull);
 
@@ -104,13 +149,12 @@ class ScopedBlock extends Block {
 			break;
 		case bracketsPos:
 			{
-				const pattern = /^([^{]*)(\\\w+[^\\]+)\{(.*)$/s;
-				if (!pattern.test(source)) {
+				const pattern = BRACKETS_BEGIN_PATTERNS.find(p => p.test(source));
+				if (!pattern) {
 					console.error("unepxect scoped source:", source);
-
 					return null;
 				}
-				
+
 				const [_, pre, head, body] = source.match(pattern);
 				if (pre)
 					this.blocks.push(new PlainBlock(pre));

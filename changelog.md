@@ -13,6 +13,8 @@ TODO:
 
 *	2020.3.30
 
+	+	lilyParser.ts: ScopedBlock.measures added.
+
 	+	inc/lilyParser.ts created.
 
 
