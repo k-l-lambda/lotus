@@ -11,6 +11,11 @@ TODO:
 
 
 
+*	2020.3.30
+
+	+	inc/lilyParser.ts created.
+
+
 *	2020.3.28
 
 	+	staffNotation.ts: fixed octave shift missing.

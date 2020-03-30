@@ -39,7 +39,7 @@
 			<div class="build-container" ref="buildContainer" :class="{loading: engraving, dirty: engraverDirty, chromatic: chromaticSymbols}" v-resize="onResize">
 				<MidiRoll v-if="tokenizeStaff && midiPlayer" v-show="rollVisible"
 					:player="midiPlayer"
-					:timeScale="4e-3"
+					:timeScale="16e-3"
 					:height="120"
 					:width="buildContainerSize.width"
 				/>
@@ -67,14 +67,14 @@
 
 <script>
 	import resize from "vue-resize-directive";
-	import {MIDI} from "@k-l-lambda/web-widgets";
+	import {MIDI, MidiAudio} from "@k-l-lambda/web-widgets";
 
 	import "../utils.js";
 	import {mutexDelay} from "../delay.js";
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
 	import StaffToken from "../../inc/staffSvg/staffToken.ts";
 	import SheetDocument from "../../inc/staffSvg/sheetDocument.ts";
-	import {MidiAudio} from "@k-l-lambda/web-widgets";
+	import * as LilyParser from "../../inc/lilyParser.ts";
 
 	import {MidiRoll} from "@k-l-lambda/web-widgets";
 	import SourceEditor from "../components/source-editor.vue";
@@ -337,6 +337,12 @@
 					else
 						this.midiPlayer.play();
 				}
+			},
+
+
+			parseSource () {
+				const result = LilyParser.parse(this.lilySource);
+				console.log("source parsing:", result);
 			},
 		},
 
