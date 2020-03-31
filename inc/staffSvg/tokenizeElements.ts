@@ -38,14 +38,18 @@ const normalizeElement = elem => {
 		if (!elem.transform) {
 			data.x = elem.x;
 			data.y = elem.y;
-			data.identity.width = roundNumber(elem.width, SIZE_PRECISION, 0.1);
-			data.identity.height = roundNumber(elem.height, SIZE_PRECISION, 0.1);
+			data.identity.width = elem.width;
+			data.identity.height = elem.height;
+			data.identity.rw = roundNumber(elem.width, SIZE_PRECISION);
+			data.identity.rh = roundNumber(elem.height, SIZE_PRECISION);
 		}
 		else {
 			data.x = elem.x + elem.transform.translate.x;
 			data.y = elem.y + elem.transform.translate.y;
-			data.identity.width = roundNumber(elem.width * elem.transform.scale.x, SIZE_PRECISION, 0.1);
-			data.identity.height = roundNumber(elem.height * elem.transform.scale.y, SIZE_PRECISION, 0.1);
+			data.identity.width = elem.width;
+			data.identity.height = elem.height;
+			data.identity.rw = roundNumber(elem.width * elem.transform.scale.x, SIZE_PRECISION);
+			data.identity.rh = roundNumber(elem.height * elem.transform.scale.y, SIZE_PRECISION);
 		}
 
 		break;

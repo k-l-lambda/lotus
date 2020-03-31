@@ -22,11 +22,13 @@
 				<BoolStoreInput v-show="false" v-model="tokenizeStaff" sessionKey="lotus-tokenizeStaff" />
 				<BoolStoreInput v-show="false" v-model="rollVisible" sessionKey="lotus-rollVisible" />
 				<BoolStoreInput v-show="false" v-model="showNotationsMatcher" sessionKey="lotus-showNotationsMatcher" />
+				<BoolStoreInput v-show="false" v-model="enabledMidiAudio" sessionKey="lotus-enabledMidiAudio" />
 				<CheckButton content="&#x1f3b9;" v-model="tokenizeStaff" title="live staff" />
 				<fieldset v-show="tokenizeStaff">
 					<CheckButton content="&#x1f3a8;" v-model="chromaticSymbols" :disabled="!sheetDocument" title="chromatic symbols" />
 					<CheckButton content="&#x2633;" v-model="rollVisible" :disabled="!midiPlayer" title="show MIDI roll" />
 					<CheckButton content="c|s" v-model="showNotationsMatcher" :disabled="!matcherNotations" title="show notations matcher" />
+					<CheckButton content="&#x1f50a;" v-model="enabledMidiAudio" title="MIDI Audio" />
 					<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
 				</fieldset>
 			</fieldset>
@@ -134,6 +136,7 @@
 				rollVisible: false,
 				matcherNotations: null,
 				showNotationsMatcher: false,
+				enabledMidiAudio: true,
 			};
 		},
 
@@ -219,15 +222,17 @@
 
 			onMidi (data, timestamp) {
 				//console.log("onMidi:", data, timestamp);
-				switch (data.subtype) {
-				case "noteOn":
-					MidiAudio.noteOn(data.channel, data.noteNumber, data.velocity, timestamp);
+				if (this.enabledMidiAudio) {
+					switch (data.subtype) {
+					case "noteOn":
+						MidiAudio.noteOn(data.channel, data.noteNumber, data.velocity, timestamp);
 
-					break;
-				case "noteOff":
-					MidiAudio.noteOff(data.channel, data.noteNumber, timestamp);
+						break;
+					case "noteOff":
+						MidiAudio.noteOff(data.channel, data.noteNumber, timestamp);
 
-					break;
+						break;
+					}
 				}
 			},
 

@@ -85,26 +85,10 @@ const symbolRules = [
 	pathFrameSymbol("NOTE REST THIRTYSECOND", simplifyPath("M56 -500l87 328c-36 -13 -73 -24 -111 -24c-46 0 -87 33 -87 79c0 39 32 72 72 72c25 0 49 -16 57 -40c10 -28 5 -59 34 -59c17 0 56 53 61 71l39 150c-35 -12 -70 -23 -107 -23c-46 0 -87 33 -87 79c0 39 32 72 72 72c25 0 48 -16 56 -40c10 -28 6 -59 35 -59 c16 0 53 52 57 69l40 151c-34 -12 -68 -22 -104 -22c-46 0 -87 33 -87 79c0 39 31 72 71 72c25 0 49 -16 57 -40c10 -28 6 -59 35 -59c16 0 47 52 53 67c5 12 22 11 26 0l-217 -923c-7 -6 -17 -9 -26 -9s-19 3 -26 9z")),
 	//pathSymbol("NOTE REST SIXTYFOURTH", ),
 
-	identitySymbol("MEASURE_SEPARATOR", {
-		type: "rect",
-		width: 0.2,
-		height: 4.05,
-	}),
-	identitySymbol("MEASURE_SEPARATOR", {
-		type: "rect",
-		width: 0.15,
-		height: 4.05,
-	}),
-	identitySymbol("MEASURE_SEPARATOR BOLD", {
-		type: "rect",
-		width: 0.55,
-		height: 4.05,
-	}),
-	identitySymbol("MEASURE_SEPARATOR BOLD", {
-		type: "rect",
-		width: 0.75,
-		height: 4.05,
-	}),
+	conditionSymbol("MEASURE_SEPARATOR", elem => elem.identity.type === "rect"
+		&& (elem.identity.rw === 0.2 || elem.identity.rw === 0.15) && elem.identity.rh === 4.05),
+	conditionSymbol("MEASURE_SEPARATOR BOLD", elem => elem.identity.type === "rect"
+		&& (elem.identity.rw === 0.55 || elem.identity.rw === 0.75) && elem.identity.rh === 4.05),
 
 	pathSymbol("CLEF TREBLE HEAD", "M267 -593l-1 -41h-5c-108 0 -196 88 -196 196c0 58 54 104 113 104c54 0 95 -48 95 -104c0 -52 -43 -95 -95 -95c-11 0 -23 3 -34 8c26 -40 69 -68 119 -68h4zM375 261c5 0 9 1 14 1c155 0 255 -128 255 -260c0 -76 -33 -154 -107 -209c-22 -17 -47 -28 -73 -36 c3 -35 5 -71 5 -107c0 -19 -1 -38 -2 -57c-7 -119 -87 -224 -201 -227l1 41c93 2 154 93 160 192c1 18 1 36 1 54c0 31 -1 63 -4 94c-29 -5 -58 -8 -89 -8c-188 0 -333 172 -333 373c0 177 132 307 249 441c-19 63 -35 125 -43 190c-6 51 -7 103 -7 155 c0 116 56 226 150 294c5 4 13 3 18 -1c70 -84 132 -245 132 -358c0 -143 -86 -255 -181 -364c20 -69 38 -138 55 -208zM460 -204c69 24 115 96 115 165c0 91 -68 182 -176 192c25 -117 47 -233 61 -357zM73 30c0 -136 130 -250 265 -250c28 0 55 2 82 6 c-14 127 -38 246 -64 366c-79 -9 -124 -62 -124 -120c0 -44 26 -91 82 -123c5 -4 6 -10 6 -15c0 -11 -9 -21 -21 -21c-3 0 -5 1 -8 2c-80 43 -117 114 -117 184c0 88 58 173 159 196c-14 59 -30 119 -46 177c-107 -121 -214 -242 -214 -402zM431 915c0 57 -4 80 -21 132 c-99 -49 -162 -150 -162 -260c0 -75 17 -135 35 -197c81 97 148 199 148 325z"),
 	pathFramesSymbol("CLEF TREBLE", [
@@ -137,15 +121,15 @@ const symbolRules = [
 	pathFrameSymbol("SLUR", "M. .C. . . . . .C. . . . . .z"),
 
 	conditionSymbol("STAVES_CONNECTION",
-		elem => elem.identity.type === "rect" && (elem.identity.width === 0.25 || elem.identity.width === 0.15) && elem.identity.height >= 12,
+		elem => elem.identity.type === "rect" && (elem.identity.rw === 0.25 || elem.identity.rw === 0.15) && elem.identity.height >= 12,
 		elem => ({height: elem.identity.height})),
 
 	conditionSymbol("VERTICAL_LINE", elem => elem.identity.type === "rect"
-		&& (elem.identity.width === 0.15 || elem.identity.width === 0.55 || elem.identity.width === 0.75 || elem.identity.width === 0.1) && elem.identity.height >= 1),
+		&& (elem.identity.rw === 0.15 || elem.identity.rw === 0.55 || elem.identity.rw === 0.75 || elem.identity.rw === 0.1) && elem.identity.height >= 1),
 
 	conditionSymbol("STAFF_LINE", elem => elem.identity.type === "line" && elem.identity.height === 0 && elem.identity.width > 10 && !elem.identity["stroke-dasharray"]),
 
-	conditionSymbol("ADDITIONAL_LINE", elem => elem.identity.type === "rect" && elem.identity.height === 0.2 && elem.identity.width >= 1.75 && elem.identity.width <= 2),
+	conditionSymbol("ADDITIONAL_LINE", elem => elem.identity.type === "rect" && elem.identity.rh === 0.2 && elem.identity.rw >= 1.75 && elem.identity.rw <= 2),
 
 	// TODO: limit scale of NUMBER as TIME_SIG
 	pathFrameSymbol("NUMBER 3", "M c-  - - - -c -  -  -c - - - - -s-  - c     c   -  -c - - - - -c- - - - - -s -  -c -  -  -c - - - - -c-  -  - c     s -  -c - - - - -c -  -  -c     vc  -  - h-c-  -  - s   hc     vc  -  - z"),

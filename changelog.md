@@ -13,6 +13,8 @@ TODO:
 
 *	2020.3.31
 
+	+	organizeTokens.ts: merge crossed staves connections.
+
 	+	staffSvg: updated size precision to 0.05.
 
 	+	lilyCommands.ts: added options of removeBreak, removePageBreak on postProcessLy.

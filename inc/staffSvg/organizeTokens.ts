@@ -20,10 +20,25 @@ const tokensRowsSplit = (tokens, logger) => {
 	const pageHeight = Math.max(...tokens.map(token => token.y));
 	const pageTile = Array(Math.round(pageHeight)).fill(-1);
 
+	let crossedCount = 0;
+
 	const connections = tokens.filter(token => token.is("STAVES_CONNECTION"));
 	connections.forEach((connection, i) => {
-		for (let y = Math.round(connection.y) - 1; y <= Math.round(connection.y + connection.height) + 1; ++y) 
-			pageTile[y] = i;
+		const start = Math.round(connection.y) - 1;
+		const end = Math.round(connection.y + connection.height) + 1;
+
+		let index = i - crossedCount;
+
+		for (let y = start; y <= end; ++y) {
+			if (pageTile[y] >= 0) {
+				index = pageTile[y];
+				++crossedCount;
+				break;
+			}
+		}
+
+		for (let y = start; y <= end; ++y) 
+			pageTile[y] = index;
 	});
 	logger.append("tokensRowsSplit.pageTile.0", [...pageTile]);
 
