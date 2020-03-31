@@ -68,6 +68,7 @@
 <script>
 	import resize from "vue-resize-directive";
 	import {MIDI, MidiAudio} from "@k-l-lambda/web-widgets";
+	import {sliceMidi} from "@k-l-lambda/web-widgets/source/inc/MidiUtils.js";
 
 	import "../utils.js";
 	import {mutexDelay} from "../delay.js";
@@ -347,10 +348,10 @@
 
 
 			async sliceSource (startTick, endTick) {
-				// TODO: slice MIDI data
+				const partMidi = sliceMidi(this.midi, startTick, endTick);
 
 				const body = new FormData();
-				const midi = new Blob([MIDI.encodeMidiFile(this.midi)], {type: "audio/midi"});
+				const midi = new Blob([MIDI.encodeMidiFile(partMidi)], {type: "audio/midi"});
 				body.append("midi", midi);
 				body.append("options", JSON.stringify({removeInstrumentName: true}));
 

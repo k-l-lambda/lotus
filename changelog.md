@@ -15,6 +15,8 @@ TODO:
 
 *	2020.3.31
 
+	+	playground.vue: sliceSource implemented.
+
 	+	lilyCommands.ts: midi2ly added.
 
 

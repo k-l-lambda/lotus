@@ -66,7 +66,6 @@ const xml2ly = async (xml, options) => {
 
 
 const midi2ly = async (midi, options) => {
-	console.log("midi:", midi);
 	const hash = genHashString();
 	//const midiFileName = `${TEMP_DIR}midi2ly-${hash}.midi`;
 	//await asyncCall(fs.writeFile, midiFileName, midi);
