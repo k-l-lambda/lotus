@@ -25,6 +25,7 @@ const tokensRowsSplit = (tokens, logger) => {
 		for (let y = Math.round(connection.y) - 1; y <= Math.round(connection.y + connection.height) + 1; ++y) 
 			pageTile[y] = i;
 	});
+	logger.append("tokensRowsSplit.pageTile.0", [...pageTile]);
 
 	const addlineYs = tokens.filter(token => token.is("ADDITIONAL_LINE")).map(token => Math.round(token.y)).sort((y1, y2) => y1 - y2);
 	addlineYs.forEach(y => {
@@ -35,16 +36,21 @@ const tokensRowsSplit = (tokens, logger) => {
 		if (pageTile[y] >= 0)
 			pageTile[y - 1] = pageTile[y];
 	});
+	logger.append("tokensRowsSplit.pageTile.1", [...pageTile]);
 
 	const octaveAs = tokens.filter(token => token.is("OCTAVE A"));
 	octaveAs.forEach(token => {
 		const nextIndex = pageTile.find((index, y) => y > token.y && index >= 0);
-		for (let y = Math.floor(token.y) - 1; y < pageHeight; ++y)
+		for (let y = Math.floor(token.y) - 1; y < pageHeight; ++y) {
+			if (pageTile[y] >= 0)
+				break;
+
 			pageTile[y] = nextIndex;
+		}
 	});
 	logger.append("tokensRowsSplit.octaveAs", octaveAs);
 
-	logger.append("tokensRowsSplit.pageTile", pageTile);
+	logger.append("tokensRowsSplit.pageTile.2", pageTile);
 
 	/*const linkedTokens = tokens
 		.filter(token => token.href && token.is("NOTE"))
