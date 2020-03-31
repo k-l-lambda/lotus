@@ -357,13 +357,16 @@
 
 
 			async sliceSource (startTick, endTick) {
+				if (!this.midi)
+					return null;
+
 				const partMidi = sliceMidi(this.midi, startTick, endTick);
 				console.log("partMidi:", partMidi);
 
 				const body = new FormData();
 				const midi = new Blob([MIDI.encodeMidiFile(partMidi)], {type: "audio/midi"});
 				body.append("midi", midi);
-				body.append("options", JSON.stringify({removeInstrumentName: true}));
+				body.append("options", JSON.stringify({removeInstrumentName: true, tupletReplace: true}));
 
 				const response = await fetch("/midi2ly", {
 					method: "POST",

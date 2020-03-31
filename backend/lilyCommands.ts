@@ -41,6 +41,7 @@ const postProcessLy = (ly, {
 	removePageBreak = false,
 	removeInstrumentName = false,
 	removeTempo = false,
+	tupletReplace = false,
 } = {}) => {
 	let result = ly;
 
@@ -61,6 +62,12 @@ const postProcessLy = (ly, {
 
 	if (removeTempo)
 		result = result.replace(/\\tempo /g, "% \\tempo ");
+
+	if (tupletReplace) {
+		result = result
+			.replace(/4\*128\/384/g, "8*2/3")
+			.replace(/4\*64\/384/g, "16*2/3");
+	}
 
 	return result;
 };

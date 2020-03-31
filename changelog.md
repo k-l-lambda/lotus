@@ -13,6 +13,8 @@ TODO:
 
 *	2020.3.31
 
+	+	lilyCommands.ts: added option of tupletReplace.
+
 	+	organizeTokens.ts: merge crossed staves connections.
 
 	+	staffSvg: updated size precision to 0.05.
