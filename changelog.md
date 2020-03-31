@@ -15,6 +15,8 @@ TODO:
 
 *	2020.3.31
 
+	+	lilyCommands.ts: added options of removeBreak, removePageBreak on postProcessLy.
+
 	+	playground.vue: sliceSource implemented.
 
 	+	lilyCommands.ts: midi2ly added.

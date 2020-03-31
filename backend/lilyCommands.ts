@@ -34,7 +34,12 @@ const initialize = async () => {
 initialize();
 
 
-const postProcessLy = (ly, {pointClick = true, midi = true} = {}) => {
+const postProcessLy = (ly, {
+	pointClick = true,
+	midi = true,
+	removeBreak = false,
+	removePageBreak = false,
+} = {}) => {
 	let result = ly;
 
 	if (pointClick)
@@ -43,7 +48,11 @@ const postProcessLy = (ly, {pointClick = true, midi = true} = {}) => {
 	if (midi)
 		result = result.replace(/%  \\midi/g, "\\midi");
 
-	// TODO: remove breaks & page breaks
+	if (removeBreak)
+		result = result.replace(/\s\\break\s/g, " ");
+
+	if (removePageBreak)
+		result = result.replace(/\s\\pageBreak\s/g, " ");
 
 	return result;
 };
