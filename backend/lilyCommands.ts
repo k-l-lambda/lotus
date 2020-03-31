@@ -65,6 +65,23 @@ const xml2ly = async (xml, options) => {
 };
 
 
+const midi2ly = async (midi, options) => {
+	console.log("midi:", midi);
+	const hash = genHashString();
+	//const midiFileName = `${TEMP_DIR}midi2ly-${hash}.midi`;
+	//await asyncCall(fs.writeFile, midiFileName, midi);
+
+	const lyFileName = `${TEMP_DIR}midi2ly-${hash}-midi.ly`;
+
+	const result = await child_process.exec(`${LILYPOND_DIR}midi2ly ${midi.path} -o ${lyFileName}`);
+	console.log("midi2ly:", result.stdout, result.stderr);
+
+	const ly = await asyncCall(fs.readFile, lyFileName);
+
+	return postProcessLy(ly.toString(), options);
+};
+
+
 const postProcessSvg = svg => {
 	return svg.replace(/textedit:[^"]+:(\d+:\d+:\d+)/g, "textedit:$1");
 };
@@ -105,5 +122,6 @@ const engraveSvg = async source => {
 
 export {
 	xml2ly,
+	midi2ly,
 	engraveSvg,
 };

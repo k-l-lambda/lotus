@@ -344,6 +344,28 @@
 				const result = LilyParser.parse(this.lilySource);
 				console.log("source parsing:", result);
 			},
+
+
+			async sliceSource (startTick, endTick) {
+				// TODO: slice MIDI data
+
+				const body = new FormData();
+				const midi = new Blob([MIDI.encodeMidiFile(this.midi)], {type: "audio/midi"});
+				body.append("midi", midi);
+				body.append("options", JSON.stringify({removeInstrumentName: true}));
+
+				const response = await fetch("/midi2ly", {
+					method: "POST",
+					body,
+				});
+				if (!response.ok) {
+					console.warn("MIDI to ly failed:", await response.text());
+					return;
+				}
+
+				const ly = await response.text();
+				console.log("ly:", ly);
+			},
 		},
 
 

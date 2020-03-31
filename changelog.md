@@ -1,5 +1,7 @@
 
 TODO:
+	slice sheet:
+		slice MIDI, midi2ly
 	octave dash line rendering issue
 	notation accuracy
 		599 No 81.ly
@@ -9,6 +11,11 @@ TODO:
 		cursor position
 		line numbers
 
+
+
+*	2020.3.31
+
+	+	lilyCommands.ts: midi2ly added.
 
 
 *	2020.3.30
