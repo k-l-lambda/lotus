@@ -120,7 +120,7 @@
 				this.doc.pages.forEach(
 					page => page.rows.forEach(
 						row => row.staves.forEach(
-							staff => staff.measures.forEach(
+							staff => staff && staff.measures.forEach(
 								measure => measure.tokens.forEach(
 									token => !token.href || tokens.set(token.href, token))))));
 
