@@ -13,6 +13,8 @@ TODO:
 
 *	2020.3.31
 
+	+	staffSvg: updated size precision to 0.05.
+
 	+	lilyCommands.ts: added options of removeBreak, removePageBreak on postProcessLy.
 
 	+	playground.vue: sliceSource implemented.

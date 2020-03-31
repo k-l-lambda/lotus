@@ -1,7 +1,7 @@
 
 import * as _ from "lodash";
 
-import {TOKEN_PRECISION, roundNumber} from "./utils";
+import {TOKEN_PRECISION, SIZE_PRECISION, roundNumber} from "./utils";
 import {identityHash, symbolize} from "./svgSymbols";
 import StaffToken from "./staffToken";
 
@@ -25,8 +25,8 @@ const normalizeElement = elem => {
 	case "line":
 		data.x = elem.x1 + elem.transform.translate.x;
 		data.y = elem.y1 + elem.transform.translate.y;
-		data.identity.width = roundNumber((elem.x2 - elem.x1) * elem.transform.scale.x, TOKEN_PRECISION);
-		data.identity.height = roundNumber((elem.y2 - elem.y1) * elem.transform.scale.y, TOKEN_PRECISION);
+		data.identity.width = roundNumber((elem.x2 - elem.x1) * elem.transform.scale.x, SIZE_PRECISION);
+		data.identity.height = roundNumber((elem.y2 - elem.y1) * elem.transform.scale.y, SIZE_PRECISION);
 		data.identity["stroke-width"] = elem["stroke-width"];
 		data.identity["stroke-dasharray"] = elem["stroke-dasharray"];
 
@@ -38,14 +38,14 @@ const normalizeElement = elem => {
 		if (!elem.transform) {
 			data.x = elem.x;
 			data.y = elem.y;
-			data.identity.width = roundNumber(elem.width, TOKEN_PRECISION, 0.1);
-			data.identity.height = roundNumber(elem.height, TOKEN_PRECISION, 0.1);
+			data.identity.width = roundNumber(elem.width, SIZE_PRECISION, 0.1);
+			data.identity.height = roundNumber(elem.height, SIZE_PRECISION, 0.1);
 		}
 		else {
 			data.x = elem.x + elem.transform.translate.x;
 			data.y = elem.y + elem.transform.translate.y;
-			data.identity.width = roundNumber(elem.width * elem.transform.scale.x, TOKEN_PRECISION, 0.1);
-			data.identity.height = roundNumber(elem.height * elem.transform.scale.y, TOKEN_PRECISION, 0.1);
+			data.identity.width = roundNumber(elem.width * elem.transform.scale.x, SIZE_PRECISION, 0.1);
+			data.identity.height = roundNumber(elem.height * elem.transform.scale.y, SIZE_PRECISION, 0.1);
 		}
 
 		break;

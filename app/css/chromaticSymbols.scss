@@ -13,7 +13,17 @@
 		stroke: lightgray;
 	}
 
-	.measure-separator, .additional-line, .brace, .vertical-line
+	.measure-separator
+	{
+		fill: hotpink;
+	}
+
+	.additional-line
+	{
+		fill: chocolate;
+	}
+
+	.brace, .vertical-line
 	{
 		fill: lightgray;
 	}

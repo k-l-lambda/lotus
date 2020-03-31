@@ -119,25 +119,28 @@ const tokensRowsSplit = (tokens, logger) => {
 const isRowToken = token => token.is("STAVES_CONNECTION") || token.is("BRACE") || token.is("VERTICAL_LINE");
 
 
-const parseTokenRow = tokens => {
+const parseTokenRow = (tokens, logger) => {
 	const separatorYs : Set<number> = new Set();
 	tokens.filter(token => token.is("MEASURE_SEPARATOR")).forEach(token => separatorYs.add(token.ry));
-	//console.log("separatorYs:", separatorYs);
+	logger.append("parseTokenRow.separatorYs", Array.from(separatorYs));
 
 	const staffLines = tokens.filter(token => token.is("STAFF_LINE")).reduce((lines, token) => {
 		lines[token.ry] = token;
 		return lines;
 	}, {});
-	//console.log("staffLines:", staffLines);
+	logger.append("parseTokenRow.staffLines", Object.keys(staffLines));
 
 	const staffYs = Array.from(separatorYs)
+		.filter(y => staffLines[y] || staffLines[y + TOKEN_PRECISION])
 		.map(y => staffLines[y] ? y : y + TOKEN_PRECISION).map(y => y + 2)
 		.sort((y1, y2) => y1 - y2);
+	logger.append("parseTokenRow.staffYs", staffYs);
 
 	const additionalLinesYs = tokens.filter(token => token.is("ADDITIONAL_LINE")).reduce((ys, token) => {
 		ys.add(token.ry);
 		return ys;
 	}, new Set());
+	logger.append("parseTokenRow.additionalLinesYs", Array.from(additionalLinesYs));
 
 	for (const y of staffYs) {
 		console.assert(staffLines[y - 2] && staffLines[y] && staffLines[y + 2],
@@ -252,7 +255,7 @@ const organizeTokens = (tokens, {logger, viewBox, width, height}: any = {}) => {
 	const meaningfulTokens = tokens.filter(token => !token.is("NULL"));
 	const rowTokens = tokensRowsSplit(meaningfulTokens, logger);
 
-	const rows = rowTokens.map(parseTokenRow);
+	const rows = rowTokens.map(tokens => parseTokenRow(tokens, logger));
 
 	return {
 		rows,
