@@ -246,6 +246,10 @@
 
 				const body = new FormData();
 				body.append("xml", xml);
+				body.append("options", JSON.stringify({
+					removeBreak: true,
+					removePageBreak: true,
+				}));
 
 				const response = await fetch("/musicxml2ly", {
 					method: "POST",
@@ -349,6 +353,7 @@
 
 			async sliceSource (startTick, endTick) {
 				const partMidi = sliceMidi(this.midi, startTick, endTick);
+				console.log("partMidi:", partMidi);
 
 				const body = new FormData();
 				const midi = new Blob([MIDI.encodeMidiFile(partMidi)], {type: "audio/midi"});

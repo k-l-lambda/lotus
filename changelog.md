@@ -1,12 +1,10 @@
 
 TODO:
-	slice sheet:
-		slice MIDI, midi2ly
-	octave dash line rendering issue
-	notation accuracy
-		599 No 81.ly
-	octave dash line missing
-	symbols of NUMBER & TIME_SIG
+	staffSvg
+		octave dash line rendering issue
+		octave dash line missing
+		tempo note head symbol
+		symbols of NUMBER & TIME_SIG
 	source editor
 		cursor position
 		line numbers

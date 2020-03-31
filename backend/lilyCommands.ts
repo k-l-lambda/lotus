@@ -39,6 +39,8 @@ const postProcessLy = (ly, {
 	midi = true,
 	removeBreak = false,
 	removePageBreak = false,
+	removeInstrumentName = false,
+	removeTempo = false,
 } = {}) => {
 	let result = ly;
 
@@ -53,6 +55,12 @@ const postProcessLy = (ly, {
 
 	if (removePageBreak)
 		result = result.replace(/\s\\pageBreak\s/g, " ");
+
+	if (removeInstrumentName)
+		result = result.replace(/\\set Staff.instrumentName/g, "% \\set Staff.instrumentName");
+
+	if (removeTempo)
+		result = result.replace(/\\tempo /g, "% \\tempo ");
 
 	return result;
 };
