@@ -69,10 +69,14 @@ export default class StaffToken {
 		if (this.is("SHARP"))
 			return 1;
 
+		if (this.is("SHARPSHARP"))
+			return 2;
+
 		if (this.is("FLAT"))
 			return -1;
 
-		// TODO: double sharp & double flat
+		if (this.is("FLATFLAT"))
+			return -2;
 
 		return null;
 	}

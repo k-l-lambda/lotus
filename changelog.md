@@ -1,6 +1,7 @@
 
 TODO:
 	staffSvg
+		same note slur issue
 		octave dash line rendering issue
 		octave dash line missing
 		tempo note head symbol
@@ -12,6 +13,8 @@ TODO:
 
 
 *	2020.4.1
+
+	+	staffToken.ts: added double alter symbol values.
 
 	+	notations-matcher.vue: added view width.
 
