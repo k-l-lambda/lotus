@@ -11,6 +11,13 @@ TODO:
 
 
 
+*	2020.4.1
+
+	+	notations-matcher.vue: added view width.
+
+	+	lilyCommands.ts: fixed svg files sorting.
+
+
 *	2020.3.31
 
 	+	lilyCommands.ts: added option of tupletReplace.

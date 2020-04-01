@@ -1,6 +1,6 @@
 <template>
-	<div>
-		<svg xmlns="http://www.w3.org/2000/svg" height="480" viewBox="-20 -20 1000 160">
+	<div class="notations-matcher">
+		<svg xmlns="http://www.w3.org/2000/svg" height="480" :viewBox="`-20 -20 ${width} 160`">
 			<g :transform="`translate(${positionC.x}, ${positionC.y})`" class="criterion">
 				<PinaoRoll v-if="criterion" :notations="criterion" :timeScale="timeScale" :pitchScale="1" />
 			</g>
@@ -49,12 +49,6 @@
 		},
 
 
-		created () {
-			this.satisfyNotation(this.criterion, "c");
-			this.satisfyNotation(this.sample, "s");
-		},
-
-
 		computed: {
 			links () {
 				return this.path && this.path.map((ci, si) => ({ci, si})).filter(({ci}) => ci >= 0).map(({ci, si}) => ({
@@ -62,6 +56,23 @@
 					s: this.sample.notes[si],
 				}));
 			},
+
+
+			width () {
+				const lastC = this.criterion && this.criterion.notes[this.criterion.notes.length - 1];
+				const lastS = this.sample && this.sample.notes[this.sample.notes.length - 1];
+
+				const cduration = lastC ? (lastC.start + lastC.duration) : 0;
+				const sduration = lastS ? (lastS.start + lastS.duration) : 0;
+
+				return Math.max(cduration, sduration, 1) * this.timeScale;
+			},
+		},
+
+
+		created () {
+			this.satisfyNotation(this.criterion, "c");
+			this.satisfyNotation(this.sample, "s");
 		},
 
 
@@ -117,5 +128,10 @@
 	{
 		stroke: red;
 		stroke-width: 0.2;
+	}
+
+	.notations-matcher
+	{
+		overflow: auto;
 	}
 </style>
