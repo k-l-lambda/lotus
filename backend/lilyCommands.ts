@@ -110,6 +110,9 @@ const postProcessSvg = svg => {
 };
 
 
+const nameNumber = name => Number(name.match(/-(\d+)\./)[1]);
+
+
 const engraveSvg = async source => {
 	const hash = genHashString();
 	const sourceFilename = `${TEMP_DIR}engrave-${hash}.ly`;
@@ -121,7 +124,8 @@ const engraveSvg = async source => {
 	const result = await child_process.exec(`cd ${TEMP_DIR} && ${LILYPOND_DIR}lilypond -dbackend=svg .${sourceFilename}`);
 
 	const svgFiles: string[] = await asyncCall(glob, `${TEMP_DIR}engrave-${hash}*.svg`);
-	svgFiles.sort();
+	svgFiles.sort((n1, n2) => nameNumber(n1) - nameNumber(n2));
+	//console.log("svgFiles:", svgFiles);
 
 	const svgs = await Promise.all(svgFiles.map(filename => asyncCall(fs.readFile, filename)));
 
