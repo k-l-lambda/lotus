@@ -37,7 +37,7 @@ export default class Scheduler {
 			}
 		});
 		//console.log("tokenTable:", tokenTable);
-	
+
 		const tickTable: TickItem[] = Object.entries(tokenTable).map(([tick, tokens]) => {
 			if (!tokens.length)
 				return null;

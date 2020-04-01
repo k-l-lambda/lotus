@@ -69,6 +69,7 @@
 			satisfyNotation (notation, type) {
 				if (notation) {
 					notation.notes.forEach(note => {
+						note.start = note.softIndex * 4e+3;
 						note.duration = note.duration || 2000;
 						note.classes = note.classes || {};
 
