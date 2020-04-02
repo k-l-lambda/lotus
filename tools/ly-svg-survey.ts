@@ -10,7 +10,7 @@ const testStaffSize = async size => {
 		#(set-global-staff-size ${size})
 
 		\\new PianoStaff <<
-			\\relative c''{c1}
+			\\relative c'{c1}
 			\\relative c'{r}
 		>>
 	`;
@@ -25,7 +25,9 @@ const testStaffSize = async size => {
 	const ws: number[] = doc.match(/width="[-.\d]+"/g).map(str => Number(str.match(/"([-.\d]+)"/)[1]));
 	const wss = Array.from(new Set(ws)).sort((x1, x2) => x1 - x2);
 
-	return {strokeWidth, wss};
+	const addLineWidth = Number(doc.match(/height="([-.\d]+)"/)[1]);
+
+	return {strokeWidth, addLineWidth, wss};
 };
 
 
@@ -37,6 +39,7 @@ const main = async () => {
 			console.log(i);
 	}
 
+	//console.log("results:", results.map(({addLineWidth}) => addLineWidth).join(", "));
 	console.log("results:", results);
 };
 

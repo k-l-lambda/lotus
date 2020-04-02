@@ -8,7 +8,8 @@ const roundNumber = (x, precision, min = -Infinity) => Number(Math.max(Math.roun
 
 
 // empirical formula for basic staff line stroke width
-const sizeToStrokeWidth = size => 0.342842872995173 + 13.1430019250855 / size;
+const sizeToStrokeWidth1 = size => 0.342842872995173 + 13.1430019250855 / size;
+const sizeToStrokeWidth2 = size => (0.1342842872995173 + 1.31430019250855 / size) / 0.2;
 
 
 
@@ -17,5 +18,6 @@ export {
 	SIZE_PRECISION,
 	STROKE_PRECISION,
 	roundNumber,
-	sizeToStrokeWidth,
+	sizeToStrokeWidth1,
+	sizeToStrokeWidth2,
 };

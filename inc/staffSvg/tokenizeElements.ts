@@ -1,7 +1,7 @@
 
 import * as _ from "lodash";
 
-import {POS_PRECISION, SIZE_PRECISION, STROKE_PRECISION, roundNumber, sizeToStrokeWidth} from "./utils";
+import {POS_PRECISION, SIZE_PRECISION, STROKE_PRECISION, roundNumber, sizeToStrokeWidth1, sizeToStrokeWidth2} from "./utils";
 import {identityHash, symbolize} from "./svgSymbols";
 import StaffToken from "./staffToken";
 
@@ -10,7 +10,8 @@ import StaffToken from "./staffToken";
 const normalizeElement = (elem, attributes) => {
 	const data : any = {x: null, y: null, identity: {type: elem.type}};
 
-	const basicStrokeWidth = sizeToStrokeWidth(attributes.globalStaffSize);
+	const basicSW1 = sizeToStrokeWidth1(attributes.globalStaffSize);
+	const basicSW2 = sizeToStrokeWidth2(attributes.globalStaffSize);
 
 	switch (elem.type) {
 	case "a":
@@ -84,11 +85,15 @@ const normalizeElement = (elem, attributes) => {
 
 	if (data.identity) {
 		if (data.identity["stroke-width"])
-			data.sw = roundNumber(data.identity["stroke-width"] / basicStrokeWidth, STROKE_PRECISION);
+			data.sw = roundNumber(data.identity["stroke-width"] / basicSW1, STROKE_PRECISION);
 		else if (data.identity.width && data.identity.height) {
 			const strokeWidth = Math.min(data.identity.width, data.identity.height);
-			if (strokeWidth < 2)
-				data.sw = roundNumber(strokeWidth / basicStrokeWidth, STROKE_PRECISION);
+			if (strokeWidth < 2) {
+				data.sw = roundNumber(strokeWidth / basicSW1, STROKE_PRECISION);
+
+				if (data.identity.height < data.identity.width)
+					data.sw2 = roundNumber(strokeWidth / basicSW2, STROKE_PRECISION);
+			}
 		}
 	}
 

@@ -1,9 +1,9 @@
 
-import {TOKEN_PRECISION} from "./utils";
+import {POS_PRECISION} from "./utils";
 
 
 
-const parseLink = link => {
+/*const parseLink = link => {
 	const [_, line, c1, c2] = link.match(/(\d+):(\d+):(\d+)/);
 	return [line, c1, c2].map(Number);
 };
@@ -13,7 +13,7 @@ const compareLinks = (link1, link2) => {
 	const n2 = parseLink(link2);
 
 	return n1[0] === n2[0] ? (n1[1] * 1e4 + n1[2] - n2[1] * 1e4 - n2[2]) : n1[0] - n2[0];
-};
+};*/
 
 
 const tokensRowsSplit = (tokens, logger) => {
@@ -146,8 +146,8 @@ const parseTokenRow = (tokens, logger) => {
 	logger.append("parseTokenRow.staffLines", Object.keys(staffLines));
 
 	const staffYs = Array.from(separatorYs)
-		.filter(y => staffLines[y] || staffLines[y + TOKEN_PRECISION])
-		.map(y => staffLines[y] ? y : y + TOKEN_PRECISION).map(y => y + 2)
+		.filter(y => staffLines[y] || staffLines[y + POS_PRECISION])
+		.map(y => staffLines[y] ? y : y + POS_PRECISION).map(y => y + 2)
 		.sort((y1, y2) => y1 - y2);
 	logger.append("parseTokenRow.staffYs", staffYs);
 
