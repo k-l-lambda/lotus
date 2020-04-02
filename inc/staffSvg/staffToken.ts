@@ -8,6 +8,7 @@ export default class StaffToken {
 	y: Number;
 	rx: Number;
 	ry: Number;
+	sw: Number;
 	symbol: String;
 	symbols = new Set();
 	hash: String;
@@ -26,7 +27,7 @@ export default class StaffToken {
 	toJSON () {
 		return {
 			__prototype: "StaffToken",
-			..._.pick(this, ["x", "y", "rx", "ry", "symbol", "hash", "href"]),
+			..._.pick(this, ["x", "y", "rx", "ry", "sw", "symbol", "hash", "href"]),
 		};
 	}
 

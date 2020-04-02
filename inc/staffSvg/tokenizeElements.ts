@@ -1,14 +1,16 @@
 
 import * as _ from "lodash";
 
-import {TOKEN_PRECISION, SIZE_PRECISION, roundNumber} from "./utils";
+import {POS_PRECISION, SIZE_PRECISION, STROKE_PRECISION, roundNumber, sizeToStrokeWidth} from "./utils";
 import {identityHash, symbolize} from "./svgSymbols";
 import StaffToken from "./staffToken";
 
 
 
-const normalizeElement = elem => {
+const normalizeElement = (elem, attributes) => {
 	const data : any = {x: null, y: null, identity: {type: elem.type}};
+
+	const basicStrokeWidth = sizeToStrokeWidth(attributes.globalStaffSize);
 
 	switch (elem.type) {
 	case "a":
@@ -66,7 +68,7 @@ const normalizeElement = elem => {
 		data.y = elem.transform.translate.y;
 		data.href = elem.href;
 		data.identity.scale = elem.transform.scale;
-		//data.identity.points = elem.points.split(" ").map(x => roundNumber(Number(x), TOKEN_PRECISION)).join(" ");
+		//data.identity.points = elem.points.split(" ").map(x => roundNumber(Number(x), POS_PRECISION)).join(" ");
 		data.identity.points = elem.points;
 		data.identity["stroke-width"] = elem["stroke-width"];
 
@@ -77,8 +79,18 @@ const normalizeElement = elem => {
 	}
 
 	// round position
-	data.rx = roundNumber(data.x, TOKEN_PRECISION);
-	data.ry = roundNumber(data.y, TOKEN_PRECISION);
+	data.rx = roundNumber(data.x, POS_PRECISION);
+	data.ry = roundNumber(data.y, POS_PRECISION);
+
+	if (data.identity) {
+		if (data.identity["stroke-width"])
+			data.sw = roundNumber(data.identity["stroke-width"] / basicStrokeWidth, STROKE_PRECISION);
+		else if (data.identity.width && data.identity.height) {
+			const strokeWidth = Math.min(data.identity.width, data.identity.height);
+			if (strokeWidth < 2)
+				data.sw = roundNumber(strokeWidth / basicStrokeWidth, STROKE_PRECISION);
+		}
+	}
 
 	data.hash = identityHash(data.identity);
 
@@ -87,8 +99,8 @@ const normalizeElement = elem => {
 
 
 // TODO: consider split arc linking line into 2 parts
-const tokenizeElements = (elements, logger) => {
-	const es = elements.map(normalizeElement).filter(e => e);
+const tokenizeElements = (elements, attributes, logger) => {
+	const es = elements.map(e => normalizeElement(e, attributes)).filter(e => e);
 
 	logger.append("tokenizeElements", {elementCount: es.length});
 
@@ -97,9 +109,9 @@ const tokenizeElements = (elements, logger) => {
 		hashTable[elem.hash] = elem.identity;
 
 	const tokens = es.map(elem => {
-		const {x, y, rx, ry, href, hash} = elem;
+		const {x, y, rx, ry, sw, href, hash} = elem;
 		return new StaffToken({
-			x, y, rx, ry, href, hash,
+			x, y, rx, ry, sw, href, hash,
 			...symbolize(elem),
 		});
 	});
@@ -107,7 +119,7 @@ const tokenizeElements = (elements, logger) => {
 	logger.append("tokenizeElements.nonsymbolTokens", tokens
 		.filter(token => !token.symbol)
 		.map(token => ({
-			..._.pick(token, ["x", "y", "rx", "ry", "href"]),
+			..._.pick(token, ["x", "y", "rx", "ry", "sw", "href"]),
 			identity: hashTable[token.hash],
 		})));
 

@@ -6,10 +6,10 @@ import LogRecorder from "../logRecorder";
 
 
 
-const parseSvgPage = (dom, {logger = new LogRecorder(), ...options}) => {
+const parseSvgPage = (dom, {logger = new LogRecorder(), attributes, ...options}) => {
 	const elem = svgToElements(dom, {logger, ...options});
 	//console.log("elem:", elem);
-	const {tokens, hashTable} = tokenizeElements(elem.children, logger);
+	const {tokens, hashTable} = tokenizeElements(elem.children, attributes, logger);
 
 	const [x, y, width, height] = elem.viewBox.match(/[\d-.]+/g).map(Number);
 	const viewBox = {x, y, width, height};

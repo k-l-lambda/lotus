@@ -10,7 +10,7 @@
 
 	.staff-line
 	{
-		stroke: lightgray;
+		stroke: gainsboro;
 	}
 
 	.measure-separator
@@ -25,7 +25,12 @@
 
 	.brace, .vertical-line
 	{
-		fill: lightgray;
+		fill: whitesmoke;
+	}
+
+	.note-stem
+	{
+		fill: slategray;
 	}
 
 	.staves-connection
@@ -81,8 +86,8 @@
 	.row > rect.mark
 	{
 		fill: #ffff0004;
-		stroke: #ff0;
-		stroke-width: 0.2;
+		stroke: #ff0a;
+		stroke-width: 0.6;
 	}
 
 	.staff > circle.mark

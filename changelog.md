@@ -16,6 +16,8 @@ TODO:
 
 *	2020.4.2
 
+	+	staffSvg: added stroke width parsing.
+
 	+	tools/ly-svg-survey.ts created.
 
 

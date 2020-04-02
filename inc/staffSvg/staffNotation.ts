@@ -204,6 +204,9 @@ const parseNotationInStaff = (context : StaffContext, staff) => {
 
 
 const parseNotationFromSheetDocument = (document, {logger}) => {
+	if (!document.pages[0].rows[0].staves.length)
+		return null;
+
 	const contexts = Array(document.pages[0].rows[0].staves.length).fill(null).map(() => new StaffContext({logger}));
 
 	for (const page of document.pages) {

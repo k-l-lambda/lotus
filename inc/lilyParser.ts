@@ -185,7 +185,20 @@ const parse = source => {
 };
 
 
+const getGlobalAttributes = source => {
+	const code = removeComments(source);
+
+	const cap1 = code.match(/set-global-staff-size\s+([\d.]+)/);
+	const globalStaffSize = cap1 ? Number(cap1[1]) : 20;
+
+	return {
+		globalStaffSize,
+	};
+};
+
+
 
 export {
 	parse,
+	getGlobalAttributes,
 };

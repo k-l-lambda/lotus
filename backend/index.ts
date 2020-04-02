@@ -4,6 +4,7 @@ import {DOMParser} from "xmldom";
 
 import * as lilyCommands from "./lilyCommands";
 import * as staffSvg from "../inc/staffSvg";
+import * as lilyParser from "../inc/lilyParser";
 import LogRecorder from "../inc/logRecorder";
 
 
@@ -53,9 +54,11 @@ export default {
 				if (!tokenize)
 					return JSON.stringify(result);
 
+				const attributes = lilyParser.getGlobalAttributes(source);
+
 				const logger = new LogRecorder({enabled: log});
 
-				const pages = result.svgs.map(svg => staffSvg.parseSvgPage(svg, {DOMParser, logger}));
+				const pages = result.svgs.map(svg => staffSvg.parseSvgPage(svg, {DOMParser, logger, attributes}));
 				const doc = {
 					__prototype: "SheetDocument",
 					pages: pages.map(page => page.structure),

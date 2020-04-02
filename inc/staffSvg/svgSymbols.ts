@@ -127,9 +127,12 @@ const symbolRules = [
 		elem => ({height: elem.identity.height})),
 
 	conditionSymbol("VERTICAL_LINE", elem => elem.identity.type === "rect"
-		&& (elem.identity.rw === 0.15 || elem.identity.rw === 0.45 || elem.identity.rw === 0.4 || elem.identity.rw === 0.55 || elem.identity.rw === 0.6 || elem.identity.rw === 0.75 || elem.identity.rw === 0.1) && elem.identity.height >= 1),
+		&& elem.sw === 0.19 && elem.identity.height >= 1),
 
-	conditionSymbol("STAFF_LINE", elem => elem.identity.type === "line" && elem.identity.height === 0 && elem.identity.width > 10 && !elem.identity["stroke-dasharray"]),
+	conditionSymbol("NOTE_STEM", elem => elem.identity.type === "rect"
+		&& elem.sw === 0.13 && elem.identity.height >= 1),
+
+	conditionSymbol("STAFF_LINE", elem => elem.identity.type === "line" && elem.identity.height === 0 && elem.identity.width > 2 && elem.sw === 0.1 && !elem.identity["stroke-dasharray"]),
 
 	conditionSymbol("ADDITIONAL_LINE", elem => elem.identity.type === "rect" && elem.identity.rh === 0.2 && elem.identity.rw >= 1.75 && elem.identity.rw <= 2),
 
