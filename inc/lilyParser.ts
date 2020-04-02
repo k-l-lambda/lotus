@@ -188,11 +188,18 @@ const parse = source => {
 const getGlobalAttributes = source => {
 	const code = removeComments(source);
 
+	let staffSize = 20;
+
 	const cap1 = code.match(/set-global-staff-size\s+([\d.]+)/);
-	const globalStaffSize = cap1 ? Number(cap1[1]) : 20;
+	if (cap1)
+		staffSize = Number(cap1[1]);
+
+	const cap2 = code.match(/layout-set-staff-size\s+([\d.]+)/);
+	if (cap2)
+		staffSize = Number(cap2[1]);
 
 	return {
-		globalStaffSize,
+		staffSize,
 	};
 };
 

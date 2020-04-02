@@ -123,11 +123,11 @@ const symbolRules = [
 	pathFrameSymbol("SLUR", "M. .C. . . . . .C. . . . . .z"),
 
 	conditionSymbol("STAVES_CONNECTION",
-		elem => elem.identity.type === "rect" && (elem.sw === 0.16 || elem.sw === 0.6) && elem.identity.height >= 10,
+		elem => elem.identity.type === "rect" && elem.sw === 0.16 && elem.identity.height >= 10,
 		elem => ({height: elem.identity.height})),
 
 	conditionSymbol("VERTICAL_LINE", elem => elem.identity.type === "rect"
-		&& elem.sw === 0.19 && elem.identity.height >= 1),
+		&& (elem.sw === 0.19 || elem.sw === 0.6) && elem.identity.height >= 1),
 
 	conditionSymbol("NOTE_STEM", elem => elem.identity.type === "rect"
 		&& elem.sw === 0.13 && elem.identity.height >= 1),

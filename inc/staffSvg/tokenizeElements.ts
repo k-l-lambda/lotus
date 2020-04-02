@@ -10,8 +10,8 @@ import StaffToken from "./staffToken";
 const normalizeElement = (elem, attributes) => {
 	const data : any = {x: null, y: null, identity: {type: elem.type}};
 
-	const basicSW1 = sizeToStrokeWidth1(attributes.globalStaffSize);
-	const basicSW2 = sizeToStrokeWidth2(attributes.globalStaffSize);
+	const basicSW1 = sizeToStrokeWidth1(attributes.staffSize);
+	const basicSW2 = sizeToStrokeWidth2(attributes.staffSize);
 
 	switch (elem.type) {
 	case "a":
