@@ -5,18 +5,12 @@ import * as glob from "glob";
 import * as child_process from "child-process-promise";
 import {MIDI} from "@k-l-lambda/web-widgets";
 
+import asyncCall from "../inc/asyncCall";
+
 
 
 const TEMP_DIR = process.env.TEMP_DIR;
 const LILYPOND_DIR = process.env.LILYPOND_DIR;
-
-
-const asyncCall = (func, ...args): Promise<any> => new Promise((resolve, reject) => func(...args, (err, data) => {
-	if (err)
-		reject(err);
-	else
-		resolve(data);
-}));
 
 
 const genHashString = (len = 8) => Buffer.from(Math.random().toString()).toString("base64").substr(3, 3 + len);
