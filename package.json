@@ -8,7 +8,9 @@
     "dev": "ts-node-dev --project ./tsconfig.node.json ./main.ts",
     "dev:inspect": "ts-node-dev --project ./tsconfig.node.json --inspect -- ./main.ts",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "ts-dev": "ts-node-dev --project ./tsconfig.node.json",
+    "ts-dev:inspect": "ts-node-dev --project ./tsconfig.node.json --inspect --"
   },
   "author": "K.L. <k.l.lambda@gmail.com> (https://k-l-lambda.github.io)",
   "license": "ISC",

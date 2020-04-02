@@ -1,5 +1,7 @@
 
 TODO:
+	use multiple line widths, or uniform layout to parse notation?
+		system-system-spacing = #'((basic-distance . 1000))
 	staffSvg
 		same note slur issue
 		octave dash line rendering issue
@@ -10,6 +12,11 @@ TODO:
 		cursor position
 		line numbers
 
+
+
+*	2020.4.2
+
+	+	tools/ly-svg-survey.ts created.
 
 
 *	2020.4.1
