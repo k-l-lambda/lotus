@@ -113,7 +113,7 @@ const loadDefinition = async file => {
 };
 
 
-const enumerate = async (templateFile, defineFile) => {
+const enumerate = async (templateFile, defineFile, sizeRange = [0.5, 30, 0.5]) => {
 	const definition = await loadDefinition(defineFile);
 
 	const template = await asyncCall(fs.readFile, templateFile);
@@ -132,7 +132,7 @@ const enumerate = async (templateFile, defineFile) => {
 	}
 	//console.log("table:", table, lastTotal);
 
-	for (let size = 0.5; size <= 30; size += 0.5) {
+	for (let size = sizeRange[0]; size <= sizeRange[1]; size += sizeRange[2]) {
 		const nodes = await testEngrave(template, size);
 		const symbols = extractSymbols(definition, nodes);
 		//console.log("symbols:", symbols);
@@ -186,9 +186,9 @@ const dumpSymbolTests = async (templateFile, defineFile, sizes = [1, 20, 100]) =
 };
 
 
-const main = async (templateFile = "./tools/assets/path-symbols-2.ly", defineFile = "./tools/assets/path-symbol-define-2.csv") => {
-	//dumpSymbolTests(templateFile, defineFile, [1, 10, 20]);
-	enumerate(templateFile, defineFile);
+const main = async (templateFile = "./tools/assets/path-symbols.ly", defineFile = "./tools/assets/path-symbol-define.csv") => {
+	dumpSymbolTests(templateFile, defineFile, [22.7288571429]);
+	//enumerate(templateFile, defineFile);
 };
 
 

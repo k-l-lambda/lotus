@@ -20,6 +20,7 @@ const initialize = async () => {
 	// empty temporary directory
 	try {
 		await child_process.exec(`rm ${TEMP_DIR}*`);
+		console.log("Temporary directory clear.");
 	}
 	catch (_) {
 	}
@@ -114,6 +115,7 @@ const engraveSvg = async source => {
 	const midiFilename = `${TEMP_DIR}engrave-${hash}.midi`;
 
 	await asyncCall(fs.writeFile, sourceFilename, source);
+	//console.log("ly source written:", sourceFilename);
 
 	const result = await child_process.exec(`cd ${TEMP_DIR} && ${LILYPOND_DIR}lilypond -dbackend=svg .${sourceFilename}`);
 
