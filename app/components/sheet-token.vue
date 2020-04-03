@@ -43,7 +43,7 @@
 
 	.token
 	{
-		.staff-line
+		.staff-line, .line
 		{
 			stroke: $default-color;
 		}

@@ -1,13 +1,8 @@
 
 TODO:
-	use multiple line widths, or uniform layout to parse notation?
-		system-system-spacing = #'((basic-distance . 1000))
 	staffSvg
 		same note slur issue
-		octave dash line rendering issue
-		octave dash line missing
 		tempo note head symbol
-		symbols of NUMBER & TIME_SIG
 	source editor
 		cursor position
 		line numbers
@@ -15,6 +10,11 @@ TODO:
 
 
 *	2020.4.3
+
+	+	staffSvg: fixed line rendering styles.
+
+	+	System - system spacing option in lilypond:
+			system-system-spacing = #'((basic-distance . 1000))
 
 	+	sheet-live.vue: added note matching status on notehead token.
 

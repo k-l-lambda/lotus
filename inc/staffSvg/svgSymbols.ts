@@ -116,10 +116,12 @@ const symbolRules = [
 		"stroke-width": 0.0924,
 		"stroke-dasharray": "0.362351432995067,0.537648567004933",
 	}),
-	conditionSymbol("OCTAVE CLOSE", elem => elem.identity.type === "line" && elem.identity.height === 0.8
+	conditionSymbol("OCTAVE CLOSE LINE", elem => elem.identity.type === "line" && elem.identity.height === 0.8
 		&& elem.identity.width === 0 && elem.identity["stroke-dasharray"] === "1.0,0.0" && elem.identity["stroke-width"] < 0.1),
 
 	pathFrameSymbol("DOT", "M c     s -  -s- - - -s-  - z"),
+
+	conditionSymbol("LINE", elem => elem.identity.type === "line"),
 
 	conditionSymbol("NULL LARGE_RECT", elem => elem.identity.type === "rect" && (elem.identity.height > 1) && elem.identity.width >= 7 && elem.rx <= 0 && elem.ry <= 0),
 	conditionSymbol("NULL COPYRIGHT", elem => elem.identity.type === "text" && /www\.lilypond\.org/.test(elem.identity.text)),
