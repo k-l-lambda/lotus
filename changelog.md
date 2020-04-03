@@ -1,6 +1,5 @@
 
 TODO:
-	svg-path-enumeration.ts/testEngrave
 	use multiple line widths, or uniform layout to parse notation?
 		system-system-spacing = #'((basic-distance . 1000))
 	staffSvg

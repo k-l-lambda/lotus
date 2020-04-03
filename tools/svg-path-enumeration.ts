@@ -17,9 +17,25 @@ const testEngrave = async (template, size) => {
 
 	const nodes = dom.childNodes[0].childNodes;
 
-	// TODO: expand g
+	return Array.from(nodes).reduce((list: any[], node: any) => {
+		switch (node.nodeName) {
+		case "a":
+			node.childNodes = Array.from(node.childNodes).filter((node: any) => node.nodeName === "path");
+			list.push (node);
 
-	return nodes;
+			break;
+		case "path":
+			list.push (node);
+
+			break;
+		case "g":
+			list.push(...Array.from(node.childNodes).filter((node: any) => node.nodeName === "path"));
+
+			break;
+		}
+
+		return list;
+	}, []);
 };
 
 
@@ -61,6 +77,8 @@ const extractSymbols = (definition, nodes) => {
 			d: path.getAttribute("d"),
 		});
 	});
+
+	return symbols;
 };
 
 
