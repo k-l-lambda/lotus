@@ -16,6 +16,8 @@ TODO:
 
 *	2020.4.3
 
+	+	svgSymbols.ts: added postSymbolize.
+
 	+	Enabled compile option of esModuleInterop in tsconfig.node.json.
 
 	+	svg-path-enumeration.ts: enumerate implemented.

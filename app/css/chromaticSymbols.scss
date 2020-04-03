@@ -28,7 +28,7 @@
 		fill: whitesmoke;
 	}
 
-	.note-stem
+	.note-stem, .notetail
 	{
 		fill: slategray;
 	}
@@ -53,7 +53,12 @@
 		fill: deepskyblue;
 	}
 
-	.time-sig
+	.number
+	{
+		fill: lightslategray;
+	}
+
+	.time-sig, .time-sig.number
 	{
 		fill: seagreen;
 	}
@@ -76,6 +81,11 @@
 	.slur
 	{
 		fill: pink;
+	}
+
+	.expressive
+	{
+		fill: wheat;
 	}
 
 	.mark
