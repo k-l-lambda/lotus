@@ -14,6 +14,11 @@ TODO:
 
 
 
+*	2020.4.3
+
+	+	svg-path-enumeration.ts: dumpSymbolTests added.
+
+
 *	2020.4.2
 
 	+	tools/svg-path-enumeration.ts created.

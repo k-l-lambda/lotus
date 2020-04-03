@@ -45,9 +45,8 @@ const extractSymbols = (definition, nodes) => {
 	definition.forEach(({symbol, id, index}) => {
 		let targetIndex = null;
 		let path = null;
-		for (let i = 0; i < nodes.length; ++i) {
-			const node = nodes[i];
-			if (targetIndex >= 0) {
+		for (const node of nodes) {
+			if (Number.isFinite(targetIndex)) {
 				if (node.nodeName === "path") {
 					if (targetIndex > 0)
 						--targetIndex;
@@ -62,7 +61,7 @@ const extractSymbols = (definition, nodes) => {
 					const nodeId = node.getAttribute("xlink:href").replace("textedit:", "");
 					if (nodeId === id) {
 						if (index)
-							targetIndex = index;
+							targetIndex = index - 1;
 						else {
 							path = node.childNodes[0];
 							break;
@@ -72,21 +71,32 @@ const extractSymbols = (definition, nodes) => {
 			}
 		}
 
-		symbols.push({
-			symbol,
-			d: path.getAttribute("d"),
-		});
+		if (!path)
+			console.warn("no symbol found for", symbol, id, index);
+		else {
+			const d = path.getAttribute("d");
+			//console.log("d:", symbol, id, index, d);
+	
+			symbols.push({
+				symbol,
+				d,
+			});
+		}
 	});
 
 	return symbols;
 };
 
 
-const enumerate = async (templateFile = "./tools/assets/path-symbols.ly", defineFile = "./tools/assets/path-symbol-define.txt") => {
-	const definitionBuffer = await asyncCall(fs.readFile, defineFile);
-	const definition = definitionBuffer.toString().split("\n").map(line => line.split(",")).filter(fields => fields.length === 3)
+const loadDefinition = async file => {
+	const definitionBuffer = await asyncCall(fs.readFile, file);
+	return definitionBuffer.toString().split("\n").map(line => line.split(",")).filter(fields => fields.length === 3)
 		.map(([symbol, id, index]) => ({symbol, id, index: Number(index)}));
-	//console.log("definition:", definition);
+};
+
+
+const enumerate = async (templateFile, defineFile) => {
+	const definition = await loadDefinition(defineFile);
 
 	const template = await asyncCall(fs.readFile, templateFile);
 	const nodes = await testEngrave(template, 20);
@@ -97,8 +107,38 @@ const enumerate = async (templateFile = "./tools/assets/path-symbols.ly", define
 };
 
 
+const dumpSymbolTests = async (templateFile, defineFile, sizes = [1, 20, 100]) => {
+	const definition = await loadDefinition(defineFile);
 
-enumerate();
+	const template = await asyncCall(fs.readFile, templateFile);
+
+	for (const size of sizes) {
+		const nodes = await testEngrave(template, size);
+		const symbols = extractSymbols(definition, nodes);
+
+		const elems = symbols.map((symbol, i) => `<g transform="translate(1000, ${(i + 1) * 1000})">
+			<text x="2000" font-size="600">${symbol.symbol}</text>
+			<path transform="scale(0.6, -0.6)" d="${symbol.d}" />
+		</g>`).join("\n");
+		const doc = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 ${(symbols.length + 1) * 1000}">
+			${elems}
+		</svg>`;
+
+		await asyncCall(fs.writeFile, `./temp/symbol-test-${size}.svg`, doc);
+	};
+
+	console.log("Dump done.");
+};
+
+
+const main = async (templateFile = "./tools/assets/path-symbols.ly", defineFile = "./tools/assets/path-symbol-define.txt") => {
+	dumpSymbolTests(templateFile, defineFile);
+	//enumerate(templateFile, defineFile);
+};
+
+
+
+main();
 
 
 
