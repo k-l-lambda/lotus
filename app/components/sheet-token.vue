@@ -43,7 +43,7 @@
 
 	.token
 	{
-		.staff-line, .line
+		.staff-line, .line, .slur
 		{
 			stroke: $default-color;
 		}
@@ -51,7 +51,7 @@
 		use
 		{
 			fill: $default-color;
-			stroke-width: 0;
+			//stroke-width: 0;
 		}
 
 		&.on use

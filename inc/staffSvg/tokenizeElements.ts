@@ -62,6 +62,7 @@ const normalizeElement = (elem, attributes) => {
 		data.href = elem.href;
 		data.identity.scale = elem.transform.scale;
 		data.identity.d = elem.d;
+		data.identity["stroke-width"] = elem["stroke-width"];
 
 		break;
 	case "polygon":

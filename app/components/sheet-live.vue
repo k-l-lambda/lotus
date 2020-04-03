@@ -8,7 +8,7 @@
 				<g class="sign" v-for="sign of signs" :key="sign.id" :id="`sign-${sign.id}`"
 					:transform="sign.def.scale && `scale(${sign.def.scale.x}, ${sign.def.scale.y})`"
 				>
-					<path v-if="sign.def.type === 'path'" :d="sign.def.d" />
+					<path v-if="sign.def.type === 'path'" :d="sign.def.d" :stroke-width="sign.def['stroke-width']" />
 					<rect v-if="sign.def.type === 'rect'"
 						x="0" y="0"
 						:width="sign.def.width"
@@ -282,7 +282,7 @@
 			path
 			{
 				stroke: inherit;
-				stroke-width: inherit;
+				//stroke-width: inherit;
 				fill: inherit;
 			}
 		}
