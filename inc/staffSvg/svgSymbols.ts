@@ -84,6 +84,12 @@ const symbolRules = [
 		"M. -.C. -. . -. . -.C. -. . -. . -.z",
 		"M. .C. . . . . .C. . . . . .z",
 	]),
+	pathFramesSymbol("SLUR DOWN", [
+		"M1.5028 -0.8074C2.4307 0.0391 5.9413 0.0391 6.8692 -0.8074L6.8692 -0.8074C5.9413 -0.0896 2.4307 -0.0896 1.5028 -0.8074z",
+	].map(simplifyPath)),
+	pathFramesSymbol("SLUR UP", [
+		"M1.6331 0.7750C2.7048 -0.1232 7.7198 -0.1232 8.7915 0.7750L8.7915 0.7750C7.7198 0.0055 2.7048 0.0055 1.6331 0.7750z",
+	].map(simplifyPath)),
 
 	conditionSymbol("STAVES_CONNECTION",
 		elem => elem.identity.type === "rect" && elem.sw === 0.16 && elem.identity.height >= 10,
@@ -99,7 +105,7 @@ const symbolRules = [
 
 	conditionSymbol("STAFF_LINE", elem => elem.identity.type === "line" && elem.identity.height === 0 && elem.identity.width > 2 && elem.sw === 0.1 && !elem.identity["stroke-dasharray"]),
 
-	conditionSymbol("ADDITIONAL_LINE", elem => elem.identity.type === "rect" && elem.sw2 === 0.2 && elem.identity.rw >= 1.75 && elem.identity.rw <= 2.1),
+	conditionSymbol("ADDITIONAL_LINE", elem => elem.identity.type === "rect" && elem.sw2 === 0.2 && elem.identity.rw >= 1.25 && elem.identity.rw <= 3.25),
 
 	conditionSymbol("OCTAVE A", elem => elem.identity.type === "text" && /8va/.test(elem.identity.text)),
 	conditionSymbol("OCTAVE B", elem => elem.identity.type === "text" && /8vb/.test(elem.identity.text)),
