@@ -1,6 +1,6 @@
 <template>
 	<div class="notations-matcher">
-		<svg xmlns="http://www.w3.org/2000/svg" height="480" :viewBox="`-20 -20 ${width} 160`">
+		<svg xmlns="http://www.w3.org/2000/svg" height="480" :viewBox="`-20 -20 ${width + 40} 160`">
 			<g :transform="`translate(${positionC.x}, ${positionC.y})`" class="criterion">
 				<PinaoRoll v-if="criterion" :notations="criterion" :timeScale="timeScale" :pitchScale="1" />
 			</g>
@@ -65,7 +65,7 @@
 				const cduration = lastC ? (lastC.start + lastC.duration) : 0;
 				const sduration = lastS ? (lastS.start + lastS.duration) : 0;
 
-				return Math.max(cduration, sduration, 1) * this.timeScale + 40;
+				return Math.max(cduration, sduration, 1) * this.timeScale;
 			},
 		},
 
