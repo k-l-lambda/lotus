@@ -65,7 +65,7 @@
 				const cduration = lastC ? (lastC.start + lastC.duration) : 0;
 				const sduration = lastS ? (lastS.start + lastS.duration) : 0;
 
-				return Math.max(cduration, sduration, 1) * this.timeScale;
+				return Math.max(cduration, sduration + 40e+3, 1) * this.timeScale;
 			},
 		},
 
