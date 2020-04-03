@@ -102,8 +102,9 @@ const enumerate = async (templateFile, defineFile) => {
 	const template = await asyncCall(fs.readFile, templateFile);
 
 	const table = {};
+	let lastTotal: any = 0;
 
-	for (let size = 1; size <= 200; ++size) {
+	for (let size = 0.5; size <= 30; size += 0.5) {
 		const nodes = await testEngrave(template, size);
 		const symbols = extractSymbols(definition, nodes);
 		//console.log("symbols:", symbols);
@@ -113,8 +114,14 @@ const enumerate = async (templateFile, defineFile) => {
 			table[symbol].add(simplifyPath(d));
 		});
 
-		if (size % 10 === 0)
-			console.log("enumerating ", size);
+		const total = Object.values(table).reduce((sum: number, set: any) => sum + set.size, 0);
+		if (total > lastTotal) {
+			console.log("enumerating:", size, total);
+			lastTotal = total;
+		}
+
+		//if (size % 10 === 0)
+		//	console.log("enumerating ", size);
 	}
 
 	const list = Object.entries(table).map(([symbol, set]: any[]) => ({symbol, ds: Array.from(set)}));
