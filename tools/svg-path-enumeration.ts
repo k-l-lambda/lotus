@@ -21,7 +21,16 @@ const testEngrave = async (template, size) => {
 	return Array.from(nodes).reduce((list: any[], node: any) => {
 		switch (node.nodeName) {
 		case "a":
-			node.childNodes = Array.from(node.childNodes).filter((node: any) => node.nodeName === "path");
+			node.childNodes = Array.from(node.childNodes)
+				.filter((node: any) => ["path", "g"].includes(node.nodeName))
+				.reduce((nodes: any[], node: any) => {
+					if (node.nodeName === "g")
+						nodes.push(...Array.from(node.childNodes).filter((node: any) => node.nodeName === "path"));
+					else
+						nodes.push(node);
+
+					return nodes;
+				}, []);
 			list.push (node);
 
 			break;
@@ -46,26 +55,31 @@ const extractSymbols = (definition, nodes) => {
 	definition.forEach(({symbol, id, index}) => {
 		let targetIndex = null;
 		let path = null;
-		for (const node of nodes) {
-			if (Number.isFinite(targetIndex)) {
-				if (node.nodeName === "path") {
-					if (targetIndex > 0)
-						--targetIndex;
-					else {
-						path = node;
-						break;
+
+		if (!id)
+			path = nodes[index];
+		else {
+			for (const node of nodes) {
+				if (Number.isFinite(targetIndex)) {
+					if (node.nodeName === "path") {
+						if (targetIndex > 0)
+							--targetIndex;
+						else {
+							path = node;
+							break;
+						}
 					}
 				}
-			}
-			else {
-				if (node.nodeName === "a") {
-					const nodeId = node.getAttribute("xlink:href").replace("textedit:", "");
-					if (nodeId === id) {
-						if (index)
-							targetIndex = index - 1;
-						else {
-							path = node.childNodes[0];
-							break;
+				else {
+					if (node.nodeName === "a") {
+						const nodeId = node.getAttribute("xlink:href").replace("textedit:", "");
+						if (nodeId === id) {
+							if (index > 0)
+								targetIndex = index - 1;
+							else {
+								path = node.childNodes[-index];
+								break;
+							}
 						}
 					}
 				}
@@ -91,7 +105,10 @@ const extractSymbols = (definition, nodes) => {
 
 const loadDefinition = async file => {
 	const definitionBuffer = await asyncCall(fs.readFile, file);
-	return definitionBuffer.toString().split("\n").map(line => line.split(",")).filter(fields => fields.length === 3)
+	return definitionBuffer.toString().split("\n")
+		.filter(line => !/^#/.test(line))
+		.map(line => line.split(","))
+		.filter(fields => fields.length === 3)
 		.map(([symbol, id, index]) => ({symbol, id, index: Number(index)}));
 };
 
@@ -140,6 +157,7 @@ const dumpSymbolTests = async (templateFile, defineFile, sizes = [1, 20, 100]) =
 
 	for (const size of sizes) {
 		const nodes = await testEngrave(template, size);
+		//console.log("nodes:", nodes);
 		const symbols = extractSymbols(definition, nodes);
 
 		const elems = symbols.map((symbol, i) => `<g transform="translate(1000, ${(i + 1) * 1000})">
@@ -157,9 +175,9 @@ const dumpSymbolTests = async (templateFile, defineFile, sizes = [1, 20, 100]) =
 };
 
 
-const main = async (templateFile = "./tools/assets/path-symbols.ly", defineFile = "./tools/assets/path-symbol-define.txt") => {
-	//dumpSymbolTests(templateFile, defineFile);
-	enumerate(templateFile, defineFile);
+const main = async (templateFile = "./tools/assets/path-symbols-2.ly", defineFile = "./tools/assets/path-symbol-define-2.csv") => {
+	dumpSymbolTests(templateFile, defineFile, [1, 10, 20]);
+	//enumerate(templateFile, defineFile);
 };
 
 
