@@ -38,7 +38,9 @@
 				<SourceEditor :source.sync="lilySource" :disabled="converting" />
 				<Loading v-show="converting" />
 			</div>
-			<div class="build-container" ref="buildContainer" :class="{loading: engraving, dirty: engraverDirty, chromatic: chromaticSymbols}" v-resize="onResize">
+			<div class="build-container" ref="buildContainer" v-resize="onResize" :class="{
+				loading: engraving, dirty: engraverDirty, chromatic: chromaticSymbols, inspecting: showNotationsMatcher,
+			}">
 				<MidiRoll v-if="tokenizeStaff && midiPlayer" v-show="rollVisible"
 					:player="midiPlayer"
 					:timeScale="16e-3"
@@ -505,6 +507,14 @@
 					flex: 1 1 0;
 					overflow: auto;
 					width: 100%;
+				}
+
+				&.inspecting
+				{
+					.token.dismatched use
+					{
+						fill: red;
+					}
 				}
 			}
 		}

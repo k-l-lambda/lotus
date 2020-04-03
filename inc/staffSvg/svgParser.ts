@@ -66,6 +66,7 @@ const domNodeToElement = node => {
 			[_, tx, ty] = elem.transform.match(/translate\(([\d.-]+),\s*([\d.-]+)\)/);
 		else if (/scale\([\d.\-,\s]+\)/.test(elem.transform))
 			[_, sx, sy] = elem.transform.match(/scale\(([\d.-]+),\s*([\d.-]+)\)/);
+		else if (/^rotate(.*)$/.test(elem.transform)) {}
 		else
 			console.warn("unexpected transform:", elem.transform);
 

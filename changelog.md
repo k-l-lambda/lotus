@@ -16,6 +16,8 @@ TODO:
 
 *	2020.4.3
 
+	+	sheet-live.vue: added note matching status on notehead token.
+
 	+	svgSymbols.ts: added postSymbolize.
 
 	+	Enabled compile option of esModuleInterop in tsconfig.node.json.

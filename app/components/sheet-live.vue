@@ -59,7 +59,7 @@
 						<g class="mark">
 							<text :x="measure.headX">{{i4}}</text>
 						</g>
-						<SheetToken v-for="(token, i5) of measure.tokens" :key="i5" :token="token" />
+						<SheetToken v-for="(token, i5) of measure.tokens" :key="i5" :token="token" :matchedIds="matchedIds" />
 					</g>
 				</g>
 			</g>
@@ -99,6 +99,7 @@
 			return {
 				midiPlayer: null,
 				scheduler: null,
+				matchedIds: new Set(),
 			};
 		},
 
@@ -203,6 +204,7 @@
 			async updateMidiNotation () {
 				this.midiNotation = null;
 				this.scheduler = null;
+				this.matchedIds.clear();
 
 				if (this.midiPlayer) {
 					this.midiPlayer.dispose();
@@ -235,6 +237,10 @@
 			async matchNotations () {
 				const matcherNotations = await StaffNotation.matchNotations(this.midiNotation, this.sheetNotation);
 				//console.log("matching:", this.midiNotation.notes.map(n => n.ids && n.ids[0]));
+
+				const matchedIds = new Set();
+				this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));
+				this.matchedIds = matchedIds;
 
 				this.scheduler = SheetScheduler.createFromNotation(this.midiNotation, this.linkedTokens);
 
