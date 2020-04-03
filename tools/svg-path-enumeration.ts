@@ -121,6 +121,17 @@ const enumerate = async (templateFile, defineFile) => {
 	const table = {};
 	let lastTotal: any = 0;
 
+	const libraryFileName = "./tools/assets/path-symbols.json";
+	const libaray = await asyncCall(fs.readFile, libraryFileName);
+	if (libaray) {
+		const data = JSON.parse(libaray);
+		data.forEach(item => table[item.symbol] = new Set(item.ds));
+
+		lastTotal = Object.values(table).reduce((sum: number, set: any) => sum + set.size, 0);
+		console.log("Library size:", lastTotal);
+	}
+	//console.log("table:", table, lastTotal);
+
 	for (let size = 0.5; size <= 30; size += 0.5) {
 		const nodes = await testEngrave(template, size);
 		const symbols = extractSymbols(definition, nodes);
@@ -144,7 +155,7 @@ const enumerate = async (templateFile, defineFile) => {
 	const list = Object.entries(table).map(([symbol, set]: any[]) => ({symbol, ds: Array.from(set)}));
 	console.log("list:", list);
 
-	await asyncCall(fs.writeFile, "./tools/assets/path-symbols.json", JSON.stringify(list));
+	await asyncCall(fs.writeFile, libraryFileName, JSON.stringify(list));
 
 	console.log("Enumeration done.");
 };
@@ -176,8 +187,8 @@ const dumpSymbolTests = async (templateFile, defineFile, sizes = [1, 20, 100]) =
 
 
 const main = async (templateFile = "./tools/assets/path-symbols-2.ly", defineFile = "./tools/assets/path-symbol-define-2.csv") => {
-	dumpSymbolTests(templateFile, defineFile, [1, 10, 20]);
-	//enumerate(templateFile, defineFile);
+	//dumpSymbolTests(templateFile, defineFile, [1, 10, 20]);
+	enumerate(templateFile, defineFile);
 };
 
 
