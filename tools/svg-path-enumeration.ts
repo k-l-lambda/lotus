@@ -1,7 +1,7 @@
 
 import "../env.js";
 
-import * as fs from "fs";
+import fs from "fs";
 import {DOMParser} from "xmldom";
 
 import * as lilyCommands from "../backend/lilyCommands";
@@ -121,7 +121,7 @@ const enumerate = async (templateFile, defineFile) => {
 	const table = {};
 	let lastTotal: any = 0;
 
-	const libraryFileName = "./tools/assets/path-symbols.json";
+	const libraryFileName = "./inc/staffSvg/path-symbols.json";
 	const libaray = await asyncCall(fs.readFile, libraryFileName);
 	if (libaray) {
 		const data = JSON.parse(libaray);

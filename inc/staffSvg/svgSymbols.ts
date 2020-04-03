@@ -1,5 +1,8 @@
 
-import * as sha1 from "sha1";
+import sha1 from "sha1";
+
+//import pathSymbols from "./path-symbols.json";
+//console.log("pathSymbols:", pathSymbols);
 
 
 

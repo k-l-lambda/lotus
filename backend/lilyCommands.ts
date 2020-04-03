@@ -1,8 +1,8 @@
 
 
-import * as fs from "fs";
-import * as glob from "glob";
-import * as child_process from "child-process-promise";
+import fs from "fs";
+import glob from "glob";
+import child_process from "child-process-promise";
 import {MIDI} from "@k-l-lambda/web-widgets";
 
 import asyncCall from "../inc/asyncCall";

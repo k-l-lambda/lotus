@@ -1,5 +1,5 @@
 
-import * as _ from "lodash";
+import _ from "lodash";
 
 import {POS_PRECISION, SIZE_PRECISION, STROKE_PRECISION, roundNumber, sizeToStrokeWidth1, sizeToStrokeWidth2} from "./utils";
 import {identityHash, symbolize} from "./svgSymbols";

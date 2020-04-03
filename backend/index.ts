@@ -1,5 +1,5 @@
 
-import * as formidable from "formidable";
+import formidable from "formidable";
 import {DOMParser} from "xmldom";
 
 import * as lilyCommands from "./lilyCommands";

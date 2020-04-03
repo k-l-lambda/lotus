@@ -1,5 +1,5 @@
 
-import * as _ from "lodash";
+import _ from "lodash";
 
 
 
