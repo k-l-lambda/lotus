@@ -6,6 +6,7 @@ import {DOMParser} from "xmldom";
 
 import * as lilyCommands from "../backend/lilyCommands";
 import asyncCall from "../inc/asyncCall";
+import {simplifyPath} from "../inc/staffSvg/svgSymbols";
 
 
 
@@ -99,11 +100,29 @@ const enumerate = async (templateFile, defineFile) => {
 	const definition = await loadDefinition(defineFile);
 
 	const template = await asyncCall(fs.readFile, templateFile);
-	const nodes = await testEngrave(template, 20);
-	//console.log("nodes:", nodes);
 
-	const symbols = extractSymbols(definition, nodes);
-	console.log("symbols:", symbols);
+	const table = {};
+
+	for (let size = 1; size <= 200; ++size) {
+		const nodes = await testEngrave(template, size);
+		const symbols = extractSymbols(definition, nodes);
+		//console.log("symbols:", symbols);
+
+		symbols.forEach(({symbol, d}) => {
+			table[symbol] = table[symbol] || new Set();
+			table[symbol].add(simplifyPath(d));
+		});
+
+		if (size % 10 === 0)
+			console.log("enumerating ", size);
+	}
+
+	const list = Object.entries(table).map(([symbol, set]: any[]) => ({symbol, ds: Array.from(set)}));
+	console.log("list:", list);
+
+	await asyncCall(fs.writeFile, "./tools/assets/path-symbols.json", JSON.stringify(list));
+
+	console.log("Enumeration done.");
 };
 
 
@@ -132,8 +151,8 @@ const dumpSymbolTests = async (templateFile, defineFile, sizes = [1, 20, 100]) =
 
 
 const main = async (templateFile = "./tools/assets/path-symbols.ly", defineFile = "./tools/assets/path-symbol-define.txt") => {
-	dumpSymbolTests(templateFile, defineFile);
-	//enumerate(templateFile, defineFile);
+	//dumpSymbolTests(templateFile, defineFile);
+	enumerate(templateFile, defineFile);
 };
 
 

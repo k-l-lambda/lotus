@@ -233,6 +233,7 @@ const symbolize = elem => {
 
 
 export {
+	simplifyPath,
 	identityHash,
 	symbolize,
 };

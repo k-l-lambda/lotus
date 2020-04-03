@@ -16,6 +16,7 @@ TODO:
 
 *	2020.4.3
 
+	+	svg-path-enumeration.ts: enumerate implemented.
 	+	svg-path-enumeration.ts: dumpSymbolTests added.
 
 
