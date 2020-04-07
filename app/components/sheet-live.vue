@@ -73,7 +73,6 @@
 
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import SheetScheduler from "../../inc/staffSvg/scheduler.ts";
-	import LogRecorder from "../../inc/logRecorder.ts";
 
 	import SheetToken from "./sheet-token.vue";
 
@@ -92,6 +91,7 @@
 			doc: Object,
 			hashTable: Object,
 			midi: Object,
+			sheetNotation: Object,
 		},
 
 
@@ -144,7 +144,7 @@
 
 
 		created () {
-			this.updateSheetNotation();
+			//this.updateSheetNotation();
 			this.updateMidiNotation();
 		},
 
@@ -186,17 +186,6 @@
 							});
 						}
 					}
-				}
-			},
-
-
-			updateSheetNotation () {
-				this.sheetNotation = null;
-				if (this.doc) {
-					const logger = new LogRecorder({enabled: true});
-					this.sheetNotation = StaffNotation.parseNotationFromSheetDocument(this.doc, {logger});
-
-					console.log("sheet notation parsed:", logger.toJSON());
 				}
 			},
 
@@ -250,7 +239,7 @@
 
 
 		watch: {
-			doc: "updateSheetNotation",
+			//doc: "updateSheetNotation",
 			midi: "updateMidiNotation",
 
 

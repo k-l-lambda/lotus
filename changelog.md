@@ -15,6 +15,8 @@ TODO:
 
 *	2020.4.7
 
+	+	sheet-live.vue: parse sheet notation outside.
+
 	+	staffSvg: added slur points parsing.
 
 

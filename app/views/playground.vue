@@ -56,6 +56,7 @@
 					<SheetSimple v-if="svgDocuments && !tokenizeStaff" :documents="svgDocuments" />
 					<SheetLive v-if="tokenizeStaff && sheetDocument" ref="sheet"
 						:doc="sheetDocument"
+						:sheetNotation="sheetNotation"
 						:hashTable="svgHashTable"
 						:midi="midi"
 						:midiPlayer.sync="midiPlayer"
@@ -80,6 +81,8 @@
 	import StaffToken from "../../inc/staffSvg/staffToken.ts";
 	import SheetDocument from "../../inc/staffSvg/sheetDocument.ts";
 	import * as LilyParser from "../../inc/lilyParser.ts";
+	import LogRecorder from "../../inc/logRecorder.ts";
+	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 
 	import {MidiRoll} from "@k-l-lambda/web-widgets";
 	import SourceEditor from "../components/source-editor.vue";
@@ -131,6 +134,7 @@
 				autoEngrave: true,
 				tokenizeStaff: true,
 				sheetDocument: null,
+				sheetNotation: null,
 				svgHashTable: null,
 				midi: null,
 				chromaticSymbols: false,
@@ -241,6 +245,7 @@
 
 			clearSheet () {
 				this.sheetDocument = null;
+				this.sheetNotation = null;
 				this.svgHashTable = null;
 				this.midi = null;
 				this.midiPlayer = null;
@@ -293,10 +298,8 @@
 				});
 				if (!response.ok) {
 					console.warn("Engraving failed:", await response.text());
-					this.svgDocuments = null;
-					this.sheetDocument = null;
-					this.midi = null;
-					this.midiPlayer = null;
+
+					this.clearSheet();
 				}
 				else {
 					const result = await response.json();
@@ -310,6 +313,8 @@
 						this.sheetDocument = recoverJSON(result.doc, {StaffToken, SheetDocument});
 						this.svgHashTable = result.hashTable;
 						this.midi = result.midi;
+
+						this.updateSheetNotation();
 					}
 					else
 						this.clearSheet();
@@ -381,6 +386,17 @@
 
 				const ly = await response.text();
 				console.log("ly:", ly);
+			},
+
+
+			updateSheetNotation () {
+				this.sheetNotation = null;
+				if (this.sheetDocument) {
+					const logger = new LogRecorder({enabled: true});
+					this.sheetNotation = StaffNotation.parseNotationFromSheetDocument(this.sheetDocument, {logger});
+
+					console.log("sheet notation parsed:", logger.toJSON());
+				}
 			},
 		},
 
