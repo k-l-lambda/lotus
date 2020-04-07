@@ -212,7 +212,7 @@ const parseTokenRow = (tokens, logger) => {
 		top,
 		bottom,
 		tokens: localTokens.filter(isRowToken),
-		staves: staffYs.map((y, i) => staffTokens[i] && parseTokenStaff(staffTokens[i], y - rowY)),
+		staves: staffYs.map((y, i) => staffTokens[i] && parseTokenStaff(staffTokens[i], y - rowY, logger)),
 	};
 };
 
@@ -220,9 +220,15 @@ const parseTokenRow = (tokens, logger) => {
 const isStaffToken = token => token.is("STAFF_LINE") || token.is("MEASURE_SEPARATOR");
 
 
-const parseTokenStaff = (tokens, y) => {
+const parseTokenStaff = (tokens, y, logger) => {
 	const localTokens = tokens.map(token => token.translate({y}));
 	const notes = localTokens.filter(token => token.is("NOTE"));
+
+	// mark tied notes
+	const ties = tokens.filter(token => token.is("SLUR") && token.source === "~");
+	logger.append("parseTokenStaff.ties", ties);
+
+	// TODO:
 
 	const separatorXsRaw = localTokens
 		.filter(token => token.is("MEASURE_SEPARATOR"))
@@ -264,8 +270,16 @@ const parseTokenMeasure = (tokens, endX) => {
 };
 
 
-const organizeTokens = (tokens, {logger, viewBox, width, height}: any = {}) => {
+const organizeTokens = (tokens, ly: string, {logger, viewBox, width, height}: any = {}) => {
 	//logger.append("organizeTokens", tokens);
+
+	// added source on tokens
+	const lyLines = ly.split("\n");
+	tokens.forEach(token => {
+		const pos = token.sourcePosition;
+		if (pos)
+			token.source = lyLines[pos.line - 1].substr(pos.start, pos.end - pos.start);
+	});
 
 	const meaningfulTokens = tokens.filter(token => !token.is("NULL"));
 	const rowTokens = tokensRowsSplit(meaningfulTokens, logger);

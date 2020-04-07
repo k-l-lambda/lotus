@@ -15,6 +15,7 @@ export default class StaffToken {
 	href: String;
 	start?: object;
 	target?: object;
+	source?: string;
 
 
 	constructor (data) {
@@ -29,7 +30,7 @@ export default class StaffToken {
 	toJSON () {
 		return {
 			__prototype: "StaffToken",
-			..._.pick(this, ["x", "y", "rx", "ry", "sw", "start", "target", "symbol", "hash", "href"]),
+			..._.pick(this, ["x", "y", "rx", "ry", "sw", "start", "target", "source", "symbol", "hash", "href"]),
 		};
 	}
 
@@ -129,5 +130,15 @@ export default class StaffToken {
 		// TODO: maybe some single value can be greater than 10?
 
 		return null;
+	}
+
+
+	get sourcePosition () {
+		if (!this.href)
+			return null;
+
+		const [_, line, start, end] = this.href.match(/(\d+):(\d+):(\d+)/);
+
+		return {line, start, end};
 	}
 };

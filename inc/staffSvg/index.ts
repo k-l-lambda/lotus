@@ -6,7 +6,7 @@ import LogRecorder from "../logRecorder";
 
 
 
-const parseSvgPage = (dom, {logger = new LogRecorder(), attributes, ...options}) => {
+const parseSvgPage = (dom, ly, {logger = new LogRecorder(), attributes, ...options}) => {
 	const elem = svgToElements(dom, {logger, ...options});
 	//console.log("elem:", elem);
 	const {tokens, hashTable} = tokenizeElements(elem.children, attributes, logger);
@@ -15,7 +15,7 @@ const parseSvgPage = (dom, {logger = new LogRecorder(), attributes, ...options})
 	const viewBox = {x, y, width, height};
 
 	return {
-		structure: organizeTokens(tokens, {logger, viewBox, width: elem.width, height: elem.height}),
+		structure: organizeTokens(tokens, ly, {logger, viewBox, width: elem.width, height: elem.height}),
 		hashTable,
 	};
 };

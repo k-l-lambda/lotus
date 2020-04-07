@@ -58,7 +58,7 @@ export default {
 
 				const logger = new LogRecorder({enabled: log});
 
-				const pages = result.svgs.map(svg => staffSvg.parseSvgPage(svg, {DOMParser, logger, attributes}));
+				const pages = result.svgs.map(svg => staffSvg.parseSvgPage(svg, source, {DOMParser, logger, attributes}));
 				const doc = {
 					__prototype: "SheetDocument",
 					pages: pages.map(page => page.structure),
