@@ -1,8 +1,8 @@
 
 TODO:
+	refined sheet-token classes.
+	tied note ids
 	staffSvg
-		same note slur issue
-			~ in ly
 		tempo note head symbol
 	source editor
 		cursor position

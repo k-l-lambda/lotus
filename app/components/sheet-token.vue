@@ -20,7 +20,7 @@
 
 		computed: {
 			isNotehead () {
-				return this.token && this.token.is("NOTEHEAD");
+				return this.token && this.token.is("NOTEHEAD") && !this.token.tied;
 			},
 
 

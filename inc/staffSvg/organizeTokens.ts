@@ -242,13 +242,13 @@ const parseTokenStaff = (tokens, y, logger) => {
 
 		const nearest = notes.reduce((best, note) => {
 			const dx = note.x - position.x;
-			const dy = note.y - position.y;
+			const dy = (note.y - position.y) * 2;
 			const distance = Math.sqrt(dx * dx + dy * dy);
 			if (distance < best.distance)
 				return {distance, note};
 
 			return best;
-		}, {distance: 2});
+		}, {distance: 8});
 		if (nearest.note) {
 			nearest.note.tied = true;
 			logger.append("parseTokenStaff.tiedNote", {nearest, tie});
