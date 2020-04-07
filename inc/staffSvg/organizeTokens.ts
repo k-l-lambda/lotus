@@ -165,10 +165,10 @@ const parseTokenRow = (tokens, logger) => {
 	const rowY = staffYs[0] - 2;
 	const rowX = staffLines[rowY] && staffLines[rowY].rx;
 
-	const symbolYs = tokens.filter(token => token.symbol).map(token => token.ry);
+	const noteYs = tokens.filter(token => token.is("NOTE")).map(token => token.ry).concat(Object.keys(staffLines).map(Number));
 
-	const top = Math.min(...symbolYs) - rowY;
-	const bottom = Math.max(...symbolYs) - rowY;
+	const top = Math.min(...noteYs) - rowY;
+	const bottom = Math.max(...noteYs) - rowY;
 
 	//console.log("additionalLinesYs:", additionalLinesYs);
 	const splitters = [];

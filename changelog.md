@@ -1,7 +1,5 @@
 
 TODO:
-	refined sheet-token classes.
-	tied note ids
 	staffSvg
 		tempo note head symbol
 	source editor
@@ -11,6 +9,8 @@ TODO:
 
 
 *	2020.4.7
+
+	+	organizeToken.ts: refined row top & bottom.
 
 	+	staffNotations.ts: append tied note id in sheet notation.
 
