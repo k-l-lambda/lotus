@@ -12,6 +12,8 @@ TODO:
 
 *	2020.4.7
 
+	+	staffNotations.ts: append tied note id in sheet notation.
+
 	+	sheet-live.vue: refined token classes.
 
 	+	staffSvg: mark tied notes.

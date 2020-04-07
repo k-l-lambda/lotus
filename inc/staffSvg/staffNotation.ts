@@ -154,18 +154,17 @@ const parseNotationInMeasure = (context : StaffContext, measure) => {
 				context.setBeatsPerMeasure(token.timeSignatureValue);
 		}
 		else if (token.is("NOTEHEAD")) {
-			if (!token.tied) {
-				const note = {
-					x: token.rx - measure.noteRange.begin,
-					y: token.ry,
-					pitch: context.yToPitch(token.ry),
-					id: token.href,
-				};
-				notes.push(note);
+			const note = {
+				x: token.rx - measure.noteRange.begin,
+				y: token.ry,
+				pitch: context.yToPitch(token.ry),
+				id: token.href,
+				tied: token.tied,
+			};
+			notes.push(note);
 
-				xs[note.x] = xs[note.x] || new Set();
-				xs[note.x].add(token.ry);
-			}
+			xs[note.x] = xs[note.x] || new Set();
+			xs[note.x].add(token.ry);
 		}
 	}
 
@@ -187,6 +186,7 @@ const parseNotationInMeasure = (context : StaffContext, measure) => {
 		context.track.appendNote(duration * note.x / (measure.noteRange.end - measure.noteRange.begin), {
 			pitch: note.pitch,
 			id: note.id,
+			tied: note.tied,
 		});
 	});
 
@@ -236,16 +236,27 @@ const parseNotationFromSheetDocument = (document, {logger}) => {
 const matchNotations = async (midiNotation, svgNotation) => {
 	// map svgNotation without duplicated ones
 	const noteMap = {};
+	const notePMap = {};
 	const svgNotes = svgNotation.notes.reduce((notes, note) => {
-		const index = `${note.time}-${note.pitch}`;
-		if (noteMap[index]) {
-			noteMap[index].ids = noteMap[index].ids || [noteMap[index].id];
-			noteMap[index].ids.push(note.id);
+		if (note.tied) {
+			if (notePMap[note.pitch]) {
+				const tieNote = notePMap[note.pitch];
+				tieNote.ids = tieNote.ids || [tieNote.id];
+				tieNote.ids.push(note.id);
+			}
 		}
 		else {
-			const sn = {start: note.time * 16, pitch: note.pitch, id: note.id};
-			noteMap[index] = sn;
-			notes.push(sn);
+			const index = `${note.time}-${note.pitch}`;
+			if (noteMap[index]) {
+				noteMap[index].ids = noteMap[index].ids || [noteMap[index].id];
+				noteMap[index].ids.push(note.id);
+			}
+			else {
+				const sn = {start: note.time * 16, pitch: note.pitch, id: note.id};
+				noteMap[index] = sn;
+				notePMap[sn.pitch] = sn;
+				notes.push(sn);
+			}
 		}
 
 		return notes;
