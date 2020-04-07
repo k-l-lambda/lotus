@@ -12,6 +12,8 @@ TODO:
 
 *	2020.4.7
 
+	+	sheet-live.vue: refined token classes.
+
 	+	staffSvg: mark tied notes.
 
 	+	staffToken.ts: added source property.

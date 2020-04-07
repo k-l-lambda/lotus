@@ -59,7 +59,13 @@
 						<g class="mark">
 							<text :x="measure.headX">{{i4}}</text>
 						</g>
-						<SheetToken v-for="(token, i5) of measure.tokens" :key="i5" :token="token" :matchedIds="matchedIds" />
+						<SheetToken v-for="(token, i5) of measure.tokens" :key="i5" :token="token"
+							:classes="{
+								matched: matchedIds && matchedIds.has(token.href),
+								mismatched: token.is('NOTEHEAD') && matchedIds && !matchedIds.has(token.href),
+								tied: token.tied,
+							}"
+						/>
 					</g>
 				</g>
 			</g>

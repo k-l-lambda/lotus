@@ -1,7 +1,7 @@
 <template>
 	<g class="token"
 		:transform="`translate(${token.x}, ${token.y})`"
-		:class="{on: token.on, matched, dismatched}"
+		:class="{on: token.on, ...classes}"
 	>
 		<use :class="token.classes" :xlink:href="`#sign-${token.hash}`" />
 	</g>
@@ -14,24 +14,7 @@
 
 		props: {
 			token: Object,
-			matchedIds: Set,
-		},
-
-
-		computed: {
-			isNotehead () {
-				return this.token && this.token.is("NOTEHEAD") && !this.token.tied;
-			},
-
-
-			matched () {
-				return this.isNotehead && this.matchedIds && this.matchedIds.has(this.token.href);
-			},
-
-
-			dismatched () {
-				return this.isNotehead && this.matchedIds && !this.matchedIds.has(this.token.href);
-			},
+			classes: Object,
 		},
 	};
 </script>

@@ -527,9 +527,14 @@
 
 				&.inspecting
 				{
-					.token.dismatched use
+					.token.mismatched use
 					{
 						fill: red;
+					}
+
+					.token.tied use
+					{
+						fill: goldenrod;
 					}
 				}
 			}
