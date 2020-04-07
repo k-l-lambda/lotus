@@ -154,16 +154,18 @@ const parseNotationInMeasure = (context : StaffContext, measure) => {
 				context.setBeatsPerMeasure(token.timeSignatureValue);
 		}
 		else if (token.is("NOTEHEAD")) {
-			const note = {
-				x: token.rx - measure.noteRange.begin,
-				y: token.ry,
-				pitch: context.yToPitch(token.ry),
-				id: token.href,
-			};
-			notes.push(note);
+			if (!token.tied) {
+				const note = {
+					x: token.rx - measure.noteRange.begin,
+					y: token.ry,
+					pitch: context.yToPitch(token.ry),
+					id: token.href,
+				};
+				notes.push(note);
 
-			xs[note.x] = xs[note.x] || new Set();
-			xs[note.x].add(token.ry);
+				xs[note.x] = xs[note.x] || new Set();
+				xs[note.x].add(token.ry);
+			}
 		}
 	}
 

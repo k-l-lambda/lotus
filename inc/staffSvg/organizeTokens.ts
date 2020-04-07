@@ -225,10 +225,35 @@ const parseTokenStaff = (tokens, y, logger) => {
 	const notes = localTokens.filter(token => token.is("NOTE"));
 
 	// mark tied notes
-	const ties = tokens.filter(token => token.is("SLUR") && token.source === "~");
+	const ties = localTokens.filter(token => token.is("SLUR") && token.source === "~");
 	logger.append("parseTokenStaff.ties", ties);
 
-	// TODO:
+	ties.forEach(tie => {
+		let offsetY = 0;
+		if (tie.is("UP"))
+			offsetY = 0.5;
+		if (tie.is("DOWN"))
+			offsetY = -0.5;
+
+		const position = {
+			x: tie.x + tie.target.x - 0.3,
+			y: tie.y + tie.target.y + offsetY,
+		};
+
+		const nearest = notes.reduce((best, note) => {
+			const dx = note.x - position.x;
+			const dy = note.y - position.y;
+			const distance = Math.sqrt(dx * dx + dy * dy);
+			if (distance < best.distance)
+				return {distance, note};
+
+			return best;
+		}, {distance: 2});
+		if (nearest.note) {
+			nearest.note.tied = true;
+			logger.append("parseTokenStaff.tiedNote", {nearest, tie});
+		}
+	});
 
 	const separatorXsRaw = localTokens
 		.filter(token => token.is("MEASURE_SEPARATOR"))

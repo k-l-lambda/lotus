@@ -12,6 +12,8 @@ TODO:
 
 *	2020.4.7
 
+	+	staffSvg: mark tied notes.
+
 	+	staffToken.ts: added source property.
 
 	+	sheet-live.vue: parse sheet notation outside.

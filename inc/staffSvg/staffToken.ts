@@ -16,6 +16,7 @@ export default class StaffToken {
 	start?: object;
 	target?: object;
 	source?: string;
+	tied?: boolean;
 
 
 	constructor (data) {
@@ -30,7 +31,7 @@ export default class StaffToken {
 	toJSON () {
 		return {
 			__prototype: "StaffToken",
-			..._.pick(this, ["x", "y", "rx", "ry", "sw", "start", "target", "source", "symbol", "hash", "href"]),
+			..._.pick(this, ["x", "y", "rx", "ry", "sw", "start", "target", "source", "tied", "symbol", "hash", "href"]),
 		};
 	}
 
