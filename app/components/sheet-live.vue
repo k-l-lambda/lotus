@@ -52,6 +52,7 @@
 					:transform="`translate(${staff.x}, ${staff.y})`"
 				>
 					<circle class="mark" />
+					<line class="mark" v-if="Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
 					<g>
 						<SheetToken v-for="(token, i5) of staff.tokens" :key="i5" :token="token" />
 					</g>

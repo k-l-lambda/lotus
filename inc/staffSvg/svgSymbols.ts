@@ -81,10 +81,6 @@ const symbolRules = [
 		"M-15 -537c0 -285 -111 -561 -111 -831c0 -147 36 -282 138 -390c3 -3 6 -9 6 -12c0 -9 -9 -18 -18 -18c-3 0 -9 3 -12 6c-138 147 -186 339 -186 540c0 291 114 570 114 846c0 144 -33 279 -135 387c-3 3 -3 6 -3 9s0 6 3 9c102 108 135 243 135 387		c0 276 -114 555 -114 846c0 201 48 393 186 540c3 3 9 6 12 6c9 0 18 -9 18 -18c0 -3 -3 -9 -6 -12c-102 -108 -138 -243 -138 -390c0 -270 111 -546 111 -831c0 -198 -45 -390 -180 -537c135 -147 180 -339 180 -537z",
 	].map(simplifyPath)),
 
-	pathFramesSymbol("SLUR",[
-		"M. -.C. -. . -. . -.C. -. . -. . -.z",
-		"M. .C. . . . . .C. . . . . .z",
-	]),
 	pathFramesSymbol("SLUR DOWN", [
 		"M1.5028 -0.8074C2.4307 0.0391 5.9413 0.0391 6.8692 -0.8074L6.8692 -0.8074C5.9413 -0.0896 2.4307 -0.0896 1.5028 -0.8074z",
 	].map(simplifyPath)),
@@ -92,6 +88,10 @@ const symbolRules = [
 		"M1.6331 0.7750C2.7048 -0.1232 7.7198 -0.1232 8.7915 0.7750L8.7915 0.7750C7.7198 0.0055 2.7048 0.0055 1.6331 0.7750z",
 		"M1.2172 -3.2497C3.8915 -5.3756 29.8558 -8.0703 32.9096 -6.5389L32.9096 -6.5389C29.8641 -7.9902 3.8998 -5.2954 1.2172 -3.2497z",
 	].map(simplifyPath)),
+	pathFramesSymbol("SLUR",[
+		"M. -.C. -. . -. . -.C. -. . -. . -.z",
+		"M. .C. . . . . .C. . . . . .z",
+	]),
 
 	conditionSymbol("STAVES_CONNECTION",
 		elem => elem.identity.type === "rect" && elem.sw === 0.16 && elem.identity.height >= 10,
@@ -151,11 +151,14 @@ const postSymbolRules = [
 	postConditionSymbol("NUMBER", elem => elemScale(elem, 0.004), "TIME_SIG"),
 
 	postSymbolProcess("SLUR", (elem, result) => {
-		const [_, sy, ex, ey] = elem.identity.d.match(/M[\d.-]+ ([\d.-]+).*L([\d.-]+) ([\d.-]+)/);
-		result.start = {x: 0, y: Number(sy)};
-		result.target = {x: Number(ex), y: Number(ey)};
+		const captures = elem.identity.d.match(/M[\d.-]+ ([\d.-]+).*L([\d.-]+) ([\d.-]+)/);
+		if (captures) {
+			const [_, sy, ex, ey] = captures;
+			result.start = {x: 0, y: Number(sy)};
+			result.target = {x: Number(ex), y: Number(ey)};
 
-		//console.log("slur:", result);
+			//console.log("slur:", result);
+		}
 	}),
 ];
 

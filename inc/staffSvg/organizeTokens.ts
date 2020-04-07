@@ -212,7 +212,7 @@ const parseTokenRow = (tokens, logger) => {
 		top,
 		bottom,
 		tokens: localTokens.filter(isRowToken),
-		staves: staffYs.map((y, i) => staffTokens[i] && parseTokenStaff(staffTokens[i], y - rowY, logger)),
+		staves: staffYs.map((y, i) => staffTokens[i] && parseTokenStaff(staffTokens[i], y - rowY, splitters[i] - (y - rowY), logger)),
 	};
 };
 
@@ -220,7 +220,7 @@ const parseTokenRow = (tokens, logger) => {
 const isStaffToken = token => token.is("STAFF_LINE") || token.is("MEASURE_SEPARATOR");
 
 
-const parseTokenStaff = (tokens, y, logger) => {
+const parseTokenStaff = (tokens, y, top, logger) => {
 	const localTokens = tokens.map(token => token.translate({y}));
 	const notes = localTokens.filter(token => token.is("NOTE"));
 
@@ -274,6 +274,7 @@ const parseTokenStaff = (tokens, y, logger) => {
 
 	return {
 		x: 0, y,
+		top,
 		tokens: localTokens.filter(isStaffToken),
 		measures,
 	};
