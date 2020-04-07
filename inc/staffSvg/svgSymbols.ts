@@ -133,6 +133,13 @@ const symbolRules = [
 pathSymbols.forEach(({symbol, ds}) => symbolRules.push(pathFramesSymbol(symbol, ds)));
 
 
+const postSymbolProcess = (symbol, process) => (elem, result) => {
+	const symbols = result.symbol && result.symbol.split(" ");
+	if (symbols && symbols.includes(symbol))
+		process(elem, result);
+};
+
+
 const postConditionSymbol = (symbol, condition, addSymbol) => (elem, result) => {
 	const symbols = result.symbol && result.symbol.split(" ");
 	if (symbols && symbols.includes(symbol) && condition(elem))
@@ -142,6 +149,14 @@ const postConditionSymbol = (symbol, condition, addSymbol) => (elem, result) => 
 
 const postSymbolRules = [
 	postConditionSymbol("NUMBER", elem => elemScale(elem, 0.004), "TIME_SIG"),
+
+	postSymbolProcess("SLUR", (elem, result) => {
+		const [_, sy, ex, ey] = elem.identity.d.match(/M[\d.-]+ ([\d.-]+).*L([\d.-]+) ([\d.-]+)/);
+		result.start = {x: 0, y: Number(sy)};
+		result.target = {x: Number(ex), y: Number(ey)};
+
+		//console.log("slur:", result);
+	}),
 ];
 
 

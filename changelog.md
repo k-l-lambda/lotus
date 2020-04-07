@@ -2,11 +2,20 @@
 TODO:
 	staffSvg
 		same note slur issue
+			~ in ly
+			parse slur's stride vector, from start to end
+				M (0.8514 -0.7750) C1.1616 -0.3687 1.6795 -0.3687 1.9897 -0.7750L (1.9897 -0.7750) C1.6795 -0.4975 1.1616 -0.4975 0.8514 -0.7750z
+			parseNotationInMeasure
 		tempo note head symbol
 	source editor
 		cursor position
 		line numbers
 
+
+
+*	2020.4.7
+
+	+	staffSvg: added slur points parsing.
 
 
 *	2020.4.3
