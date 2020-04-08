@@ -1,5 +1,6 @@
 
 TODO:
+	parse measure ticks from ly
 	staffSvg
 		tempo note head symbol
 	source editor
@@ -9,6 +10,8 @@ TODO:
 
 
 *	2020.4.8
+
+	+	playground.vue: score.json exporting implemented.
 
 	+	app/components/sheet-signs.vue created.
 

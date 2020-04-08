@@ -16,7 +16,8 @@
 					<BoolStoreInput v-model="autoEngrave" sessionKey="lotus-autoEngrave" />auto
 				</span>
 				<span class="dirty-badge" :class="{dirty: engraverDirty}"></span>
-				<button @click="engrave" :class="{working: engraving}" title="engrave">&#x1f3bc;</button>
+				<button @click="engrave" :class="{working: engraving}" style="zoom: 160%" title="engrave">&#x1f3bc;</button>
+				<button :disabled="!sheetDocument" @click="exportScore">.json</button>
 			</fieldset>
 			<fieldset>
 				<BoolStoreInput v-show="false" v-model="tokenizeStaff" sessionKey="lotus-tokenizeStaff" />
@@ -75,7 +76,7 @@
 	import {MIDI, MidiAudio} from "@k-l-lambda/web-widgets";
 	import {sliceMidi} from "@k-l-lambda/web-widgets/source/inc/MidiUtils.js";
 
-	import "../utils.js";
+	import {downloadUrl} from "../utils.js";
 	import {mutexDelay} from "../delay.js";
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
 	import StaffToken from "../../inc/staffSvg/staffToken.ts";
@@ -399,6 +400,16 @@
 
 					console.log("sheet notation parsed:", logger.toJSON());
 				}
+			},
+
+
+			exportScore () {
+				const data = {
+					doc: this.sheetDocument,
+					midi: this.midi,
+				};
+				const blob = new Blob([JSON.stringify(data)]);
+				downloadUrl(URL.createObjectURL(blob), "score.json");
 			},
 		},
 
