@@ -181,6 +181,25 @@ const parseTokenRow = (tokens, logger) => {
 		.filter(token => !isRowToken(token))
 		.forEach(appendToken);
 
+	// measure ranges
+	const notes = localTokens.filter(token => token.is("NOTE"));
+	const separatorXsRaw = Array.from(new Set(localTokens
+		.filter(token => token.is("MEASURE_SEPARATOR"))
+		.map(token => token.x))).sort((x1: number, x2: number) => x1 - x2);
+
+	const measureRanges = separatorXsRaw.map((x, i) => {
+		const left = i > 0 ? separatorXsRaw[i - 1] : -Infinity;
+
+		return {
+			x,
+			notes: notes.filter(note => note.x > left && note.x < x),
+		};
+	}).filter(({notes}) => notes.length).map(({x, notes}) => ({
+		headX: notes[0].x - 3,
+		noteRange: {begin: notes[0].x, end: x},
+	}));
+	logger.append("parseTokenRow.measureRanges", measureRanges);
+
 	return {
 		//staffYs,
 		x: rowX,
@@ -188,7 +207,13 @@ const parseTokenRow = (tokens, logger) => {
 		top,
 		bottom,
 		tokens: localTokens.filter(isRowToken),
-		staves: staffYs.map((y, i) => staffTokens[i] && parseTokenStaff(staffTokens[i], y - rowY, splitters[i] - (y - rowY), logger)),
+		staves: staffYs.map((y, i) => staffTokens[i] && parseTokenStaff({
+			tokens: staffTokens[i],
+			y: y - rowY,
+			top: splitters[i] - (y - rowY),
+			measureRanges,
+			logger,
+		})),
 	};
 };
 
@@ -196,9 +221,10 @@ const parseTokenRow = (tokens, logger) => {
 const isStaffToken = token => token.is("STAFF_LINE") || token.is("MEASURE_SEPARATOR");
 
 
-const parseTokenStaff = (tokens, y, top, logger) => {
+const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 	const localTokens = tokens.map(token => token.translate({y}));
 	const notes = localTokens.filter(token => token.is("NOTE"));
+	logger.append("parseTokenStaff.localTokens", localTokens);
 
 	// mark tied notes
 	const ties = localTokens.filter(token => token.is("SLUR") && token.source === "~");
@@ -231,7 +257,7 @@ const parseTokenStaff = (tokens, y, top, logger) => {
 		}
 	});
 
-	const separatorXsRaw = localTokens
+	/*const separatorXsRaw = localTokens
 		.filter(token => token.is("MEASURE_SEPARATOR"))
 		.map(token => token.x);
 
@@ -246,7 +272,18 @@ const parseTokenStaff = (tokens, y, top, logger) => {
 		const left = i > 0 ? separatorXs[i - 1] : -Infinity;
 
 		return localTokens.filter(token => !isStaffToken(token) && token.x > left && token.x < x);
-	}).map((tokens, i) => parseTokenMeasure(tokens, separatorXs[i]));
+	}).map((tokens, i) => parseTokenMeasure(tokens, separatorXs[i]));*/
+	const measures = measureRanges.map((range, i) => {
+		const left = i > 0 ? measureRanges[i - 1].noteRange.end : -Infinity;
+
+		const tokens = localTokens.filter(token => !isStaffToken(token) && token.x > left && token.x < range.noteRange.end);
+
+		return {
+			tokens,
+			noteRange: range.noteRange,
+			headX: range.headX,
+		};
+	});
 
 	return {
 		x: 0, y,
@@ -257,7 +294,7 @@ const parseTokenStaff = (tokens, y, top, logger) => {
 };
 
 
-const parseTokenMeasure = (tokens, endX) => {
+/*const parseTokenMeasure = (tokens, endX) => {
 	const notes = tokens.filter(token => token.is("NOTE"));
 
 	//const head = tokens.filter(token => token.x < notes[0].x - 3);
@@ -269,7 +306,7 @@ const parseTokenMeasure = (tokens, endX) => {
 		noteRange,
 		headX,
 	};
-};
+};*/
 
 
 const organizeTokens = (tokens, ly: string, {logger, viewBox, width, height}: any = {}) => {
