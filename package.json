@@ -12,7 +12,7 @@
     "ts-dev": "ts-node-dev --project ./tsconfig.node.json",
     "ts-dev:inspect": "ts-node-dev --project ./tsconfig.node.json --inspect --"
   },
-  "author": "K.L. <k.l.lambda@gmail.com> (https://k-l-lambda.github.io)",
+  "author": "K.L.",
   "license": "ISC",
   "devDependencies": {
     "@k-l-lambda/web-widgets": "^0.3.13",
