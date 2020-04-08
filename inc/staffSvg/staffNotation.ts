@@ -1,6 +1,8 @@
 
 import Matcher from "@k-l-lambda/web-widgets/source/inc/Matcher";
 
+import LogRecorder from "../logRecorder";
+
 
 
 const TICKS_PER_BEAT = 480;
@@ -29,11 +31,6 @@ class NotationTrack {
 			...data,
 		});
 	}
-};
-
-
-declare class LogRecorder {
-	append (desc: string, data?: any);
 };
 
 
@@ -125,7 +122,7 @@ class StaffContext {
 };
 
 
-const parseNotationInMeasure = (context : StaffContext, measure) => {
+const parseNotationInMeasure = (context: StaffContext, measure) => {
 	//console.log("parseNotationInMeasure:", measure);
 
 	context.resetAlters();
@@ -205,7 +202,7 @@ const parseNotationInStaff = (context : StaffContext, staff) => {
 };
 
 
-const parseNotationFromSheetDocument = (document, {logger}) => {
+const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} = {}) => {
 	if (!document.pages[0].rows[0].staves.length)
 		return null;
 

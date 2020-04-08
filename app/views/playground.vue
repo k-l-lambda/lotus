@@ -407,6 +407,7 @@
 				const data = {
 					doc: this.sheetDocument,
 					midi: this.midi,
+					hashTable: this.svgHashTable,
 				};
 				const blob = new Blob([JSON.stringify(data)]);
 				downloadUrl(URL.createObjectURL(blob), "score.json");

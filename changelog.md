@@ -11,6 +11,8 @@ TODO:
 
 *	2020.4.8
 
+	+	profiler.vue: live sheet & sheet signs added.
+
 	+	index.vue: multiple views supporting added.
 
 	+	playground.vue: score.json exporting implemented.
