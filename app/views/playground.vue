@@ -472,28 +472,6 @@
 		height: 100%;
 		overflow: hidden;
 
-		& > header
-		{
-			padding: 1em;
-			text-align: center;
-			background-color: #fffa;
-
-			button
-			{
-				font-size: 24px;
-			}
-
-			.dirty-badge
-			{
-				width: 1em;
-
-				&.dirty::before
-				{
-					content: "*";
-				}
-			}
-		}
-
 		& > main
 		{
 			flex: 1 1 0;

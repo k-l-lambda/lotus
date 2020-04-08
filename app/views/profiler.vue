@@ -120,4 +120,11 @@
 
 <style lang="scss">
 	@import "../css/common.scss";
+
+
+	main
+	{
+		width: 100%;
+		overflow: auto;
+	}
 </style>
