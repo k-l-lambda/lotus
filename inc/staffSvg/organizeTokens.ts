@@ -261,7 +261,8 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 	const measures = measureRanges.map((range, i) => {
 		const left = i > 0 ? measureRanges[i - 1].noteRange.end : -Infinity;
 
-		const tokens = localTokens.filter(token => !isStaffToken(token) && token.x > left && token.x < range.noteRange.end);
+		const tokens = localTokens.filter(token => !isStaffToken(token) && token.x > left
+			&& (token.x < range.noteRange.end || i === measureRanges.length - 1));
 
 		return {
 			tokens,

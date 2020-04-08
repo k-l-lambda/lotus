@@ -111,7 +111,7 @@ const symbolRules = [
 
 	conditionSymbol("OCTAVE A", elem => elem.identity.type === "text" && /8va/.test(elem.identity.text)),
 	conditionSymbol("OCTAVE B", elem => elem.identity.type === "text" && /8vb/.test(elem.identity.text)),
-	identitySymbol("OCTAVE CLOSE", {
+	identitySymbol("OCTAVE CLOSE LINE", {
 		type: "line",
 		width: 0,
 		height: 1.25,

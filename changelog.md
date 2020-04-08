@@ -1,5 +1,7 @@
 
 TODO:
+	options to control layout
+	SVG static elements baking
 	parse measure ticks from ly
 	staffSvg
 		tempo note head symbol
