@@ -2,6 +2,8 @@
 	<div>
 		<header class="controls">
 			<input type="file" @change="onScoreChange" />
+			<button @click="homePlayer">&#x23ee;</button>
+			<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
 		</header>
 		<main>
 			<SheetSigns v-if="svgHashTable" v-show="false" :hashTable="svgHashTable" />
@@ -74,8 +76,24 @@
 			},
 
 
-			onMidi (data, timestamp) {
-				console.log("onMidi:", data, timestamp);
+			onMidi (/*data, timestamp*/) {
+				//console.log("onMidi:", data, timestamp);
+			},
+
+
+			homePlayer () {
+				if (this.midiPlayer)
+					this.midiPlayer.turnCursor(0);
+			},
+
+
+			togglePlayer () {
+				if (this.midiPlayer) {
+					if (this.midiPlayer.isPlaying)
+						this.midiPlayer.pause();
+					else
+						this.midiPlayer.play();
+				}
 			},
 		},
 	};

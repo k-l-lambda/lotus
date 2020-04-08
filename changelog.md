@@ -11,6 +11,8 @@ TODO:
 
 *	2020.4.8
 
+	+	profiler.vue: added player controls.
+
 	+	profiler.vue: live sheet & sheet signs added.
 
 	+	index.vue: multiple views supporting added.
