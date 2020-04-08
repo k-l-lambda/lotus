@@ -45,7 +45,8 @@ class SheetDocument {
 	updateTokenIndex () {
 		this.rows.forEach((row, index) => {
 			row.index = index;
-			row.width = row.tokens.reduce((max, token) => Math.max(max, token.x), 0);
+			row.width = row.tokens.concat(...row.staves.map(staff => staff.tokens))
+				.reduce((max, token) => Math.max(max, token.x), 0);
 
 			row.staves = row.staves.filter(s => s);
 			row.staves.forEach(staff =>

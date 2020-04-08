@@ -8,6 +8,11 @@ TODO:
 
 
 
+*	2020.4.8
+
+	+	staffSvg: row splitting for single staff implemented.
+
+
 *	2020.4.7
 
 	+	organizeToken.ts: refined row top & bottom.

@@ -23,23 +23,44 @@ const tokensRowsSplit = (tokens, logger) => {
 	let crossedCount = 0;
 
 	const connections = tokens.filter(token => token.is("STAVES_CONNECTION"));
-	connections.forEach((connection, i) => {
-		const start = Math.round(connection.y) - 1;
-		const end = Math.round(connection.y + connection.height) + 1;
+	if (!connections.length) {
+		// single line row, split by staff lines
+		const lines = tokens.filter(token => token.is("STAFF_LINE"));
+		lines.forEach(line => pageTile[Math.round(line.y)] = 0);
 
-		let index = i - crossedCount;
+		let index = -1;
+		let outStaff = true;
+		for (let y = 0; y < pageTile.length; ++y) {
+			const out = pageTile[y] < 0;
+			if (outStaff && !out)
+				++index;
 
-		for (let y = start; y <= end; ++y) {
-			if (pageTile[y] >= 0) {
-				index = pageTile[y];
-				++crossedCount;
-				break;
-			}
+			if (!out)
+				pageTile[y] = index;
+
+			outStaff = out;
 		}
+	}
+	else {
+		connections.forEach((connection, i) => {
+			const start = Math.round(connection.y) - 1;
+			const end = Math.round(connection.y + connection.height) + 1;
 
-		for (let y = start; y <= end; ++y) 
-			pageTile[y] = index;
-	});
+			let index = i - crossedCount;
+
+			for (let y = start; y <= end; ++y) {
+				if (pageTile[y] >= 0) {
+					index = pageTile[y];
+					++crossedCount;
+					break;
+				}
+			}
+
+			for (let y = start; y <= end; ++y) 
+				pageTile[y] = index;
+		});
+	}
+
 	logger.append("tokensRowsSplit.pageTile.0", [...pageTile]);
 
 	const addlineYs = tokens.filter(token => token.is("ADDITIONAL_LINE")).map(token => Math.round(token.y)).sort((y1, y2) => y1 - y2);
@@ -67,58 +88,12 @@ const tokensRowsSplit = (tokens, logger) => {
 
 	logger.append("tokensRowsSplit.pageTile.2", pageTile);
 
-	/*const linkedTokens = tokens
-		.filter(token => token.href && token.is("NOTE"))
-		.sort((t1, t2) => compareLinks(t1.href, t2.href));
-
-	const rows = [];
-
-	if (connections.length > 1) {
-		let row = 0;
-		let lastToken = null;
-		let lastTileIndex = 0;
-
-		logger.append("tokensRowsSplit.linkedTokens", {linkedTokensCount: linkedTokens.length});
-
-		for (const token of linkedTokens) {
-			const tileIndex = pageTile[Math.round(token.y)];
-			logger.append("tokensRowsSplit.token", {row, tileIndex, lastTileIndex, token});
-
-			if (lastToken) {
-				// detect next voice
-				if (token.y - lastToken.y < -4 && token.x - lastToken.x < -10) {
-					logger.append("tokensRowsSplit.nextVoice", {token, lastToken});
-					break;
-				}
-
-				// detect next row
-				if (token.href !== lastToken.href && tileIndex > lastTileIndex /*(
-					(token.y - lastToken.y > 24 && token.x - lastToken.x < -10)
-					|| (token.y - lastToken.y > 4 && token.x - lastToken.x < -20)
-				)*//*) {
-					//console.log("y plus:", token.y - lastToken.y);
-					++row;
-					lastTileIndex = Math.max(lastTileIndex, tileIndex);
-				}
-			}
-	
-			rows[row] = rows[row] || [];
-			rows[row].push(token);
-	
-			lastToken = token;
-		}
-	}
-
-	const rowBoundaries = rows.map(elems => Math.min(...elems.map(elem => elem.y)) - 2.5);*/
-
 	const rowBoundaries = pageTile.reduce((boundaries, index, y) => {
 		if (index >= boundaries.length)
 			boundaries.push(y);
 
 		return boundaries;
 	}, []);
-
-	// TODO: use linkedTokens when single staff
 
 	rowBoundaries[0] = -Infinity;
 	logger.append("tokensRowsSplit.rowBoundaries", rowBoundaries);
