@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<header class="controls">
+			<StoreInput v-show="false" v-model="sourceText" sessionKey="lotus-profilerSourceText" />
 			<input type="file" @change="onScoreChange" />
 			<button @click="homePlayer">&#x23ee;</button>
 			<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
@@ -27,6 +28,7 @@
 
 	import SheetLive from "../components/sheet-live.vue";
 	import SheetSigns from "../components/sheet-signs.vue";
+	import StoreInput from "../components/store-input.vue";
 
 
 
@@ -37,11 +39,13 @@
 		components: {
 			SheetLive,
 			SheetSigns,
+			StoreInput,
 		},
 
 
 		data () {
 			return {
+				sourceText: null,
 				sheetDocument: null,
 				sheetNotation: null,
 				svgHashTable: null,
@@ -60,8 +64,20 @@
 
 				switch (file.type) {
 				case "application/json":
-					const text = await file.readAs("Text");
-					const data = recoverJSON(text, {StaffToken, SheetDocument});
+					this.sourceText = await file.readAs("Text");
+
+					break;
+				}
+			},
+
+
+			loadSheet () {
+				this.sheetDocument = null;
+				this.svgHashTable = null;
+				this.midi = null;
+
+				if (this.sourceText) {
+					const data = recoverJSON(this.sourceText, {StaffToken, SheetDocument});
 					//console.log("data:", data);
 
 					this.sheetDocument = data.doc;
@@ -70,8 +86,6 @@
 
 					if (this.sheetDocument)
 						this.sheetNotation = StaffNotation.parseNotationFromSheetDocument(this.sheetDocument);
-
-					break;
 				}
 			},
 
@@ -95,6 +109,11 @@
 						this.midiPlayer.play();
 				}
 			},
+		},
+
+
+		watch: {
+			sourceText: "loadSheet",
 		},
 	};
 </script>

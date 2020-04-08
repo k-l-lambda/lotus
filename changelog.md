@@ -11,6 +11,8 @@ TODO:
 
 *	2020.4.8
 
+	+	profiler.vue: store source text.
+
 	+	sheet-live.vue: refined token status updating.
 
 	+	profiler.vue: added player controls.
