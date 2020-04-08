@@ -43,7 +43,7 @@ const tokensRowsSplit = (tokens, logger) => {
 	}
 	else {
 		connections.forEach((connection, i) => {
-			const start = Math.round(connection.y) - 1;
+			const start = Math.round(connection.y) - 2;
 			const end = Math.round(connection.y + connection.height) + 1;
 
 			let index = i - crossedCount;
@@ -64,6 +64,7 @@ const tokensRowsSplit = (tokens, logger) => {
 	logger.append("tokensRowsSplit.pageTile.0", [...pageTile]);
 
 	const addlineYs = tokens.filter(token => token.is("ADDITIONAL_LINE")).map(token => Math.round(token.y)).sort((y1, y2) => y1 - y2);
+	logger.append("tokensRowsSplit.addlineYs", addlineYs);
 	addlineYs.forEach(y => {
 		if (pageTile[y] >= 0)
 			pageTile[y + 1] = pageTile[y];
@@ -257,22 +258,6 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 		}
 	});
 
-	/*const separatorXsRaw = localTokens
-		.filter(token => token.is("MEASURE_SEPARATOR"))
-		.map(token => token.x);
-
-	const separatorXs = separatorXsRaw.filter((x, i) => {
-		const left = i > 0 ? separatorXsRaw[i - 1] : -Infinity;
-
-		return notes.filter(note => note.x > left && note.x < x).length > 0;
-	});
-	//console.log("separatorXs:", separatorXs, separatorXsRaw);
-
-	const measures = separatorXs.map((x, i) => {
-		const left = i > 0 ? separatorXs[i - 1] : -Infinity;
-
-		return localTokens.filter(token => !isStaffToken(token) && token.x > left && token.x < x);
-	}).map((tokens, i) => parseTokenMeasure(tokens, separatorXs[i]));*/
 	const measures = measureRanges.map((range, i) => {
 		const left = i > 0 ? measureRanges[i - 1].noteRange.end : -Infinity;
 
