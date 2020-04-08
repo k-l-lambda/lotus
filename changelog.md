@@ -11,6 +11,8 @@ TODO:
 
 *	2020.4.8
 
+	+	index.vue: multiple views supporting added.
+
 	+	playground.vue: score.json exporting implemented.
 
 	+	app/components/sheet-signs.vue created.
