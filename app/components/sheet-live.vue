@@ -1,36 +1,5 @@
 <template>
 	<div class="sheet live">
-		<svg class="sign-prefabs"
-			v-show="false"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<defs>
-				<g class="sign" v-for="sign of signs" :key="sign.id" :id="`sign-${sign.id}`"
-					:transform="sign.def.scale && `scale(${sign.def.scale.x}, ${sign.def.scale.y})`"
-				>
-					<path v-if="sign.def.type === 'path'" :d="sign.def.d" :stroke-width="sign.def['stroke-width']" />
-					<rect v-if="sign.def.type === 'rect'"
-						x="0" y="0"
-						:width="sign.def.width"
-						:height="sign.def.height"
-					/>
-					<line v-if="sign.def.type === 'line'"
-						x1="0" y1="0"
-						:x2="sign.def.width"
-						:y2="sign.def.height"
-						:stroke-width="sign.def['stroke-width']"
-						:stroke-dasharray="sign.def['stroke-dasharray']"
-					/>
-					<polygon v-if="sign.def.type === 'polygon'"
-						:points="sign.def.points"
-						:stroke-width="sign.def['stroke-width']"
-					/>
-					<text v-if="sign.def.type === 'text'" :font-size="sign.def['font-size']">
-						<tspan>{{sign.def.text}}</tspan>
-					</text>
-				</g>
-			</defs>
-		</svg>
 		<svg v-for="(page, i) of doc.pages" :key="i"
 			class="page"
 			xmlns="http://www.w3.org/2000/svg"
@@ -96,7 +65,6 @@
 
 		props: {
 			doc: Object,
-			hashTable: Object,
 			midi: Object,
 			sheetNotation: Object,
 		},
@@ -112,14 +80,6 @@
 
 
 		computed: {
-			signs () {
-				if (!this.hashTable)
-					return [];
-
-				return Object.entries(this.hashTable).map(([id, def]) => ({id, def}));
-			},
-
-
 			linkedTokens () {
 				if (!this.doc)
 					return null;
@@ -262,26 +222,6 @@
 	{
 		white-space: nowrap;
 		display: inline-block;
-
-		.sign 
-		{
-			line, polygon
-			{
-				stroke: inherit;
-			}
-
-			polygon, rect
-			{
-				fill: inherit;
-			}
-
-			path
-			{
-				stroke: inherit;
-				//stroke-width: inherit;
-				fill: inherit;
-			}
-		}
 
 		.page
 		{

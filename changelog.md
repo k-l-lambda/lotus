@@ -10,6 +10,8 @@ TODO:
 
 *	2020.4.8
 
+	+	app/components/sheet-signs.vue created.
+
 	+	organizeTokens.ts: separate measure ranges before staff parsing.
 
 	+	staffSvg: row splitting for single staff implemented.

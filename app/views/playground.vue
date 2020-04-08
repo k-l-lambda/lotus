@@ -54,10 +54,10 @@
 				/>
 				<div class="sheet-container">
 					<SheetSimple v-if="svgDocuments && !tokenizeStaff" :documents="svgDocuments" />
+					<SheetSigns v-if="svgHashTable" v-show="false" :hashTable="svgHashTable" />
 					<SheetLive v-if="tokenizeStaff && sheetDocument" ref="sheet"
 						:doc="sheetDocument"
 						:sheetNotation="sheetNotation"
-						:hashTable="svgHashTable"
 						:midi="midi"
 						:midiPlayer.sync="midiPlayer"
 						:matcherNotations.sync="matcherNotations"
@@ -88,6 +88,7 @@
 	import SourceEditor from "../components/source-editor.vue";
 	import SheetSimple from "../components/sheet-simple.vue";
 	import SheetLive from "../components/sheet-live.vue";
+	import SheetSigns from "../components/sheet-signs.vue";
 	import Loading from "../components/loading-dots.vue";
 	import StoreInput from "../components/store-input.vue";
 	import BoolStoreInput from "../components/bool-store-input.vue";
@@ -109,6 +110,7 @@
 			SourceEditor,
 			SheetSimple,
 			SheetLive,
+			SheetSigns,
 			Loading,
 			StoreInput,
 			BoolStoreInput,
