@@ -11,6 +11,8 @@ TODO:
 
 *	2020.4.8
 
+	+	sheet-live.vue: refined token status updating.
+
 	+	profiler.vue: added player controls.
 
 	+	profiler.vue: live sheet & sheet signs added.

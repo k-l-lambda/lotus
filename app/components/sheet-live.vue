@@ -90,7 +90,12 @@
 						row => row.staves.forEach(
 							staff => staff && staff.measures.forEach(
 								measure => measure.tokens.forEach(
-									token => !token.href || tokens.set(token.href, token))))));
+									token => {
+										if (token.href) {
+											Vue.set(token, "on", token.on || false);
+											tokens.set(token.href, token);
+										}
+									})))));
 
 				return tokens;
 			},
@@ -128,11 +133,11 @@
 
 						switch (data.subtype) {
 						case "noteOn":
-							tokens.forEach(token => token && Vue.set(token, "on", true));
+							tokens.forEach(token => token.on = true);
 
 							break;
 						case "noteOff":
-							tokens.forEach(token => token && Vue.set(token, "on", false));
+							tokens.forEach(token => token.on = false);
 
 							break;
 						}
