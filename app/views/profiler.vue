@@ -5,6 +5,8 @@
 			<input type="file" @change="onScoreChange" />
 			<button @click="homePlayer">&#x23ee;</button>
 			<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
+			<CheckButton content="cursor" v-model="showCursor" />
+			<CheckButton content="note highlight" v-model="noteHighlight" />
 		</header>
 		<main>
 			<SheetSigns v-if="svgHashTable" v-show="false" :hashTable="svgHashTable" />
@@ -13,6 +15,8 @@
 				:sheetNotation="sheetNotation"
 				:midi="midi"
 				:midiPlayer.sync="midiPlayer"
+				:showCursor="showCursor"
+				:noteHighlight="noteHighlight"
 				@midi="onMidi"
 			/>
 		</main>
@@ -29,6 +33,7 @@
 	import SheetLive from "../components/sheet-live.vue";
 	import SheetSigns from "../components/sheet-signs.vue";
 	import StoreInput from "../components/store-input.vue";
+	import CheckButton from "../components/check-button.vue";
 
 
 
@@ -40,6 +45,7 @@
 			SheetLive,
 			SheetSigns,
 			StoreInput,
+			CheckButton,
 		},
 
 
@@ -51,6 +57,8 @@
 				svgHashTable: null,
 				midi: null,
 				midiPlayer: null,
+				showCursor: true,
+				noteHighlight: true,
 			};
 		},
 

@@ -13,6 +13,8 @@ TODO:
 
 *	2020.4.9
 
+	+	profiler.vue: added options of cursor & note hightlight.
+
 	+	sheet-live.vue: added property of showMark.
 
 	+	index.ts created.

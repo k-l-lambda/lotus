@@ -72,6 +72,10 @@
 				type: Boolean,
 				default: true,
 			},
+			noteHighlight: {
+				type: Boolean,
+				default: true,
+			},
 		},
 
 
@@ -130,29 +134,31 @@
 			onMidi (data, timestamp) {
 				this.$emit("midi", data, timestamp);
 
-				const delay = Math.max(timestamp - performance.now(), 0);
-				setTimeout(() => {
-					//console.log("midi event:", data);
-					if (data.ids) {
-						const tokens = data.ids.map(id => this.linkedTokens.get(id));
+				if (this.noteHighlight) {
+					const delay = Math.max(timestamp - performance.now(), 0);
+					setTimeout(() => {
+						//console.log("midi event:", data);
+						if (data.ids) {
+							const tokens = data.ids.map(id => this.linkedTokens.get(id));
 
-						switch (data.subtype) {
-						case "noteOn":
-							tokens.forEach(token => token.on = true);
+							switch (data.subtype) {
+							case "noteOn":
+								tokens.forEach(token => token.on = true);
 
-							break;
-						case "noteOff":
-							tokens.forEach(token => token.on = false);
+								break;
+							case "noteOff":
+								tokens.forEach(token => token.on = false);
 
-							break;
+								break;
+							}
 						}
-					}
-				}, delay);
+					}, delay);
+				}
 			},
 
 
 			updateTokenStatus () {
-				if (this.midiNotation) {
+				if (this.midiNotation && this.noteHighlight) {
 					for (const note of this.midiNotation.notes) {
 						const on = this.midiPlayer.progressTime >= note.start && this.midiPlayer.progressTime < note.start + note.duration;
 						if (note.ids) {
