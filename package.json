@@ -2,7 +2,7 @@
   "name": "lotus",
   "version": "0.3.0",
   "description": "Lotus is a sheet music toolset, an enhancement of LilyPond.",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "start": "ts-node --project ./tsconfig.node.json ./main.ts",
     "dev": "ts-node-dev --project ./tsconfig.node.json ./main.ts",
@@ -14,8 +14,11 @@
   },
   "author": "K.L.",
   "license": "ISC",
-  "devDependencies": {
+  "dependencies": {
     "@k-l-lambda/web-widgets": "^0.3.13",
+    "vue": "^2.6.11"
+  },
+  "devDependencies": {
     "@types/express": "^4.17.3",
     "@typescript-eslint/eslint-plugin": "^2.24.0",
     "@typescript-eslint/parser": "^2.24.0",
@@ -39,7 +42,6 @@
     "ts-node": "^8.7.0",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.8.3",
-    "vue": "^2.6.11",
     "vue-resize-directive": "^1.2.0",
     "vue-template-compiler": "^2.6.11",
     "xmldom": "^0.3.0"

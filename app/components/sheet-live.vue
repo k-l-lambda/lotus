@@ -225,22 +225,6 @@
 <style lang="scss" scoped>
 	.sheet
 	{
-		white-space: nowrap;
-		display: inline-block;
-
-		.page
-		{
-			display: inline-block;
-			margin: 1em;
-			background: #f6fffa;
-			border-radius: 1em;
-		}
-
-		.cursor
-		{
-			fill: lightblue;
-		}
-
 		.mark
 		{
 			visibility: hidden;

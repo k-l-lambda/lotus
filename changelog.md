@@ -11,6 +11,11 @@ TODO:
 
 
 
+*	2020.4.9
+
+	+	index.ts created.
+
+
 *	2020.4.8
 
 	+	profiler.vue: store source text.
