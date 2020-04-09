@@ -3,6 +3,7 @@
   "version": "0.3.0",
   "description": "Lotus is a sheet music toolset, an enhancement of LilyPond.",
   "main": "index.ts",
+  "browser": "index.browser.ts",
   "scripts": {
     "start": "ts-node --project ./tsconfig.node.json ./main.ts",
     "dev": "ts-node-dev --project ./tsconfig.node.json ./main.ts",
