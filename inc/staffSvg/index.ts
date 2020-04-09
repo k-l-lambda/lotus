@@ -3,6 +3,8 @@ import {svgToElements} from "./svgParser";
 import tokenizeElements from "./tokenizeElements";
 import organizeTokens from "./organizeTokens";
 import LogRecorder from "../logRecorder";
+import StaffToken from "./staffToken";
+import SheetDocument from "./sheetDocument";
 
 
 
@@ -27,4 +29,6 @@ export {
 	tokenizeElements,
 	organizeTokens,
 	parseSvgPage,
+	StaffToken,
+	SheetDocument,
 };
