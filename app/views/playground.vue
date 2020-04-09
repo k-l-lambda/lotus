@@ -62,6 +62,7 @@
 						:midi="midi"
 						:midiPlayer.sync="midiPlayer"
 						:matcherNotations.sync="matcherNotations"
+						:showMark="true"
 						@midi="onMidi"
 					/>
 				</div>

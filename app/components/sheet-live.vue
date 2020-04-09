@@ -10,8 +10,8 @@
 			<g class="row" v-for="(row, ii) of page.rows" :key="ii"
 				:transform="`translate(${row.x}, ${row.y})`"
 			>
-				<rect class="mark" :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top" />
-				<rect class="cursor" v-if="cursorPosition && cursorPosition.row === row.index"
+				<rect class="mark" v-if="showMark" :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top" />
+				<rect class="cursor" v-if="showCursor && cursorPosition && cursorPosition.row === row.index"
 					:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
 				/>
 				<g>
@@ -20,13 +20,13 @@
 				<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
 					:transform="`translate(${staff.x}, ${staff.y})`"
 				>
-					<circle class="mark" />
-					<line class="mark" v-if="Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
+					<circle class="mark" v-if="showMark" />
+					<line class="mark" v-if="showMark && Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
 					<g>
 						<SheetToken v-for="(token, i5) of staff.tokens" :key="i5" :token="token" />
 					</g>
 					<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
-						<g class="mark">
+						<g class="mark" v-if="showMark">
 							<text :x="measure.headX">{{i4}}</text>
 						</g>
 						<SheetToken v-for="(token, i5) of measure.tokens" :key="i5" :token="token"
@@ -67,6 +67,11 @@
 			doc: Object,
 			midi: Object,
 			sheetNotation: Object,
+			showMark: Boolean,
+			showCursor: {
+				type: Boolean,
+				default: true,
+			},
 		},
 
 

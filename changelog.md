@@ -13,6 +13,8 @@ TODO:
 
 *	2020.4.9
 
+	+	sheet-live.vue: added property of showMark.
+
 	+	index.ts created.
 
 

@@ -126,5 +126,22 @@
 	{
 		width: 100%;
 		overflow: auto;
+
+		.sheet.live
+		{
+			white-space: nowrap;
+			display: inline-block;
+
+			.page
+			{
+				display: inline-block;
+				margin: 1em;
+			}
+
+			.cursor
+			{
+				fill: lightblue;
+			}
+		}
 	}
 </style>
