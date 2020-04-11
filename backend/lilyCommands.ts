@@ -53,7 +53,7 @@ const postProcessLy = (ly, {
 		result = result.replace(/\s\\pageBreak\s/g, " ");
 
 	if (removeInstrumentName)
-		result = result.replace(/\\set Staff.instrumentName/g, "% \\set Staff.instrumentName");
+		result = result.replace(/\\set Staff\.instrumentName/g, "% \\set Staff.instrumentName");
 
 	if (removeTempo)
 		result = result.replace(/\\tempo /g, "% \\tempo ");

@@ -11,6 +11,11 @@ TODO:
 
 
 
+*	2020.4.11
+
+	+	app/components/dialog.vue created.
+
+
 *	2020.4.9
 
 	+	profiler.vue: added options of cursor & note hightlight.

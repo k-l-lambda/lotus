@@ -10,6 +10,7 @@
 			<StoreInput v-show="false" v-model="lilySource" sessionKey="lotus-lilySource" />
 			<fieldset>
 				<button @click="saveSource" title="save source">&#x1f4be;</button>
+				<button @click="settingPanelVisible = true">&#x2699;</button>
 			</fieldset>
 			<fieldset>
 				<span>
@@ -69,6 +70,9 @@
 				<Loading v-show="engraving" />
 			</div>
 		</main>
+		<Dialog :visible.sync="settingPanelVisible">
+			<table></table>
+		</Dialog>
 	</div>
 </template>
 
@@ -96,6 +100,7 @@
 	import BoolStoreInput from "../components/bool-store-input.vue";
 	import CheckButton from "../components/check-button.vue";
 	import NotationsMatcher from "../components/notations-matcher.vue";
+	import Dialog from "../components/dialog.vue";
 
 
 
@@ -119,6 +124,7 @@
 			CheckButton,
 			MidiRoll,
 			NotationsMatcher,
+			Dialog,
 		},
 
 
@@ -147,6 +153,7 @@
 				matcherNotations: null,
 				showNotationsMatcher: false,
 				enabledMidiAudio: true,
+				settingPanelVisible: false,
 			};
 		},
 
