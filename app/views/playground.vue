@@ -25,12 +25,14 @@
 				<BoolStoreInput v-show="false" v-model="rollVisible" sessionKey="lotus-rollVisible" />
 				<BoolStoreInput v-show="false" v-model="showNotationsMatcher" sessionKey="lotus-showNotationsMatcher" />
 				<BoolStoreInput v-show="false" v-model="enabledMidiAudio" sessionKey="lotus-enabledMidiAudio" />
+				<BoolStoreInput v-show="false" v-model="showCursor" sessionKey="lotus-playground.showCursor" />
 				<CheckButton content="&#x1f3b9;" v-model="tokenizeStaff" title="live staff" />
 				<fieldset v-show="tokenizeStaff">
 					<CheckButton content="&#x1f3a8;" v-model="chromaticSymbols" :disabled="!sheetDocument" title="chromatic symbols" />
 					<CheckButton content="&#x2633;" v-model="rollVisible" :disabled="!midiPlayer" title="show MIDI roll" />
 					<CheckButton content="c|s" v-model="showNotationsMatcher" :disabled="!matcherNotations" title="show notations matcher" />
 					<CheckButton content="&#x1f50a;" v-model="enabledMidiAudio" title="MIDI Audio" />
+					<CheckButton content="&#xa56f;" v-model="showCursor" title="show cursor" />
 					<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
 				</fieldset>
 			</fieldset>
@@ -64,6 +66,7 @@
 						:midiPlayer.sync="midiPlayer"
 						:matcherNotations.sync="matcherNotations"
 						:showMark="true"
+						:showCursor="showCursor"
 						@midi="onMidi"
 					/>
 				</div>
@@ -180,6 +183,7 @@
 				matcherNotations: null,
 				showNotationsMatcher: false,
 				enabledMidiAudio: true,
+				showCursor: true,
 				settingPanelVisible: false,
 				xml2lyOptions: {
 					removeBreaks: true,
