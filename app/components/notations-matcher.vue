@@ -2,10 +2,10 @@
 	<div class="notations-matcher">
 		<svg xmlns="http://www.w3.org/2000/svg" height="480" :viewBox="`-20 -20 ${width + 40} 160`">
 			<g :transform="`translate(${positionC.x}, ${positionC.y})`" class="criterion">
-				<PinaoRoll v-if="criterion" :notations="criterion" :timeScale="timeScale" :pitchScale="1" />
+				<PinaoRoll v-if="criterion" :notations="criterion" :timeScale="timeScale" :pitchScale="1" :tooltips="true" />
 			</g>
 			<g :transform="`translate(${positionS.x}, ${positionS.y})`" class="sample">
-				<PinaoRoll v-if="sample" :notations="sample" :timeScale="timeScale" :pitchScale="1" />
+				<PinaoRoll v-if="sample" :notations="sample" :timeScale="timeScale" :pitchScale="1" :tooltips="true" />
 			</g>
 			<g class="links" v-if="links">
 				<line v-for="link of links" :key="link.s.index"

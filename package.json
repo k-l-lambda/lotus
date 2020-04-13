@@ -16,7 +16,7 @@
   "author": "K.L.",
   "license": "ISC",
   "dependencies": {
-    "@k-l-lambda/web-widgets": "^0.3.13",
+    "@k-l-lambda/web-widgets": "^0.3.14",
     "sha1": "^1.1.1",
     "vue": "^2.6.11"
   },
