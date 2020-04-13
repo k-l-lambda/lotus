@@ -8,7 +8,7 @@
 
 <script>
 	export default {
-		name: "dialog",
+		name: "popup-dialog",
 
 
 		props: {
@@ -49,6 +49,7 @@
 			padding: 2em;
 			cursor: default;
 			text-align: center;
+			padding: 2em;
 		}
 	}
 </style>

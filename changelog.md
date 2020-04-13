@@ -11,6 +11,11 @@ TODO:
 
 
 
+*	2020.4.13
+
+	+	playground.vue: added settings panel.
+
+
 *	2020.4.11
 
 	+	app/components/dialog.vue created.

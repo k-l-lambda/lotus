@@ -71,7 +71,34 @@
 			</div>
 		</main>
 		<Dialog :visible.sync="settingPanelVisible">
-			<table></table>
+			<table class="settings">
+				<tbody>
+					<tr>
+						<th>MusicXML to Lilypond</th>
+						<td><hr /></td>
+					</tr>
+					<tr>
+						<td>Remove Breaks</td>
+						<td><BoolStoreInput v-model="xml2lyOptions.removeBreaks" localKey="lotus-xml2lyOptions.removeBreaks" /></td>
+					</tr>
+					<tr>
+						<th>Lilypond Markups</th>
+						<td><hr /></td>
+					</tr>
+					<tr>
+						<td>Enabled</td>
+						<td><BoolStoreInput v-model="lilyMarkups.enabled" localKey="lotus-lilyMarkups.enabled" /></td>
+					</tr>
+					<tr>
+						<td>Staff Size</td>
+						<td><StoreInput type="number" v-model="lilyMarkups.staffSize" localKey="lotus-lilyMarkups.staffSize" /></td>
+					</tr>
+					<tr>
+						<td>Auto Paper Size</td>
+						<td><BoolStoreInput v-model="lilyMarkups.autoPaperSize" localKey="lotus-lilyMarkups.autoPaperSize" /></td>
+					</tr>
+				</tbody>
+			</table>
 		</Dialog>
 	</div>
 </template>
@@ -154,6 +181,14 @@
 				showNotationsMatcher: false,
 				enabledMidiAudio: true,
 				settingPanelVisible: false,
+				xml2lyOptions: {
+					removeBreaks: true,
+				},
+				lilyMarkups: {
+					enabled: false,
+					staffSize: null,
+					autoPaperSize: true,
+				},
 			};
 		},
 
@@ -556,6 +591,35 @@
 					{
 						fill: goldenrod;
 					}
+				}
+			}
+		}
+
+		.settings
+		{
+			font-family: Verdana, Arial;
+			font-size: 20px;
+
+			hr
+			{
+				border-width: .2px;
+			}
+
+			th
+			{
+				text-transform: uppercase;
+				padding: 1em;
+				font-size: 120%;
+			}
+
+			td
+			{
+				text-align: left;
+				padding: .2em 1em;
+
+				&:first-child
+				{
+					text-align: right;
 				}
 			}
 		}
