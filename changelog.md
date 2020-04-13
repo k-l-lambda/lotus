@@ -7,11 +7,12 @@ TODO:
 		tempo note head symbol
 	source editor
 		cursor position
-		line numbers
 
 
 
 *	2020.4.13
+
+	+	source-editor.vue: enhanced by vue-prism-editor.
 
 	+	playground.vue: added settings panel.
 
