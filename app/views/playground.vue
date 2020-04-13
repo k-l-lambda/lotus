@@ -305,8 +305,8 @@
 				const body = new FormData();
 				body.append("xml", xml);
 				body.append("options", JSON.stringify({
-					removeBreak: true,
-					removePageBreak: true,
+					removeBreak: this.xml2lyOptions.removeBreaks,
+					removePageBreak: this.xml2lyOptions.removeBreaks,
 				}));
 
 				const response = await fetch("/musicxml2ly", {
