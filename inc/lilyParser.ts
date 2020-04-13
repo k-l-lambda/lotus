@@ -1,10 +1,41 @@
 
-const removeComments = source => source.replace(/%.*\n/g, "\n");
-
 const BRACKETS_BEGIN_PATTERNS = [
 	/^([^{]*\s+)?(\w+\s+=[^{]*)\{(.*)$/s,
 	/^([^{]*)(\\\w+[^\\]+)\{(.*)$/s,
 ];
+
+const SINGLE_COMMENT = /%.*\n/;
+const SINGLE_COMMENT_G = /%.*\n/g;
+const SCOPED_COMMENT = /%\{.*?%\}/s;
+const SCOPED_COMMENT_G = /%\{.*?%\}/gs;
+
+
+const removeComments = source => source.replace(SCOPED_COMMENT_G, "").replace(SINGLE_COMMENT_G, "\n");
+
+
+const escapeComments = source => {
+	let residual = source;
+	const comments = [];
+
+	while (SCOPED_COMMENT.test(residual)) {
+		const comment = residual.match(SCOPED_COMMENT)[0];
+		residual = residual.replace(SCOPED_COMMENT, `$$${comments.length}$$`);
+
+		comments.push(comment);
+	}
+
+	while (SINGLE_COMMENT.test(residual)) {
+		const comment = residual.match(SINGLE_COMMENT)[0];
+		residual = residual.replace(SINGLE_COMMENT, `$$${comments.length}$$\n`);
+
+		comments.push(comment);
+	}
+
+	return {
+		residual,
+		comments,
+	};
+};
 
 
 class Block {
@@ -177,11 +208,11 @@ class ScopedBlock extends Block {
 
 
 const parse = source => {
-	const residual = removeComments(source);
+	const {residual, comments} = escapeComments(source);
 	const block = new ScopedBlock();
 	block.parse(residual);
 
-	return block;
+	return {block, comments};
 };
 
 

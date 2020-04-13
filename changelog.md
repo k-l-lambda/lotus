@@ -1,5 +1,7 @@
 
 TODO:
+	lily parser
+		restore from blocks
 	options to control layout
 	SVG static elements baking
 	parse measure ticks from ly
@@ -11,6 +13,8 @@ TODO:
 
 
 *	2020.4.13
+
+	+	lilyParser.ts: escapeComments added.
 
 	+	source-editor.vue: enhanced by vue-prism-editor.
 
