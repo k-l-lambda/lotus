@@ -116,7 +116,7 @@
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
 	import StaffToken from "../../inc/staffSvg/staffToken.ts";
 	import SheetDocument from "../../inc/staffSvg/sheetDocument.ts";
-	import * as LilyParser from "../../inc/lilyParser.ts";
+	import * as LilyParser from "../../inc/lilyParser/manual.ts";
 	import LogRecorder from "../../inc/logRecorder.ts";
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 
