@@ -57,6 +57,11 @@ class Block {
 	get isDivider () {
 		return false;
 	}
+
+
+	stringify () : string {
+		return "";
+	}
 };
 
 
@@ -74,12 +79,22 @@ class PlainBlock extends Block {
 	get isNull () {
 		return !this.content;
 	}
+
+
+	stringify () {
+		return this.content;
+	}
 };
 
 
 class DividerBlock extends Block {
 	get isDivider () {
 		return true;
+	}
+
+
+	stringify () {
+		return " |\n";
 	}
 }
 
@@ -134,7 +149,14 @@ class ScopedBlock extends Block {
 		return measures;
 	}
 
-	
+
+	stringify () {
+		return (this.head || "") + " {"
+			+ this.blocks.reduce((source, block) => source + block.stringify(), "")	// TODO: add indents
+			+ "\n}\n";
+	}
+
+
 	parse (source: string): string {
 		let residual = source;
 		while (residual) {
