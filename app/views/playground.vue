@@ -441,6 +441,8 @@
 
 			updateSheetNotation () {
 				this.sheetNotation = null;
+				this.matcherNotations = null;
+
 				if (this.sheetDocument) {
 					const logger = new LogRecorder({enabled: true});
 					this.sheetNotation = StaffNotation.parseNotationFromSheetDocument(this.sheetDocument, {logger});
