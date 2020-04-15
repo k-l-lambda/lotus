@@ -43,9 +43,11 @@ NOTE				{PITCH}{UNSIGNED}?
 
 {COMMAND}					return 'COMMAND';
 {SYMBOL}					return 'SYMBOL';
-
 {FRACTION}					return 'FRACTION';
-{SPECIAL}					return 'SPECIAL';
+{INT}						return 'INT';
+{REAL}						return 'REAL';
+
+{SPECIAL}					return yytext;
 \|							return 'DIVIDE';
 
 <<EOF>>						return 'EOF';
@@ -59,20 +61,89 @@ NOTE				{PITCH}{UNSIGNED}?
 expressions
 	: expressions EOF
 		{ return $1; }
-	| expressions word
-		{$$ = $1.concat([$2]);}
-	| word
+	| paragraphs
+		{$$ = $1;}
+	| %empty
+		{$$ = null;}
+	;
+
+paragraphs
+	: paragraph
 		{$$ = [$1];}
+	| paragraphs paragraph
+		{$$ = $1.concat([$2]);}
+	;
+
+paragraph
+	: /*declaration
+		{$$ = $1;}
+	|*/ block
+		{$$ = $1;}
+	;
+
+block
+	: brackets_scope
+		{$$ = {chidren: $1};}
+	| cmd brackets_scope
+		{$$ = {head: $1, chidren: $2};}
+	;
+
+cmd
+	: COMMAND arguments
+		{$$ = {cmd: $1, args: $2}}
+	;
+
+arguments
+	: %empty
+		{$$ = [];}
+	| argument
+		{$$ = [$1];}
+	| arguments argument
+		{$$ = $1.concat([$2]);}
+	;
+
+argument
+	: note
+		{$$ = $1;}
+	| FRACTION
+		{$$ = $1;}
+	| INT
+		{$$ = $1;}
+	| REAL
+		{$$ = $1;}
+	| STRING
+		{$$ = $1;}
+	;
+
+brackets_scope
+	: "{" statements "}"
+		{$$ = $2;}
+	;
+
+statements
+	: %empty
+		{$$ = [];}
+	| statement
+		{$$ = [$1];}
+	| statements statement
+		{$$ = $1.concat([$2]);}
+	;
+
+statement
+	: cmd
+		{$$ = $1;}
+	| note
+		{$$ = $1;}
+	| DIVIDE
+		{$$ = $1;}
 	;
 
 word
-	: NOTE
+	: note
 		{$$ = $1;}
 	| COMMAND
 		{$$ = $1;}
 	| SYMBOL
-		{$$ = $1;}
-	| SPECIAL
 		{$$ = $1;}
 	| DIVIDE
 		{$$ = $1;}
@@ -80,4 +151,9 @@ word
 		{$$ = $1;}
 	| STRING
 		{$$ = $1;}
+	;
+
+note
+	: NOTE
+		{$$ = $1;}	// TODO
 	;
