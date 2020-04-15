@@ -12,6 +12,11 @@ TODO:
 
 
 
+*	2020.4.15
+
+	+	lilypond.jison: added basic lexel rules.
+
+
 *	2020.4.14
 
 	+	Lilypond parser based on jison created.
