@@ -1,4 +1,9 @@
 
+%{
+	const command = (cmd, arg) => ({cmd, arg});
+%}
+
+
 %lex
 
 A					[a-zA-Z\200-\377]
@@ -89,20 +94,20 @@ block
 	;
 
 cmd
-	: COMMAND arguments
-		{$$ = {cmd: $1, args: $2}}
+	: COMMAND value
+		{$$ = command($1, $2);}
+	| COMMAND
+		{$$ = command($1);}
 	;
 
-arguments
-	: %empty
-		{$$ = [];}
+/*arguments
+	: arguments argument
+		{$$ = $1.concat([$2]);}
 	| argument
 		{$$ = [$1];}
-	| arguments argument
-		{$$ = $1.concat([$2]);}
-	;
+	;*/
 
-argument
+value
 	: note
 		{$$ = $1;}
 	| FRACTION
@@ -116,29 +121,38 @@ argument
 	;
 
 brackets_scope
-	: "{" statements "}"
+	: "{" statement "}"
 		{$$ = $2;}
-	;
-
-statements
-	: %empty
+	| "{" "}"
 		{$$ = [];}
-	| statement
-		{$$ = [$1];}
-	| statements statement
-		{$$ = $1.concat([$2]);}
 	;
 
 statement
-	: cmd
+	: closed_statement
 		{$$ = $1;}
-	| note
-		{$$ = $1;}
-	| DIVIDE
+	| open_statement
 		{$$ = $1;}
 	;
 
-word
+closed_statement
+	: value
+		{$$ = [$1];}
+	| closed_statement value
+		{$$ = $1.concat([$2]);}
+	| open_statement value
+		{$1[$1.length - 1].arg = $2; $$ = $1;}
+	| statement DIVIDE
+		{$$ = $1.concat([$2]);}
+	;
+
+open_statement
+	: COMMAND
+		{$$ = [command($1)];}
+	| statement COMMAND
+		{$$ = $1.concat([command($2)]);}
+	;
+
+/*word
 	: note
 		{$$ = $1;}
 	| COMMAND
@@ -151,7 +165,7 @@ word
 		{$$ = $1;}
 	| STRING
 		{$$ = $1;}
-	;
+	;*/
 
 note
 	: NOTE

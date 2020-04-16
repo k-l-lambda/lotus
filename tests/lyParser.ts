@@ -12,3 +12,8 @@ const parser = lilyParser.createParser(grammar);
 
 const result = parser.parse(source);
 console.log("result:", result);
+
+
+
+// keep inspector connected
+setTimeout(() => console.log("done."), 1e+8);

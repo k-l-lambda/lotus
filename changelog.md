@@ -12,6 +12,11 @@ TODO:
 
 
 
+*	2020.4.16
+
+	+	lilypond.jison: fixed confliction by command formation.
+
+
 *	2020.4.15
 
 	+	lilypond.jison: added basic lexel rules.
