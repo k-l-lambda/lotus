@@ -14,6 +14,8 @@ TODO:
 
 *	2020.4.17
 
+	+	lilypond.jison: chord formula implemented.
+
 	+	lyParser.ts: added source file name argument.
 
 

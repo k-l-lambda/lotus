@@ -1,6 +1,8 @@
 
 %{
 	const command = (cmd, arg) => ({cmd, arg});
+
+	const chord = (pitches, duration) => ({pitches, duration: duration && Number(duration)});
 %}
 
 
@@ -34,23 +36,27 @@ BOM_UTF8			\357\273\277
 PHONET				[abcdefgr]
 TONE				{PHONET}(([i][s])*|([e][s])*)
 PITCH				{TONE}(\'*|\,*)
-NOTE				{PITCH}{UNSIGNED}?
+//NOTE				{PITCH}{UNSIGNED}?
+DURATION			[1]|"2"|"4"|[8]|[1][6]|[3][2]|[6][4]|[1][2][8]|"256"
 
 
 %%
+
+// workaround non-word-boundary parsing for DURATION
+\s{FRACTION}				yytext = yytext.replace(/^\s+/, ""); return 'FRACTION';
+\s{INT}						yytext = yytext.replace(/^\s+/, ""); return 'INT';
+\s{REAL}					yytext = yytext.replace(/^\s+/, ""); return 'REAL';
 
 \s+							{}	// spaces
 \%\{(.|\n)*?\%\}			{}	// scoped comments
 \%[^\n]*\n					{}	// single comments
 \"(\\\"|[^"])*\"			return 'STRING';
 
-{NOTE}						return 'NOTE';
+{PITCH}						return 'PITCH';
+{DURATION}					return 'DURATION';
 
 {COMMAND}					return 'COMMAND';
 {SYMBOL}					return 'SYMBOL';
-{FRACTION}					return 'FRACTION';
-{INT}						return 'INT';
-{REAL}						return 'REAL';
 
 {SPECIAL}					return yytext;
 \|							return 'DIVIDE';
@@ -108,7 +114,7 @@ cmd
 	;*/
 
 value
-	: note
+	: chord
 		{$$ = $1;}
 	| FRACTION
 		{$$ = $1;}
@@ -152,22 +158,20 @@ open_statement
 		{$$ = $1.concat([command($2)]);}
 	;
 
-/*word
-	: note
-		{$$ = $1;}
-	| COMMAND
-		{$$ = $1;}
-	| SYMBOL
-		{$$ = $1;}
-	| DIVIDE
-		{$$ = $1;}
-	| FRACTION
-		{$$ = $1;}
-	| STRING
-		{$$ = $1;}
-	;*/
+pitches
+	:	pitches PITCH
+		{$$ = $1.concat([$2]);}
+	|	PITCH
+		{$$ = [$1];}
+	;
 
-note
-	: NOTE
-		{$$ = $1;}	// TODO
+chord
+	: PITCH
+		{$$ = chord([$1]);}
+	| PITCH DURATION
+		{$$ = chord([$1], $2);}
+	| "<" pitches ">"
+		{$$ = chord($2);}
+	| "<" pitches ">" DURATION
+		{$$ = chord($2, $4);}
 	;
