@@ -12,6 +12,11 @@ TODO:
 
 
 
+*	2020.4.17
+
+	+	lyParser.ts: added source file name argument.
+
+
 *	2020.4.16
 
 	+	lilypond.jison: fixed confliction by command formation.

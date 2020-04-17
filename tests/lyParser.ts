@@ -5,12 +5,19 @@ import * as lilyParser from "../inc/lilyParser";
 
 
 
-const grammar = fs.readFileSync("./inc/lilyParser/lilypond.jison").toString();
-const source = fs.readFileSync("./tests/ly/test.ly").toString();
+const parse = (sourceFile = "./tests/ly/test.ly") => {
+	const grammar = fs.readFileSync("./inc/lilyParser/lilypond.jison").toString();
+	const source = fs.readFileSync(sourceFile).toString();
+	
+	const parser = lilyParser.createParser(grammar);
+	
+	return parser.parse(source);
+};
 
-const parser = lilyParser.createParser(grammar);
 
-const result = parser.parse(source);
+const argv = JSON.parse(process.env.npm_config_argv);
+
+const result = parse(argv.original[2]);
 console.log("result:", result);
 
 
