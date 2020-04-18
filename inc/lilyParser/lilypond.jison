@@ -34,17 +34,16 @@ HYPHEN				--
 BOM_UTF8			\357\273\277
 
 PHONET				[abcdefgr]
-TONE				{PHONET}(([i][s])*|([e][s])*)
-PITCH				{TONE}(\'*|\,*)
-DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
-
-(\^|\_){UNSIGNED}	FINGERING
+PITCH				{PHONET}(([i][s])*|([e][s])*)
+//PITCH				{TONE}(\'*|\,*)
+//DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
 
 
 %%
 
-// workaround non-word-boundary parsing for DURATION
+// workaround non-word-boundary parsing for POST_UNSIGNED
 \s{FRACTION}				yytext = yytext.replace(/^\s+/, ""); return 'FRACTION';
+\s{UNSIGNED}				yytext = yytext.replace(/^\s+/, ""); return 'UNSIGNED';
 \s{INT}						yytext = yytext.replace(/^\s+/, ""); return 'INT';
 \s{REAL}					yytext = yytext.replace(/^\s+/, ""); return 'REAL';
 
@@ -52,11 +51,6 @@ DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
 \%\{(.|\n)*?\%\}			{}	// scoped comments
 \%[^\n]*\n					{}	// single comments
 \"(\\\"|[^"])*\"			return 'STRING';
-
-{PITCH}						return 'PITCH';
-{DURATION}					return 'DURATION';
-
-{FINGERING}					return 'FINGERING';
 
 // binary command
 "\\repeat"					return 'CMD_REPEAT';
@@ -73,10 +67,19 @@ DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
 "\\header"					return 'CMD_HEADER';
 
 {COMMAND}					return 'COMMAND';
+
+{PITCH}						return 'PITCH';
+{UNSIGNED}					return 'POST_UNSIGNED';
+
 {SYMBOL}					return 'SYMBOL';
 
 {SPECIAL}					return yytext;
 \|							return 'DIVIDE';
+
+[()]						return yytext;
+
+"["							return yytext;
+"]"							return yytext;
 
 <<EOF>>						return 'EOF';
 
@@ -197,6 +200,8 @@ music_list
 music_embedded
 	: music
 		{$$ = $1;}
+	| post_event
+		{$$ = $1;}
 	;
 
 music
@@ -253,7 +258,7 @@ duration
 	;
 
 steno_duration
-	: DURATION dots
+	: POST_UNSIGNED dots
 		{$$ = $1 + $2;}
 	;
 
@@ -289,13 +294,6 @@ simple_string
 		{$$ = $1;}
 	;
 
-/*block
-	: brackets_scope
-		{$$ = {chidren: $1};}
-	| cmd brackets_scope
-		{$$ = {head: $1, chidren: $2};}
-	;*/
-
 // all kinds commands in music list, seems named as MUSIC_IDENTIFIER in lilypond's parser.yy
 music_identifier
 	: COMMAND
@@ -304,6 +302,14 @@ music_identifier
 		{$$ = command($1, $2);}
 	//| binary_cmd value value
 	//	{$$ = command($1, [$2, $3]);}
+	| "("
+		{$$ = $1;}
+	| ")"
+		{$$ = $1;}
+	| "["
+		{$$ = $1;}
+	| "]"
+		{$$ = $1;}
 	;
 
 /*binary_cmd
@@ -326,8 +332,8 @@ unitary_cmd
 		{$$ = $1;}
 	;
 
-/*value
-	: PITCH
+value
+	: music
 		{$$ = $1;}
 	| FRACTION
 		{$$ = $1;}
@@ -339,47 +345,11 @@ unitary_cmd
 		{$$ = $1;}
 	| SYMBOL
 		{$$ = $1;}
-	;*/
-
-/*statement
-	: closed_statement
-		{$$ = $1;}
-	| open_statement
-		{$$ = $1;}
 	;
-
-closed_statement
-	: value
-		{$$ = [$1];}
-	| closed_statement value
-		{$$ = $1.concat([$2]);}
-	| open_statement value
-		{$1[$1.length - 1].arg = $2; $$ = $1;}
-	| statement DIVIDE
-		{$$ = $1.concat([$2]);}
-	;
-
-open_statement
-	: COMMAND
-		{$$ = [command($1)];}
-	| statement COMMAND
-		{$$ = $1.concat([command($2)]);}
-	;*/
-
-/*chord
-	: PITCH
-		{$$ = chord([$1]);}
-	| PITCH DURATION
-		{$$ = chord([$1], $2);}
-	| "<" pitches ">"
-		{$$ = chord($2);}
-	| "<" pitches ">" DURATION
-		{$$ = chord($2, $4);}
-	;*/
 
 pitch_or_music
 	//: pitch exclamations questions octave_check maybe_notemode_duration erroneous_quotes optional_rest post_events
-	: PITCH optional_notemode_duration
+	: pitch optional_notemode_duration
 		{$$ = chord([$1], $2);}
 	;
 
@@ -389,8 +359,53 @@ note_chord_element
 	;
 
 pitches
-	:	pitches PITCH
+	:	pitches pitch
 		{$$ = $1.concat([$2]);}
-	|	PITCH
+	|	pitch
 		{$$ = [$1];}
+	;
+
+pitch
+	: PITCH quotes
+		{$$ = $1 + $2;}
+	;
+
+quotes
+	: %empty
+		{$$ = "";}
+	| sub_quotes
+		{$$ = $1;}
+	| sup_quotes
+		{$$ = $1;}
+	;
+
+sup_quotes
+	: "'"
+		{$$ = $1;}
+	| sup_quotes "'"
+		{$$ = $1 + $2;}
+	;
+
+sub_quotes
+	: ","
+		{$$ = $1;}
+	| sub_quotes ","
+		{$$ = $1 + $2;}
+	;
+
+post_event
+	: post_event_nofinger
+		{$$ = $1;}
+	;
+
+post_event_nofinger
+	: '^' fingering
+		{$$ = {type: "fingering", direction: "up", value: $2};}
+	| '_' fingering
+		{$$ = {type: "fingering", direction: "down", value: $2};}
+	;
+
+fingering
+	: POST_UNSIGNED
+		{$$ = $1;}
 	;

@@ -12,6 +12,11 @@ TODO:
 
 
 
+*	2020.4.18
+
+	+	lilypond.jison: test-2.ly passed.
+
+
 *	2020.4.17
 
 	+	lilypond.jison: chord formula implemented.
