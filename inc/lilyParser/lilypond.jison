@@ -87,7 +87,7 @@ DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
 
 %%
 
-start_symbol:
+start_symbol
 	: lilypond EOF
 		{ return $1; }
 	//| embedded_lilypond
@@ -100,12 +100,12 @@ lilypond
 		{$$ = $1.concat([$2]);}
 	| lilypond assignment
 		{$$ = $1.concat([$2]);}
-	| lilypond composite_music
-		{$$ = $1.concat([$2]);}
 	;
 
 toplevel_expression
 	: header_block
+		{$$ = $1;}
+	| composite_music
 		{$$ = $1;}
 	;
 
@@ -184,7 +184,7 @@ sequential_music
 
 braced_music_list
 	: '{' music_list '}'
-		{$$ = $1;}
+		{$$ = $2;}
 	;
 
 music_list
@@ -237,13 +237,13 @@ event_chord
 simple_element
 	//: DRUM_PITCH optional_notemode_duration
 	: RESTNAME optional_notemode_duration	// TODO: resolve RESTNAME
-		{$$ = $1 + $2;};
+		{$$ = $1 + $2;}
 	;
 
 optional_notemode_duration
 	: %empty
 		{$$ = null;}
-	: duration
+	| duration
 		{$$ = $1;}
 	;
 
@@ -257,14 +257,14 @@ steno_duration
 		{$$ = $1 + $2;}
 	;
 
-dots:
+dots
 	: %empty
 		{$$ = "";}
 	| dots "."
 		{$$ = $1 + $2;}
 	;
 
-multipliers:
+multipliers
 	: %empty
 		{$$ = "";}
 	| multipliers '*' UNSIGNED
@@ -272,8 +272,9 @@ multipliers:
 	//| multipliers '*' FRACTION
 	;
 
-repeated_music:
-	CMD_REPEAT simple_string unsigned_number music
+repeated_music
+	: CMD_REPEAT simple_string unsigned_number music
+		{$$ = {repeat: [$2, $3], music: $4};}
 	;
 
 unsigned_number
@@ -301,32 +302,32 @@ music_identifier
 		{$$ = command($1);}
 	| unitary_cmd value
 		{$$ = command($1, $2);}
-	| binary_cmd value value
-		{$$ = command($1, [$2, $3]);}
+	//| binary_cmd value value
+	//	{$$ = command($1, [$2, $3]);}
 	;
 
-binary_cmd
+/*binary_cmd
 	: CMD_REPEAT
 		{$$ = $1;}
-	;
+	;*/
 
 unitary_cmd
 	: CMD_CLEF
 		{$$ = $1;}
-	: CMD_KEY
+	| CMD_KEY
 		{$$ = $1;}
-	: CMD_TIME
+	| CMD_TIME
 		{$$ = $1;}
-	: CMD_STEMUP
+	| CMD_STEMUP
 		{$$ = $1;}
-	: CMD_STEMDOWN
+	| CMD_STEMDOWN
 		{$$ = $1;}
-	: CMD_RELATIVE
+	| CMD_RELATIVE
 		{$$ = $1;}
 	;
 
-value
-	: chord
+/*value
+	: PITCH
 		{$$ = $1;}
 	| FRACTION
 		{$$ = $1;}
@@ -338,14 +339,7 @@ value
 		{$$ = $1;}
 	| SYMBOL
 		{$$ = $1;}
-	;
-
-braced_music_list
-	: "{" music_list "}"
-		{$$ = $2;}
-	| "{" "}"
-		{$$ = [];}
-	;
+	;*/
 
 /*statement
 	: closed_statement
@@ -369,15 +363,8 @@ open_statement
 	: COMMAND
 		{$$ = [command($1)];}
 	| statement COMMAND
-		{$$ = $1.concat([command($2)]);}*/
-	;
-
-pitches
-	:	pitches PITCH
-		{$$ = $1.concat([$2]);}
-	|	PITCH
-		{$$ = [$1];}
-	;
+		{$$ = $1.concat([command($2)]);}
+	;*/
 
 /*chord
 	: PITCH
@@ -399,4 +386,11 @@ pitch_or_music
 note_chord_element
 	: "<" pitches ">" optional_notemode_duration
 		{$$ = chord($2, $4);}
+	;
+
+pitches
+	:	pitches PITCH
+		{$$ = $1.concat([$2]);}
+	|	PITCH
+		{$$ = [$1];}
 	;
