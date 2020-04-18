@@ -44,7 +44,6 @@ PITCH				{PHONET}(([i][s])*|([e][s])*)
 // workaround non-word-boundary parsing for POST_UNSIGNED
 \s{FRACTION}				yytext = yytext.replace(/^\s+/, ""); return 'FRACTION';
 \s{UNSIGNED}				yytext = yytext.replace(/^\s+/, ""); return 'UNSIGNED';
-\s{INT}						yytext = yytext.replace(/^\s+/, ""); return 'INT';
 \s{REAL}					yytext = yytext.replace(/^\s+/, ""); return 'REAL';
 
 \s+							{}	// spaces
@@ -62,6 +61,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*)
 "\\stemUp"					return 'CMD_STEMUP';
 "\\stemDown"				return 'CMD_STEMDOWN';
 "\\relative"				return 'CMD_RELATIVE';
+"\\bar"						return 'CMD_BAR';
 
 // simple command
 "\\header"					return 'CMD_HEADER';
@@ -70,6 +70,8 @@ PITCH				{PHONET}(([i][s])*|([e][s])*)
 
 {PITCH}						return 'PITCH';
 {UNSIGNED}					return 'POST_UNSIGNED';
+
+{INT}						return 'INT';
 
 {SYMBOL}					return 'SYMBOL';
 
@@ -310,6 +312,8 @@ music_identifier
 		{$$ = $1;}
 	| "]"
 		{$$ = $1;}
+	| DIVIDE
+		{$$ = $1;}
 	;
 
 /*binary_cmd
@@ -329,6 +333,8 @@ unitary_cmd
 	| CMD_STEMDOWN
 		{$$ = $1;}
 	| CMD_RELATIVE
+		{$$ = $1;}
+	| CMD_BAR
 		{$$ = $1;}
 	;
 

@@ -1,7 +1,7 @@
 
 TODO:
 	lily parser
-		restore from blocks
+		reconstruction from parsing result
 	options to control layout
 	SVG static elements baking
 	parse measure ticks from ly
