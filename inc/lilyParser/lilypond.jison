@@ -43,8 +43,8 @@ PITCH				{PHONET}(([i][s])*|([e][s])*)(?=[\W\d])
 
 // workaround non-word-boundary parsing for POST_UNSIGNED
 \s{FRACTION}				yytext = yytext.replace(/^\s+/, ""); return 'FRACTION';
-\s{UNSIGNED}				yytext = yytext.replace(/^\s+/, ""); return 'UNSIGNED';
 \s{REAL}					yytext = yytext.replace(/^\s+/, ""); return 'REAL';
+\s{UNSIGNED}				yytext = yytext.replace(/^\s+/, ""); return 'UNSIGNED';
 
 \s+							{}	// spaces
 \%\{(.|\n)*?\%\}			{}	// scoped comments
@@ -73,6 +73,50 @@ PITCH				{PHONET}(([i][s])*|([e][s])*)(?=[\W\d])
 "\\markup"					return 'MARKUP';
 "\\markuplist"				return 'MARKUPLIST';
 "\\repeat"					return 'REPEAT';
+"\\context"					return 'CONTEXT';
+"\\accepts"					return 'ACCEPTS';
+"\\addlyrics"				return 'ADDLYRICS';
+"\\alias"					return 'ALIAS';
+"\\alternative"				return 'ALTERNATIVE';
+"\\book"					return 'BOOK';
+"\\bookpart"				return 'BOOKPART';
+"\\change"					return 'CHANGE';
+"\\chordmode"				return 'CHORDMODE';
+"\\chords"					return 'CHORDS';
+"\\consists"				return 'CONSISTS';
+"\\default"					return 'DEFAULT';
+"\\defaultchild"			return 'DEFAULTCHILD';
+"\\denies"					return 'DENIES';
+"\\description"				return 'DESCRIPTION';
+"\\drummode"				return 'DRUMMODE';
+"\\drums"					return 'DRUMS';
+"\\etc"						return 'ETC';
+"\\figuremode"				return 'FIGUREMODE';
+"\\figures"					return 'FIGURES';
+"\\version-error"			return 'INVALID';
+"\\layout"					return 'LAYOUT';
+"\\lyricmode"				return 'LYRICMODE';
+"\\lyrics"					return 'LYRICS';
+"\\lyricsto"				return 'LYRICSTO';
+"\\midi"					return 'MIDI';
+"\\name"					return 'NAME';
+"\\notemode"				return 'NOTEMODE';
+"\\override"				return 'OVERRIDE';
+"\\paper"					return 'PAPER';
+"\\remove"					return 'REMOVE';
+"\\rest"					return 'REST';
+"\\revert"					return 'REVERT';
+"\\score"					return 'SCORE';
+"\\score-lines"				return 'SCORELINES';
+"\\sequential"				return 'SEQUENTIAL';
+"\\set"						return 'SET';
+"\\simultaneous"			return 'SIMULTANEOUS';
+"\\tempo"					return 'TEMPO';
+"\\type"					return 'TYPE';
+"\\unset"					return 'UNSET';
+"\\with"					return 'WITH';
+
+"\\cm"						return 'CENTIMETER';
 
 {COMMAND}					return 'COMMAND';
 
@@ -129,6 +173,8 @@ toplevel_expression
 		{$$ = $1;}
 	| full_markup
 		{$$ = $1;}
+	| output_def
+		{$$ = $1;}
 	//| full_markup_list
 	//	{$$ = $1;}
 	//| book_block
@@ -137,7 +183,6 @@ toplevel_expression
 	//| score_block
 	//| SCM_TOKEN
 	//| embedded_scm_active
-	//| output_def
 	;
 
 header_block
@@ -208,7 +253,31 @@ symbol_list_element
 identifier_init
 	: identifier_init_nonumber
 		{$$ = $1;}
-	//| number_expression
+	| number_expression
+		{$$ = $1;}
+	| symbol_list_part_bare '.' property_path
+		{$$ = $1 + "." + $3;}
+	| symbol_list_part_bare ',' property_path
+		{$$ = $1 + "," + $3;}
+	| post_event_nofinger post_events
+		{$$ = [$1, $2];}
+	;
+
+number_expression
+	: number_expression '+' number_term
+	| number_expression '-' number_term
+	| number_term
+	;
+
+number_term
+	: number_factor
+	| number_factor '*' number_factor
+	| number_factor '/' number_factor
+	;
+
+number_factor
+	: '-'  number_factor
+	| bare_number
 	;
 
 identifier_init_nonumber
@@ -269,7 +338,8 @@ markup_head_1_list
 	;
 
 markup_head_1_item
-	//: markup_function /*EXPECT_MARKUP*/ markup_command_list_arguments
+	//: markup_function EXPECT_MARKUP markup_command_list_arguments
+	//: markup_function markup_command_list_arguments
 	//	{$$ = {func: $1, args: $2};}
 	: markup_function
 		{$$ = {func: $1};}
@@ -388,6 +458,22 @@ bare_number_common
 		{$$ = Number($1);}
 	//| NUMBER_IDENTIFIER
 	//| REAL NUMBER_IDENTIFIER
+	| number_identifier
+		{$$ = $1;}
+	;
+
+// equivalent for NUMBER_IDENTIFIER in lilypond's parser.yy
+number_identifier
+	: REAL number_unit
+		{$$ = {number: Number($1), unit: $2};}
+	| INT number_unit
+		{$$ = {number: Number($1), unit: $2};}
+	;
+
+// addon term to construct number_identifier
+number_unit
+	: CENTIMETER
+		{$$ = $1;}
 	;
 
 score_body
@@ -716,4 +802,125 @@ markup_top
 markup_mode_word
 	: markup_mode markup_word
 		{$$ = {markup: $2};}
+	;
+
+output_def
+	: output_def_body '}'
+		{$$ = $1;}
+	;
+
+output_def_body
+	: output_def_head_with_mode_switch '{'
+		{$$ = {head: $1};}
+	| output_def_body assignment
+	//| output_def_body embedded_scm_active
+	//| output_def_body SCM_TOKEN
+	| output_def_body music_or_context_def
+	//| output_def_body error
+	;
+
+output_def_head_with_mode_switch
+	: output_def_head
+	;
+
+output_def_head
+	: PAPER
+		{$$ = $1;}
+	| MIDI
+		{$$ = $1;}
+	| LAYOUT
+		{$$ = $1;}
+	;
+
+music_or_context_def
+	: music_assign
+	| context_def_spec_block
+	;
+
+context_def_spec_block
+	: CONTEXT '{' context_def_spec_body '}'
+	;
+
+context_def_spec_body
+	: %empty
+		{$$ = [];}
+	| context_def_spec_body context_mod
+		{$$ = $1.concat([$2]);}
+	| context_def_spec_body context_modification
+		{$$ = $1.concat([$2]);}
+	| context_def_spec_body context_mod_arg
+		{$$ = $1.concat([$2]);}
+	;
+
+context_modification
+	: WITH '{' context_mod_list '}'
+	| WITH context_modification_arg
+	;
+
+context_mod
+	: property_operation
+	| context_def_mod SYMBOL
+	//| context_def_mod embedded_scm
+	;
+
+property_operation
+	: symbol '=' scalar
+	| UNSET symbol
+	| OVERRIDE revert_arg '=' scalar
+	| REVERT revert_arg
+	;
+
+symbol
+	: STRING
+		{$$ = $1;}
+	| SYMBOL
+		{$$ = $1;}
+	//| embedded_scm_bare
+	;
+
+scalar
+	//: embedded_scm_arg
+	: pitch_or_music
+		{$$ = $1;}
+	//| SCM_IDENTIFIER
+	//	{$$ = $1;}
+	| bare_number
+		{$$ = $1;}
+	| '-' bare_number
+		{$$ = -$1;}
+	| string
+		{$$ = $1;}
+	| symbol_list_part_bare '.' property_path
+		{$$ = $1 + "." + $3;}
+	| symbol_list_part_bare ',' property_path
+		{$$ = $1 + "." + $3;}
+	;
+
+bare_number
+	: bare_number_common
+		{$$ = $1;}
+	| UNSIGNED
+		{$$ = $1;}
+	//| UNSIGNED NUMBER_IDENTIFIER
+	;
+
+context_def_mod
+	: CONSISTS
+		{$$ = $1;}
+	| REMOVE
+		{$$ = $1;}
+	| ACCEPTS
+		{$$ = $1;}
+	| DEFAULTCHILD
+		{$$ = $1;}
+	| DENIES
+		{$$ = $1;}
+	| ALIAS
+		{$$ = $1;}
+	| TYPE
+		{$$ = $1;}
+	| DESCRIPTION
+		{$$ = $1;}
+	| NAME
+		{$$ = $1;}
 	;
