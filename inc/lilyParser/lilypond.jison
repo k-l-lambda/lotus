@@ -34,7 +34,7 @@ HYPHEN				--
 BOM_UTF8			\357\273\277
 
 PHONET				[abcdefgr]
-PITCH				{PHONET}(([i][s])*|([e][s])*)
+PITCH				{PHONET}(([i][s])*|([e][s])*)(?=\W)
 //PITCH				{TONE}(\'*|\,*)
 //DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
 
@@ -51,10 +51,9 @@ PITCH				{PHONET}(([i][s])*|([e][s])*)
 \%[^\n]*\n					{}	// single comments
 \"(\\\"|[^"])*\"			return 'STRING';
 
-// binary command
-"\\repeat"					return 'CMD_REPEAT';
+// binary commands
 
-// unitary command
+// unitary commands
 "\\clef"					return 'CMD_CLEF';
 "\\key"						return 'CMD_KEY';
 "\\time"					return 'CMD_TIME';
@@ -62,10 +61,18 @@ PITCH				{PHONET}(([i][s])*|([e][s])*)
 "\\stemDown"				return 'CMD_STEMDOWN';
 "\\relative"				return 'CMD_RELATIVE';
 "\\bar"						return 'CMD_BAR';
-"\\version"					return 'CMD_VERSION';
 
-// simple command
-"\\header"					return 'CMD_HEADER';
+"\\version"					return 'CMD_VERSION';
+"\\column"					return 'CMD_COLUMN';
+"\\line"					return 'CMD_LINE';
+
+// simple commands
+
+// syntax commands
+"\\header"					return 'HEADER';
+"\\markup"					return 'MARKUP';
+"\\markuplist"				return 'MARKUPLIST';
+"\\repeat"					return 'REPEAT';
 
 {COMMAND}					return 'COMMAND';
 
@@ -120,10 +127,26 @@ toplevel_expression
 		{$$ = $1;}
 	| composite_music
 		{$$ = $1;}
+	| full_markup
+		{$$ = $1;}
+	//| full_markup_list
+	//	{$$ = $1;}
+	//| book_block
+	//| bookpart_block
+	//| BOOK_IDENTIFIER
+	//| score_block
+	//| SCM_TOKEN
+	//| embedded_scm_active
+	//| output_def
 	;
 
 header_block
-	: CMD_HEADER '{' lilypond_header_body '}'
+	: lilypond_header
+		{$$ = $1;}
+	;
+
+lilypond_header
+	: HEADER '{' lilypond_header_body '}'
 		{$$ = {type: "header", data: $3};}
 	;
 
@@ -191,8 +214,220 @@ identifier_init
 identifier_init_nonumber
 	: header_block
 		{$$ = $1;}
-	| composite_music
+	| music_assign
 		{$$ = $1;}
+	| full_markup_list
+		{$$ = $1;}
+	| string
+		{$$ = $1;}
+	| pitch_or_music
+		{$$ = $1;}
+	| FRACTION
+		{$$ = $1;}
+	//| score_block
+	//| book_block
+	//| bookpart_block
+	//| output_def
+	//| context_def_spec_block
+	//| embedded_scm
+	//| partial_markup
+	//| context_modification
+	//| partial_function ETC
+	;
+
+string
+	: STRING
+		{$$ = $1;}
+	| SYMBOL
+		{$$ = $1;}
+	| full_markup
+		{$$ = $1;}
+	;
+
+full_markup_list
+	: MARKUPLIST
+		{$$ = $1;}
+	| markup_list
+		{$$ = $1;}
+	;
+
+markup_list
+	: markup_composed_list
+	| markup_uncomposed_list
+		{$$ = $1;}
+	;
+
+markup_composed_list
+	: markup_head_1_list markup_uncomposed_list
+	;
+
+markup_head_1_list
+	: markup_head_1_item
+		{$$ = [$1];}
+	| markup_head_1_list markup_head_1_item
+		{$$ = $1.concat([$2]);}
+	;
+
+markup_head_1_item
+	//: markup_function /*EXPECT_MARKUP*/ markup_command_list_arguments
+	//	{$$ = {func: $1, args: $2};}
+	: markup_function
+		{$$ = {func: $1};}
+	;
+
+// equivalent for MARKUP_FUNCTION in lilypond's parser.yy
+markup_function
+	: CMD_COLUMN
+		{$$ = $1;}
+	| CMD_LINE
+		{$$ = $1;}
+	;
+
+markup_uncomposed_list
+	: markup_braced_list
+		{$$ = $1;}
+	//| markup_command_list
+	//| markup_scm MARKUPLIST_IDENTIFIER
+	//| SCORELINES '{' score_body '}'
+	;
+
+markup_braced_list
+	: '{' markup_braced_list_body '}'
+		{$$ = $2;}
+	;
+
+markup_braced_list_body
+	: %empty
+		{$$ = [];}
+	| markup_braced_list_body markup
+		{$$ = $1.concat([$2]);}
+	| markup_braced_list_body markup_list
+		{$$ = $1.concat([$2]);}
+	;
+
+markup
+	: markup_head_1_list simple_markup
+		{$$ = {head: $1, data: $2};}
+	| simple_markup
+		{$$ = {data: $1};}
+	;
+
+simple_markup
+	: markup_word
+		{$$ = $1;}
+	| simple_markup_noword
+		{$$ = $1;}
+	;
+
+markup_word
+	: STRING
+		{$$ = $1;}
+	| SYMBOL
+		{$$ = $1;}
+	;
+
+simple_markup_noword
+	: SCORE '{' score_body '}'
+		{$$ = {score: $3};}
+	| markup_function markup_command_basic_arguments
+		{$$ = {func: $1, args: $2};}
+	//| markup_scm MARKUP_IDENTIFIER
+	;
+
+markup_command_basic_arguments
+	: %emtpy
+		{$$ = [];}
+	| /*EXPECT_MARKUP_LIST*/ markup_command_list_arguments markup_list
+		{$$ = $1.concat($2);}
+	| /*EXPECT_SCM*/ markup_command_list_arguments markup_command_embedded_lilypond
+		{$$ = $1.concat($2);}
+	//| EXPECT_SCM markup_command_list_arguments embedded_scm
+	//| EXPECT_SCM markup_command_list_arguments mode_changed_music
+	//| EXPECT_SCM markup_command_list_arguments MUSIC_IDENTIFIER
+	//| EXPECT_SCM markup_command_list_arguments STRING
+	//| EXPECT_NO_MORE_ARGS
+	;
+
+markup_command_list_arguments
+	: markup_command_basic_arguments
+		{$$ = [$1];}
+	| /*EXPECT_MARKUP*/ markup_command_list_arguments markup
+		{$$ = $1.concat($2);}
+	;
+
+markup_command_embedded_lilypond
+	: '{' embedded_lilypond '}'
+	;
+
+embedded_lilypond
+	: %empty
+		{$$ = $1;}
+	| identifier_init_nonumber
+		{$$ = $1;}
+	| embedded_lilypond_number
+		{$$ = $1;}
+	| post_event
+		{$$ = $1;}
+	//| duration post_events %prec ':'
+	| music_embedded music_embedded music_list
+		{$$ = [$1, $2, $3];}
+	//| error
+	//| INVALID embedded_lilypond
+	;
+
+embedded_lilypond_number
+	: '-' embedded_lilypond_number
+		{$$ = -$1;}
+	| bare_number_common
+		{$$ = $1;}
+	//| UNSIGNED NUMBER_IDENTIFIER
+	;
+
+bare_number_common
+	: REAL
+		{$$ = Number($1);}
+	//| NUMBER_IDENTIFIER
+	//| REAL NUMBER_IDENTIFIER
+	;
+
+score_body
+	: score_items
+		{$$ = $1;}
+	//| score_body error
+	;
+
+score_items
+	: %empty
+		{$$ = [];}
+	| score_items score_item
+		{$$ = $1.concat([$2]);}
+	| score_items lilypond_header
+		{$$ = $1.concat([$2]);}
+	;
+
+score_item
+	//: embedded_scm
+	: music
+	//| output_def
+	;
+
+//markup_command_list
+//	: MARKUP_LIST_FUNCTION markup_command_list_arguments
+//	;
+
+markup_scm
+	: embedded_scm
+	;
+
+embedded_scm
+	: embedded_scm_bare
+	| scm_function_call
+	| lookup
+	;
+
+embedded_scm_bare
+	: SCM_TOKEN
+	| SCM_IDENTIFIER
 	;
 
 composite_music
@@ -322,7 +557,7 @@ multipliers
 	;
 
 repeated_music
-	: CMD_REPEAT simple_string unsigned_number music
+	: REPEAT simple_string unsigned_number music
 		{$$ = {repeat: [$2, $3], music: $4};}
 	;
 
@@ -359,8 +594,6 @@ music_identifier
 	;
 
 /*binary_cmd
-	: CMD_REPEAT
-		{$$ = $1;}
 	;*/
 
 unitary_cmd
@@ -399,6 +632,7 @@ pitch_or_music
 	//: pitch exclamations questions octave_check maybe_notemode_duration erroneous_quotes optional_rest post_events
 	: pitch optional_notemode_duration
 		{$$ = chord([$1], $2);}
+	//| new_chord post_events
 	;
 
 note_chord_element
@@ -456,4 +690,30 @@ post_event_nofinger
 fingering
 	: POST_UNSIGNED
 		{$$ = $1;}
+	;
+
+full_markup
+	: markup_mode markup_top
+		{$$ = {markup: $2};}
+	| markup_mode_word
+		{$$ = $1;}
+	;
+
+markup_mode
+	: MARKUP
+		{$$ = $1;}
+	;
+
+markup_top
+	: markup_list
+		{$$ = {body: $1};}
+	| markup_head_1_list simple_markup
+		{$$ = {head: $1, body: $2};}
+	| simple_markup_noword
+		{$$ = {body: $1};}
+	;
+
+markup_mode_word
+	: markup_mode markup_word
+		{$$ = {markup: $2};}
 	;

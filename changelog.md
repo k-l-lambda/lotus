@@ -14,6 +14,8 @@ TODO:
 
 *	2020.4.20
 
+	+	lilypond.jison: markup syntax rules added.
+
 	+	lilypond.jison: syntax of property_path added.
 
 	+	Lilypond symbol 'SCM' = scheme
