@@ -34,7 +34,7 @@ HYPHEN				--
 BOM_UTF8			\357\273\277
 
 PHONET				[abcdefgr]
-PITCH				{PHONET}(([i][s])*|([e][s])*)(?=\W)
+PITCH				{PHONET}(([i][s])*|([e][s])*)(?=[\W\d])
 //PITCH				{TONE}(\'*|\,*)
 //DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
 
