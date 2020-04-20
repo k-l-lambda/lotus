@@ -129,7 +129,8 @@ lilypond_header_body
 assignment
 	: assignment_id '=' identifier_init
 		{$$ = {key: $1, value: $3};}
-	//| assignment_id '.' property_path '=' identifier_init
+	| assignment_id '.' property_path '=' identifier_init
+		{$$ = {key: $1 + $3, value: $5};}
 	//| markup_mode_word '=' identifier_init
 	;
 
@@ -137,6 +138,39 @@ assignment_id
 	: STRING
 		{$$ = $1;}
 	| SYMBOL
+		{$$ = $1;}
+	;
+
+property_path
+	: symbol_list_rev
+		{$$ = $1;}
+	;
+
+symbol_list_rev
+	: symbol_list_part
+		{$$ = $1;}
+	//| symbol_list_rev '.' symbol_list_partf
+	| symbol_list_rev ',' symbol_list_part
+		{$$ = $1 + "," + $3;}
+	;
+
+symbol_list_part
+	: symbol_list_part_bare
+		{$$ = $1;}
+	//| embedded_scm_bare
+	;
+
+symbol_list_part_bare
+	: SYMBOL
+		{$$ = $1;}
+	| symbol_list_element
+		{$$ = $1;}
+	;
+
+symbol_list_element
+	: STRING
+		{$$ = $1;}
+	| STRING
 		{$$ = $1;}
 	;
 

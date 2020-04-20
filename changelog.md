@@ -12,6 +12,13 @@ TODO:
 
 
 
+*	2020.4.20
+
+	+	lilypond.jison: syntax of property_path added.
+
+	+	Lilypond symbol 'SCM' = scheme
+
+
 *	2020.4.18
 
 	+	lilypond.jison: test-2.ly passed.
