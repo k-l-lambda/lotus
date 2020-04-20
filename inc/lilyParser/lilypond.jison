@@ -29,8 +29,8 @@ HORIZONTALWHITE		[ \t]
 BLACK				[^ \n\t\f\r]
 RESTNAME			[rs]
 ESCAPED				[nt\\''""]
-EXTENDER			__
-HYPHEN				--
+EXTENDER			\_\_
+HYPHEN				\-\-
 BOM_UTF8			\357\273\277
 
 PHONET				[abcdefgr]
@@ -51,12 +51,21 @@ PITCH				{PHONET}(([i][s])*|([e][s])*)(?=[\W\d])
 \%[^\n]*\n					{}	// single comments
 \"(\\\"|[^"])*\"			return 'STRING';
 
+{EXTENDER}					return 'EXTENDER';
+{HYPHEN}					return 'HYPHEN';
+
+"<"							return 'ANGLE_OPEN';
+">"							return 'ANGLE_CLOSE';
+
+{E_UNSIGNED}				return 'E_UNSIGNED';
+
 // binary commands
 
 // unitary commands
 "\\clef"					return 'CMD_CLEF';
 "\\key"						return 'CMD_KEY';
 "\\time"					return 'CMD_TIME';
+"\\times"					return 'CMD_TIMES';
 "\\stemUp"					return 'CMD_STEMUP';
 "\\stemDown"				return 'CMD_STEMDOWN';
 "\\relative"				return 'CMD_RELATIVE';
@@ -542,6 +551,22 @@ function_arglist_nonbackup
 	| function_arglist_nonbackup_reparse REPARSE symbol_list_arg
 	;
 
+function_arglist_common
+	//: EXPECT_NO_MORE_ARGS
+	: %empty
+	//| EXPECT_SCM function_arglist_optional embedded_scm_arg
+	//| EXPECT_SCM function_arglist_optional bare_number_common
+	//| EXPECT_SCM function_arglist_optional post_event_nofinger
+	//| EXPECT_SCM function_arglist_optional '-' NUMBER_IDENTIFIER
+	| function_arglist_common_reparse REPARSE SCM_ARG
+	| function_arglist_common_reparse REPARSE lyric_element_music
+	| function_arglist_common_reparse REPARSE pitch_or_music
+	| function_arglist_common_reparse REPARSE bare_number_common
+	| function_arglist_common_reparse REPARSE duration
+	| function_arglist_common_reparse REPARSE reparsed_rhythm
+	| function_arglist_common_reparse REPARSE symbol_list_arg
+	;
+
 lookup
 	: LOOKUP_IDENTIFIER
 	| LOOKUP_IDENTIFIER '.' symbol_list_rev
@@ -744,6 +769,8 @@ unitary_cmd
 		{$$ = $1;}
 	| CMD_TIME
 		{$$ = $1;}
+	| CMD_TIMES
+		{$$ = $1;}
 	| CMD_STEMUP
 		{$$ = $1;}
 	| CMD_STEMDOWN
@@ -826,6 +853,65 @@ post_event_nofinger
 		{$$ = {type: "fingering", direction: "up", value: $2};}
 	| '_' fingering
 		{$$ = {type: "fingering", direction: "down", value: $2};}
+	| direction_less_event
+		{$$ = $1;}
+	| script_dir music_function_call
+	| HYPHEN
+	| EXTENDER
+	| script_dir direction_reqd_event
+	| script_dir direction_less_event
+	;
+
+direction_reqd_event
+	: gen_text_def
+	| script_abbreviation
+	;
+
+gen_text_def
+	: full_markup
+	| STRING
+	| SYMBOL
+	| embedded_scm
+	;
+
+script_abbreviation
+	: '^'
+	| '+'
+	| '-' 
+ 	| '!'
+	| ANGLE_CLOSE
+	| '.' 
+	| '_'
+	;
+
+direction_less_event
+	: string_number_event
+	//| EVENT_IDENTIFIER
+	| tremolo_type
+	| event_function_event
+	;
+
+string_number_event
+	: E_UNSIGNED
+	;
+
+tremolo_type
+	: ':'
+	| ':' UNSIGNED
+	;
+
+event_function_event
+	: EVENT_FUNCTION function_arglist
+	;
+
+music_function_call
+	: MUSIC_FUNCTION function_arglist
+	;
+
+script_dir
+	: "_"
+	| "^"
+	| "-"
 	;
 
 fingering
