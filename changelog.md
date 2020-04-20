@@ -14,6 +14,8 @@ TODO:
 
 *	2020.4.20
 
+	+	lilypond.jison: syntax term of scm_identifier added.
+
 	+	lilypond.jison: syntax of output_def added.
 
 	+	lilypond.jison: markup syntax rules added.

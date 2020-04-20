@@ -107,6 +107,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*)(?=[\W\d])
 "\\rest"					return 'REST';
 "\\revert"					return 'REVERT';
 "\\score"					return 'SCORE';
+//"\\Score"					return 'SCORE';		// why there is capital score in layout/context block?
 "\\score-lines"				return 'SCORELINES';
 "\\sequential"				return 'SEQUENTIAL';
 "\\set"						return 'SET';
@@ -134,6 +135,8 @@ PITCH				{PHONET}(([i][s])*|([e][s])*)(?=[\W\d])
 
 "["							return yytext;
 "]"							return yytext;
+
+"##f"						return 'SCM_FALSE';
 
 <<EOF>>						return 'EOF';
 
@@ -233,7 +236,7 @@ symbol_list_rev
 symbol_list_part
 	: symbol_list_part_bare
 		{$$ = $1;}
-	//| embedded_scm_bare
+	| embedded_scm_bare
 	;
 
 symbol_list_part_bare
@@ -255,10 +258,10 @@ identifier_init
 		{$$ = $1;}
 	| number_expression
 		{$$ = $1;}
-	| symbol_list_part_bare '.' property_path
-		{$$ = $1 + "." + $3;}
-	| symbol_list_part_bare ',' property_path
-		{$$ = $1 + "," + $3;}
+	//| symbol_list_part_bare '.' property_path
+	//	{$$ = $1 + "." + $3;}
+	//| symbol_list_part_bare ',' property_path
+	//	{$$ = $1 + "," + $3;}
 	| post_event_nofinger post_events
 		{$$ = [$1, $2];}
 	;
@@ -293,12 +296,13 @@ identifier_init_nonumber
 		{$$ = $1;}
 	| FRACTION
 		{$$ = $1;}
+	| embedded_scm
+		{$$ = $1;}
 	//| score_block
 	//| book_block
 	//| bookpart_block
 	//| output_def
 	//| context_def_spec_block
-	//| embedded_scm
 	//| partial_markup
 	//| context_modification
 	//| partial_function ETC
@@ -507,13 +511,64 @@ markup_scm
 
 embedded_scm
 	: embedded_scm_bare
-	| scm_function_call
-	| lookup
+		{$$ = $1;}
+	//| scm_function_call
+	//| lookup
+	;
+
+scm_function_call
+	: SCM_FUNCTION function_arglist
+	;
+
+function_arglist
+	: function_arglist_nonbackup
+	//| EXPECT_OPTIONAL EXPECT_SCM function_arglist_skip_nonbackup DEFAULT
+	;
+
+function_arglist_nonbackup
+	: function_arglist_common
+	//| EXPECT_OPTIONAL EXPECT_SCM function_arglist_nonbackup post_event_nofinger
+	//| EXPECT_OPTIONAL EXPECT_SCM function_arglist_nonbackup '-' UNSIGNED
+	//| EXPECT_OPTIONAL EXPECT_SCM function_arglist_nonbackup '-' REAL
+	//| EXPECT_OPTIONAL EXPECT_SCM function_arglist_nonbackup '-' NUMBER_IDENTIFIER
+	//| EXPECT_OPTIONAL EXPECT_SCM function_arglist_nonbackup embedded_scm_arg
+	//| EXPECT_OPTIONAL EXPECT_SCM function_arglist_nonbackup bare_number_common
+	| function_arglist_nonbackup_reparse REPARSE pitch_or_music
+	| function_arglist_nonbackup_reparse REPARSE duration
+	| function_arglist_nonbackup_reparse REPARSE reparsed_rhythm
+	| function_arglist_nonbackup_reparse REPARSE bare_number_common
+	| function_arglist_nonbackup_reparse REPARSE SCM_ARG
+	| function_arglist_nonbackup_reparse REPARSE lyric_element_music
+	| function_arglist_nonbackup_reparse REPARSE symbol_list_arg
+	;
+
+lookup
+	: LOOKUP_IDENTIFIER
+	| LOOKUP_IDENTIFIER '.' symbol_list_rev
+	;
+
+symbol_list_rev
+	: symbol_list_part
+	| symbol_list_rev '.' symbol_list_part
+	| symbol_list_rev ',' symbol_list_part
+	;
+
+symbol_list_part
+	: symbol_list_part_bare
+	| embedded_scm_bare
 	;
 
 embedded_scm_bare
-	: SCM_TOKEN
-	| SCM_IDENTIFIER
+	//: SCM_TOKEN
+	//| SCM_IDENTIFIER
+	: scm_identifier
+		{$$ = $1;}
+	;
+
+// equivalent for SCM_IDENTIFIER in lilypond parser.yy
+scm_identifier
+	: SCM_FALSE
+		{$$ = false;}
 	;
 
 composite_music
@@ -852,6 +907,11 @@ context_def_spec_body
 		{$$ = $1.concat([$2]);}
 	;
 
+context_mod_arg
+	: embedded_scm
+	| composite_music
+	;
+
 context_modification
 	: WITH '{' context_mod_list '}'
 	| WITH context_modification_arg
@@ -875,15 +935,15 @@ symbol
 		{$$ = $1;}
 	| SYMBOL
 		{$$ = $1;}
-	//| embedded_scm_bare
+	| embedded_scm_bare
 	;
 
 scalar
 	//: embedded_scm_arg
 	: pitch_or_music
 		{$$ = $1;}
-	//| SCM_IDENTIFIER
-	//	{$$ = $1;}
+	| scm_identifier
+		{$$ = $1;}
 	| bare_number
 		{$$ = $1;}
 	| '-' bare_number
