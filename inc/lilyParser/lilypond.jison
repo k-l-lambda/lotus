@@ -62,6 +62,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*)
 "\\stemDown"				return 'CMD_STEMDOWN';
 "\\relative"				return 'CMD_RELATIVE';
 "\\bar"						return 'CMD_BAR';
+"\\version"					return 'CMD_VERSION';
 
 // simple command
 "\\header"					return 'CMD_HEADER';
@@ -101,10 +102,17 @@ start_symbol
 lilypond
 	: %empty
 		{$$ = [];}
+	| version
+		{$$ = [$1];}
 	| lilypond toplevel_expression
 		{$$ = $1.concat([$2]);}
 	| lilypond assignment
 		{$$ = $1.concat([$2]);}
+	;
+
+version
+	: CMD_VERSION STRING
+		{$$ = {version: $2};}
 	;
 
 toplevel_expression
