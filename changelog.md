@@ -14,6 +14,8 @@ TODO:
 
 *	2020.4.21
 
+	+	lyParser.ts: multiple source testing added.
+
 	+	lilypond.jison: syntax for scheme expression.
 
 	+	lilypond.jison: syntax of context music added.
