@@ -452,6 +452,9 @@ markup_word
 	// extra formla
 	| "."
 		{$$ = $1;}
+	// extra formla
+	| "-"
+		{$$ = $1;}
 	;
 
 simple_markup_noword
@@ -959,9 +962,16 @@ value
 
 pitch_or_music
 	//: pitch exclamations questions octave_check maybe_notemode_duration erroneous_quotes optional_rest post_events
-	: pitch optional_notemode_duration
+	: pitch optional_notemode_duration optional_rest post_events
 		{$$ = chord([$1], $2);}
 	//| new_chord post_events
+	;
+
+post_events
+	: %empty
+		{$$ = [];}
+	| post_events post_event
+		{$$ = $1.concat($2);}
 	;
 
 note_chord_element
@@ -1010,6 +1020,8 @@ sub_quotes
 post_event
 	: post_event_nofinger
 		{$$ = $1;}
+	| '-' fingering
+		{$$ = {type: "fingering", direction: "middle", value: $2};}
 	;
 
 post_event_nofinger
@@ -1026,9 +1038,9 @@ post_event_nofinger
 	| script_dir direction_less_event
 	// extra formula
 	| script_dir COMMAND
-		{$$ = {dir: $1, content: $2};}
+		{$$ = {direction: $1, content: $2};}
 	| script_dir expressive_mark
-		{$$ = {dir: $1, content: $2};}
+		{$$ = {direction: $1, content: $2};}
 	;
 
 direction_reqd_event
@@ -1079,8 +1091,11 @@ music_function_call
 
 script_dir
 	: "_"
+		{$$ = "down";}
 	| "^"
+		{$$ = "up";}
 	| "-"
+		{$$ = "middle";}
 	;
 
 fingering
@@ -1276,5 +1291,12 @@ scheme_token
 	: bare_number
 		{$$ = $1;}
 	| symbol
+		{$$ = $1;}
+	;
+
+optional_rest
+	: %empty
+		{$$ = null;}
+	| REST
 		{$$ = $1;}
 	;
