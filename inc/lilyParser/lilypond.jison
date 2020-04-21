@@ -56,6 +56,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 
 //"<"							return 'ANGLE_OPEN';
 //">"							return 'ANGLE_CLOSE';
+"<<"						return 'DOUBLE_ANGLE_OPEN';
+">>"						return 'DOUBLE_ANGLE_CLOSE';
 
 {E_UNSIGNED}				return 'E_UNSIGNED';
 
@@ -194,14 +196,20 @@ toplevel_expression
 		{$$ = $1;}
 	| output_def
 		{$$ = $1;}
+	| score_block
+		{$$ = $1;}
 	//| full_markup_list
 	//	{$$ = $1;}
 	//| book_block
 	//| bookpart_block
 	//| BOOK_IDENTIFIER
-	//| score_block
 	//| SCM_TOKEN
 	//| embedded_scm_active
+	;
+
+score_block
+	: SCORE '{' score_body '}'
+		{$$ = {block: "score", body: $3};}
 	;
 
 header_block
@@ -211,7 +219,7 @@ header_block
 
 lilypond_header
 	: HEADER '{' lilypond_header_body '}'
-		{$$ = {type: "header", data: $3};}
+		{$$ = {block: "header", body: $3};}
 	;
 
 lilypond_header_body
@@ -314,7 +322,8 @@ identifier_init_nonumber
 		{$$ = $1;}
 	| embedded_scm
 		{$$ = $1;}
-	//| score_block
+	| score_block
+		{$$ = $1;}
 	//| book_block
 	//| bookpart_block
 	//| output_def
@@ -519,8 +528,9 @@ score_items
 	;
 
 score_item
-	//: embedded_scm
 	: music
+		{$$ = $1;}
+	//: embedded_scm
 	//| output_def
 	;
 
@@ -530,6 +540,7 @@ score_item
 
 markup_scm
 	: embedded_scm
+		{$$ = $1;}
 	;
 
 embedded_scm
@@ -638,7 +649,13 @@ music_bare
 grouped_music_list
 	: sequential_music
 		{$$ = $1;}
-	//\ simultaneous_music
+	| simultaneous_music
+		{$$ = $1;}
+	;
+
+simultaneous_music
+	: SIMULTANEOUS braced_music_list
+	| DOUBLE_ANGLE_OPEN music_list DOUBLE_ANGLE_CLOSE
 	;
 
 sequential_music
@@ -733,9 +750,10 @@ dots
 multipliers
 	: %empty
 		{$$ = "";}
-	| multipliers '*' UNSIGNED
+	| multipliers '*' unsigned_number
 		{$$ = $1 + "*" + $3;}
 	//| multipliers '*' FRACTION
+	//| multipliers '*' multiplier_scm
 	;
 
 repeated_music
@@ -746,6 +764,10 @@ repeated_music
 unsigned_number
 	: UNSIGNED
 		{$$ = $1;}
+	| POST_UNSIGNED
+		{$$ = $1;}
+	//| NUMBER_IDENTIFIER
+	//| embedded_scm
 	;
 
 simple_string
