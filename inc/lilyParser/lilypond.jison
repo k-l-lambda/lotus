@@ -83,6 +83,9 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\italic"					return 'CMD_ITALIC';
 
 // simple commands
+"\\<"						return 'CMD_CRESCENDO_BEGIN';
+"\\>"						return 'CMD_DECRESCENDO_BEGIN';
+"\\!"						return 'CMD_DYNAMICS_END';
 
 // syntax commands
 "\\header"					return 'HEADER';
@@ -895,6 +898,17 @@ music_identifier
 		{$$ = $1;}
 	| DIVIDE
 		{$$ = $1;}
+	| expressive_mark
+		{$$ = $1;}
+	;
+
+expressive_mark
+	: CMD_CRESCENDO_BEGIN
+		{$$ = $1;}
+	| CMD_DECRESCENDO_BEGIN
+		{$$ = $1;}
+	| CMD_DYNAMICS_END
+		{$$ = $1;}
 	;
 
 /*binary_cmd
@@ -1012,6 +1026,8 @@ post_event_nofinger
 	| script_dir direction_less_event
 	// extra formula
 	| script_dir COMMAND
+		{$$ = {dir: $1, content: $2};}
+	| script_dir expressive_mark
 		{$$ = {dir: $1, content: $2};}
 	;
 
