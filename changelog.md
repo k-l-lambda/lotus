@@ -12,6 +12,11 @@ TODO:
 
 
 
+*	2020.4.21
+
+	+	lilypond.jison: enhanced grammar.
+
+
 *	2020.4.20
 
 	+	lilypond.jison: syntax term of scm_identifier added.

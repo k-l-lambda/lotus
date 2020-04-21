@@ -34,8 +34,8 @@ HYPHEN				\-\-
 BOM_UTF8			\357\273\277
 
 PHONET				[abcdefgr]
-PITCH				{PHONET}(([i][s])*|([e][s])*)(?=[\W\d])
-//PITCH				{TONE}(\'*|\,*)
+PITCH				{PHONET}(([i][s])*|([e][s])*|[s]*)(?=[\W\d])
+PLACEHOLDER_PITCH	[s](?=[\W\d])
 //DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
 
 
@@ -54,8 +54,8 @@ PITCH				{PHONET}(([i][s])*|([e][s])*)(?=[\W\d])
 {EXTENDER}					return 'EXTENDER';
 {HYPHEN}					return 'HYPHEN';
 
-"<"							return 'ANGLE_OPEN';
-">"							return 'ANGLE_CLOSE';
+//"<"							return 'ANGLE_OPEN';
+//">"							return 'ANGLE_CLOSE';
 
 {E_UNSIGNED}				return 'E_UNSIGNED';
 
@@ -70,10 +70,15 @@ PITCH				{PHONET}(([i][s])*|([e][s])*)(?=[\W\d])
 "\\stemDown"				return 'CMD_STEMDOWN';
 "\\relative"				return 'CMD_RELATIVE';
 "\\bar"						return 'CMD_BAR';
+"\\omit"					return 'CMD_OMIT';
+"\\ottava"					return 'CMD_OTTAVA';
+"\\barNumberCheck"			return 'CMD_BARNUMBERCHECK';
 
 "\\version"					return 'CMD_VERSION';
 "\\column"					return 'CMD_COLUMN';
 "\\line"					return 'CMD_LINE';
+"\\bold"					return 'CMD_BOLD';
+"\\italic"					return 'CMD_ITALIC';
 
 // simple commands
 
@@ -131,6 +136,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*)(?=[\W\d])
 {COMMAND}					return 'COMMAND';
 
 {PITCH}						return 'PITCH';
+{PLACEHOLDER_PITCH}			return 'PLACEHOLDER_PITCH';
 {UNSIGNED}					return 'POST_UNSIGNED';
 
 {INT}						return 'INT';
@@ -146,6 +152,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*)(?=[\W\d])
 "]"							return yytext;
 
 "##f"						return 'SCM_FALSE';
+\#{INT}						return 'SCM_INT';
 
 <<EOF>>						return 'EOF';
 
@@ -364,6 +371,10 @@ markup_function
 		{$$ = $1;}
 	| CMD_LINE
 		{$$ = $1;}
+	| CMD_BOLD
+		{$$ = $1;}
+	| CMD_ITALIC
+		{$$ = $1;}
 	;
 
 markup_uncomposed_list
@@ -406,6 +417,9 @@ markup_word
 	: STRING
 		{$$ = $1;}
 	| SYMBOL
+		{$$ = $1;}
+	// extra formla
+	| "."
 		{$$ = $1;}
 	;
 
@@ -594,6 +608,8 @@ embedded_scm_bare
 scm_identifier
 	: SCM_FALSE
 		{$$ = false;}
+	| SCM_INT
+		{$$ = $1;}
 	;
 
 composite_music
@@ -779,6 +795,12 @@ unitary_cmd
 		{$$ = $1;}
 	| CMD_BAR
 		{$$ = $1;}
+	| CMD_OMIT
+		{$$ = $1;}
+	| CMD_OTTAVA
+		{$$ = $1;}
+	| CMD_BARNUMBERCHECK
+		{$$ = $1;}
 	;
 
 value
@@ -793,6 +815,8 @@ value
 	| STRING
 		{$$ = $1;}
 	| SYMBOL
+		{$$ = $1;}
+	| scm_identifier
 		{$$ = $1;}
 	;
 
@@ -818,6 +842,9 @@ pitches
 pitch
 	: PITCH quotes
 		{$$ = $1 + $2;}
+	//| steno_pitch
+	| PLACEHOLDER_PITCH
+		{$$ = $1;}
 	;
 
 quotes
@@ -860,6 +887,9 @@ post_event_nofinger
 	| EXTENDER
 	| script_dir direction_reqd_event
 	| script_dir direction_less_event
+	// extra formula
+	| script_dir COMMAND
+		{$$ = {dir: $1, content: $2};}
 	;
 
 direction_reqd_event
@@ -879,7 +909,7 @@ script_abbreviation
 	| '+'
 	| '-' 
  	| '!'
-	| ANGLE_CLOSE
+	| '>'
 	| '.' 
 	| '_'
 	;
