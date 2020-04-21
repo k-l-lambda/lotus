@@ -81,6 +81,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\line"					return 'CMD_LINE';
 "\\bold"					return 'CMD_BOLD';
 "\\italic"					return 'CMD_ITALIC';
+"\\tiny"					return 'CMD_TINY';
 
 // simple commands
 "\\<"						return 'CMD_CRESCENDO_BEGIN';
@@ -261,7 +262,8 @@ property_path
 symbol_list_rev
 	: symbol_list_part
 		{$$ = $1;}
-	//| symbol_list_rev '.' symbol_list_partf
+	| symbol_list_rev '.' symbol_list_part
+		{$$ = $1 + "." + $3;}
 	| symbol_list_rev ',' symbol_list_part
 		{$$ = $1 + "," + $3;}
 	;
@@ -283,7 +285,7 @@ symbol_list_part_bare
 symbol_list_element
 	: STRING
 		{$$ = $1;}
-	| STRING
+	| UNSIGNED
 		{$$ = $1;}
 	;
 
@@ -406,6 +408,8 @@ markup_function
 		{$$ = $1;}
 	| CMD_ITALIC
 		{$$ = $1;}
+	| CMD_TINY
+		{$$ = $1;}
 	;
 
 markup_uncomposed_list
@@ -454,6 +458,8 @@ markup_word
 		{$$ = $1;}
 	// extra formla
 	| "-"
+		{$$ = $1;}
+	| unsigned_number
 		{$$ = $1;}
 	;
 
@@ -623,12 +629,6 @@ lookup
 	| LOOKUP_IDENTIFIER '.' symbol_list_rev
 	;
 
-symbol_list_rev
-	: symbol_list_part
-	| symbol_list_rev '.' symbol_list_part
-	| symbol_list_rev ',' symbol_list_part
-	;
-
 symbol_list_part
 	: symbol_list_part_bare
 	| embedded_scm_bare
@@ -647,6 +647,8 @@ scm_identifier
 		{$$ = false;}
 	| SCM_INT
 		{$$ = $1;}
+	| "#" "'" SYMBOL
+		{$$ = {scm_id: $3};}
 	;
 
 composite_music
@@ -793,8 +795,38 @@ music_assign
 simple_music
 	: event_chord
 		{$$ = $1;}
-	//| music_property_def
+	| music_property_def
+		{$$ = $1;}
 	//| context_change
+	;
+
+music_property_def
+	: OVERRIDE grob_prop_path '=' scalar
+		{$$ = {cmd: "override", key: $2, value: $4};}
+	| REVERT simple_revert_context revert_arg
+		{$$ = {cmd: "revert", key: $2, arg: $3};}
+	| SET context_prop_spec '=' scalar
+		{$$ = {cmd: "override", key: $2, value: $4};}
+	| UNSET context_prop_spec
+		{$$ = {cmd: "unset", key: $2};}
+	;
+
+revert_arg
+	: revert_arg_backup BACKUP symbol_list_arg
+	;
+
+simple_revert_context
+	: symbol_list_part
+	;
+
+grob_prop_path
+	: grob_prop_spec
+	| grob_prop_spec property_path
+	;
+
+context_prop_spec
+	: symbol_list_rev
+		{$$ = $1;}
 	;
 
 event_chord
@@ -958,6 +990,8 @@ value
 		{$$ = $1;}
 	| scm_identifier
 		{$$ = $1;}
+	| SYMBOL '.' property_path
+		{$$ = $1 + "." + $3;}
 	;
 
 pitch_or_music
@@ -1184,12 +1218,33 @@ context_mod_arg
 
 context_modification
 	: WITH '{' context_mod_list '}'
+		{$$ = {with: $3};}
 	| WITH context_modification_arg
+		{$$ = {with: $3};}
+	;
+
+context_modification_arg
+	: embedded_scm
+		{$$ = $1;}
+	//| MUSIC_IDENTIFIER
+	| music_identifier
+		{$$ = $1;}
+	;
+
+context_mod_list
+	: %empty
+		{$$ = [];}
+	| context_mod_list context_mod
+		{$$ = $1.concat($2);}
+	| context_mod_list context_mod_arg
+		{$$ = $1.concat($2);}
 	;
 
 context_mod
 	: property_operation
+		{$$ = $1;}
 	| context_def_mod SYMBOL
+		{$$ = {mod: $1, value: $2};}
 	//| context_def_mod embedded_scm
 	;
 
