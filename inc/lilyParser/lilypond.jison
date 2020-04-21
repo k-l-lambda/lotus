@@ -133,6 +133,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\unset"					return 'UNSET';
 "\\with"					return 'WITH';
 
+"\\new"						return 'NEWCONTEXT';
+
 "\\cm"						return 'CENTIMETER';
 
 {COMMAND}					return 'COMMAND';
@@ -324,9 +326,10 @@ identifier_init_nonumber
 		{$$ = $1;}
 	| score_block
 		{$$ = $1;}
+	| output_def
+		{$$ = $1;}
 	//| book_block
 	//| bookpart_block
-	//| output_def
 	//| context_def_spec_block
 	//| partial_markup
 	//| context_modification
@@ -339,6 +342,17 @@ string
 	| SYMBOL
 		{$$ = $1;}
 	| full_markup
+		{$$ = $1;}
+	;
+
+text
+	: STRING
+		{$$ = $1;}
+	| SYMBOL
+		{$$ = $1;}
+	| full_markup
+		{$$ = $1;}
+	| embedded_scm_bare
 		{$$ = $1;}
 	;
 
@@ -530,8 +544,9 @@ score_items
 score_item
 	: music
 		{$$ = $1;}
+	| output_def
+		{$$ = $1;}
 	//: embedded_scm
-	//| output_def
 	;
 
 //markup_command_list
@@ -626,8 +641,68 @@ scm_identifier
 composite_music
 	: basic_music
 		{$$ = $1;}
-	//| contexted_basic_music
+	| contexted_basic_music
+		{$$ = $1;}
 	//| basic_music new_lyrics
+	;
+
+contexted_basic_music
+	: context_prefix contextable_music new_lyrics
+		{$$ = {head: $1, body: $2, lyrics: $3}}
+	| context_prefix contextable_music
+		{$$ = {head: $1, body: $2}}
+	| context_prefix contexted_basic_music
+		{$$ = {head: $1, body: $2}}
+	;
+
+contextable_music
+	: basic_music
+		{$$ = $1;}
+	| pitch_as_music
+		{$$ = $1;}
+	| event_chord
+		{$$ = $1;}
+	;
+
+new_lyrics
+	: ADDLYRICS optional_context_mods lyric_mode_music
+		{$$ = [{addLyrics: $3, mods: $2}];}
+	| new_lyrics ADDLYRICS optional_context_mods lyric_mode_music
+		{$$ = $1.concat([{addLyrics: $4, mods: $3}]);}
+	;
+
+lyric_mode_music
+	: grouped_music_list
+		{$$ = $1;}
+	//| MUSIC_IDENTIFIER
+	| music_identifier
+		{$$ = $1;}
+	;
+
+context_prefix
+	: CONTEXT symbol optional_id optional_context_mods
+		{$$ = {context: $2, assign: $3, mods: $4};}
+	| NEWCONTEXT symbol optional_id optional_context_mods
+		{$$ = {context: $2, new: true, assign: $3, mods: $4};}
+	;
+
+optional_id
+	: %empty
+		{$$ = null;}
+	| '=' simple_string
+		{$$ = $2;}
+	;
+
+optional_context_mods
+	: context_modification_mods_list
+		{$$ = $1;}
+	;
+
+context_modification_mods_list
+	: %empty
+		{$$ = [];}
+	| context_modification_mods_list context_modification
+		{$$ = $1.concat($2);}
 	;
 
 basic_music
@@ -655,7 +730,9 @@ grouped_music_list
 
 simultaneous_music
 	: SIMULTANEOUS braced_music_list
+		{$$ = $2;}
 	| DOUBLE_ANGLE_OPEN music_list DOUBLE_ANGLE_CLOSE
+		{$$ = $2;}
 	;
 
 sequential_music
@@ -704,6 +781,7 @@ music_assign
 
 simple_music
 	: event_chord
+		{$$ = $1;}
 	//| music_property_def
 	//| context_change
 	;
@@ -711,10 +789,27 @@ simple_music
 event_chord
 	: note_chord_element
 		{$$ = $1;}
+	| tempo_event
+		{$$ = $1;}
 	//| simple_element post_events
 	//| CHORD_REPETITION optional_notemode_duration post_events
 	//| MULTI_MEASURE_REST optional_notemode_duration post_events
-	//| tempo_event
+	;
+
+tempo_event
+	: TEMPO steno_duration '=' tempo_range
+		{$$ = {tempo: $4, unit: $2};}
+	| TEMPO text steno_duration '=' tempo_range
+		{$$ = {tempo: $5, unit: $3, text: $2};}
+	| TEMPO text
+		{$$ = {tempo: $2};}
+	;
+
+tempo_range
+	: unsigned_number
+		{$$ = $1;}
+	| unsigned_number '-' unsigned_number
+		{$$ = {from: $1, to: $2};}
 	;
 
 simple_element
@@ -736,7 +831,7 @@ duration
 	;
 
 steno_duration
-	: POST_UNSIGNED dots
+	: unsigned_number dots
 		{$$ = $1 + $2;}
 	;
 

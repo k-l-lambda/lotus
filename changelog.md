@@ -14,6 +14,8 @@ TODO:
 
 *	2020.4.21
 
+	+	lilypond.jison: syntax of context music added.
+
 	+	lilypond.jison: enhanced grammar.
 
 
