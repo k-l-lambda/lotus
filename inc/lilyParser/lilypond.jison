@@ -147,6 +147,9 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 
 {SYMBOL}					return 'SYMBOL';
 
+"##f"						return 'SCM_FALSE';
+\#{INT}						return 'SCM_INT';
+
 {SPECIAL}					return yytext;
 \|							return 'DIVIDE';
 
@@ -155,8 +158,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "["							return yytext;
 "]"							return yytext;
 
-"##f"						return 'SCM_FALSE';
-\#{INT}						return 'SCM_INT';
+"#"							return yytext;
 
 <<EOF>>						return 'EOF';
 
@@ -199,6 +201,8 @@ toplevel_expression
 	| output_def
 		{$$ = $1;}
 	| score_block
+		{$$ = $1;}
+	| embedded_scheme_expression
 		{$$ = $1;}
 	//| full_markup_list
 	//	{$$ = $1;}
@@ -263,6 +267,7 @@ symbol_list_part
 	: symbol_list_part_bare
 		{$$ = $1;}
 	| embedded_scm_bare
+		{$$ = $1;}
 	;
 
 symbol_list_part_bare
@@ -920,6 +925,7 @@ unitary_cmd
 		{$$ = $1;}
 	;
 
+// extra syntax
 value
 	: music
 		{$$ = $1;}
@@ -1169,6 +1175,7 @@ symbol
 	| SYMBOL
 		{$$ = $1;}
 	| embedded_scm_bare
+		{$$ = $1;}
 	;
 
 scalar
@@ -1215,5 +1222,43 @@ context_def_mod
 	| DESCRIPTION
 		{$$ = $1;}
 	| NAME
+		{$$ = $1;}
+	;
+
+embedded_scm_active
+	//: SCM_IDENTIFIER
+	: scm_identifier
+		{$$ = $1;}
+	| scm_function_call
+		{$$ = $1;}
+	| lookup
+		{$$ = $1;}
+	;
+
+
+// extra syntax, maybe the substitution for embedded_scm_active in lilypond's parser
+embedded_scheme_expression
+	: "#" scheme_expression
+		{$$ = $2;}
+	;
+
+scheme_expression
+	: "(" scheme_token scheme_args ")"
+		{$$ = {func: $2, args: $3};}
+	| scheme_token
+		{$$ = $1;}
+	;
+
+scheme_args
+	: %empty
+		{$$ = [];}
+	| scheme_args scheme_token
+		{$$ = $1.concat($2);}
+	;
+
+scheme_token
+	: bare_number
+		{$$ = $1;}
+	| symbol
 		{$$ = $1;}
 	;
