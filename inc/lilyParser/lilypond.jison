@@ -827,11 +827,19 @@ revert_arg
 
 simple_revert_context
 	: symbol_list_part
+		{$$ = $1;}
 	;
 
 grob_prop_path
 	: grob_prop_spec
+		{$$ = $1;}
 	| grob_prop_spec property_path
+		{$$ = $1 + $2;}
+	;
+
+grob_prop_spec
+	: symbol_list_rev
+		{$$ = $1;}
 	;
 
 context_prop_spec
