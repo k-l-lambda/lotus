@@ -12,6 +12,11 @@ TODO:
 
 
 
+*	2020.4.22
+
+	+	lyParser.ts: directory walking implemented.
+
+
 *	2020.4.21
 
 	+	lyParser.ts: multiple source testing added.

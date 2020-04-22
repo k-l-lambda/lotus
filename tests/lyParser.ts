@@ -6,8 +6,23 @@ import * as lilyParser from "../inc/lilyParser";
 
 
 
-const parse = sourceFile => {
-	const grammar = fs.readFileSync("./inc/lilyParser/lilypond.jison").toString();
+const walkDir = (dir, pattern) => {
+	const list = fs.readdirSync(dir);
+	//console.log("files:", files);
+
+	const files = list.map(filename => {
+		const file = path.resolve(dir, filename);
+		const stat = fs.statSync(file);
+
+		return {file, filename, stat};
+	}).filter(({_, filename, stat}) => !stat.isDirectory() && (!pattern || pattern.test(filename)))
+		.map(({file}) => file);
+
+	return files;
+};
+
+
+const parse = (grammar, sourceFile) => {
 	const source = fs.readFileSync(sourceFile).toString();
 
 	const parser = lilyParser.createParser(grammar);
@@ -17,12 +32,32 @@ const parse = sourceFile => {
 
 
 const main = sourceList => {
+	if (sourceList.length === 1) {
+		const stat = fs.statSync(sourceList[0]);
+		if (stat.isDirectory()) {
+			sourceList = walkDir(sourceList[0], /\.ly$/);
+			console.log("directory walk, files count:", sourceList.length);
+		}
+	}
+
+	const grammar = fs.readFileSync("./inc/lilyParser/lilypond.jison").toString();
+
+	const failures = [];
+
 	for (const source of sourceList) {
 		console.log("Parsing", source, "...");
 
-		const result = parse(source);
-		console.log("result:", result);
+		try {
+			const result = parse(grammar, source);
+			console.log("result:", result);
+		}
+		catch (error) {
+			console.warn("failed:", source, error);
+			failures.push({source, error});
+		}
 	}
+
+	console.log("Failures:", failures);
 
 	console.log("Done.");
 };
