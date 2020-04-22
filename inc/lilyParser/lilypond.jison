@@ -752,8 +752,39 @@ music_bare
 		{$$ = $1;}
 	| music_identifier
 		{}
-	//| mode_changed_music
-	//	{$$ = $1;}
+	| mode_changed_music
+		{$$ = $1;}
+	;
+
+mode_changed_music
+	: mode_changing_head grouped_music_list
+		{$$ = {head: $1, body: $2};}
+	| mode_changing_head_with_context optional_context_mods grouped_music_list
+		{$$ = {head: $1, mods: $2, body: $3};}
+	;
+
+mode_changing_head_with_context
+	: DRUMS
+		{$$ = $1;}
+	| FIGURES
+		{$$ = $1;}
+	| CHORDS
+		{$$ = $1;}
+	| LYRICS
+		{$$ = $1;}
+	;
+
+mode_changing_head
+	: NOTEMODE
+		{$$ = $1;}
+	| DRUMMODE
+		{$$ = $1;}
+	| FIGUREMODE
+		{$$ = $1;}
+	| CHORDMODE
+		{$$ = $1;}
+	| LYRICMODE
+		{$$ = $1;}
 	;
 
 grouped_music_list
