@@ -540,6 +540,7 @@ markup_command_list_arguments
 
 markup_command_embedded_lilypond
 	: '{' embedded_lilypond '}'
+		{$$ = $2;}
 	;
 
 embedded_lilypond
@@ -634,6 +635,7 @@ scm_function_call
 
 function_arglist
 	: function_arglist_nonbackup
+		{$$ = $1;}
 	//| EXPECT_OPTIONAL EXPECT_SCM function_arglist_skip_nonbackup DEFAULT
 	;
 
@@ -672,12 +674,16 @@ function_arglist_common
 
 lookup
 	: LOOKUP_IDENTIFIER
+		{$$ = $1;}
 	| LOOKUP_IDENTIFIER '.' symbol_list_rev
+		{$$ = $1 + "." + $2;}
 	;
 
 symbol_list_part
 	: symbol_list_part_bare
+		{$$ = $1;}
 	| embedded_scm_bare
+		{$$ = $1;}
 	;
 
 embedded_scm_bare
@@ -1216,35 +1222,52 @@ post_event_nofinger
 
 direction_reqd_event
 	: gen_text_def
+		{$$ = $1;}
 	| script_abbreviation
+		{$$ = $1;}
 	;
 
 gen_text_def
 	: full_markup
+		{$$ = $1;}
 	| STRING
+		{$$ = $1;}
 	| SYMBOL
+		{$$ = $1;}
 	| embedded_scm
+		{$$ = $1;}
 	;
 
 script_abbreviation
 	: '^'
+		{$$ = $1;}
 	| '+'
+		{$$ = $1;}
 	| '-' 
+		{$$ = $1;}
  	| '!'
+		{$$ = $1;}
 	| '>'
+		{$$ = $1;}
 	| '.' 
+		{$$ = $1;}
 	| '_'
+		{$$ = $1;}
 	;
 
 direction_less_event
 	: string_number_event
+		{$$ = $1;}
 	//| EVENT_IDENTIFIER
 	| tremolo_type
+		{$$ = $1;}
 	| event_function_event
+		{$$ = $1;}
 	;
 
 string_number_event
 	: E_UNSIGNED
+		{$$ = $1;}
 	;
 
 tremolo_type
@@ -1325,6 +1348,7 @@ output_def_body
 
 output_def_head_with_mode_switch
 	: output_def_head
+		{$$ = $1;}
 	;
 
 output_def_head
@@ -1361,7 +1385,9 @@ context_def_spec_body
 
 context_mod_arg
 	: embedded_scm
+		{$$ = $1;}
 	| composite_music
+		{$$ = $1;}
 	;
 
 context_modification

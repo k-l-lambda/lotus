@@ -17,6 +17,8 @@ export default async function load () {
 		lilyParser.hookJisonPrint();
 
 		parser = lilyParser.createParser(grammar);
+		if (!parser)
+			console.error("lily parser create failed.");
 
 		lilyParser.hookJisonPrint((...args) => console.log("[JISON]", ...args));
 	}
