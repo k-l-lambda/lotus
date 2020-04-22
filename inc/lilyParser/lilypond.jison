@@ -8,6 +8,8 @@
 
 %lex
 
+%option flex unicode
+
 A					[a-zA-Z\200-\377]
 AA					{A}|_
 N					[0-9]
@@ -38,6 +40,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s]*)(?=[\W\d])
 PLACEHOLDER_PITCH	[s](?=[\W\d])
 //DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
 
+//UNICODE_HAN			[\p{Script=Han}]
 
 %%
 
@@ -60,34 +63,6 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 ">>"						return 'DOUBLE_ANGLE_CLOSE';
 
 {E_UNSIGNED}				return 'E_UNSIGNED';
-
-// binary commands
-
-// unitary commands
-"\\clef"					return 'CMD_CLEF';
-"\\key"						return 'CMD_KEY';
-"\\time"					return 'CMD_TIME';
-"\\times"					return 'CMD_TIMES';
-"\\stemUp"					return 'CMD_STEMUP';
-"\\stemDown"				return 'CMD_STEMDOWN';
-"\\relative"				return 'CMD_RELATIVE';
-"\\bar"						return 'CMD_BAR';
-"\\omit"					return 'CMD_OMIT';
-"\\ottava"					return 'CMD_OTTAVA';
-"\\barNumberCheck"			return 'CMD_BARNUMBERCHECK';
-"\\partial"					return 'CMD_PARTIAL';
-
-"\\version"					return 'CMD_VERSION';
-"\\column"					return 'CMD_COLUMN';
-"\\line"					return 'CMD_LINE';
-"\\bold"					return 'CMD_BOLD';
-"\\italic"					return 'CMD_ITALIC';
-"\\tiny"					return 'CMD_TINY';
-
-// simple commands
-"\\<"						return 'CMD_CRESCENDO_BEGIN';
-"\\>"						return 'CMD_DECRESCENDO_BEGIN';
-"\\!"						return 'CMD_DYNAMICS_END';
 
 // syntax commands
 "\\header"					return 'HEADER';
@@ -142,6 +117,36 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 
 "\\cm"						return 'CENTIMETER';
 
+// binary commands
+
+// unitary commands
+"\\clef"					return 'CMD_CLEF';
+"\\key"						return 'CMD_KEY';
+"\\time"					return 'CMD_TIME';
+"\\times"					return 'CMD_TIMES';
+"\\stemUp"					return 'CMD_STEMUP';
+"\\stemDown"				return 'CMD_STEMDOWN';
+"\\relative"				return 'CMD_RELATIVE';
+"\\bar"						return 'CMD_BAR';
+"\\omit"					return 'CMD_OMIT';
+"\\ottava"					return 'CMD_OTTAVA';
+"\\barNumberCheck"			return 'CMD_BARNUMBERCHECK';
+"\\partial"					return 'CMD_PARTIAL';
+"\\mark"					return 'CMD_MARK';
+
+"\\version"					return 'CMD_VERSION';
+"\\column"					return 'CMD_COLUMN';
+"\\line"					return 'CMD_LINE';
+"\\bold"					return 'CMD_BOLD';
+"\\italic"					return 'CMD_ITALIC';
+"\\tiny"					return 'CMD_TINY';
+"\\box"						return 'CMD_BOX';
+
+// simple commands
+"\\<"						return 'CMD_CRESCENDO_BEGIN';
+"\\>"						return 'CMD_DECRESCENDO_BEGIN';
+"\\!"						return 'CMD_DYNAMICS_END';
+
 {COMMAND}					return 'COMMAND';
 
 {PITCH}						return 'PITCH';
@@ -170,6 +175,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 
 "#"							return yytext;
 "~"							return yytext;
+
+.							return 'UNKNOWN_CHAR';
 
 <<EOF>>						return 'EOF';
 
@@ -417,6 +424,8 @@ markup_function
 		{$$ = $1;}
 	| CMD_TINY
 		{$$ = $1;}
+	| CMD_BOX
+		{$$ = $1;}
 	;
 
 markup_uncomposed_list
@@ -469,6 +478,8 @@ markup_word
 	| "'"
 		{$$ = $1;}
 	| unsigned_number
+		{$$ = $1;}
+	| UNKNOWN_CHAR
 		{$$ = $1;}
 	;
 
@@ -1002,11 +1013,15 @@ unitary_cmd
 		{$$ = $1;}
 	| CMD_PARTIAL
 		{$$ = $1;}
+	| CMD_MARK
+		{$$ = $1;}
 	;
 
 // extra syntax
 value
 	: music
+		{$$ = $1;}
+	| full_markup
 		{$$ = $1;}
 	| FRACTION
 		{$$ = $1;}
