@@ -395,12 +395,14 @@ full_markup_list
 
 markup_list
 	: markup_composed_list
+		{$$ = $1;}
 	| markup_uncomposed_list
 		{$$ = $1;}
 	;
 
 markup_composed_list
 	: markup_head_1_list markup_uncomposed_list
+		{$$ = {head: $1, body: $2};}
 	;
 
 markup_head_1_list
@@ -497,10 +499,12 @@ markup_word
 	// extra formla
 	| "-"
 		{$$ = $1;}
+	// extra formla
 	| "'"
 		{$$ = $1;}
 	| unsigned_number
 		{$$ = $1;}
+	// extra formla
 	| UNKNOWN_CHAR
 		{$$ = $1;}
 	;
@@ -818,14 +822,14 @@ grouped_music_list
 
 simultaneous_music
 	: SIMULTANEOUS braced_music_list
-		{$$ = $2;}
+		{$$ = {music: "simultaneous", body: $2};}
 	| DOUBLE_ANGLE_OPEN music_list DOUBLE_ANGLE_CLOSE
-		{$$ = $2;}
+		{$$ = {music: "simultaneous", body: $2};}
 	;
 
 sequential_music
 	: braced_music_list
-		{$$ = $1;}
+		{$$ = {music: "sequential", body: $1};}
 	;
 
 braced_music_list
@@ -1188,21 +1192,26 @@ post_event
 
 post_event_nofinger
 	: '^' fingering
-		{$$ = {type: "fingering", direction: "up", value: $2};}
+		{$$ = {direction: "up", fingering: $2};}
 	| '_' fingering
-		{$$ = {type: "fingering", direction: "down", value: $2};}
+		{$$ = {direction: "down", fingering: $2};}
 	| direction_less_event
 		{$$ = $1;}
 	| script_dir music_function_call
+		{$$ = {direction: $1, event: $2};}
 	| HYPHEN
+		{$$ = $1;}
 	| EXTENDER
+		{$$ = $1;}
 	| script_dir direction_reqd_event
+		{$$ = {direction: $1, event: $2};}
 	| script_dir direction_less_event
+		{$$ = {direction: $1, event: $2};}
 	// extra formula
 	| script_dir zero_command
-		{$$ = {direction: $1, content: $2};}
+		{$$ = {direction: $1, cmd: $2};}
 	| script_dir expressive_mark
-		{$$ = {direction: $1, content: $2};}
+		{$$ = {direction: $1, expressive: $2};}
 	;
 
 direction_reqd_event
@@ -1298,11 +1307,19 @@ output_def
 
 output_def_body
 	: output_def_head_with_mode_switch '{'
-		{$$ = {head: $1};}
+		{$$ = {head: $1, body: []};}
 	| output_def_body assignment
+		{
+			$1.body.push($2);
+			$$ = $1;
+		}
+	| output_def_body music_or_context_def
+		{
+			$1.body.push($2);
+			$$ = $1;
+		}
 	//| output_def_body embedded_scm_active
 	//| output_def_body SCM_TOKEN
-	| output_def_body music_or_context_def
 	//| output_def_body error
 	;
 
@@ -1321,11 +1338,14 @@ output_def_head
 
 music_or_context_def
 	: music_assign
+		{$$ = $1;}
 	| context_def_spec_block
+		{$$ = $1;}
 	;
 
 context_def_spec_block
 	: CONTEXT '{' context_def_spec_body '}'
+		{$$ = {head: $1, body: $3};}
 	;
 
 context_def_spec_body
