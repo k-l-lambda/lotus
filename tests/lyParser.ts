@@ -71,6 +71,7 @@ const sourceList = argv.original.length > 2 ? argv.original.slice(2) : [
 	"test-3.1.ly",
 	"test-3.2.ly",
 	"test-3.3.ly",
+	"test-3.4.ly",
 	"test-4.ly",
 ].map(filename => path.resolve("./tests/ly", filename));
 

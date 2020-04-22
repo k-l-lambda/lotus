@@ -75,6 +75,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\omit"					return 'CMD_OMIT';
 "\\ottava"					return 'CMD_OTTAVA';
 "\\barNumberCheck"			return 'CMD_BARNUMBERCHECK';
+"\\partial"					return 'CMD_PARTIAL';
 
 "\\version"					return 'CMD_VERSION';
 "\\column"					return 'CMD_COLUMN';
@@ -992,6 +993,8 @@ unitary_cmd
 		{$$ = $1;}
 	| CMD_BARNUMBERCHECK
 		{$$ = $1;}
+	| CMD_PARTIAL
+		{$$ = $1;}
 	;
 
 // extra syntax
@@ -999,6 +1002,8 @@ value
 	: music
 		{$$ = $1;}
 	| FRACTION
+		{$$ = $1;}
+	| UNSIGNED
 		{$$ = $1;}
 	| INT
 		{$$ = $1;}
