@@ -44,7 +44,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 // workaround non-word-boundary parsing for POST_UNSIGNED
 \s{FRACTION}				yytext = yytext.replace(/^\s+/, ""); return 'FRACTION';
 \s{REAL}					yytext = yytext.replace(/^\s+/, ""); return 'REAL';
-\s{UNSIGNED}				yytext = yytext.replace(/^\s+/, ""); return 'UNSIGNED';
+//\s{UNSIGNED}				yytext = yytext.replace(/^\s+/, ""); return 'UNSIGNED';
 
 \s+							{}	// spaces
 \%\{(.|\n)*?\%\}			{}	// scoped comments
@@ -146,7 +146,11 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 
 {PITCH}						return 'PITCH';
 {PLACEHOLDER_PITCH}			return 'PLACEHOLDER_PITCH';
-{UNSIGNED}					return 'POST_UNSIGNED';
+//{UNSIGNED}					return 'POST_UNSIGNED';
+
+//{FRACTION}					return 'FRACTION';
+//{REAL}						return 'REAL';
+{UNSIGNED}					return 'UNSIGNED';
 
 {INT}						return 'INT';
 
@@ -921,8 +925,8 @@ repeated_music
 unsigned_number
 	: UNSIGNED
 		{$$ = $1;}
-	| POST_UNSIGNED
-		{$$ = $1;}
+	//| POST_UNSIGNED
+	//	{$$ = $1;}
 	//| NUMBER_IDENTIFIER
 	//| embedded_scm
 	;
@@ -1021,9 +1025,23 @@ value
 
 pitch_or_music
 	//: pitch exclamations questions octave_check maybe_notemode_duration erroneous_quotes optional_rest post_events
-	: pitch optional_notemode_duration optional_rest post_events
+	: pitch exclamations questions optional_notemode_duration optional_rest post_events
 		{$$ = chord([$1], $2);}
 	//| new_chord post_events
+	;
+
+exclamations
+	: %empty
+		{$$ = [];}
+	| exclamations '!'
+		{$$ = $1.concat($2);}
+	;
+
+questions
+	: %empty
+		{$$ = [];}
+	| questions '?'
+		{$$ = $1.concat($2);}
 	;
 
 post_events
@@ -1158,7 +1176,7 @@ script_dir
 	;
 
 fingering
-	: POST_UNSIGNED
+	: UNSIGNED
 		{$$ = $1;}
 	;
 
