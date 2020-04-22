@@ -466,6 +466,8 @@ markup_word
 	// extra formla
 	| "-"
 		{$$ = $1;}
+	| "'"
+		{$$ = $1;}
 	| unsigned_number
 		{$$ = $1;}
 	;
