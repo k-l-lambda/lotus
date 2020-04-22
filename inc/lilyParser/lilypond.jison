@@ -1,6 +1,6 @@
 
 %{
-	const command = (cmd, arg) => ({cmd, arg});
+	const command = (cmd, arg) => ({cmd: cmd.substr(1), arg});
 
 	const chord = (pitches, duration) => ({pitches, duration});
 %}
@@ -118,6 +118,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\cm"						return 'CENTIMETER';
 
 // binary commands
+"\\relative"				return 'CMD_RELATIVE';
 
 // unitary commands
 "\\clef"					return 'CMD_CLEF';
@@ -126,7 +127,6 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\times"					return 'CMD_TIMES';
 "\\stemUp"					return 'CMD_STEMUP';
 "\\stemDown"				return 'CMD_STEMDOWN';
-"\\relative"				return 'CMD_RELATIVE';
 "\\bar"						return 'CMD_BAR';
 "\\omit"					return 'CMD_OMIT';
 "\\ottava"					return 'CMD_OTTAVA';
@@ -1007,12 +1007,14 @@ simple_string
 
 // all kinds commands in music list, seems named as MUSIC_IDENTIFIER in lilypond's parser.yy
 music_identifier
-	: COMMAND
-		{$$ = command($1);}
+	: zero_command
+		{$$ = $1;}
 	| unitary_cmd value
 		{$$ = command($1, $2);}
 	//| binary_cmd value value
 	//	{$$ = command($1, [$2, $3]);}
+	| cmd_relative
+		{$$ = $1;}
 	| "("
 		{$$ = $1;}
 	| ")"
@@ -1027,6 +1029,12 @@ music_identifier
 		{$$ = $1;}
 	| expressive_mark
 		{$$ = $1;}
+	;
+
+// extra syntax
+zero_command
+	: COMMAND
+		{$$ = command($1);}
 	;
 
 expressive_mark
@@ -1054,8 +1062,8 @@ unitary_cmd
 		{$$ = $1;}
 	| CMD_STEMDOWN
 		{$$ = $1;}
-	| CMD_RELATIVE
-		{$$ = $1;}
+	//| CMD_RELATIVE
+	//	{$$ = $1;}
 	| CMD_BAR
 		{$$ = $1;}
 	| CMD_OMIT
@@ -1068,6 +1076,12 @@ unitary_cmd
 		{$$ = $1;}
 	| CMD_MARK
 		{$$ = $1;}
+	;
+
+// extra syntax
+cmd_relative
+	: CMD_RELATIVE pitch music
+		{$$ = {relative: $2, music: $3};}
 	;
 
 // extra syntax
@@ -1185,7 +1199,7 @@ post_event_nofinger
 	| script_dir direction_reqd_event
 	| script_dir direction_less_event
 	// extra formula
-	| script_dir COMMAND
+	| script_dir zero_command
 		{$$ = {direction: $1, content: $2};}
 	| script_dir expressive_mark
 		{$$ = {direction: $1, content: $2};}

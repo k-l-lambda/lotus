@@ -14,6 +14,8 @@ TODO:
 
 *	2020.4.22
 
+	+	playground.vue: lily markup button added.
+
 	+	app/loadLilyParser.js created.
 
 	+	lilypond.jison: added syntax of mode_changed_music.

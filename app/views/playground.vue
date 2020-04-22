@@ -11,6 +11,7 @@
 			<fieldset>
 				<button @click="saveSource" title="save source">&#x1f4be;</button>
 				<button @click="settingPanelVisible = true">&#x2699;</button>
+				<button v-show="lilyMarkups.enabled" @click="markupSource" title="markup lilypond source">{}</button>
 			</fieldset>
 			<fieldset>
 				<span>
@@ -465,6 +466,18 @@
 				};
 				const blob = new Blob([JSON.stringify(data)]);
 				downloadUrl(URL.createObjectURL(blob), "score.json");
+			},
+
+
+			updateLilyDocument () {
+				this.lilyDocument = this.lilyParser.parse(this.lilySource);
+			},
+
+
+			markupSource () {
+				this.updateLilyDocument();
+				console.log("lily document", this.lilyDocument);
+				// TODO
 			},
 		},
 
