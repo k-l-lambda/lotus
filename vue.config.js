@@ -15,14 +15,14 @@ module.exports = {
 	},
 	chainWebpack: config => {
 		config;
-		/*// binary file loader
+		// text file loader
 		config.module
-			.rule("raw-binary")
-			.test(/\.(dat)$/)
+			.rule("raw-text")
+			.test(/\.jison$/)
 			.use("url-loader")
 			.loader("url-loader");
 
-		// ignore third-party packed js
+		/*// ignore third-party packed js
 		config.module
 			.rule("js")
 			.exclude

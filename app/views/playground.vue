@@ -119,6 +119,7 @@
 	import * as LilyParser from "../../inc/lilyParser/manual.ts";
 	import LogRecorder from "../../inc/logRecorder.ts";
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
+	import loadLilyParser from "../loadLilyParser.js";
 
 	import {MidiRoll} from "@k-l-lambda/web-widgets";
 	import SourceEditor from "../components/source-editor.vue";
@@ -193,15 +194,19 @@
 					staffSize: null,
 					autoPaperSize: true,
 				},
+				lilyParser: null,
 			};
 		},
 
 
-		created () {
+		async created () {
 			window.$main = this;
 
 			if (MidiAudio.WebAudio.empty())
 				MidiAudio.loadPlugin({soundfontUrl: "/soundfont/", api: "webaudio"}).then(() => console.log("Soundfont loaded."));
+
+			this.lilyParser = await loadLilyParser();
+			console.log("lily parser loaded.");
 		},
 
 
