@@ -42,7 +42,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 %%
 
 // workaround non-word-boundary parsing for POST_UNSIGNED
-\s{FRACTION}				yytext = yytext.replace(/^\s+/, ""); return 'FRACTION';
+//\s{FRACTION}				yytext = yytext.replace(/^\s+/, ""); return 'FRACTION';
 \s{REAL}					yytext = yytext.replace(/^\s+/, ""); return 'REAL';
 //\s{UNSIGNED}				yytext = yytext.replace(/^\s+/, ""); return 'UNSIGNED';
 
@@ -148,7 +148,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 {PLACEHOLDER_PITCH}			return 'PLACEHOLDER_PITCH';
 //{UNSIGNED}					return 'POST_UNSIGNED';
 
-//{FRACTION}					return 'FRACTION';
+{FRACTION}					return 'FRACTION';
 //{REAL}						return 'REAL';
 {UNSIGNED}					return 'UNSIGNED';
 
@@ -913,7 +913,8 @@ multipliers
 		{$$ = "";}
 	| multipliers '*' unsigned_number
 		{$$ = $1 + "*" + $3;}
-	//| multipliers '*' FRACTION
+	| multipliers '*' FRACTION
+		{$$ = $1 + "*" + $3;}
 	//| multipliers '*' multiplier_scm
 	;
 
