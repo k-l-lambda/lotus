@@ -2,7 +2,7 @@
 %{
 	const command = (cmd, arg) => ({cmd, arg});
 
-	const chord = (pitches, duration) => ({pitches, duration: duration && Number(duration)});
+	const chord = (pitches, duration) => ({pitches, duration});
 %}
 
 
@@ -139,8 +139,14 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\line"					return 'CMD_LINE';
 "\\bold"					return 'CMD_BOLD';
 "\\italic"					return 'CMD_ITALIC';
-"\\tiny"					return 'CMD_TINY';
 "\\box"						return 'CMD_BOX';
+
+"\\huge"					return 'CMD_HUGE';
+"\\large"					return 'CMD_LARGE';
+"\\normalsize"				return 'CMD_NORMALSIZE';
+"\\small"					return 'CMD_SMALL';
+"\\tiny"					return 'CMD_TINY';
+"\\teeny"					return 'CMD_TEENY';
 
 // simple commands
 "\\<"						return 'CMD_CRESCENDO_BEGIN';
@@ -422,9 +428,25 @@ markup_function
 		{$$ = $1;}
 	| CMD_ITALIC
 		{$$ = $1;}
-	| CMD_TINY
+	| markup_font_size
 		{$$ = $1;}
 	| CMD_BOX
+		{$$ = $1;}
+	;
+
+// extra syntax
+markup_font_size
+	: CMD_HUGE
+		{$$ = $1;}
+	| CMD_LARGE
+		{$$ = $1;}
+	| CMD_NORMALSIZE
+		{$$ = $1;}
+	| CMD_SMALL
+		{$$ = $1;}
+	| CMD_TINY
+		{$$ = $1;}
+	| CMD_TEENY
 		{$$ = $1;}
 	;
 
@@ -1075,7 +1097,7 @@ value
 pitch_or_music
 	//: pitch exclamations questions octave_check maybe_notemode_duration erroneous_quotes optional_rest post_events
 	: pitch exclamations questions optional_notemode_duration optional_rest post_events
-		{$$ = chord([$1], $2);}
+		{$$ = chord([$1], $4);}
 	//| new_chord post_events
 	;
 
