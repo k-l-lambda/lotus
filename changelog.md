@@ -1,9 +1,9 @@
 
 TODO:
-	lily parser
+	LilyDocument
 		reconstruction from parsing result
 	options to control layout
-	SVG static elements baking
+	SVG static elements baking to image
 	parse measure ticks from ly
 	staffSvg
 		tempo note head symbol
@@ -13,6 +13,8 @@ TODO:
 
 
 *	2020.4.22
+
+	+	inc/lilyParser/lilyDocument.ts created.
 
 	+	playground.vue: lily markup button added.
 

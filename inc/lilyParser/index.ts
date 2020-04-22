@@ -1,13 +1,11 @@
 
-
-//import lilyGrammar from "./lilypond.jison";
-//console.log("lilyGrammar:", lilyGrammar);
-
 import jison from "jison";
 
+import LilyDocment from "./lilyDocument";
 
 
-const createParser = grammar => new jison.Parser(grammar);
+
+const createParser = grammar => jison.Parser(grammar);
 
 
 const hookJisonPrint = (print = () => {}) => jison.print = print;
@@ -17,4 +15,5 @@ const hookJisonPrint = (print = () => {}) => jison.print = print;
 export {
 	createParser,
 	hookJisonPrint,
+	LilyDocment,
 };

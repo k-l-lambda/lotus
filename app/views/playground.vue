@@ -121,6 +121,7 @@
 	import LogRecorder from "../../inc/logRecorder.ts";
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import loadLilyParser from "../loadLilyParser.js";
+	import {LilyDocment} from "../../inc/lilyParser";
 
 	import {MidiRoll} from "@k-l-lambda/web-widgets";
 	import SourceEditor from "../components/source-editor.vue";
@@ -470,7 +471,7 @@
 
 
 			updateLilyDocument () {
-				this.lilyDocument = this.lilyParser.parse(this.lilySource);
+				this.lilyDocument = new LilyDocment(this.lilyParser.parse(this.lilySource));
 			},
 
 
