@@ -33,7 +33,7 @@ EXTENDER			\_\_
 HYPHEN				\-\-
 BOM_UTF8			\357\273\277
 
-PHONET				[abcdefgr]
+PHONET				[abcdefgrR]
 PITCH				{PHONET}(([i][s])*|([e][s])*|[s]*)(?=[\W\d])
 PLACEHOLDER_PITCH	[s](?=[\W\d])
 //DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
@@ -152,6 +152,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 {SYMBOL}					return 'SYMBOL';
 
 "##f"						return 'SCM_FALSE';
+"##t"						return 'SCM_TRUE';
 \#{INT}						return 'SCM_INT';
 
 {SPECIAL}					return yytext;
@@ -163,6 +164,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "]"							return yytext;
 
 "#"							return yytext;
+"~"							return yytext;
 
 <<EOF>>						return 'EOF';
 
@@ -645,6 +647,8 @@ embedded_scm_bare
 scm_identifier
 	: SCM_FALSE
 		{$$ = false;}
+	| SCM_TRUE
+		{$$ = true;}
 	| SCM_INT
 		{$$ = $1;}
 	| "#" "'" SYMBOL
@@ -797,7 +801,13 @@ simple_music
 		{$$ = $1;}
 	| music_property_def
 		{$$ = $1;}
-	//| context_change
+	| context_change
+		{$$ = $1;}
+	;
+
+context_change
+	: CHANGE symbol '=' simple_string
+		{$$ = {change: $2, value: $4};}
 	;
 
 music_property_def
@@ -930,6 +940,8 @@ music_identifier
 	| "["
 		{$$ = $1;}
 	| "]"
+		{$$ = $1;}
+	| "~"
 		{$$ = $1;}
 	| DIVIDE
 		{$$ = $1;}
