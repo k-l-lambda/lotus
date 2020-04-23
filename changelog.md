@@ -12,6 +12,11 @@ TODO:
 
 
 
+*	2020.4.23
+
+	+	lilyDocument.ts: term classes added.
+
+
 *	2020.4.22
 
 	+	inc/lilyParser/lilyDocument.ts created.

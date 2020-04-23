@@ -1,8 +1,12 @@
 
 %{
-	const command = (cmd, arg) => ({cmd: cmd.substr(1), arg});
+	const command = (cmd, arg) => ({proto: "Command", cmd: cmd.substr(1), arg});
 
-	const chord = (pitches, duration) => ({pitches, duration});
+	const chord = (pitches, duration) => ({proto: "Chord", pitches, duration});
+
+	const block = (block, head, body, mods) => ({proto: "Block", block, head, body, mods});
+
+	const schemeExpression = (func, args) => ({proto: "SchemeExpression", func, args});
 %}
 
 
@@ -212,7 +216,7 @@ lilypond
 
 version
 	: CMD_VERSION STRING
-		{$$ = {version: $2};}
+		{$$ = command($1, $2);}
 	;
 
 toplevel_expression
@@ -239,7 +243,7 @@ toplevel_expression
 
 score_block
 	: SCORE '{' score_body '}'
-		{$$ = {block: "score", body: $3};}
+		{$$ = block("score", $1, $3);}
 	;
 
 header_block
@@ -249,7 +253,7 @@ header_block
 
 lilypond_header
 	: HEADER '{' lilypond_header_body '}'
-		{$$ = {block: "header", body: $3};}
+		{$$ = block("header", $1, $3);}
 	;
 
 lilypond_header_body
@@ -1330,7 +1334,7 @@ output_def
 
 output_def_body
 	: output_def_head_with_mode_switch '{'
-		{$$ = {head: $1, body: []};}
+		{$$ = block("score", $1, []);}
 	| output_def_body assignment
 		{
 			$1.body.push($2);
@@ -1504,7 +1508,7 @@ embedded_scheme_expression
 
 scheme_expression
 	: "(" scheme_token scheme_args ")"
-		{$$ = {func: $2, args: $3};}
+		{$$ = schemeExpression($2, $3);}
 	| scheme_token
 		{$$ = $1;}
 	;
