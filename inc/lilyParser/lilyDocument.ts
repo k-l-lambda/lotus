@@ -20,7 +20,31 @@ class BaseTerm implements LilyTerm {
 
 
 	join () {
-		return this.serilize().join(" ");
+		//return this.serilize().join(" ");
+		const words = this.serilize();
+		let indent = 0;
+		const result = [];
+
+		for (const word of words) {
+			if (/^\}/.test(word))
+				result.pop(); // remove the last tab
+
+			result.push(word);
+
+			if (/\n$/.test(word)) {
+				if (/\{\n$/.test(word))
+					++indent;
+				else if (/^\}/.test(word)) 
+					--indent;
+
+				if (indent)
+					result.push(...Array(indent).fill("\t"));
+			}
+			else
+				result.push(" ");
+		}
+
+		return result.join("");
 	}
 
 
@@ -29,7 +53,7 @@ class BaseTerm implements LilyTerm {
 	}
 
 
-	static optionalSerialize (item : (string | LilyTerm)) {
+	static optionalSerialize (item : any) {
 		return BaseTerm.isTerm(item) ? (item as LilyTerm).serilize() : [item];
 	}
 }
@@ -40,7 +64,7 @@ class Root extends BaseTerm {
 
 
 	serilize () {
-		return [].concat(...this.sections.map(section => section.serilize()));
+		return [].concat(...this.sections.map(section => [...section.serilize(), "\n\n\n"]));
 	}
 };
 
@@ -69,7 +93,9 @@ class Block extends BaseTerm {
 		// TODO: handle mods
 		return [
 			this.head,
-			...[].concat(...this.body.map(section => BaseTerm.optionalSerialize(section))),
+			"{\n",
+			...[].concat(...this.body.map(section => [...BaseTerm.optionalSerialize(section), "\n"])),
+			"}\n",
 		];
 	}
 };
@@ -104,6 +130,15 @@ class SchemeExpression extends BaseTerm {
 class Assignment extends BaseTerm {
 	key: string;
 	value: object;
+
+
+	serilize () {
+		return [
+			this.key,
+			"=",
+			...BaseTerm.optionalSerialize(this.value),
+		];
+	}
 };
 
 
@@ -114,9 +149,6 @@ class Chord extends BaseTerm {
 
 
 class Unexpect extends BaseTerm {
-	data: any;
-
-
 	constructor (data) {
 		super(data);
 
@@ -172,7 +204,7 @@ export default class LilyDocument {
 
 
 	toString () {
-		//return this.root.join();
-		return this.root.serilize();
+		return this.root.join();
+		//return this.root.serilize();
 	}
 };
