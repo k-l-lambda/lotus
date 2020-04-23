@@ -27,6 +27,11 @@ class BaseTerm implements LilyTerm {
 	static isTerm (x) {
 		return typeof x === "object" && x instanceof BaseTerm;
 	}
+
+
+	static optionalSerialize (item : (string | LilyTerm)) {
+		return BaseTerm.isTerm(item) ? (item as LilyTerm).serilize() : [item];
+	}
 }
 
 
@@ -46,7 +51,10 @@ class Command extends BaseTerm {
 
 
 	serilize () {
-		return [this.cmd, ...[].concat(...this.args.map(arg => BaseTerm.isTerm(arg) ? arg.serilize() : [arg]))];
+		return [
+			this.cmd,
+			...[].concat(...this.args.map(arg => BaseTerm.optionalSerialize(arg))),
+		];
 	}
 };
 
@@ -59,7 +67,20 @@ class Block extends BaseTerm {
 
 	serilize () {
 		// TODO: handle mods
-		return [this.head, ...[].concat(...this.body.map(arg => arg.serilize()))];
+		return [
+			this.head,
+			...[].concat(...this.body.map(section => BaseTerm.optionalSerialize(section))),
+		];
+	}
+};
+
+
+class Scheme extends BaseTerm {
+	exp: SchemeExpression;
+
+
+	serilize () {
+		return ["#" + this.exp.serilize().join(" ")];
 	}
 };
 
@@ -67,6 +88,16 @@ class Block extends BaseTerm {
 class SchemeExpression extends BaseTerm {
 	func: (string | SchemeExpression);
 	args: (string | SchemeExpression)[];
+
+
+	serilize () {
+		return [
+			"(",
+			...BaseTerm.optionalSerialize(this.func),
+			...[].concat(...this.args.map(arg => BaseTerm.optionalSerialize(arg))),
+			")",
+		];
+	}
 };
 
 
@@ -98,6 +129,7 @@ const termDictionary = {
 	Root,
 	Command,
 	Block,
+	Scheme,
 	SchemeExpression,
 	Assignment,
 	Chord,
@@ -105,18 +137,6 @@ const termDictionary = {
 
 
 const parseRaw = data => {
-	/*switch (context) {
-	case "root":
-		return data.map(section => parseRaw(section, "toplevel_block"));
-
-	case "toplevel_block":
-		if (data.version)
-			return new Command("version", [data.version]);
-		else if (data.block)
-			return new Block(data);
-
-		break;
-	}*/
 	if (!data)
 		return data;
 

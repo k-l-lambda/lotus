@@ -14,6 +14,8 @@
 
 	const block = (block, head, body, mods) => ({proto: "Block", block, head, body, mods});
 
+	const scheme = exp => ({proto: "Scheme", exp});
+
 	const schemeExpression = (func, args) => ({proto: "SchemeExpression", func, args});
 
 	const assignment = (key, value) => ({proto: "Assignment", key, value});
@@ -1513,7 +1515,7 @@ embedded_scm_active
 // extra syntax, maybe the substitution for embedded_scm_active in lilypond's parser
 embedded_scheme_expression
 	: "#" scheme_expression
-		{$$ = $2;}
+		{$$ = scheme($2);}
 	;
 
 scheme_expression
