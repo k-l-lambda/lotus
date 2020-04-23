@@ -20,7 +20,6 @@ class BaseTerm implements LilyTerm {
 
 
 	join () {
-		//return this.serilize().join(" ");
 		const words = this.serilize();
 		let indent = 0;
 		const result = [];
@@ -148,6 +147,17 @@ class Chord extends BaseTerm {
 };
 
 
+class NumberUnit extends BaseTerm {
+	number: number;
+	unit: string;
+
+
+	serilize () {
+		return [`${this.number}${this.unit}`];
+	}
+}
+
+
 class Unexpect extends BaseTerm {
 	constructor (data) {
 		super(data);
@@ -165,6 +175,7 @@ const termDictionary = {
 	SchemeExpression,
 	Assignment,
 	Chord,
+	NumberUnit,
 };
 
 
@@ -179,7 +190,7 @@ const parseRaw = data => {
 
 		const {proto, ...fields} = data;
 		if (proto) {
-			const termClass = termDictionary[data.proto];
+			const termClass = termDictionary[proto];
 			if (!termClass)
 				throw new Error(`Unexpected term class: ${data.proto}`);
 
@@ -199,6 +210,7 @@ export default class LilyDocument {
 
 
 	constructor (data) {
+		console.log("raw data:", data);
 		this.root = parseRaw(data);
 	}
 

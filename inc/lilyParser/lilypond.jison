@@ -19,6 +19,8 @@
 	const schemeExpression = (func, args) => ({proto: "SchemeExpression", func, args});
 
 	const assignment = (key, value) => ({proto: "Assignment", key, value});
+
+	const numberUnit = (number, unit) => ({proto: "NumberUnit", number: Number(number), unit});
 %}
 
 
@@ -418,7 +420,7 @@ markup_list
 
 markup_composed_list
 	: markup_head_1_list markup_uncomposed_list
-		{$$ = {head: $1, body: $2};}
+		{$$ = block("markup", $1, $2);}
 	;
 
 markup_head_1_list
@@ -595,9 +597,9 @@ bare_number_common
 // equivalent for NUMBER_IDENTIFIER in lilypond's parser.yy
 number_identifier
 	: REAL number_unit
-		{$$ = {number: Number($1), unit: $2};}
+		{$$ = numberUnit($1, $2);}
 	| INT number_unit
-		{$$ = {number: Number($1), unit: $2};}
+		{$$ = numberUnit($1, $2);}
 	;
 
 // addon term to construct number_identifier
@@ -1385,7 +1387,7 @@ music_or_context_def
 
 context_def_spec_block
 	: CONTEXT '{' context_def_spec_body '}'
-		{$$ = {head: $1, body: $3};}
+		{$$ = block("context", $1, $3);}
 	;
 
 context_def_spec_body
