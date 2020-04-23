@@ -1,12 +1,22 @@
 
 %{
-	const command = (cmd, arg) => ({proto: "Command", cmd: cmd.substr(1), arg});
+	const root = (sections = []) => ({proto: "Root", sections});
+
+	const appendSection = (list, item) => {
+		list.sections.push(item);
+
+		return list;
+	};
+
+	const command = (cmd, ...args) => ({proto: "Command", cmd: cmd.substr(1), args});
 
 	const chord = (pitches, duration) => ({proto: "Chord", pitches, duration});
 
 	const block = (block, head, body, mods) => ({proto: "Block", block, head, body, mods});
 
 	const schemeExpression = (func, args) => ({proto: "SchemeExpression", func, args});
+
+	const assignment = (key, value) => ({proto: "Assignment", key, value});
 %}
 
 
@@ -205,13 +215,13 @@ start_symbol
 
 lilypond
 	: %empty
-		{$$ = [];}
+		{$$ = root();}
 	| version
-		{$$ = [$1];}
+		{$$ = root([$1]);}
 	| lilypond toplevel_expression
-		{$$ = $1.concat([$2]);}
+		{$$ = appendSection($1, $2);}
 	| lilypond assignment
-		{$$ = $1.concat([$2]);}
+		{$$ = appendSection($1, $2);}
 	;
 
 version
@@ -265,9 +275,9 @@ lilypond_header_body
 
 assignment
 	: assignment_id '=' identifier_init
-		{$$ = {key: $1, value: $3};}
+		{$$ = assignment($1, $3);}
 	| assignment_id '.' property_path '=' identifier_init
-		{$$ = {key: $1 + $3, value: $5};}
+		{$$ = assignment($1 + $3, $5);}
 	//| markup_mode_word '=' identifier_init
 	;
 
@@ -897,13 +907,13 @@ context_change
 
 music_property_def
 	: OVERRIDE grob_prop_path '=' scalar
-		{$$ = {cmd: "override", key: $2, value: $4};}
+		{$$ = command($1, assignment($2, $4));}
 	| REVERT simple_revert_context revert_arg
-		{$$ = {cmd: "revert", key: $2, arg: $3};}
+		{$$ = command($1, $2, $3);}
 	| SET context_prop_spec '=' scalar
-		{$$ = {cmd: "override", key: $2, value: $4};}
+		{$$ = command($1, assignment($2, $4));}
 	| UNSET context_prop_spec
-		{$$ = {cmd: "unset", key: $2};}
+		{$$ = command($1, $2);}
 	;
 
 revert_arg

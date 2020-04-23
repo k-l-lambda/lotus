@@ -1,35 +1,84 @@
 
 interface LilyTerm {
 	serilize () : string[];
+	join () : string;
 };
 
 
 class BaseTerm implements LilyTerm {
-	constructor (data) {
-		Object.assign(this, data);
+	constructor (data: object) {
+		//Object.assign(this, data);
+		for (const key in data) 
+			this[key] = parseRaw(data[key]);
 	}
 
 
 	serilize () {
+		console.warn("unimplemented serilization:", this);
 		return [];
+	}
+
+
+	join () {
+		return this.serilize().join(" ");
+	}
+
+
+	static isTerm (x) {
+		return typeof x === "object" && x instanceof BaseTerm;
 	}
 }
 
 
+class Root extends BaseTerm {
+	sections: LilyTerm[];
+
+
+	serilize () {
+		return [].concat(...this.sections.map(section => section.serilize()));
+	}
+};
+
+
 class Command extends BaseTerm {
-	cmd: object;
+	cmd: string;
 	args: any[];
+
+
+	serilize () {
+		return [this.cmd, ...[].concat(...this.args.map(arg => BaseTerm.isTerm(arg) ? arg.serilize() : [arg]))];
+	}
 };
 
 
 class Block extends BaseTerm {
-	data: object;
+	head: string;
+	body: LilyTerm[];
+	mods?: LilyTerm[];
+
+
+	serilize () {
+		// TODO: handle mods
+		return [this.head, ...[].concat(...this.body.map(arg => arg.serilize()))];
+	}
 };
 
 
 class SchemeExpression extends BaseTerm {
 	func: (string | SchemeExpression);
 	args: (string | SchemeExpression)[];
+};
+
+
+class Assignment extends BaseTerm {
+	key: string;
+	value: object;
+};
+
+
+class Chord extends BaseTerm {
+	pitches: string[];
+	duration: string;
 };
 
 
@@ -46,9 +95,12 @@ class Unexpect extends BaseTerm {
 
 
 const termDictionary = {
+	Root,
 	Command,
 	Block,
 	SchemeExpression,
+	Assignment,
+	Chord,
 };
 
 
@@ -65,12 +117,10 @@ const parseRaw = data => {
 
 		break;
 	}*/
-	switch (typeof data) {
-	case "string":
-	case "number":
-	case "boolean":
+	if (!data)
 		return data;
-	
+
+	switch (typeof data) {
 	case "object":
 		if (Array.isArray(data))
 			return data.map(item => parseRaw(item));
@@ -83,18 +133,26 @@ const parseRaw = data => {
 
 			return new termClass(fields);
 		}
+
+		return new Unexpect(data); 
 	}
 
-	return new Unexpect(data); 
+	return data;
 };
 
 
 
 export default class LilyDocument {
-	root: object;
+	root: LilyTerm;
 
 
 	constructor (data) {
 		this.root = parseRaw(data);
+	}
+
+
+	toString () {
+		//return this.root.join();
+		return this.root.serilize();
 	}
 };

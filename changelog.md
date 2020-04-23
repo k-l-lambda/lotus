@@ -14,6 +14,8 @@ TODO:
 
 *	2020.4.23
 
+	+	lilyDocument.ts: root term added.
+
 	+	lilyDocument.ts: term classes added.
 
 
