@@ -10,7 +10,7 @@
 
 	const command = (cmd, ...args) => ({proto: "Command", cmd: cmd.substr(1), args});
 
-	const chord = (pitches, duration) => ({proto: "Chord", pitches, duration});
+	const chord = (pitches, duration, options = {}) => ({proto: "Chord", pitches, duration, options});
 
 	const block = (block, head, body, mods) => ({proto: "Block", block, head, body, mods});
 
@@ -1153,7 +1153,7 @@ value
 pitch_or_music
 	//: pitch exclamations questions octave_check maybe_notemode_duration erroneous_quotes optional_rest post_events
 	: pitch exclamations questions optional_notemode_duration optional_rest post_events
-		{$$ = chord([$1], $4);}
+		{$$ = chord([$1], $4, {exclamations: $2, questions: $3, rest: $5, post_events: $6});}
 	//| new_chord post_events
 	;
 
@@ -1304,7 +1304,9 @@ string_number_event
 
 tremolo_type
 	: ':'
+		{$$ = ":";}
 	| ':' UNSIGNED
+		{$$ = ":" + $2;}
 	;
 
 event_function_event

@@ -25,6 +25,12 @@ class BaseTerm implements LilyTerm {
 		const result = [];
 
 		for (const word of words) {
+			if (word === "\b") {
+				// remove the last space
+				result.pop();
+				continue;
+			}
+
 			if (/^\}/.test(word))
 				result.pop(); // remove the last tab
 
@@ -166,6 +172,29 @@ class Assignment extends BaseTerm {
 class Chord extends BaseTerm {
 	pitches: string[];
 	duration: string;
+	options: any;
+
+
+	get single () {
+		return this.pitches.length === 1;
+	}
+
+
+	serilize () {
+		const pitches = this.single ? this.pitches : [
+			"<", "\b", ...this.pitches, "\b", ">",
+		];
+
+		const {exclamations, questions, rest, post_events} = this.options;
+		const postfix = [].concat(...[exclamations, questions, this.duration, rest, post_events]
+			.filter(item => item)
+			.map(item => ["\b", item]));
+
+		return [
+			...pitches,
+			...postfix,
+		];
+	}
 };
 
 
