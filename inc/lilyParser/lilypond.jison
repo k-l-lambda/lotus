@@ -25,6 +25,8 @@
 	const musicBlock = body => ({proto: "MusicBlock", body});
 
 	const simultaneousList = list => ({proto: "SimultaneousList", list});
+
+	const contextedMusic = (head, body, lyrics) => ({proto: "ContextedMusic", head, body, lyrics});
 %}
 
 
@@ -739,11 +741,14 @@ composite_music
 
 contexted_basic_music
 	: context_prefix contextable_music new_lyrics
-		{$$ = {head: $1, body: $2, lyrics: $3}}
+		//{$$ = {head: $1, body: $2, lyrics: $3}}
+		{$$ = contextedMusic($1, $2, $3);}
 	| context_prefix contextable_music
-		{$$ = {head: $1, body: $2}}
+		//{$$ = {head: $1, body: $2}}
+		{$$ = contextedMusic($1, $2);}
 	| context_prefix contexted_basic_music
-		{$$ = {head: $1, body: $2}}
+		//{$$ = {head: $1, body: $2}}
+		{$$ = contextedMusic($1, $2);}
 	;
 
 contextable_music
@@ -772,9 +777,11 @@ lyric_mode_music
 
 context_prefix
 	: CONTEXT symbol optional_id optional_context_mods
-		{$$ = {context: $2, assign: $3, mods: $4};}
+		//{$$ = {context: $2, assign: $3, mods: $4};}
+		{$$ = command($1, $2, $3, $4);}
 	| NEWCONTEXT symbol optional_id optional_context_mods
-		{$$ = {context: $2, new: true, assign: $3, mods: $4};}
+		//{$$ = {context: $2, new: true, assign: $3, mods: $4};}
+		{$$ = command($1, $2, $3, $4);}
 	;
 
 optional_id

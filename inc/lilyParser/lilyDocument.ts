@@ -59,7 +59,7 @@ class BaseTerm implements LilyTerm {
 
 
 	static optionalSerialize (item : any) {
-		return BaseTerm.isTerm(item) ? (item as LilyTerm).serilize() : [item];
+		return BaseTerm.isTerm(item) ? (item as LilyTerm).serilize() : (item === undefined ? [] : [item]);
 	}
 }
 
@@ -129,6 +129,22 @@ class SimultaneousList extends BaseTerm {
 			...[].concat(...this.list.map(section => BaseTerm.optionalSerialize(section))),
 			"\n",
 			">>\n",
+		];
+	}
+};
+
+
+class ContextedMusic extends BaseTerm {
+	head: LilyTerm;
+	body: LilyTerm;
+	lyrics?: LilyTerm;
+
+
+	serilize () {
+		return [
+			...BaseTerm.optionalSerialize(this.head),
+			...BaseTerm.optionalSerialize(this.body),
+			...BaseTerm.optionalSerialize(this.lyrics),
 		];
 	}
 };
@@ -247,6 +263,7 @@ const termDictionary = {
 	NumberUnit,
 	MusicBlock,
 	SimultaneousList,
+	ContextedMusic,
 	Divide,
 };
 

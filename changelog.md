@@ -14,6 +14,8 @@ TODO:
 
 *	2020.4.24
 
+	+	lilyDocument.ts: term of ContextedMusic added.
+
 	+	lilyDocument.ts: term of SimultaneousList added.
 
 	+	lilyDocument.ts: Chord.serilize implemented.
