@@ -1,6 +1,6 @@
 
 %{
-	const optionalNumber = x => Number.isFinite(Number(x)) ? Number(x) : x;
+	const preferNumber = x => Number.isFinite(Number(x)) ? Number(x) : x;
 
 
 	const root = (sections = []) => ({proto: "Root", sections});
@@ -23,7 +23,7 @@
 
 	const assignment = (key, value) => ({proto: "Assignment", key, value});
 
-	const numberUnit = (number, unit) => ({proto: "NumberUnit", number: optionalNumber(number), unit});
+	const numberUnit = (number, unit) => ({proto: "NumberUnit", number: preferNumber(number), unit});
 
 	const musicBlock = body => ({proto: "MusicBlock", body});
 
@@ -31,7 +31,11 @@
 
 	const contextedMusic = (head, body, lyrics) => ({proto: "ContextedMusic", head, body, lyrics});
 
-	const tempo = (beatsPerMinute, unit, text) => ({proto: "Tempo", beatsPerMinute: optionalNumber(beatsPerMinute), unit: optionalNumber(unit), text});
+	const tempo = (beatsPerMinute, unit, text) => ({proto: "Tempo", beatsPerMinute: preferNumber(beatsPerMinute), unit: preferNumber(unit), text});
+
+	const postEvent = (direction, arg) => ({proto: "PostEvent", direction, arg});
+
+	const fingering = value => ({proto: "Fingering", value: preferNumber(value)});
 %}
 
 
@@ -611,6 +615,8 @@ number_identifier
 	: REAL number_unit
 		{$$ = numberUnit($1, $2);}
 	| INT number_unit
+		{$$ = numberUnit($1, $2);}
+	| UNSIGNED number_unit
 		{$$ = numberUnit($1, $2);}
 	;
 
@@ -1240,31 +1246,38 @@ post_event
 	: post_event_nofinger
 		{$$ = $1;}
 	| '-' fingering
-		{$$ = {type: "fingering", direction: "middle", value: $2};}
+		//{$$ = {type: "fingering", direction: "middle", value: $2};}
+		{$$ = postEvent("middle", fingering($2));}
 	;
 
 post_event_nofinger
 	: '^' fingering
-		{$$ = {direction: "up", fingering: $2};}
+		//{$$ = {direction: "up", fingering: $2};}
+		{$$ = postEvent("up", fingering($2));}
 	| '_' fingering
-		{$$ = {direction: "down", fingering: $2};}
+		//{$$ = {direction: "down", fingering: $2};}
+		{$$ = postEvent("down", fingering($2));}
 	| direction_less_event
 		{$$ = $1;}
 	| script_dir music_function_call
-		{$$ = {direction: $1, event: $2};}
+		{$$ = postEvent($1, $2);}
 	| HYPHEN
 		{$$ = $1;}
 	| EXTENDER
 		{$$ = $1;}
 	| script_dir direction_reqd_event
-		{$$ = {direction: $1, event: $2};}
+		//{$$ = {direction: $1, event: $2};}
+		{$$ = postEvent($1, $2);}
 	| script_dir direction_less_event
-		{$$ = {direction: $1, event: $2};}
+		//{$$ = {direction: $1, event: $2};}
+		{$$ = postEvent($1, $2);}
 	// extra formula
 	| script_dir zero_command
-		{$$ = {direction: $1, cmd: $2};}
+		//{$$ = {direction: $1, cmd: $2};}
+		{$$ = postEvent($1, $2);}
 	| script_dir expressive_mark
-		{$$ = {direction: $1, expressive: $2};}
+		//{$$ = {direction: $1, expressive: $2};}
+		{$$ = postEvent($1, $2);}
 	;
 
 direction_reqd_event

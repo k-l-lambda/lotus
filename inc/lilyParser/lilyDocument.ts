@@ -238,7 +238,7 @@ class NumberUnit extends BaseTerm {
 
 
 	serilize () {
-		return [`${this.number}${this.unit}`];
+		return [this.number, "\b", this.unit];
 	}
 }
 
@@ -259,6 +259,34 @@ class Tempo extends BaseTerm {
 		];
 	}
 }
+
+
+const DIRECTION_CHAR = {
+	up: "^",
+	down: "_",
+	middle: "-",
+};
+
+
+class PostEvent extends BaseTerm {
+	direction: string;
+	arg: LilyTerm;
+
+
+	serilize () {
+		return [DIRECTION_CHAR[this.direction], "\b", ...BaseTerm.optionalSerialize(this.arg)];
+	}
+};
+
+
+class Fingering extends BaseTerm {
+	value: number;
+
+
+	serilize () {
+		return [this.value];
+	}
+};
 
 
 class Unexpect extends BaseTerm {
@@ -284,6 +312,8 @@ const termDictionary = {
 	ContextedMusic,
 	Divide,
 	Tempo,
+	PostEvent,
+	Fingering,
 };
 
 
