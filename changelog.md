@@ -12,6 +12,8 @@ TODO:
 
 *	2020.4.24
 
+	+	lilyDocument.ts: BaseTerm.getField added.
+
 	+	lilySerializationValidator.ts: mimatched documents comparing added.
 
 	+	tests/lilySerializationValidator.ts created.

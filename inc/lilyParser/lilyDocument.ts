@@ -2,6 +2,8 @@
 interface LilyTerm {
 	serialize () : string[];
 	join () : string;
+
+	query (key: string): any;
 };
 
 
@@ -57,6 +59,33 @@ class BaseTerm implements LilyTerm {
 	}
 
 
+	get entries (): LilyTerm[] {
+		return null;
+	}
+
+
+	getField (key) {
+		console.assert(this.entries, "[BaseTerm.getField] term's entries is null:", this);
+
+		for (const entry of this.entries) {
+			const result = entry.query(key);
+			if (result)
+				return result.value;
+		}
+	}
+
+
+	setField (key, value) {
+		// TODO:
+	}
+
+
+	query (key: string): any {
+		void(key);
+		console.warn("term.query not implemented:", this);
+	}
+
+
 	static isTerm (x) {
 		return typeof x === "object" && x instanceof BaseTerm;
 	}
@@ -74,6 +103,11 @@ class Root extends BaseTerm {
 
 	serialize () {
 		return [].concat(...this.sections.map(section => [...section.serialize(), "\n\n"]));
+	}
+
+
+	get entries (): LilyTerm[] {
+		return this.sections;
 	}
 };
 
@@ -106,6 +140,11 @@ class Block extends BaseTerm {
 			...[].concat(...this.body.map(section => [...BaseTerm.optionalSerialize(section), "\n"])),
 			"}\n",
 		];
+	}
+
+
+	get entries () {
+		return this.body;
 	}
 };
 
@@ -185,6 +224,12 @@ class Scheme extends BaseTerm {
 		else
 			return ["#", "\b", this.exp];
 	}
+
+
+	query (key: string): any {
+		if (this.exp instanceof SchemeExpression)
+			return this.exp.query(key);
+	}
 };
 
 
@@ -200,6 +245,12 @@ class SchemeExpression extends BaseTerm {
 			...cc(this.args.map(BaseTerm.optionalSerialize)),
 			")",
 		];
+	}
+
+
+	query (key: string): any {
+		if (key === this.func)
+			return {value: this.args.length === 1 ? this.args[0] : this.args};
 	}
 };
 
@@ -217,6 +268,12 @@ class Assignment extends BaseTerm {
 			"=",
 			...BaseTerm.optionalSerialize(this.value),
 		];
+	}
+
+
+	query (key) {
+		if (this.key === key)
+			return {value: this.value};
 	}
 };
 
