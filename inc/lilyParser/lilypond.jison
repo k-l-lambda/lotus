@@ -742,7 +742,7 @@ scm_identifier
 	| SCM_TRUE
 		{$$ = scheme(true);}
 	| SCM_INT
-		{$$ = scheme($1);}
+		{$$ = scheme($1.substr(1));}
 	| "#" "'" SYMBOL
 		//{$$ = {scm_id: $3};}
 		{$$ = scheme("'" + $3);}
@@ -802,7 +802,7 @@ optional_id
 	: %empty
 		{$$ = null;}
 	| '=' simple_string
-		{$$ = $2;}
+		{$$ = assignment(null, $2);}
 	;
 
 optional_context_mods

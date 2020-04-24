@@ -20,7 +20,7 @@ class BaseTerm implements LilyTerm {
 
 
 	join () {
-		const words = this.serialize();
+		const words = this.serialize().filter(word => word !== null);
 		let indent = 0;
 		const result = [];
 
@@ -69,7 +69,7 @@ class Root extends BaseTerm {
 
 
 	serialize () {
-		return [].concat(...this.sections.map(section => [...section.serialize(), "\n\n\n"]));
+		return [].concat(...this.sections.map(section => [...section.serialize(), "\n\n"]));
 	}
 };
 
