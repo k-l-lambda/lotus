@@ -21,6 +21,8 @@
 	const assignment = (key, value) => ({proto: "Assignment", key, value});
 
 	const numberUnit = (number, unit) => ({proto: "NumberUnit", number: Number(number), unit});
+
+	const musicBlock = body => ({proto: "MusicBlock", body});
 %}
 
 
@@ -137,6 +139,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 
 // binary commands
 "\\relative"				return 'CMD_RELATIVE';
+"\\absolute"				return 'CMD_ABSOLUTE';
 
 // unitary commands
 "\\clef"					return 'CMD_CLEF';
@@ -853,12 +856,12 @@ simultaneous_music
 
 sequential_music
 	: braced_music_list
-		{$$ = {music: "sequential", body: $1};}
+		{$$ = $1;}
 	;
 
 braced_music_list
 	: '{' music_list '}'
-		{$$ = $2;}
+		{$$ = musicBlock($2);}
 	;
 
 music_list
@@ -1041,7 +1044,7 @@ music_identifier
 		{$$ = command($1, $2);}
 	//| binary_cmd value value
 	//	{$$ = command($1, [$2, $3]);}
-	| cmd_relative
+	| pitch_mode_music
 		{$$ = $1;}
 	| "("
 		{$$ = $1;}
@@ -1054,7 +1057,7 @@ music_identifier
 	| "~"
 		{$$ = $1;}
 	| DIVIDE
-		{$$ = $1;}
+		{$$ = {proto: "Divide"};}
 	| expressive_mark
 		{$$ = $1;}
 	;
@@ -1077,6 +1080,7 @@ expressive_mark
 /*binary_cmd
 	;*/
 
+// extra syntax
 unitary_cmd
 	: CMD_CLEF
 		{$$ = $1;}
@@ -1090,8 +1094,6 @@ unitary_cmd
 		{$$ = $1;}
 	| CMD_STEMDOWN
 		{$$ = $1;}
-	//| CMD_RELATIVE
-	//	{$$ = $1;}
 	| CMD_BAR
 		{$$ = $1;}
 	| CMD_OMIT
@@ -1107,9 +1109,21 @@ unitary_cmd
 	;
 
 // extra syntax
-cmd_relative
-	: CMD_RELATIVE pitch music
-		{$$ = {relative: $2, music: $3};}
+pitch_mode_music
+	: pitch_mode pitch music
+		//{$$ = block("music", null, $3, {pitch_mode: $1, pitch: $2});}
+		{$$ = command($1, $2, $3)}
+	| pitch_mode music
+		//{$$ = block("music", null, $2, {pitch_mode: $1});}
+		{$$ = command($1, null, $2)}
+	;
+
+// extra syntax
+pitch_mode
+	: CMD_RELATIVE
+		{$$ = $1;}
+	| CMD_ABSOLUTE
+		{$$ = $1;}
 	;
 
 // extra syntax

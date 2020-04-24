@@ -100,6 +100,28 @@ class Block extends BaseTerm {
 };
 
 
+class MusicBlock extends BaseTerm {
+	body: LilyTerm[];
+
+
+	serilize () {
+		return [
+			"{\n",
+			...[].concat(...this.body.map(section => BaseTerm.optionalSerialize(section))),
+			"\n",
+			"}\n",
+		];
+	}
+};
+
+
+class Divide extends BaseTerm {
+	serilize () {
+		return ["|\n"];
+	}
+}
+
+
 class Scheme extends BaseTerm {
 	exp: SchemeExpression;
 
@@ -176,6 +198,8 @@ const termDictionary = {
 	Assignment,
 	Chord,
 	NumberUnit,
+	MusicBlock,
+	Divide,
 };
 
 

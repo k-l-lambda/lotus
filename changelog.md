@@ -12,6 +12,11 @@ TODO:
 
 
 
+*	2020.4.24
+
+	+	lilyDocument.ts: term of MusicBlock added.
+
+
 *	2020.4.23
 
 	+	lilyDocument.ts: BaseTerm.join implemented.
