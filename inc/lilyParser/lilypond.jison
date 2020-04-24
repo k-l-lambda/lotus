@@ -933,7 +933,7 @@ simple_music
 
 context_change
 	: CHANGE symbol '=' simple_string
-		{$$ = {change: $2, value: $4};}
+		{$$ = command($1, assignment($2, $4));}
 	;
 
 music_property_def
