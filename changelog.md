@@ -1,7 +1,5 @@
 
 TODO:
-	LilyDocument
-		reconstruction from parsing result
 	options to control layout
 	SVG static elements baking to image
 	parse measure ticks from ly
@@ -13,6 +11,8 @@ TODO:
 
 
 *	2020.4.24
+
+	+	tests/lilySerializationValidator.ts created.
 
 	+	lilyDocument.ts: term of PostEvent added.
 	+	lilyDocument.ts: term of Tempo added.
