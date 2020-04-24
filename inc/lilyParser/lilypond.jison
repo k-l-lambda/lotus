@@ -958,9 +958,9 @@ simple_revert_context
 
 grob_prop_path
 	: grob_prop_spec
-		{$$ = $1;}
+		{$$ = [$1];}
 	| grob_prop_spec property_path
-		{$$ = $1 + $2;}
+		{$$ = [$1, $2];}
 	;
 
 grob_prop_spec

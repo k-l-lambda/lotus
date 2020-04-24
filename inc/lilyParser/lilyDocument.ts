@@ -5,6 +5,10 @@ interface LilyTerm {
 };
 
 
+// concat array of array
+const cc = arrays => [].concat(...arrays);
+
+
 class BaseTerm implements LilyTerm {
 	constructor (data: object) {
 		//Object.assign(this, data);
@@ -193,7 +197,7 @@ class SchemeExpression extends BaseTerm {
 		return [
 			"(",
 			...BaseTerm.optionalSerialize(this.func),
-			...[].concat(...this.args.map(BaseTerm.optionalSerialize)),
+			...cc(this.args.map(BaseTerm.optionalSerialize)),
 			")",
 		];
 	}
@@ -201,13 +205,15 @@ class SchemeExpression extends BaseTerm {
 
 
 class Assignment extends BaseTerm {
-	key: string;
+	key: (string|any[]);
 	value: object;
 
 
 	serialize () {
+		const keys = (Array.isArray(this.key) ? this.key : [this.key]).map(BaseTerm.optionalSerialize);
+
 		return [
-			this.key,
+			...cc(keys),
 			"=",
 			...BaseTerm.optionalSerialize(this.value),
 		];
