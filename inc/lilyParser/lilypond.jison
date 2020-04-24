@@ -23,6 +23,8 @@
 	const numberUnit = (number, unit) => ({proto: "NumberUnit", number: Number(number), unit});
 
 	const musicBlock = body => ({proto: "MusicBlock", body});
+
+	const simultaneousList = list => ({proto: "SimultaneousList", list});
 %}
 
 
@@ -284,7 +286,7 @@ assignment
 	: assignment_id '=' identifier_init
 		{$$ = assignment($1, $3);}
 	| assignment_id '.' property_path '=' identifier_init
-		{$$ = assignment($1 + $3, $5);}
+		{$$ = assignment($1 + "." + $3, $5);}
 	//| markup_mode_word '=' identifier_init
 	;
 
@@ -717,13 +719,14 @@ embedded_scm_bare
 // equivalent for SCM_IDENTIFIER in lilypond parser.yy
 scm_identifier
 	: SCM_FALSE
-		{$$ = false;}
+		{$$ = scheme(false);}
 	| SCM_TRUE
-		{$$ = true;}
+		{$$ = scheme(true);}
 	| SCM_INT
-		{$$ = $1;}
+		{$$ = scheme($1);}
 	| "#" "'" SYMBOL
-		{$$ = {scm_id: $3};}
+		//{$$ = {scm_id: $3};}
+		{$$ = scheme("'" + $3);}
 	;
 
 composite_music
@@ -849,9 +852,9 @@ grouped_music_list
 
 simultaneous_music
 	: SIMULTANEOUS braced_music_list
-		{$$ = {music: "simultaneous", body: $2};}
+		{$$ = command($1, $2);}
 	| DOUBLE_ANGLE_OPEN music_list DOUBLE_ANGLE_CLOSE
-		{$$ = {music: "simultaneous", body: $2};}
+		{$$ = simultaneousList($2);}
 	;
 
 sequential_music
@@ -1347,7 +1350,7 @@ markup_top
 	| markup_head_1_list simple_markup
 		{$$ = {head: $1, body: $2};}
 	| simple_markup_noword
-		{$$ = {body: $1};}
+		{$$ = $1;}
 	;
 
 markup_mode_word
@@ -1456,9 +1459,13 @@ context_mod
 
 property_operation
 	: symbol '=' scalar
+		{$$ = assignment($1, $3);}
 	| UNSET symbol
+		{$$ = command($1, $2);}
 	| OVERRIDE revert_arg '=' scalar
+		{$$ = command($1, assignment($2, $4));}
 	| REVERT revert_arg
+		{$$ = command($1, $2);}
 	;
 
 symbol

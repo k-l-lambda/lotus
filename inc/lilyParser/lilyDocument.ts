@@ -31,15 +31,15 @@ class BaseTerm implements LilyTerm {
 				continue;
 			}
 
-			if (/^\}/.test(word))
+			if (/^(\}|>>)/.test(word))
 				result.pop(); // remove the last tab
 
 			result.push(word);
 
 			if (/\n$/.test(word)) {
-				if (/\{\n$/.test(word))
+				if (/(\{|<<)\n$/.test(word))
 					++indent;
-				else if (/^\}/.test(word)) 
+				else if (/^(\}|>>)/.test(word)) 
 					--indent;
 
 				if (indent)
@@ -119,6 +119,21 @@ class MusicBlock extends BaseTerm {
 };
 
 
+class SimultaneousList extends BaseTerm {
+	list: LilyTerm[];
+
+
+	serilize () {
+		return [
+			"<<\n",
+			...[].concat(...this.list.map(section => BaseTerm.optionalSerialize(section))),
+			"\n",
+			">>\n",
+		];
+	}
+};
+
+
 class Divide extends BaseTerm {
 	serilize () {
 		return ["|\n"];
@@ -127,11 +142,16 @@ class Divide extends BaseTerm {
 
 
 class Scheme extends BaseTerm {
-	exp: SchemeExpression;
+	exp: (boolean|LilyTerm);
 
 
 	serilize () {
-		return ["#" + this.exp.serilize().join(" ")];
+		if (BaseTerm.isTerm(this.exp))
+			return ["#" + (this.exp as LilyTerm).serilize().join(" ")];
+		else if (typeof this.exp === "boolean")
+			return ["##", "\b", this.exp ? "t" : "f"];
+		else
+			return ["#", "\b", this.exp];
 	}
 };
 
@@ -226,6 +246,7 @@ const termDictionary = {
 	Chord,
 	NumberUnit,
 	MusicBlock,
+	SimultaneousList,
 	Divide,
 };
 
