@@ -792,10 +792,10 @@ lyric_mode_music
 context_prefix
 	: CONTEXT symbol optional_id optional_context_mods
 		//{$$ = {context: $2, assign: $3, mods: $4};}
-		{$$ = command($1, $2, $3, $4);}
+		{$$ = command($1, $2, $3, ...$4);}
 	| NEWCONTEXT symbol optional_id optional_context_mods
 		//{$$ = {context: $2, new: true, assign: $3, mods: $4};}
-		{$$ = command($1, $2, $3, $4);}
+		{$$ = command($1, $2, $3, ...$4);}
 	;
 
 optional_id
@@ -837,7 +837,7 @@ mode_changed_music
 	: mode_changing_head grouped_music_list
 		{$$ = command($1, $2);}
 	| mode_changing_head_with_context optional_context_mods grouped_music_list
-		{$$ = command($1, $2, $3);}
+		{$$ = command($1, ...$2, $3);}
 	;
 
 mode_changing_head_with_context
@@ -1458,9 +1458,9 @@ context_mod_arg
 
 context_modification
 	: WITH '{' context_mod_list '}'
-		{$$ = {with: $3};}
+		{$$ = command($1, inlineBlock($3));}
 	| WITH context_modification_arg
-		{$$ = {with: $3};}
+		{$$ = command($1, $2);}
 	;
 
 context_modification_arg

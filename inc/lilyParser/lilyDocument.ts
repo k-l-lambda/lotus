@@ -139,8 +139,7 @@ class SimultaneousList extends BaseTerm {
 	serialize () {
 		return [
 			"<<\n",
-			...[].concat(...this.list.map(BaseTerm.optionalSerialize)),
-			"\n",
+			...[].concat(...this.list.map(item => [...BaseTerm.optionalSerialize(item), "\n"])),
 			">>\n",
 		];
 	}
