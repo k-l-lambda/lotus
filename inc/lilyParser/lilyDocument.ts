@@ -243,6 +243,24 @@ class NumberUnit extends BaseTerm {
 }
 
 
+class Tempo extends BaseTerm {
+	beatsPerMinute?: number;
+	unit?: number;
+	text?: string;
+
+
+	serilize () {
+		const assignment = Number.isFinite(this.beatsPerMinute) ? [this.unit, "=", this.beatsPerMinute] : [];
+
+		return [
+			"\\tempo",
+			...BaseTerm.optionalSerialize(this.text),
+			...assignment,
+		];
+	}
+}
+
+
 class Unexpect extends BaseTerm {
 	constructor (data) {
 		super(data);
@@ -265,6 +283,7 @@ const termDictionary = {
 	SimultaneousList,
 	ContextedMusic,
 	Divide,
+	Tempo,
 };
 
 

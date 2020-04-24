@@ -1,5 +1,8 @@
 
 %{
+	const optionalNumber = x => Number.isFinite(Number(x)) ? Number(x) : x;
+
+
 	const root = (sections = []) => ({proto: "Root", sections});
 
 	const appendSection = (list, item) => {
@@ -20,13 +23,15 @@
 
 	const assignment = (key, value) => ({proto: "Assignment", key, value});
 
-	const numberUnit = (number, unit) => ({proto: "NumberUnit", number: Number(number), unit});
+	const numberUnit = (number, unit) => ({proto: "NumberUnit", number: optionalNumber(number), unit});
 
 	const musicBlock = body => ({proto: "MusicBlock", body});
 
 	const simultaneousList = list => ({proto: "SimultaneousList", list});
 
 	const contextedMusic = (head, body, lyrics) => ({proto: "ContextedMusic", head, body, lyrics});
+
+	const tempo = (beatsPerMinute, unit, text) => ({proto: "Tempo", beatsPerMinute: optionalNumber(beatsPerMinute), unit: optionalNumber(unit), text});
 %}
 
 
@@ -971,11 +976,13 @@ event_chord
 
 tempo_event
 	: TEMPO steno_duration '=' tempo_range
-		{$$ = {tempo: $4, unit: $2};}
+		//{$$ = {tempo: $4, unit: $2};}
+		{$$ = tempo($4, $2);}
 	| TEMPO text steno_duration '=' tempo_range
-		{$$ = {tempo: $5, unit: $3, text: $2};}
+		//{$$ = {tempo: $5, unit: $3, text: $2};}
+		{$$ = tempo($5, $3, $2);}
 	| TEMPO text
-		{$$ = {tempo: $2};}
+		{$$ = tempo(undefined, undefined, $2);}
 	;
 
 tempo_range
