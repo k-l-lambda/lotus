@@ -28,15 +28,17 @@ const validate = (grammar, sourceFile) => {
 };
 
 
-const main = () => {
+const main = sourceFile => {
 	const grammar = fs.readFileSync("./inc/lilyParser/lilypond.jison").toString();
 
-	const result = validate(grammar, "./tests/ly/test-3.7.ly");
+	const result = validate(grammar, sourceFile);
 	console.log("result:", result);
 };
 
 
-main();
+const argv = JSON.parse(process.env.npm_config_argv);
+
+main(argv.original[2]);
 
 
 
