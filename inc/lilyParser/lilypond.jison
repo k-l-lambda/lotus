@@ -15,7 +15,9 @@
 
 	const chord = (pitches, duration, options = {}) => ({proto: "Chord", pitches, duration, options: {...options, proto: "_PLAIN"}});
 
-	const block = (block, head, body) => ({proto: "Block", block, head, body});
+	const block = (block, head, body = []) => ({proto: "Block", block, head, body});
+
+	const inlineBlock = body => ({proto: "InlineBlock", body});
 
 	const scheme = exp => ({proto: "Scheme", exp});
 
@@ -431,12 +433,13 @@ markup_list
 	: markup_composed_list
 		{$$ = $1;}
 	| markup_uncomposed_list
-		{$$ = $1;}
+		{$$ = [$1];}
 	;
 
 markup_composed_list
 	: markup_head_1_list markup_uncomposed_list
-		{$$ = block("markup", $1, $2);}
+		//{$$ = block("markup", $1, $2);}
+		{$$ = [...$1, $2];}
 	;
 
 markup_head_1_list
@@ -451,7 +454,8 @@ markup_head_1_item
 	//: markup_function markup_command_list_arguments
 	//	{$$ = {func: $1, args: $2};}
 	: markup_function
-		{$$ = {func: $1};}
+		//{$$ = {func: $1};}
+		{$$ = $1;}
 	;
 
 // equivalent for MARKUP_FUNCTION in lilypond's parser.yy
@@ -496,7 +500,7 @@ markup_uncomposed_list
 
 markup_braced_list
 	: '{' markup_braced_list_body '}'
-		{$$ = $2;}
+		{$$ = inlineBlock($2);}
 	;
 
 markup_braced_list_body
@@ -505,14 +509,14 @@ markup_braced_list_body
 	| markup_braced_list_body markup
 		{$$ = $1.concat([$2]);}
 	| markup_braced_list_body markup_list
-		{$$ = $1.concat([$2]);}
+		{$$ = $1.concat($2);}
 	;
 
 markup
 	: markup_head_1_list simple_markup
-		{$$ = {head: $1, data: $2};}
+		{$$ = $1.concat([$2]);}
 	| simple_markup
-		{$$ = {data: $1};}
+		{$$ = $1;}
 	;
 
 simple_markup
@@ -545,9 +549,11 @@ markup_word
 
 simple_markup_noword
 	: SCORE '{' score_body '}'
-		{$$ = {score: $3};}
+		//{$$ = {score: $3};}
+		{$$ = block("score", $1, $3);}
 	| markup_function markup_command_basic_arguments
-		{$$ = {func: $1, args: $2};}
+		//{$$ = {func: $1, args: $2};}
+		{$$ = command($1, ...$2);}
 	//| markup_scm MARKUP_IDENTIFIER
 	;
 
@@ -752,13 +758,10 @@ composite_music
 
 contexted_basic_music
 	: context_prefix contextable_music new_lyrics
-		//{$$ = {head: $1, body: $2, lyrics: $3}}
 		{$$ = contextedMusic($1, $2, $3);}
 	| context_prefix contextable_music
-		//{$$ = {head: $1, body: $2}}
 		{$$ = contextedMusic($1, $2);}
 	| context_prefix contexted_basic_music
-		//{$$ = {head: $1, body: $2}}
 		{$$ = contextedMusic($1, $2);}
 	;
 
@@ -1361,7 +1364,7 @@ fingering
 
 full_markup
 	: markup_mode markup_top
-		{$$ = command($1, $2);}
+		{$$ = command($1, ...$2);}
 	| markup_mode_word
 		{$$ = $1;}
 	;
@@ -1373,9 +1376,10 @@ markup_mode
 
 markup_top
 	: markup_list
-		{$$ = {body: $1};}
+		{$$ = $1;}
 	| markup_head_1_list simple_markup
-		{$$ = {head: $1, body: $2};}
+		//{$$ = {head: $1, body: $2};}
+		{$$ = $1.concat([$2]);}
 	| simple_markup_noword
 		{$$ = $1;}
 	;
@@ -1392,7 +1396,7 @@ output_def
 
 output_def_body
 	: output_def_head_with_mode_switch '{'
-		{$$ = block("score", $1, []);}
+		{$$ = block("score", $1);}
 	| output_def_body assignment
 		{
 			$1.body.push($2);

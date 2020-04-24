@@ -1,6 +1,6 @@
 
 interface LilyTerm {
-	serilize () : string[];
+	serialize () : string[];
 	join () : string;
 };
 
@@ -13,14 +13,14 @@ class BaseTerm implements LilyTerm {
 	}
 
 
-	serilize () {
+	serialize () {
 		console.warn("unimplemented serilization:", this);
 		return [];
 	}
 
 
 	join () {
-		const words = this.serilize();
+		const words = this.serialize();
 		let indent = 0;
 		const result = [];
 
@@ -31,7 +31,7 @@ class BaseTerm implements LilyTerm {
 				continue;
 			}
 
-			if (/^(\}|>>)/.test(word))
+			if (/^(\}\n|>>)/.test(word))
 				result.pop(); // remove the last tab
 
 			result.push(word);
@@ -59,7 +59,7 @@ class BaseTerm implements LilyTerm {
 
 
 	static optionalSerialize (item : any) {
-		return BaseTerm.isTerm(item) ? (item as LilyTerm).serilize() : (item === undefined ? [] : [item]);
+		return BaseTerm.isTerm(item) ? (item as LilyTerm).serialize() : (item === undefined ? [] : [item]);
 	}
 }
 
@@ -68,8 +68,8 @@ class Root extends BaseTerm {
 	sections: LilyTerm[];
 
 
-	serilize () {
-		return [].concat(...this.sections.map(section => [...section.serilize(), "\n\n\n"]));
+	serialize () {
+		return [].concat(...this.sections.map(section => [...section.serialize(), "\n\n\n"]));
 	}
 };
 
@@ -79,7 +79,7 @@ class Command extends BaseTerm {
 	args: any[];
 
 
-	serilize () {
+	serialize () {
 		return [
 			"\\" + this.cmd,
 			...[].concat(...this.args.map(arg => BaseTerm.optionalSerialize(arg))),
@@ -89,16 +89,29 @@ class Command extends BaseTerm {
 
 
 class Block extends BaseTerm {
-	head: string;
+	head: (string|string[]);
 	body: LilyTerm[];
 
 
-	serilize () {
+	serialize () {
+		const heads = Array.isArray(this.head) ? this.head : (this.head ? [this.head] : []);
+
 		return [
-			this.head,
+			...heads,
 			"{\n",
 			...[].concat(...this.body.map(section => [...BaseTerm.optionalSerialize(section), "\n"])),
 			"}\n",
+		];
+	}
+};
+
+
+class InlineBlock extends Block {
+	serialize () {
+		return [
+			"{",
+			...[].concat(...this.body.map(section => BaseTerm.optionalSerialize(section))),
+			"}",
 		];
 	}
 };
@@ -108,7 +121,7 @@ class MusicBlock extends BaseTerm {
 	body: LilyTerm[];
 
 
-	serilize () {
+	serialize () {
 		return [
 			"{\n",
 			...[].concat(...this.body.map(section => BaseTerm.optionalSerialize(section))),
@@ -123,7 +136,7 @@ class SimultaneousList extends BaseTerm {
 	list: LilyTerm[];
 
 
-	serilize () {
+	serialize () {
 		return [
 			"<<\n",
 			...[].concat(...this.list.map(section => BaseTerm.optionalSerialize(section))),
@@ -140,7 +153,7 @@ class ContextedMusic extends BaseTerm {
 	lyrics?: LilyTerm;
 
 
-	serilize () {
+	serialize () {
 		return [
 			...BaseTerm.optionalSerialize(this.head),
 			...BaseTerm.optionalSerialize(this.body),
@@ -151,7 +164,7 @@ class ContextedMusic extends BaseTerm {
 
 
 class Divide extends BaseTerm {
-	serilize () {
+	serialize () {
 		return ["|\n"];
 	}
 }
@@ -161,9 +174,9 @@ class Scheme extends BaseTerm {
 	exp: (boolean|LilyTerm);
 
 
-	serilize () {
+	serialize () {
 		if (BaseTerm.isTerm(this.exp))
-			return ["#" + (this.exp as LilyTerm).serilize().join(" ")];
+			return ["#" + (this.exp as LilyTerm).serialize().join(" ")];
 		else if (typeof this.exp === "boolean")
 			return ["##", "\b", this.exp ? "t" : "f"];
 		else
@@ -177,7 +190,7 @@ class SchemeExpression extends BaseTerm {
 	args: (string | SchemeExpression)[];
 
 
-	serilize () {
+	serialize () {
 		return [
 			"(",
 			...BaseTerm.optionalSerialize(this.func),
@@ -193,7 +206,7 @@ class Assignment extends BaseTerm {
 	value: object;
 
 
-	serilize () {
+	serialize () {
 		return [
 			this.key,
 			"=",
@@ -214,7 +227,7 @@ class Chord extends BaseTerm {
 	}
 
 
-	serilize () {
+	serialize () {
 		const pitches = this.single ? this.pitches : [
 			"<", "\b", ...this.pitches, "\b", ">",
 		];
@@ -237,7 +250,7 @@ class NumberUnit extends BaseTerm {
 	unit: string;
 
 
-	serilize () {
+	serialize () {
 		return [this.number, "\b", this.unit];
 	}
 }
@@ -249,7 +262,7 @@ class Tempo extends BaseTerm {
 	text?: string;
 
 
-	serilize () {
+	serialize () {
 		const assignment = Number.isFinite(this.beatsPerMinute) ? [this.unit, "=", this.beatsPerMinute] : [];
 
 		return [
@@ -273,7 +286,7 @@ class PostEvent extends BaseTerm {
 	arg: LilyTerm;
 
 
-	serilize () {
+	serialize () {
 		return [DIRECTION_CHAR[this.direction], "\b", ...BaseTerm.optionalSerialize(this.arg)];
 	}
 };
@@ -283,7 +296,7 @@ class Fingering extends BaseTerm {
 	value: number;
 
 
-	serilize () {
+	serialize () {
 		return [this.value];
 	}
 };
@@ -302,6 +315,7 @@ const termDictionary = {
 	Root,
 	Command,
 	Block,
+	InlineBlock,
 	Scheme,
 	SchemeExpression,
 	Assignment,
@@ -358,6 +372,6 @@ export default class LilyDocument {
 
 	toString () {
 		return this.root.join();
-		//return this.root.serilize();
+		//return this.root.serialize();
 	}
 };
