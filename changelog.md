@@ -12,6 +12,8 @@ TODO:
 
 *	2020.4.24
 
+	+	lilySerializationValidator.ts: mimatched documents comparing added.
+
 	+	tests/lilySerializationValidator.ts created.
 
 	+	lilyDocument.ts: term of PostEvent added.
