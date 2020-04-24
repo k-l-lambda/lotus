@@ -10,9 +10,9 @@
 
 	const command = (cmd, ...args) => ({proto: "Command", cmd: cmd.substr(1), args});
 
-	const chord = (pitches, duration, options = {}) => ({proto: "Chord", pitches, duration, options});
+	const chord = (pitches, duration, options = {}) => ({proto: "Chord", pitches, duration, options: {...options, proto: "_PLAIN"}});
 
-	const block = (block, head, body, mods) => ({proto: "Block", block, head, body, mods});
+	const block = (block, head, body) => ({proto: "Block", block, head, body});
 
 	const scheme = exp => ({proto: "Scheme", exp});
 
@@ -811,9 +811,9 @@ music_bare
 
 mode_changed_music
 	: mode_changing_head grouped_music_list
-		{$$ = {head: $1, body: $2};}
+		{$$ = command($1, $2);}
 	| mode_changing_head_with_context optional_context_mods grouped_music_list
-		{$$ = {head: $1, mods: $2, body: $3};}
+		{$$ = command($1, $2, $3);}
 	;
 
 mode_changing_head_with_context
@@ -1017,7 +1017,7 @@ multipliers
 
 repeated_music
 	: REPEAT simple_string unsigned_number music
-		{$$ = {repeat: [$2, $3], music: $4};}
+		{$$ = command($1, $2, $3, $4);}
 	;
 
 unsigned_number
@@ -1111,10 +1111,8 @@ unitary_cmd
 // extra syntax
 pitch_mode_music
 	: pitch_mode pitch music
-		//{$$ = block("music", null, $3, {pitch_mode: $1, pitch: $2});}
 		{$$ = command($1, $2, $3)}
 	| pitch_mode music
-		//{$$ = block("music", null, $2, {pitch_mode: $1});}
 		{$$ = command($1, null, $2)}
 	;
 
@@ -1333,7 +1331,7 @@ fingering
 
 full_markup
 	: markup_mode markup_top
-		{$$ = {markup: $2};}
+		{$$ = command($1, $2);}
 	| markup_mode_word
 		{$$ = $1;}
 	;
@@ -1354,7 +1352,7 @@ markup_top
 
 markup_mode_word
 	: markup_mode markup_word
-		{$$ = {markup: $2};}
+		{$$ = command($1, $2);}
 	;
 
 output_def

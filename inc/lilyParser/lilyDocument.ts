@@ -81,7 +81,7 @@ class Command extends BaseTerm {
 
 	serilize () {
 		return [
-			this.cmd,
+			"\\" + this.cmd,
 			...[].concat(...this.args.map(arg => BaseTerm.optionalSerialize(arg))),
 		];
 	}
@@ -91,11 +91,9 @@ class Command extends BaseTerm {
 class Block extends BaseTerm {
 	head: string;
 	body: LilyTerm[];
-	mods?: LilyTerm[];
 
 
 	serilize () {
-		// TODO: handle mods
 		return [
 			this.head,
 			"{\n",
@@ -243,6 +241,9 @@ const parseRaw = data => {
 
 		const {proto, ...fields} = data;
 		if (proto) {
+			if (proto === "_PLAIN")
+				return fields;
+
 			const termClass = termDictionary[proto];
 			if (!termClass)
 				throw new Error(`Unexpected term class: ${data.proto}`);
