@@ -43,4 +43,4 @@ main(argv.original[2]);
 
 
 // keep inspector connected
-setTimeout(() => console.log("done."), 1e+8);
+//setTimeout(() => console.log("done."), 1e+8);

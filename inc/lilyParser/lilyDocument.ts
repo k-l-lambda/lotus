@@ -82,7 +82,7 @@ class Command extends BaseTerm {
 	serialize () {
 		return [
 			"\\" + this.cmd,
-			...[].concat(...this.args.map(arg => BaseTerm.optionalSerialize(arg))),
+			...[].concat(...this.args.map(BaseTerm.optionalSerialize)),
 		];
 	}
 };
@@ -110,7 +110,7 @@ class InlineBlock extends Block {
 	serialize () {
 		return [
 			"{",
-			...[].concat(...this.body.map(section => BaseTerm.optionalSerialize(section))),
+			...[].concat(...this.body.map(BaseTerm.optionalSerialize)),
 			"}",
 		];
 	}
@@ -124,7 +124,7 @@ class MusicBlock extends BaseTerm {
 	serialize () {
 		return [
 			"{\n",
-			...[].concat(...this.body.map(section => BaseTerm.optionalSerialize(section))),
+			...[].concat(...this.body.map(BaseTerm.optionalSerialize)),
 			"\n",
 			"}\n",
 		];
@@ -139,7 +139,7 @@ class SimultaneousList extends BaseTerm {
 	serialize () {
 		return [
 			"<<\n",
-			...[].concat(...this.list.map(section => BaseTerm.optionalSerialize(section))),
+			...[].concat(...this.list.map(BaseTerm.optionalSerialize)),
 			"\n",
 			">>\n",
 		];
@@ -194,7 +194,7 @@ class SchemeExpression extends BaseTerm {
 		return [
 			"(",
 			...BaseTerm.optionalSerialize(this.func),
-			...[].concat(...this.args.map(arg => BaseTerm.optionalSerialize(arg))),
+			...[].concat(...this.args.map(BaseTerm.optionalSerialize)),
 			")",
 		];
 	}
@@ -222,6 +222,14 @@ class Chord extends BaseTerm {
 	options: any;
 
 
+	constructor (data: object) {
+		super(data);
+
+		if (this.options.post_events)
+			this.options.post_events = this.options.post_events.map(parseRaw);
+	}
+
+
 	get single () {
 		return this.pitches.length === 1;
 	}
@@ -233,9 +241,10 @@ class Chord extends BaseTerm {
 		];
 
 		const {exclamations, questions, rest, post_events} = this.options;
-		const postfix = [].concat(...[exclamations, questions, this.duration, rest, post_events]
+		const postfix = [].concat(...[...(exclamations || []), ...(questions || []), this.duration, rest]
 			.filter(item => item)
-			.map(item => ["\b", item]));
+			.map(item => ["\b", item]))
+			.concat(...(post_events || []).map(BaseTerm.optionalSerialize));
 
 		return [
 			...pitches,
