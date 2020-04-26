@@ -476,7 +476,7 @@ export default class LilyDocument {
 
 	globalAttributes ({readonly = false} = {}) {
 		const globalStaffSize = this.root.getField("set-global-staff-size");
-		const paper = this.root.getBlock("paper");
+		let paper = this.root.getBlock("paper");
 		const layoutStaffSize = paper && paper.getField("layout-set-staff-size");
 		let staffSize = globalStaffSize || layoutStaffSize;
 
@@ -485,10 +485,36 @@ export default class LilyDocument {
 				this.root.sections.push(new Scheme({exp: {proto: "SchemeExpression", func: "set-global-staff-size", args: [24]}}));
 				staffSize = this.root.getField("set-global-staff-size");
 			}
+
+			if (!paper) {
+				paper = new Block({
+					block: "score",
+					head: "\\paper",
+					body: [
+						// A4 paper size
+						{
+							proto: "Assignment",
+							key: "paper-width",
+							value: {proto: "NumberUnit", number: 21, unit: "\\cm"},
+						},
+						{
+							proto: "Assignment",
+							key: "paper-height",
+							value: {proto: "NumberUnit", number: 29.71, unit: "\\cm"},
+						},
+					],
+				});
+				this.root.sections.push(paper);
+			}
 		}
+
+		const paperWidth = paper.getField("paper-width");
+		const paperHeight = paper.getField("paper-height");
 
 		const attributes = {
 			staffSize,
+			paperWidth,
+			paperHeight,
 		};
 
 		if (readonly)

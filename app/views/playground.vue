@@ -43,7 +43,7 @@
 				<SourceEditor :source.sync="lilySource" :disabled="converting" />
 				<Loading v-show="converting" />
 			</div>
-			<div class="build-container" ref="buildContainer" v-resize="onResize" :class="{
+			<div class="build-container" ref="buildContainer" :class="{
 				loading: engraving, dirty: engraverDirty, chromatic: chromaticSymbols, inspecting: showNotationsMatcher,
 			}">
 				<MidiRoll v-if="tokenizeStaff && midiPlayer" v-show="rollVisible"
@@ -57,7 +57,7 @@
 					:sample="matcherNotations && matcherNotations.sample"
 					:path="matcherNotations && matcherNotations.path"
 				/>
-				<div class="sheet-container">
+				<div class="sheet-container" ref="sheetContainer" v-resize="onResize">
 					<SheetSimple v-if="svgDocuments && !tokenizeStaff" :documents="svgDocuments" />
 					<SheetSigns v-if="svgHashTable" v-show="false" :hashTable="svgHashTable" />
 					<SheetLive v-if="tokenizeStaff && sheetDocument" ref="sheet"
@@ -140,6 +140,9 @@
 
 
 
+	const CM_TO_PX = 37.794;
+
+
 	export default {
 		name: "playground",
 
@@ -167,6 +170,10 @@
 		data () {
 			return {
 				buildContainerSize: {
+					width: 100,
+					height: 100,
+				},
+				sheetContainerSize: {
 					width: 100,
 					height: 100,
 				},
@@ -213,6 +220,14 @@
 
 				return JSON.stringify(fields);
 			},
+
+
+			autoPageSize () {
+				return {
+					width: this.sheetContainerSize.width / this.lilyMarkups.pageCount - 34,
+					height: this.sheetContainerSize.height - 38,
+				};
+			},
 		},
 
 
@@ -249,6 +264,9 @@
 			onResize () {
 				this.buildContainerSize.width = this.$refs.buildContainer.clientWidth;
 				this.buildContainerSize.height = this.$refs.buildContainer.clientHeight;
+
+				this.sheetContainerSize.width = this.$refs.sheetContainer.clientWidth;
+				this.sheetContainerSize.height = this.$refs.sheetContainer.clientHeight;
 			},
 
 
@@ -496,8 +514,18 @@
 
 				console.assert(this.lilyDocument, "lilyDocument is null.");
 
+				const globalAttributes = this.lilyDocument.globalAttributes();
+
 				if (this.lilyMarkups.staffSize)
-					this.lilyDocument.globalAttributes().staffSize.value = this.lilyMarkups.staffSize;
+					globalAttributes.staffSize.value = this.lilyMarkups.staffSize;
+
+				if (this.lilyMarkups.autoPaperSize) {
+					globalAttributes.paperWidth.value.number = this.autoPageSize.width / CM_TO_PX;
+					globalAttributes.paperWidth.value.unit = "\\cm";
+
+					globalAttributes.paperHeight.value.number = this.autoPageSize.height / CM_TO_PX;
+					globalAttributes.paperHeight.value.unit = "\\cm";
+				}
 
 				this.lilySource = this.lilyDocument.toString();
 
