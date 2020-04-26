@@ -101,6 +101,10 @@
 						<td>Auto Paper Size</td>
 						<td><BoolStoreInput v-model="lilyMarkups.autoPaperSize" localKey="lotus-lilyMarkups.autoPaperSize" /></td>
 					</tr>
+					<tr>
+						<td>Page Count</td>
+						<td><StoreInput type="number" v-model.number="lilyMarkups.pageCount" localKey="lotus-lilyMarkups.pageCount" /></td>
+					</tr>
 				</tbody>
 			</table>
 		</Dialog>
@@ -194,6 +198,7 @@
 					enabled: false,
 					staffSize: null,
 					autoPaperSize: true,
+					pageCount: 2,
 				},
 				lilyParser: null,
 				lilyDocumentDirty: false,
@@ -203,7 +208,10 @@
 
 		computed: {
 			markupValueHash () {
-				return JSON.stringify({staffSize: this.lilyMarkups.staffSize});
+				const {enabled, ...fields} = this.lilyMarkups;
+				void(enabled);
+
+				return JSON.stringify(fields);
 			},
 		},
 
@@ -507,7 +515,7 @@
 
 
 			markupValueHash () {
-				if (this.lilyParser)
+				if (this.lilyParser && this.lilyMarkups.enabled)
 					this.markupSource();
 			},
 

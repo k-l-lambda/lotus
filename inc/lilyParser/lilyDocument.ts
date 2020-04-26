@@ -26,7 +26,9 @@ class BaseTerm implements LilyTerm {
 
 
 	join () {
-		const words = this.serialize().filter(word => word !== null);
+		let words = this.serialize().filter(word => word !== null);
+		words = words.filter((word, i) => !(i && words[i - 1] === "\n" && word === "\n"));
+
 		let indent = 0;
 		const result = [];
 
@@ -37,7 +39,7 @@ class BaseTerm implements LilyTerm {
 				continue;
 			}
 
-			if (/^(\}\n|>>)/.test(word))
+			if (/^(\}|>>)/.test(word))
 				result.pop(); // remove the last tab
 
 			result.push(word);
@@ -65,7 +67,7 @@ class BaseTerm implements LilyTerm {
 
 
 	getField (key) {
-		console.assert(this.entries, "[BaseTerm.getField] term's entries is null:", this);
+		console.assert(!!this.entries, "[BaseTerm.getField] term's entries is null:", this);
 
 		for (const entry of this.entries) {
 			const result = entry.query(key);
@@ -167,7 +169,7 @@ class MusicBlock extends BaseTerm {
 	serialize () {
 		return [
 			"{\n",
-			...[].concat(...this.body.map(BaseTerm.optionalSerialize)),
+			...cc(this.body.map(BaseTerm.optionalSerialize)),
 			"\n",
 			"}\n",
 		];
@@ -182,7 +184,7 @@ class SimultaneousList extends BaseTerm {
 	serialize () {
 		return [
 			"<<\n",
-			...[].concat(...this.list.map(item => [...BaseTerm.optionalSerialize(item), "\n"])),
+			...cc(this.list.map(item => [...BaseTerm.optionalSerialize(item), "\n"])),
 			">>\n",
 		];
 	}
