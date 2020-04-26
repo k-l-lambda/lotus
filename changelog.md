@@ -1,6 +1,7 @@
 
 TODO:
-	options to control layout
+	playground.sliceSource:
+		music duration parsing
 	SVG static elements baking to image
 	parse measure ticks from ly
 	staffSvg

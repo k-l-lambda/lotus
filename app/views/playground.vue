@@ -501,7 +501,7 @@
 				if ((!this.lilyDocument || this.lilyDocumentDirty) && this.lilyParser) {
 					this.lilyDocument = new LilyDocment(this.lilyParser.parse(this.lilySource));
 
-					console.log("lily document", this.lilyDocument);
+					//console.log("lily document", this.lilyDocument);
 					//console.log(this.lilyDocument.toString());
 
 					this.lilyDocumentDirty = false;
