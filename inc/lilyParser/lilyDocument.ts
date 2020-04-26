@@ -474,14 +474,23 @@ export default class LilyDocument {
 
 	globalAttributes ({readonly = false} = {}) {
 		const globalStaffSize = this.root.getField("set-global-staff-size");
-		const layoutStaffSize = this.root.getBlock("paper").getField("layout-set-staff-size");
+		const paper = this.root.getBlock("paper");
+		const layoutStaffSize = paper && paper.getField("layout-set-staff-size");
+		let staffSize = globalStaffSize || layoutStaffSize;
+
+		if (!readonly) {
+			if (!staffSize) {
+				this.root.sections.push(new Scheme({exp: {proto: "SchemeExpression", func: "set-global-staff-size", args: [24]}}));
+				staffSize = this.root.getField("set-global-staff-size");
+			}
+		}
 
 		const attributes = {
-			staffSize: globalStaffSize || layoutStaffSize,
+			staffSize,
 		};
 
 		if (readonly)
-			Object.keys(attributes).forEach(key => attributes[key] = attributes[key].value);
+			Object.keys(attributes).forEach(key => attributes[key] = attributes[key] && attributes[key].value);
 
 		return attributes;
 	}
