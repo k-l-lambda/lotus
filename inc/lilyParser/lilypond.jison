@@ -151,6 +151,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\new"						return 'NEWCONTEXT';
 
 "\\cm"						return 'CENTIMETER';
+"\\mm"						return 'MILLIMETER';
 
 // binary commands
 "\\relative"				return 'CMD_RELATIVE';
@@ -629,6 +630,8 @@ number_identifier
 // addon term to construct number_identifier
 number_unit
 	: CENTIMETER
+		{$$ = $1;}
+	| MILLIMETER
 		{$$ = $1;}
 	;
 

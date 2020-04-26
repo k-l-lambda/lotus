@@ -349,7 +349,7 @@ class NumberUnit extends BaseTerm {
 
 
 	serialize () {
-		return [this.number, "\b", this.unit];
+		return [Number(this.number.toFixed(2)), "\b", this.unit];
 	}
 }
 
