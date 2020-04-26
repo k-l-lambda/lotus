@@ -109,6 +109,11 @@ class Root extends BaseTerm {
 	get entries (): LilyTerm[] {
 		return this.sections;
 	}
+
+
+	getBlock (head) {
+		return this.entries.find((entry: any) => entry.head === head || entry.head === "\\" + head);
+	}
 };
 
 

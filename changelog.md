@@ -10,6 +10,11 @@ TODO:
 
 
 
+*	2020.4.26
+
+	+	lilyDocument.ts: Root.getBlock added.
+
+
 *	2020.4.24
 
 	+	lilyDocument.ts: BaseTerm.getField added.

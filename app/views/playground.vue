@@ -478,7 +478,7 @@
 			markupSource () {
 				this.updateLilyDocument();
 				console.log("lily document", this.lilyDocument);
-				console.log(this.lilyDocument.toString());
+				//console.log(this.lilyDocument.toString());
 				// TODO
 			},
 		},
