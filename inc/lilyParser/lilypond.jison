@@ -546,6 +546,9 @@ markup_word
 	// extra formla
 	| UNKNOWN_CHAR
 		{$$ = $1;}
+	// extra formla
+	| PITCH
+		{$$ = $1;}
 	;
 
 simple_markup_noword
@@ -1025,6 +1028,9 @@ duration
 steno_duration
 	: unsigned_number dots
 		{$$ = $1 + $2;}
+	| REAL dots
+		{$$ = $1 + $2;}
+	//| DURATION_IDENTIFIER dots
 	;
 
 dots
