@@ -95,7 +95,7 @@
 					</tr>
 					<tr>
 						<td>Staff Size</td>
-						<td><StoreInput type="number" v-model="lilyMarkups.staffSize" localKey="lotus-lilyMarkups.staffSize" /></td>
+						<td><StoreInput type="number" v-model.number="lilyMarkups.staffSize" localKey="lotus-lilyMarkups.staffSize" /></td>
 					</tr>
 					<tr>
 						<td>Auto Paper Size</td>
@@ -196,7 +196,15 @@
 					autoPaperSize: true,
 				},
 				lilyParser: null,
+				lilyDocumentDirty: false,
 			};
+		},
+
+
+		computed: {
+			markupValueHash () {
+				return JSON.stringify({staffSize: this.lilyMarkups.staffSize});
+			},
 		},
 
 
@@ -464,15 +472,29 @@
 
 
 			updateLilyDocument () {
-				this.lilyDocument = new LilyDocment(this.lilyParser.parse(this.lilySource));
+				if ((!this.lilyDocument || this.lilyDocumentDirty) && this.lilyParser) {
+					this.lilyDocument = new LilyDocment(this.lilyParser.parse(this.lilySource));
+
+					console.log("lily document", this.lilyDocument);
+					//console.log(this.lilyDocument.toString());
+
+					this.lilyDocumentDirty = false;
+				}
 			},
 
 
-			markupSource () {
+			async markupSource () {
 				this.updateLilyDocument();
-				console.log("lily document", this.lilyDocument);
-				//console.log(this.lilyDocument.toString());
-				// TODO
+
+				console.assert(this.lilyDocument, "lilyDocument is null.");
+
+				if (this.lilyMarkups.staffSize)
+					this.lilyDocument.globalAttributes().staffSize.value = this.lilyMarkups.staffSize;
+
+				this.lilySource = this.lilyDocument.toString();
+
+				await this.$nextTick();
+				this.lilyDocumentDirty = false;
 			},
 		},
 
@@ -480,6 +502,13 @@
 		watch: {
 			lilySource () {
 				this.engraverDirty = true;
+				this.lilyDocumentDirty = true;
+			},
+
+
+			markupValueHash () {
+				if (this.lilyParser)
+					this.markupSource();
 			},
 
 

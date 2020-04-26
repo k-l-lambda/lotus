@@ -4,7 +4,6 @@ import {DOMParser} from "xmldom";
 
 import * as lilyCommands from "./lilyCommands";
 import * as staffSvg from "../inc/staffSvg";
-//import * as lilyParser from "../inc/lilyParser/manual";
 import loadLilyParser from "./loadLilyParserNode";
 import {LilyDocment} from "../inc/lilyParser";
 import LogRecorder from "../inc/logRecorder";

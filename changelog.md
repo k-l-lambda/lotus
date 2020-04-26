@@ -12,6 +12,8 @@ TODO:
 
 *	2020.4.26
 
+	+	playground.vue: markup staff size updating implemented.
+
 	+	backend/loadLilyParserNode.ts: created.
 	+	lilyDocument.ts: LilyDocument.globalAttributes added.
 
