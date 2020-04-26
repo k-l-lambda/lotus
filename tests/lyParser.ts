@@ -2,7 +2,8 @@
 import fs from "fs";
 import path from "path";
 
-import * as lilyParser from "../inc/lilyParser";
+//import * as lilyParser from "../inc/lilyParser";
+import loadLilyParser from "../backend/loadLilyParserNode";
 
 
 
@@ -22,16 +23,16 @@ const walkDir = (dir, pattern) => {
 };
 
 
-const parse = (grammar, sourceFile) => {
+const parse = (parser, sourceFile) => {
 	const source = fs.readFileSync(sourceFile).toString();
 
-	const parser = lilyParser.createParser(grammar);
+	//const parser = lilyParser.createParser(grammar);
 
 	return parser.parse(source);
 };
 
 
-const main = sourceList => {
+const main = async sourceList => {
 	if (sourceList.length === 1) {
 		const stat = fs.statSync(sourceList[0]);
 		if (stat.isDirectory()) {
@@ -40,7 +41,8 @@ const main = sourceList => {
 		}
 	}
 
-	const grammar = fs.readFileSync("./inc/lilyParser/lilypond.jison").toString();
+	//const grammar = fs.readFileSync("./inc/lilyParser/lilypond.jison").toString();
+	const parser = await loadLilyParser();
 
 	const failures = [];
 
@@ -48,7 +50,7 @@ const main = sourceList => {
 		console.log("Parsing", source, "...");
 
 		try {
-			const result = parse(grammar, source);
+			const result = parse(parser, source);
 			console.log("result:", result);
 		}
 		catch (error) {
