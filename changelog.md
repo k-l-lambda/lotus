@@ -12,6 +12,9 @@ TODO:
 
 *	2020.4.26
 
+	+	backend/loadLilyParserNode.ts: created.
+	+	lilyDocument.ts: LilyDocument.globalAttributes added.
+
 	+	lilyDocument.ts: refined getField.
 
 	+	lilyDocument.ts: Root.getBlock added.

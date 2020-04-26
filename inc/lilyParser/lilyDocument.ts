@@ -59,7 +59,7 @@ class BaseTerm implements LilyTerm {
 	}
 
 
-	get entries (): LilyTerm[] {
+	get entries (): BaseTerm[] {
 		return null;
 	}
 
@@ -93,7 +93,7 @@ class BaseTerm implements LilyTerm {
 
 
 class Root extends BaseTerm {
-	sections: LilyTerm[];
+	sections: BaseTerm[];
 
 
 	serialize () {
@@ -101,13 +101,13 @@ class Root extends BaseTerm {
 	}
 
 
-	get entries (): LilyTerm[] {
+	get entries (): BaseTerm[] {
 		return this.sections;
 	}
 
 
-	getBlock (head) {
-		return this.entries.find((entry: any) => entry.head === head || entry.head === "\\" + head);
+	getBlock (head): BaseTerm {
+		return this.entries.find((entry: any) => entry.head === head || (entry.head === "\\" + head));
 	}
 };
 
@@ -128,7 +128,7 @@ class Command extends BaseTerm {
 
 class Block extends BaseTerm {
 	head: (string|string[]);
-	body: LilyTerm[];
+	body: BaseTerm[];
 
 
 	serialize () {
@@ -250,7 +250,6 @@ class SchemeExpression extends BaseTerm {
 
 	query (key: string): any {
 		if (key === this.func) {
-			//return {value: this.args.length === 1 ? this.args[0] : this.args};
 			const term = this;
 
 			return {
@@ -458,11 +457,11 @@ const parseRaw = data => {
 
 
 export default class LilyDocument {
-	root: LilyTerm;
+	root: Root;
 
 
 	constructor (data) {
-		console.log("raw data:", data);
+		//console.log("raw data:", data);
 		this.root = parseRaw(data);
 	}
 
@@ -470,5 +469,20 @@ export default class LilyDocument {
 	toString () {
 		return this.root.join();
 		//return this.root.serialize();
+	}
+
+
+	globalAttributes ({readonly = false} = {}) {
+		const globalStaffSize = this.root.getField("set-global-staff-size");
+		const layoutStaffSize = this.root.getBlock("paper").getField("layout-set-staff-size");
+
+		const attributes = {
+			staffSize: globalStaffSize || layoutStaffSize,
+		};
+
+		if (readonly)
+			Object.keys(attributes).forEach(key => attributes[key] = attributes[key].value);
+
+		return attributes;
 	}
 };

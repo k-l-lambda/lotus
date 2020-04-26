@@ -4,7 +4,9 @@ import {DOMParser} from "xmldom";
 
 import * as lilyCommands from "./lilyCommands";
 import * as staffSvg from "../inc/staffSvg";
-import * as lilyParser from "../inc/lilyParser/manual";
+//import * as lilyParser from "../inc/lilyParser/manual";
+import loadLilyParser from "./loadLilyParserNode";
+import {LilyDocment} from "../inc/lilyParser";
 import LogRecorder from "../inc/logRecorder";
 
 
@@ -54,7 +56,10 @@ export default {
 				if (!tokenize)
 					return JSON.stringify(result);
 
-				const attributes = lilyParser.getGlobalAttributes(source);
+				const lilyParser = await loadLilyParser();
+				const lilyDocument = new LilyDocment(lilyParser.parse(source));
+				const attributes = lilyDocument.globalAttributes({readonly: true});
+				//console.log("attributes:", attributes);
 
 				const logger = new LogRecorder({enabled: log});
 
