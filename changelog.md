@@ -12,6 +12,8 @@ TODO:
 
 *	2020.4.26
 
+	+	lilyDocument.ts: refined getField.
+
 	+	lilyDocument.ts: Root.getBlock added.
 
 

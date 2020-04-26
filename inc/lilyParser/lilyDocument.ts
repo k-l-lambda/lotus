@@ -70,13 +70,8 @@ class BaseTerm implements LilyTerm {
 		for (const entry of this.entries) {
 			const result = entry.query(key);
 			if (result)
-				return result.value;
+				return result;
 		}
-	}
-
-
-	setField (key, value) {
-		// TODO:
 	}
 
 
@@ -254,8 +249,23 @@ class SchemeExpression extends BaseTerm {
 
 
 	query (key: string): any {
-		if (key === this.func)
-			return {value: this.args.length === 1 ? this.args[0] : this.args};
+		if (key === this.func) {
+			//return {value: this.args.length === 1 ? this.args[0] : this.args};
+			const term = this;
+
+			return {
+				get value () {
+					return term.args.length === 1 ? term.args[0] : term.args;
+				},
+
+				set value (value) {
+					if (term.args.length === 1)
+						term.args[0] = value as string|SchemeExpression;
+					else
+						term.args = value as (string|SchemeExpression)[];
+				},
+			};
+		}
 	}
 };
 
@@ -277,8 +287,19 @@ class Assignment extends BaseTerm {
 
 
 	query (key) {
-		if (this.key === key)
-			return {value: this.value};
+		if (this.key === key) {
+			const term = this;
+
+			return {
+				get value () {
+					return term.value;
+				},
+
+				set value (value) {
+					term.value = value;
+				},
+			};
+		}
 	}
 };
 
