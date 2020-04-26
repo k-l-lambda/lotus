@@ -218,7 +218,7 @@ class Scheme extends BaseTerm {
 
 	serialize () {
 		if (BaseTerm.isTerm(this.exp))
-			return ["#" + (this.exp as LilyTerm).serialize().join(" ")];
+			return ["#", "\b", ...(this.exp as LilyTerm).serialize()];
 		else if (typeof this.exp === "boolean")
 			return ["##", "\b", this.exp ? "t" : "f"];
 		else
@@ -240,10 +240,10 @@ class SchemeExpression extends BaseTerm {
 
 	serialize () {
 		return [
-			"(",
+			"(", "\b",
 			...BaseTerm.optionalSerialize(this.func),
 			...cc(this.args.map(BaseTerm.optionalSerialize)),
-			")",
+			"\b", ")",
 		];
 	}
 
