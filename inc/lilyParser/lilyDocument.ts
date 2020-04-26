@@ -82,7 +82,7 @@ class BaseTerm implements LilyTerm {
 
 	query (key: string): any {
 		void(key);
-		console.warn("term.query not implemented:", this);
+		//console.warn("term.query not implemented:", this);
 	}
 
 

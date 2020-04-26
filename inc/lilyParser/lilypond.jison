@@ -1407,6 +1407,11 @@ output_def_body
 			$1.body.push($2);
 			$$ = $1;
 		}
+	| output_def_body embedded_scheme_expression
+		{
+			$1.body.push($2);
+			$$ = $1;
+		}
 	//| output_def_body embedded_scm_active
 	//| output_def_body SCM_TOKEN
 	//| output_def_body error
