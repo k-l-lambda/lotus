@@ -17,6 +17,8 @@ TODO:
 
 *	2020.4.27
 
+	+	package.json: added script of build-node.
+
 	+	tools/batchXml2Ly.ts created.
 
 	+	backend/walkDir.ts created.

@@ -4,5 +4,11 @@
 		"lib": ["es2017"],
 		"target": "es6",
 		"esModuleInterop": true,
+		"outDir": "dist"
 	},
+	"include": [
+		"index.ts",
+		"inc/**/*.ts",
+		"backend/**/*.ts"
+	],
 }
