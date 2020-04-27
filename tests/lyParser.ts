@@ -45,6 +45,7 @@ const main = async sourceList => {
 	}
 
 	console.log("Failures:", failures);
+	console.log(`Success: ${sourceList.length - failures.length}/${sourceList.length}`);
 
 	console.log("Done.");
 };
