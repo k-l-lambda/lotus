@@ -1053,6 +1053,8 @@ multipliers
 repeated_music
 	: REPEAT simple_string unsigned_number music
 		{$$ = command($1, $2, $3, $4);}
+	| REPEAT simple_string unsigned_number music ALTERNATIVE braced_music_list
+		{$$ = command($1, $2, $3, $4, command($5, $6));}
 	;
 
 unsigned_number
