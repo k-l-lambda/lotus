@@ -11,6 +11,11 @@ TODO:
 
 
 
+*	2020.4.27
+
+	+	backend/walkDir.ts created.
+
+
 *	2020.4.26
 
 	+	playground.vue: auto page size implemented.
