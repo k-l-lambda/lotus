@@ -549,6 +549,9 @@ markup_word
 	// extra formla
 	| PITCH
 		{$$ = $1;}
+	// extra formla
+	| COMMAND
+		{$$ = $1;}
 	;
 
 simple_markup_noword
