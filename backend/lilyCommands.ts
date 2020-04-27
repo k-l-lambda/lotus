@@ -64,6 +64,8 @@ const postProcessLy = (ly, {
 			.replace(/4\*64\/384/g, "16*2/3");
 	}
 
+	// TODO: removeStaffGroup
+
 	return result;
 };
 
