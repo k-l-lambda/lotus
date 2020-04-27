@@ -1497,8 +1497,9 @@ context_mod_list
 context_mod
 	: property_operation
 		{$$ = $1;}
-	| context_def_mod SYMBOL
-		{$$ = {mod: $1, value: $2};}
+	//| context_def_mod SYMBOL
+	| context_def_mod symbol
+		{$$ = command($1, $2);}
 	//| context_def_mod embedded_scm
 	;
 
