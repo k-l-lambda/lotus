@@ -1,5 +1,9 @@
 
 TODO:
+	lilypond post processing
+		removeStaffGroup
+		fix partial measures
+		fix repeat \alternative measures
 	playground.sliceSource:
 		music duration parsing
 	SVG static elements baking to image
