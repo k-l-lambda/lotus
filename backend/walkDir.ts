@@ -13,7 +13,7 @@ const walkDir = (dir, pattern) => {
 		const stat = fs.statSync(file);
 
 		return {file, filename, stat};
-	}).filter(({_, filename, stat}) => !stat.isDirectory() && (!pattern || pattern.test(filename)))
+	}).filter(({filename, stat}) => !stat.isDirectory() && (!pattern || pattern.test(filename)))
 		.map(({file}) => file);
 
 	return files;
