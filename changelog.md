@@ -13,6 +13,8 @@ TODO:
 
 *	2020.4.27
 
+	+	tools/batchXml2Ly.ts created.
+
 	+	backend/walkDir.ts created.
 
 
