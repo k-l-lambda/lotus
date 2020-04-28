@@ -42,6 +42,8 @@
 	const postEvent = (direction, arg) => ({proto: "PostEvent", direction, arg});
 
 	const fingering = value => ({proto: "Fingering", value: preferNumber(value)});
+
+	const markup = (head, body) => ({proto: "Markup", head, body});
 %}
 
 
@@ -535,7 +537,8 @@ markup_braced_list_body
 
 markup
 	: markup_head_1_list simple_markup
-		{$$ = $1.concat([$2]);}
+		//{$$ = $1.concat([$2]);}
+		{$$ = markup($1, $2);}
 	| simple_markup
 		{$$ = $1;}
 	;
@@ -1615,7 +1618,7 @@ bare_number
 	: bare_number_common
 		{$$ = $1;}
 	| UNSIGNED
-		{$$ = $1;}
+		{$$ = Number($1);}
 	//| UNSIGNED NUMBER_IDENTIFIER
 	;
 
@@ -1665,7 +1668,7 @@ scheme_expression
 	| bare_number
 		{$$ = $1;}
 	| INT
-		{$$ = $1;}
+		{$$ = Number($1);}
 	| "(" scheme_expression "." scheme_expression ")"
 		{$$ = schemePair($2, $4);}
 	| "(" scheme_expression scheme_args ")"

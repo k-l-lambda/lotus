@@ -1,5 +1,5 @@
 
-interface BaseTerm {
+interface LilyTerm {
 	serialize () : string[];
 	join () : string;
 
@@ -139,7 +139,7 @@ class Block extends BaseTerm {
 		return [
 			...heads,
 			"{\n",
-			...[].concat(...this.body.map(section => [...BaseTerm.optionalSerialize(section), "\n"])),
+			...cc(this.body.map(section => [...BaseTerm.optionalSerialize(section), "\n"])),
 			"}\n",
 		];
 	}
@@ -155,7 +155,7 @@ class InlineBlock extends Block {
 	serialize () {
 		return [
 			"{",
-			...[].concat(...this.body.map(BaseTerm.optionalSerialize)),
+			...cc(this.body.map(BaseTerm.optionalSerialize)),
 			"}",
 		];
 	}
@@ -305,11 +305,12 @@ class Assignment extends BaseTerm {
 
 	serialize () {
 		const keys = (Array.isArray(this.key) ? this.key : [this.key]).map(BaseTerm.optionalSerialize);
+		const values = (Array.isArray(this.value) ? this.value : [this.value]).map(BaseTerm.optionalSerialize);
 
 		return [
 			...cc(keys),
 			"=",
-			...BaseTerm.optionalSerialize(this.value),
+			...cc(values),
 		];
 	}
 
@@ -427,6 +428,20 @@ class Fingering extends BaseTerm {
 };
 
 
+class Markup extends BaseTerm {
+	head: any[];
+	body: (string|LilyTerm);
+
+
+	serialize () {
+		return [
+			...cc(this.head.map(BaseTerm.optionalSerialize)),
+			BaseTerm.optionalSerialize(this.body),
+		];
+	}
+};
+
+
 class Unexpect extends BaseTerm {
 	constructor (data) {
 		super(data);
@@ -455,6 +470,7 @@ const termDictionary = {
 	Tempo,
 	PostEvent,
 	Fingering,
+	Markup,
 };
 
 
