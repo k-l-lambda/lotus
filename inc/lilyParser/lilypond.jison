@@ -86,6 +86,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 // workaround non-word-boundary parsing for POST_UNSIGNED
 //\s{FRACTION}				yytext = yytext.replace(/^\s+/, ""); return 'FRACTION';
 \s{REAL}					yytext = yytext.replace(/^\s+/, ""); return 'REAL';
+(?:#){REAL}					return 'REAL';
 //\s{UNSIGNED}				yytext = yytext.replace(/^\s+/, ""); return 'UNSIGNED';
 
 \s+							{}	// spaces
@@ -179,6 +180,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\mark"					return 'CMD_MARK';
 "\\include"					return 'CMD_INCLUDE';
 
+// markup commands
 "\\version"					return 'CMD_VERSION';
 "\\column"					return 'CMD_COLUMN';
 "\\line"					return 'CMD_LINE';
@@ -186,6 +188,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\italic"					return 'CMD_ITALIC';
 "\\box"						return 'CMD_BOX';
 "\\whiteout"				return 'CMD_WHITEOUT';
+"\\dynamic"					return 'CMD_DYNAMIC';
 
 "\\huge"					return 'CMD_HUGE';
 "\\large"					return 'CMD_LARGE';
@@ -487,6 +490,8 @@ markup_function
 	| CMD_BOX
 		{$$ = $1;}
 	| CMD_WHITEOUT
+		{$$ = $1;}
+	| CMD_DYNAMIC
 		{$$ = $1;}
 	;
 
@@ -947,6 +952,15 @@ music_embedded
 	: music
 		{$$ = $1;}
 	| post_event
+		{$$ = $1;}
+	| music_embedded_backup
+		{$$ = $1;}
+	//| music_embedded_backup BACKUP lyric_element_music
+	//| duration post_events %prec ':'
+	;
+
+music_embedded_backup
+	: embedded_scm
 		{$$ = $1;}
 	;
 

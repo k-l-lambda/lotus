@@ -17,6 +17,8 @@ TODO:
 
 *	2020.4.28
 
+	+	lilypond.jison: parsing test of test-5.ly passed.
+
 	+	lilyDocument.ts: added terms for scheme.
 
 	+	lilypond.jison: refined syntax of scheme_expression.
