@@ -1,5 +1,5 @@
 
-interface LilyTerm {
+interface BaseTerm {
 	serialize () : string[];
 	join () : string;
 
@@ -229,15 +229,15 @@ class Scheme extends BaseTerm {
 
 
 	query (key: string): any {
-		if (this.exp instanceof SchemeExpression)
+		if (this.exp instanceof SchemeFunction)
 			return this.exp.query(key);
 	}
 };
 
 
-class SchemeExpression extends BaseTerm {
-	func: (string | SchemeExpression);
-	args: (string | SchemeExpression)[];
+class SchemeFunction extends BaseTerm {
+	func: (string | BaseTerm);
+	args: (string | BaseTerm)[];
 
 
 	serialize () {
@@ -261,12 +261,39 @@ class SchemeExpression extends BaseTerm {
 
 				set value (value) {
 					if (term.args.length === 1)
-						term.args[0] = value as string|SchemeExpression;
+						term.args[0] = value as string|BaseTerm;
 					else
-						term.args = value as (string|SchemeExpression)[];
+						term.args = value as (string|BaseTerm)[];
 				},
 			};
 		}
+	}
+};
+
+
+class SchemePair extends BaseTerm {
+	left: any;
+	right: any;
+
+
+	serialize () {
+		return [
+			"(", "\b",
+			...BaseTerm.optionalSerialize(this.left), ".", ...BaseTerm.optionalSerialize(this.right),
+			"\b", ")",
+		];
+	}
+};
+
+
+class SchemePointer extends BaseTerm {
+	value: any;
+
+
+	serialize () {
+		return [
+			"'", "\b", ...BaseTerm.optionalSerialize(this.value),
+		];
 	}
 };
 
@@ -415,7 +442,9 @@ const termDictionary = {
 	Block,
 	InlineBlock,
 	Scheme,
-	SchemeExpression,
+	SchemeFunction,
+	SchemePair,
+	SchemePointer,
 	Assignment,
 	Chord,
 	NumberUnit,
@@ -482,7 +511,7 @@ export default class LilyDocument {
 
 		if (!readonly) {
 			if (!staffSize) {
-				this.root.sections.push(new Scheme({exp: {proto: "SchemeExpression", func: "set-global-staff-size", args: [24]}}));
+				this.root.sections.push(new Scheme({exp: {proto: "SchemeFunction", func: "set-global-staff-size", args: [24]}}));
 				staffSize = this.root.getField("set-global-staff-size");
 			}
 

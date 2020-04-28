@@ -21,7 +21,7 @@
 
 	const scheme = exp => ({proto: "Scheme", exp});
 
-	const schemeExpression = (func, args) => ({proto: "SchemeExpression", func, args});
+	const schemeFunction = (func, args) => ({proto: "SchemeFunction", func, args});
 
 	const schemePair = (left, right) => ({proto: "SchemePair", left, right});
 
@@ -1609,7 +1609,7 @@ scheme_expression
 	| "(" scheme_expression "." scheme_expression ")"
 		{$$ = schemePair($2, $4);}
 	| "(" scheme_expression scheme_args ")"
-		{$$ = schemeExpression($2, $3);}
+		{$$ = schemeFunction($2, $3);}
 	| scheme_token
 		{$$ = $1;}
 	| "'" scheme_expression
