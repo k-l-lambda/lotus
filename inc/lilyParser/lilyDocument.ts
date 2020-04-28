@@ -377,7 +377,15 @@ class NumberUnit extends BaseTerm {
 
 
 	serialize () {
-		return [Number(this.number.toFixed(2)), "\b", this.unit];
+		return [this.number, "\b", this.unit];
+	}
+
+
+	set (number, unit) {
+		this.number = Number(number.toFixed(2));
+
+		if (unit !== undefined)
+			this.unit = unit;
 	}
 }
 

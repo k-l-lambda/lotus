@@ -521,11 +521,8 @@
 					globalAttributes.staffSize.value = this.lilyMarkups.staffSize;
 
 				if (this.lilyMarkups.autoPaperSize) {
-					globalAttributes.paperWidth.value.number = this.autoPageSize.width / CM_TO_PX;
-					globalAttributes.paperWidth.value.unit = "\\cm";
-
-					globalAttributes.paperHeight.value.number = this.autoPageSize.height / CM_TO_PX;
-					globalAttributes.paperHeight.value.unit = "\\cm";
+					globalAttributes.paperWidth.value.set(this.autoPageSize.width / CM_TO_PX, "\\cm");
+					globalAttributes.paperHeight.value.set(this.autoPageSize.height / CM_TO_PX, "\\cm");
 				}
 
 				this.lilySource = this.lilyDocument.toString();
