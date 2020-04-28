@@ -54,6 +54,7 @@ const main = async sourceList => {
 const argv = JSON.parse(process.env.npm_config_argv);
 
 const sourceList = argv.original.length > 2 ? argv.original.slice(2) : [
+	"test-scm.ly",
 	"test-1.ly",
 	"test-2.ly",
 	"test-3.1.ly",
