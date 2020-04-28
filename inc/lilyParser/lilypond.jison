@@ -103,6 +103,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 
 {E_UNSIGNED}				return 'E_UNSIGNED';
 
+"\\with-url"				return 'CMD_WITH_URL';
+
 // syntax commands
 "\\header"					return 'HEADER';
 "\\markup"					return 'MARKUP';
@@ -298,6 +300,8 @@ lilypond_header_body
 		{$$ = [];}
 	| lilypond_header_body assignment
 		{$$.push($2);}
+	//| lilypond_header_body SCM_TOKEN
+	//| lilypond_header_body embedded_scm_active
 	;
 
 assignment
@@ -545,6 +549,15 @@ markup_word
 	// extra formla
 	| "'"
 		{$$ = $1;}
+	// extra formla
+	| ","
+		{$$ = $1;}
+	// extra formla
+	| ":"
+		{$$ = $1;}
+	// extra formla
+	| "/"
+		{$$ = $1;}
 	| unsigned_number
 		{$$ = $1;}
 	// extra formla
@@ -554,7 +567,9 @@ markup_word
 	| PITCH
 		{$$ = $1;}
 	// extra formla
-	| COMMAND
+	| zero_command
+		{$$ = $1;}
+	| scm_identifier
 		{$$ = $1;}
 	;
 
@@ -566,6 +581,9 @@ simple_markup_noword
 		//{$$ = {func: $1, args: $2};}
 		{$$ = command($1, ...$2);}
 	//| markup_scm MARKUP_IDENTIFIER
+	// extra formula
+	| OVERRIDE scm_identifier
+		{$$ = command($1, $2);}
 	;
 
 markup_command_basic_arguments
@@ -1110,6 +1128,8 @@ music_identifier
 // extra syntax
 zero_command
 	: COMMAND
+		{$$ = command($1);}
+	| CMD_WITH_URL
 		{$$ = command($1);}
 	;
 
