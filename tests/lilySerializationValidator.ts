@@ -33,8 +33,8 @@ const validate = (grammar, sourceFile) => {
 				break;
 		}
 
-		console.log("doc0:", json0.substr(Math.max(0, pos - 30), 80));
-		console.log("doc1:", json1.substr(Math.max(0, pos - 30), 80));
+		console.log("doc0:", json0.substr(Math.max(0, pos - 70), 160));
+		console.log("doc1:", json1.substr(Math.max(0, pos - 70), 160));
 	}
 
 	return hash0 === hash1;

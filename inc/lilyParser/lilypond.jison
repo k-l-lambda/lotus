@@ -1286,7 +1286,7 @@ post_events
 
 note_chord_element
 	: "<" pitches ">" optional_notemode_duration
-		{$$ = chord($2, $4);}
+		{$$ = chord($2, $4, {withAngle: true});}
 	;
 
 pitches
