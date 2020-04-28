@@ -113,6 +113,10 @@
 						<td>Page Count</td>
 						<td><StoreInput type="number" v-model.number="lilyMarkups.pageCount" localKey="lotus-lilyMarkups.pageCount" /></td>
 					</tr>
+					<tr>
+						<td>System-System Spacing</td>
+						<td><StoreInput type="number" v-model.number="lilyMarkups.systemSpacing" localKey="lotus-lilyMarkups.systemSpacing" /></td>
+					</tr>
 				</tbody>
 			</table>
 		</Dialog>
@@ -215,6 +219,7 @@
 					staffSize: null,
 					autoPaperSize: true,
 					pageCount: 2,
+					systemSpacing: -1,
 				},
 				lilyParser: null,
 				lilyDocumentDirty: false,
@@ -533,6 +538,9 @@
 					globalAttributes.paperWidth.value.set(this.autoPageSize.width / CM_TO_PX, "\\cm");
 					globalAttributes.paperHeight.value.set(this.autoPageSize.height / CM_TO_PX, "\\cm");
 				}
+
+				if (this.lilyMarkups.systemSpacing >= 0)
+					globalAttributes.systemSpacing.value = this.lilyMarkups.systemSpacing;
 
 				this.lilySource = this.lilyDocument.toString();
 

@@ -570,10 +570,51 @@ export default class LilyDocument {
 		const paperWidth = paper.getField("paper-width");
 		const paperHeight = paper.getField("paper-height");
 
+		const SYSTEM_SYSTEM_SPACING = "system-system-spacing";
+		const systemSpacing = {
+			get value () {
+				const sss = paper.getField(SYSTEM_SYSTEM_SPACING);
+				if (sss && sss.value && sss.value.exp && sss.value.exp.value && sss.value.exp.value.func)
+					return sss.value.exp.value.func.right;
+
+				return null;
+			},
+
+
+			set value (value) {
+				const scm = {
+					proto: "Scheme",
+					exp: {
+						proto: "SchemePointer",
+						value: {
+							proto: "SchemeFunction",
+							func: {
+								proto: "SchemePair",
+								left: "basic-distance",
+								right: value,
+							},
+							args: [],
+						},
+					},
+				};
+
+				const sss: any = paper.getField(SYSTEM_SYSTEM_SPACING);
+				if (sss)
+					sss.value = parseRaw(scm);
+				else {
+					paper.body.push(new Assignment({
+						key: SYSTEM_SYSTEM_SPACING,
+						value: scm,
+					}));
+				}
+			},
+		};
+
 		const attributes = {
 			staffSize,
 			paperWidth,
 			paperHeight,
+			systemSpacing,
 		};
 
 		if (readonly)

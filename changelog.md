@@ -17,6 +17,8 @@ TODO:
 
 *	2020.4.28
 
+	+	lilyDocument.ts: added global attribute of system spacing.
+
 	+	playground.vue: added option of engraveWithLogs.
 
 	+	lilypond.jison: parsing test of test-5.ly passed.
