@@ -124,7 +124,7 @@
 	import LogRecorder from "../../inc/logRecorder.ts";
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import loadLilyParser from "../loadLilyParser.js";
-	import {LilyDocment} from "../../inc/lilyParser";
+	import {LilyDocument} from "../../inc/lilyParser";
 
 	import {MidiRoll} from "@k-l-lambda/web-widgets";
 	import SourceEditor from "../components/source-editor.vue";
@@ -500,7 +500,7 @@
 
 			updateLilyDocument () {
 				if ((!this.lilyDocument || this.lilyDocumentDirty) && this.lilyParser) {
-					this.lilyDocument = new LilyDocment(this.lilyParser.parse(this.lilySource));
+					this.lilyDocument = new LilyDocument(this.lilyParser.parse(this.lilySource));
 
 					//console.log("lily document", this.lilyDocument);
 					//console.log(this.lilyDocument.toString());

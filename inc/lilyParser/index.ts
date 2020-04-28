@@ -1,7 +1,7 @@
 
 import jison from "jison";
 
-import LilyDocment from "./lilyDocument";
+import LilyDocument from "./lilyDocument";
 
 
 
@@ -15,5 +15,5 @@ const hookJisonPrint = (print = () => {}) => jison.print = print;
 export {
 	createParser,
 	hookJisonPrint,
-	LilyDocment,
+	LilyDocument,
 };

@@ -9,7 +9,7 @@ import * as lilyParser from "../inc/lilyParser";
 const parse = (grammar, source) => {
 	const parser = lilyParser.createParser(grammar);
 
-	return new lilyParser.LilyDocment(parser.parse(source));
+	return new lilyParser.LilyDocument(parser.parse(source));
 };
 
 
