@@ -572,6 +572,11 @@ markup_word
 		{$$ = $1;}
 	| scm_identifier
 		{$$ = $1;}
+	// extra formla
+	| music_property_def
+		{$$ = $1;}
+	| context_change
+		{$$ = $1;}
 	;
 
 simple_markup_noword
