@@ -218,7 +218,6 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 
 "\\("						return yytext;
 "\\)"						return yytext;
-"_("						return yytext;
 
 {SPECIAL}					return yytext;
 \|							return 'DIVIDE';
@@ -584,6 +583,8 @@ markup_word
 		{$$ = $1;}
 	| context_change
 		{$$ = $1;}
+	| pitch_mode_music
+		{$$ = $1;}
 	;
 
 simple_markup_noword
@@ -924,7 +925,9 @@ simultaneous_music
 	;
 
 sequential_music
-	: braced_music_list
+	: SEQUENTIAL braced_music_list
+		{$$ = command($2);}
+	| braced_music_list
 		{$$ = $1;}
 	;
 
@@ -1126,17 +1129,9 @@ music_identifier
 		{$$ = $1;}
 	| ")"
 		{$$ = $1;}
-	| "\("
-		{$$ = $1;}
-	| "\)"
-		{$$ = $1;}
-	| "_("
-		{$$ = $1;}
 	| "["
 		{$$ = $1;}
 	| "]"
-		{$$ = $1;}
-	| "~"
 		{$$ = $1;}
 	| DIVIDE
 		{$$ = {proto: "Divide"};}
@@ -1160,6 +1155,12 @@ expressive_mark
 	| CMD_DYNAMICS_END
 		{$$ = $1;}
 	| "~"
+		{$$ = $1;}
+	| "("
+		{$$ = $1;}
+	| "\("
+		{$$ = $1;}
+	| "\)"
 		{$$ = $1;}
 	;
 
@@ -1199,9 +1200,11 @@ unitary_cmd
 // extra syntax
 pitch_mode_music
 	: pitch_mode pitch music
-		{$$ = command($1, $2, $3)}
+		{$$ = command($1, $2, $3);}
+	| pitch_mode pitch COMMAND
+		{$$ = command($1, $2, $3);}
 	| pitch_mode music
-		{$$ = command($1, null, $2)}
+		{$$ = command($1, null, $2);}
 	;
 
 // extra syntax
