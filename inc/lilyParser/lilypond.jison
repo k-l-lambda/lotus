@@ -75,7 +75,7 @@ HYPHEN				\-\-
 BOM_UTF8			\357\273\277
 
 PHONET				[abcdefgrR]
-PITCH				{PHONET}(([i][s])*|([e][s])*|[s]*)(?=[\W\d])
+PITCH				{PHONET}(([i][s])*|([e][s])*|[s]*|[f]*)(?=[\W\d])
 PLACEHOLDER_PITCH	[s](?=[\W\d])
 //DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
 
@@ -167,7 +167,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\clef"					return 'CMD_CLEF';
 "\\key"						return 'CMD_KEY';
 "\\time"					return 'CMD_TIME';
-"\\times"					return 'CMD_TIMES';
+//"\\times"					return 'CMD_TIMES';
+[\\][t][i][m][e][s]			return 'CMD_TIMES';
 "\\stemUp"					return 'CMD_STEMUP';
 "\\stemDown"				return 'CMD_STEMDOWN';
 "\\bar"						return 'CMD_BAR';
@@ -184,6 +185,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\bold"					return 'CMD_BOLD';
 "\\italic"					return 'CMD_ITALIC';
 "\\box"						return 'CMD_BOX';
+"\\whiteout"				return 'CMD_WHITEOUT';
 
 "\\huge"					return 'CMD_HUGE';
 "\\large"					return 'CMD_LARGE';
@@ -213,7 +215,10 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 
 "#f"						return 'SCM_FALSE';
 "#t"						return 'SCM_TRUE';
-//\#{INT}						return 'SCM_INT';
+
+"\\("						return yytext;
+"\\)"						return yytext;
+"_("						return yytext;
 
 {SPECIAL}					return yytext;
 \|							return 'DIVIDE';
@@ -481,6 +486,8 @@ markup_function
 	| markup_font_size
 		{$$ = $1;}
 	| CMD_BOX
+		{$$ = $1;}
+	| CMD_WHITEOUT
 		{$$ = $1;}
 	;
 
@@ -1119,6 +1126,12 @@ music_identifier
 		{$$ = $1;}
 	| ")"
 		{$$ = $1;}
+	| "\("
+		{$$ = $1;}
+	| "\)"
+		{$$ = $1;}
+	| "_("
+		{$$ = $1;}
 	| "["
 		{$$ = $1;}
 	| "]"
@@ -1145,6 +1158,8 @@ expressive_mark
 	| CMD_DECRESCENDO_BEGIN
 		{$$ = $1;}
 	| CMD_DYNAMICS_END
+		{$$ = $1;}
+	| "~"
 		{$$ = $1;}
 	;
 
