@@ -390,6 +390,7 @@
 					console.warn("Engraving failed:", await response.text());
 
 					this.clearSheet();
+					this.svgDocuments = null;
 				}
 				else {
 					const result = await response.json();
