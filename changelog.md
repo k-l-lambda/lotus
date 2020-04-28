@@ -15,6 +15,11 @@ TODO:
 
 
 
+*	2020.4.28
+
+	+	lilypond.jison: refined syntax of scheme_expression.
+
+
 *	2020.4.27
 
 	+	package.json: added script of build-node.

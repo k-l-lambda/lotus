@@ -23,6 +23,10 @@
 
 	const schemeExpression = (func, args) => ({proto: "SchemeExpression", func, args});
 
+	const schemePair = (left, right) => ({proto: "SchemePair", left, right});
+
+	const schemePointer = value => ({proto: "SchemePointer", value});
+
 	const assignment = (key, value) => ({proto: "Assignment", key, value});
 
 	const numberUnit = (number, unit) => ({proto: "NumberUnit", number: preferNumber(number), unit});
@@ -204,9 +208,9 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 
 {SYMBOL}					return 'SYMBOL';
 
-"##f"						return 'SCM_FALSE';
-"##t"						return 'SCM_TRUE';
-\#{INT}						return 'SCM_INT';
+"#f"						return 'SCM_FALSE';
+"#t"						return 'SCM_TRUE';
+//\#{INT}						return 'SCM_INT';
 
 {SPECIAL}					return yytext;
 \|							return 'DIVIDE';
@@ -263,7 +267,7 @@ toplevel_expression
 		{$$ = $1;}
 	| score_block
 		{$$ = $1;}
-	| embedded_scheme_expression
+	| scm_identifier
 		{$$ = $1;}
 	//| full_markup_list
 	//	{$$ = $1;}
@@ -746,15 +750,16 @@ embedded_scm_bare
 
 // equivalent for SCM_IDENTIFIER in lilypond parser.yy
 scm_identifier
-	: SCM_FALSE
-		{$$ = scheme(false);}
-	| SCM_TRUE
-		{$$ = scheme(true);}
-	| SCM_INT
-		{$$ = scheme($1.substr(1));}
-	| "#" "'" SYMBOL
-		//{$$ = {scm_id: $3};}
-		{$$ = scheme("'" + $3);}
+	//: SCM_FALSE
+	//	{$$ = scheme(false);}
+	//| SCM_TRUE
+	//	{$$ = scheme(true);}
+	//| SCM_INT
+	//	{$$ = scheme($1.substr(1));}
+	//| "#" "'" SYMBOL
+	//	{$$ = scheme("'" + $3);}
+	: "#" scheme_expression
+		{$$ = scheme($2);}
 	;
 
 composite_music
@@ -1421,7 +1426,7 @@ output_def_body
 			$1.body.push($2);
 			$$ = $1;
 		}
-	| output_def_body embedded_scheme_expression
+	| output_def_body scm_identifier
 		{
 			$1.body.push($2);
 			$$ = $1;
@@ -1586,23 +1591,35 @@ embedded_scm_active
 	;
 
 
-// extra syntax, maybe the substitution for embedded_scm_active in lilypond's parser
+/*// extra syntax, maybe the substitution for embedded_scm_active in lilypond's parser
 embedded_scheme_expression
 	: "#" scheme_expression
 		{$$ = scheme($2);}
-	;
+	;*/
 
 scheme_expression
-	: "(" scheme_token scheme_args ")"
+	: SCM_TRUE
+		{$$ = $1;}
+	| SCM_FALSE
+		{$$ = $1;}
+	| bare_number
+		{$$ = $1;}
+	| INT
+		{$$ = $1;}
+	| "(" scheme_expression "." scheme_expression ")"
+		{$$ = schemePair($2, $4);}
+	| "(" scheme_expression scheme_args ")"
 		{$$ = schemeExpression($2, $3);}
 	| scheme_token
 		{$$ = $1;}
+	| "'" scheme_expression
+		{$$ = schemePointer($2);}
 	;
 
 scheme_args
 	: %empty
 		{$$ = [];}
-	| scheme_args scheme_token
+	| scheme_args scheme_expression
 		{$$ = $1.concat($2);}
 	;
 
