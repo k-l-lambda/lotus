@@ -176,6 +176,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\barNumberCheck"			return 'CMD_BARNUMBERCHECK';
 "\\partial"					return 'CMD_PARTIAL';
 "\\mark"					return 'CMD_MARK';
+"\\include"					return 'CMD_INCLUDE';
 
 "\\version"					return 'CMD_VERSION';
 "\\column"					return 'CMD_COLUMN';
@@ -1170,6 +1171,8 @@ unitary_cmd
 	| CMD_PARTIAL
 		{$$ = $1;}
 	| CMD_MARK
+		{$$ = $1;}
+	| CMD_INCLUDE
 		{$$ = $1;}
 	;
 
