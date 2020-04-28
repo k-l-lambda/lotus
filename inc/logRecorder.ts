@@ -23,6 +23,9 @@ export default class LogRecorder {
 
 
 	toJSON () {
-		return this.enabled ? {records: this.records.map(record => [record.desc, record.data])} : null;
+		if (!this.enabled)
+			return null;
+
+		return {records: this.records.map(record => [record.desc, record.data])};
 	}
 };

@@ -86,6 +86,14 @@
 						<td><BoolStoreInput v-model="xml2lyOptions.removeBreaks" localKey="lotus-xml2lyOptions.removeBreaks" /></td>
 					</tr>
 					<tr>
+						<th>Engrave</th>
+						<td><hr /></td>
+					</tr>
+					<tr>
+						<td>Logs</td>
+						<td><BoolStoreInput v-model="engraveWithLogs" localKey="lotus-engraveWithLogs" /></td>
+					</tr>
+					<tr>
 						<th>Lilypond Markups</th>
 						<td><hr /></td>
 					</tr>
@@ -201,6 +209,7 @@
 				xml2lyOptions: {
 					removeBreaks: true,
 				},
+				engraveWithLogs: false,
 				lilyMarkups: {
 					enabled: false,
 					staffSize: null,
@@ -377,8 +386,8 @@
 
 				const body = new FormData();
 				body.append("source", this.lilySource);
-				body.append("log", true);	// TODO: add control for log
-
+				if (this.engraveWithLogs)
+					body.append("log", this.engraveWithLogs);
 				if (this.tokenizeStaff)
 					body.append("tokenize", this.tokenizeStaff);
 
