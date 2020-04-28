@@ -505,7 +505,7 @@ export default class LilyDocument {
 
 	globalAttributes ({readonly = false} = {}) {
 		const globalStaffSize = this.root.getField("set-global-staff-size");
-		let paper = this.root.getBlock("paper");
+		let paper: any = this.root.getBlock("paper");
 		const layoutStaffSize = paper && paper.getField("layout-set-staff-size");
 		let staffSize = globalStaffSize || layoutStaffSize;
 
@@ -515,26 +515,32 @@ export default class LilyDocument {
 				staffSize = this.root.getField("set-global-staff-size");
 			}
 
+			// A4 paper size
+			const DEFAULT_PAPER_WIDTH = {
+				proto: "Assignment",
+				key: "paper-width",
+				value: {proto: "NumberUnit", number: 21, unit: "\\cm"},
+			};
+			const DEFAULT_PAPER_HEIGHT = {
+				proto: "Assignment",
+				key: "paper-height",
+				value: {proto: "NumberUnit", number: 29.71, unit: "\\cm"},
+			};
+
 			if (!paper) {
 				paper = new Block({
 					block: "score",
 					head: "\\paper",
-					body: [
-						// A4 paper size
-						{
-							proto: "Assignment",
-							key: "paper-width",
-							value: {proto: "NumberUnit", number: 21, unit: "\\cm"},
-						},
-						{
-							proto: "Assignment",
-							key: "paper-height",
-							value: {proto: "NumberUnit", number: 29.71, unit: "\\cm"},
-						},
-					],
+					body: [DEFAULT_PAPER_WIDTH, DEFAULT_PAPER_HEIGHT],
 				});
 				this.root.sections.push(paper);
 			}
+
+			if (!paper.getField("paper-width")) 
+				paper.body.push(parseRaw(DEFAULT_PAPER_WIDTH));
+
+			if (!paper.getField("paper-height")) 
+				paper.body.push(parseRaw(DEFAULT_PAPER_HEIGHT));
 		}
 
 		const paperWidth = paper.getField("paper-width");
