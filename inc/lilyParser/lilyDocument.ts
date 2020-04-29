@@ -482,7 +482,7 @@ const termDictionary = {
 };
 
 
-const parseRaw = data => {
+export const parseRaw = data => {
 	if (!data)
 		return data;
 

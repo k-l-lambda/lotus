@@ -18,6 +18,7 @@ TODO:
 
 *	2020.4.29
 
+	+	flex-engraver.vue: gauge natural size implemented.
 	+	flex-engraver.vue: gauge method added.
 
 	+	flex-engraver.vue: source edition implemented.

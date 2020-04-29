@@ -46,6 +46,9 @@
 	import "../utils.js";
 	import loadLilyParser from "../loadLilyParser.js";
 	import {LilyDocument} from "../../inc/lilyParser";
+	import {parseRaw} from "../../inc/lilyParser/lilyDocument.ts";
+	import {recoverJSON} from "../../inc/jsonRecovery.ts";
+	import {StaffToken, SheetDocument} from "../../inc/staffSvg";
 
 	import SourceEditor from "../components/source-editor.vue";
 	import StoreInput from "../components/store-input.vue";
@@ -201,11 +204,31 @@
 				//console.log("source:", source);
 
 				try {
-					const result = await this.engrave(source);
+					const result = await this.engrave(source, {tokenize: true});
 					//console.log("gauge:", result);
 					console.assert(result.svgs.length === 1, "invalid page count:", result);
 
 					this.gaugeSvgDoc = result.svgs[0];
+
+					const sheetDocument = recoverJSON(result.doc, {StaffToken, SheetDocument});
+					const row = sheetDocument.pages[0].rows[0];
+					const naturalWidth = row.width;
+					const naturalHeight = row.bottom - row.top;
+					//console.log("natural size:", naturalWidth, naturalHeight, sheetDocument);
+
+					const newLiy = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
+					//console.log("newLiy:", newLiy);
+					newLiy.root.sections.push(parseRaw({
+						proto: "Assignment",
+						key: "naturalWidth",
+						value: naturalWidth,
+					}), parseRaw({
+						proto: "Assignment",
+						key: "naturalHeight",
+						value: naturalHeight,
+					}));
+					//console.log("new doc:", newLiy.toString());
+					this.currentSource.content = newLiy.toString();
 				}
 				catch (error) {
 					console.warn("Engraving failed:", error);
@@ -213,9 +236,11 @@
 			},
 
 
-			async engrave (source) {
+			async engrave (source, {tokenize} = {}) {
 				const body = new FormData();
 				body.append("source", source);
+				if (tokenize)
+					body.append("tokenize", tokenize);
 
 				const response = await fetch("/engrave", {
 					method: "POST",
