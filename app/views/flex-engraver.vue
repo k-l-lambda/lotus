@@ -50,6 +50,7 @@
 	import {parseRaw} from "../../inc/lilyParser/lilyDocument.ts";
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
 	import {StaffToken, SheetDocument} from "../../inc/staffSvg";
+	import * as constants from "../../inc/constants.ts";
 
 	import SourceEditor from "../components/source-editor.vue";
 	import StoreInput from "../components/store-input.vue";
@@ -86,6 +87,10 @@
 				chosenSourceIndex: 0,
 				sourceDirty: false,
 				gaugeSvgDoc: null,
+				staffSizeRange: {
+					min: 20,
+					max: 40,
+				},
 			};
 		},
 
@@ -190,11 +195,11 @@
 
 
 			async gauge () {
-				const lilyDocument = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
-				//console.log("lilyDocument:", lilyDocument);
-
 				const TEST_STAFF_SIZE = 20;
 				const PAPER_WIDTH = 10000;
+
+				const lilyDocument = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
+				//console.log("lilyDocument:", lilyDocument);
 
 				const globalAttributes = lilyDocument.globalAttributes();
 				globalAttributes.staffSize.value = TEST_STAFF_SIZE;
@@ -223,17 +228,33 @@
 
 					const newLiy = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
 					//console.log("newLiy:", newLiy);
-					newLiy.root.sections.push(parseRaw({
-						proto: "Assignment",
-						key: "naturalWidth",
-						value: naturalWidth,
-					}), parseRaw({
-						proto: "Assignment",
-						key: "naturalHeight",
-						value: naturalHeight,
-					}));
+
+					const nw = lilyDocument.root.getField("naturalWidth");
+					if (nw)
+						nw.value = naturalWidth;
+					else {
+						newLiy.root.sections.push(parseRaw({
+							proto: "Assignment",
+							key: "naturalWidth",
+							value: naturalWidth,
+						}));
+					}
+
+					const nh = lilyDocument.root.getField("naturalHeight");
+					if (nh)
+						nh.value = naturalHeight;
+					else {
+						newLiy.root.sections.push(parseRaw({
+							proto: "Assignment",
+							key: "naturalHeight",
+							value: naturalHeight,
+						}));
+					}
+
 					//console.log("new doc:", newLiy.toString());
 					this.currentSource.content = newLiy.toString();
+
+					this.checkAndSaveSource();
 				}
 				catch (error) {
 					console.warn("Engraving failed:", error);
@@ -259,7 +280,77 @@
 
 
 			async renderSheet () {
-				// TODO:
+				const lilyDocument = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
+
+				const naturalWidth = lilyDocument.root.getField("naturalWidth");
+				const naturalHeight = lilyDocument.root.getField("naturalHeight");
+				if (!naturalWidth || !naturalHeight) {
+					console.log("natural size is not set.", naturalWidth, naturalHeight);
+					return;
+				}
+
+				const nw = naturalWidth.value;
+				const nh = naturalHeight.value;
+
+				const globalAttributes = lilyDocument.globalAttributes();
+
+				const paperWidth = this.containerSize.width / constants.CM_TO_PX;
+				const paperHeight = this.containerSize.height / constants.CM_TO_PX;
+
+				const getNumberUnitValue = key => globalAttributes[key].value ? globalAttributes[key].value.number : null;
+
+				const marginLeft = getNumberUnitValue("leftMargin") || constants.LILY_HORIZONTAL_MARGIN_DEFAULT;
+				const marginRight = getNumberUnitValue("rightMargin") || constants.LILY_HORIZONTAL_MARGIN_DEFAULT;
+				const marginTop = getNumberUnitValue("topMargin") || constants.LILY_TOP_MARGIN_DEFAULT;
+				const marginBottom = getNumberUnitValue("bottomMargin") || constants.LILY_BOTTOM_MARGIN_DEFAULT;
+
+				const innerHeight = paperHeight - marginTop - marginBottom;
+				const innerWidth = paperWidth - marginLeft - marginRight;
+
+				let systemCount = 1;
+				let staffSize = null;
+
+				for (; systemCount < 1e+3; ++systemCount) {
+					const currentStaffSize = innerHeight / (nh * systemCount);
+					if (currentStaffSize < this.staffSizeRange.min) {
+						if (!Number.isFinite(staffSize))
+							staffSize = currentStaffSize;
+
+						break;
+					}
+
+					staffSize = currentStaffSize;
+
+					// compute system count by horizontal splitting
+					const xsc = (nw - constants.STAFF_HEAD_DEDUCTION) * staffSize / (innerWidth - constants.STAFF_HEAD_DEDUCTION * staffSize);
+					if (xsc < 0) {
+						console.warn("Horizontal space too little:", xsc, innerWidth - constants.STAFF_HEAD_DEDUCTION * staffSize);
+						return;
+					}
+
+					if (xsc <= systemCount + 0.4) {
+						staffSize = Math.min(staffSize, this.staffSizeRange.max);
+						console.log("systemCount:", systemCount, xsc);
+						break;
+					}
+
+					console.log("systemCount iteration:", systemCount, staffSize, xsc);
+				}
+
+				if (staffSize <= this.staffSizeRange.min) {
+					console.warn("Vertical space too little:", staffSize);
+					return;
+				}
+
+				globalAttributes.staffSize.value = staffSize;
+				globalAttributes.paperWidth.value = paperWidth;
+				globalAttributes.paperHeight.value = paperHeight;
+				globalAttributes.raggedLast.value = false;
+
+				const adjustedSource = lilyDocument.toString();
+				console.log("adjustedSource:", adjustedSource);
+
+				// TODO: engrave
 			},
 		},
 

@@ -18,6 +18,8 @@ TODO:
 
 *	2020.4.29
 
+	+	flex-engraver.vue: flexible staff size computing added.
+
 	+	flex-engraver.vue: gauge natural size implemented.
 	+	flex-engraver.vue: gauge method added.
 

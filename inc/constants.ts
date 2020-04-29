@@ -1,8 +1,20 @@
 
 const CM_TO_PX = 37.794;
 
+const LILY_TOP_MARGIN_DEFAULT = 0.5;
+const LILY_BOTTOM_MARGIN_DEFAULT = 0.6;
+const LILY_HORIZONTAL_MARGIN_DEFAULT = 1;
+
+const STAFF_HEAD_DEDUCTION = 0.06;	// extra width augment when system wrap added, cm per staff size
+
 
 
 export {
 	CM_TO_PX,
+
+	LILY_TOP_MARGIN_DEFAULT,
+	LILY_BOTTOM_MARGIN_DEFAULT,
+	LILY_HORIZONTAL_MARGIN_DEFAULT,
+
+	STAFF_HEAD_DEDUCTION,
 };
