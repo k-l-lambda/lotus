@@ -567,6 +567,24 @@ export default class LilyDocument {
 				paper.body.push(parseRaw(DEFAULT_PAPER_HEIGHT));
 		}
 
+		const paperPropertyCommon = key => ({
+			get value () {
+				const item = paper.getField(key);
+				if (!item)
+					return null;
+
+				return item.value;
+			},
+
+			set value (value) {
+				const item = paper.getField(key);
+				if (item)
+					item.value = value;
+				else
+					paper.body.push(new Assignment({key, value: parseRaw(value)}));
+			},
+		});
+
 		const paperPropertySchemeToken = key => ({
 			get value () {
 				const item = paper.getField(key);
@@ -587,12 +605,12 @@ export default class LilyDocument {
 
 		const attributes = {
 			staffSize,
-			paperWidth: paper.getField("paper-width"),
-			paperHeight: paper.getField("paper-height"),
-			topMargin: paper.getField("top-margin"),
-			bottomMargin: paper.getField("bottom-margin"),
-			leftMargin: paper.getField("left-margin"),
-			rightMargin: paper.getField("right-margin"),
+			paperWidth: paperPropertyCommon("paper-width"),
+			paperHeight: paperPropertyCommon("paper-height"),
+			topMargin: paperPropertyCommon("top-margin"),
+			bottomMargin: paperPropertyCommon("bottom-margin"),
+			leftMargin: paperPropertyCommon("left-margin"),
+			rightMargin: paperPropertyCommon("right-margin"),
 			systemSpacing: paperPropertySchemeToken("system-system-spacing.basic-distance"),
 			raggedLast: paperPropertySchemeToken("ragged-last"),
 		};

@@ -18,6 +18,8 @@ TODO:
 
 *	2020.4.29
 
+	+	flex-engraver.vue: gauge method added.
+
 	+	flex-engraver.vue: source edition implemented.
 
 	+	flex-engraver.vue: import source by dropping implemented.

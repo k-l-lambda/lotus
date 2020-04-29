@@ -8,11 +8,16 @@
 		<header>
 			<StoreInput v-show="false" v-model="containerSize.offsetWidth" localKey="lotus-flexEngraverContainerWidth" />
 			<StoreInput v-show="false" v-model="containerSize.offsetHeight" localKey="lotus-flexEngraverContainerHeight" />
+			<StoreInput v-show="false" v-model="chosenSourceIndex" localKey="lotus-flexEngraverChosenSourceIndex" />
 			<select class="source-list" v-model="chosenSourceIndex">
 				<option v-for="(source, i) of sourceList" :key="i" :value="i">{{source.name}}</option>
 			</select>
 			<span class="dirty" @click="saveSource">{{sourceDirty ? "*" : " "}}</span>
 			<button @click="removeCurrentSource">&#x1f5d1;</button>
+			<button @click="gauge">&#x1f4cf;</button>
+			<div class="gauge-view" v-if="gaugeSvgDoc">
+				<SheetSimple v-if="gaugeSvgDoc" :documents="[gaugeSvgDoc]" />
+			</div>
 		</header>
 		<main>
 			<SourceEditor :source.sync="currentSource && currentSource.content" />
@@ -39,9 +44,12 @@
 	import resize from "vue-resize-directive";
 
 	import "../utils.js";
+	import loadLilyParser from "../loadLilyParser.js";
+	import {LilyDocument} from "../../inc/lilyParser";
 
 	import SourceEditor from "../components/source-editor.vue";
 	import StoreInput from "../components/store-input.vue";
+	import SheetSimple from "../components/sheet-simple.vue";
 
 
 
@@ -57,6 +65,7 @@
 		components: {
 			SourceEditor,
 			StoreInput,
+			SheetSimple,
 		},
 
 
@@ -72,6 +81,7 @@
 				sourceList: [],
 				chosenSourceIndex: 0,
 				sourceDirty: false,
+				gaugeSvgDoc: null,
 			};
 		},
 
@@ -88,11 +98,13 @@
 		},
 
 
-		created () {
+		async created () {
 			window.$main = this;
 
 			this.loadSource();
-			console.log("created.");
+
+			this.lilyParser = await loadLilyParser();
+			console.log("Lilypond parser loaded.");
 		},
 
 
@@ -171,6 +183,49 @@
 				if (this.sourceDirty)
 					this.saveSource();
 			},
+
+
+			async gauge () {
+				const lilyDocument = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
+				//console.log("lilyDocument:", lilyDocument);
+
+				const globalAttributes = lilyDocument.globalAttributes();
+				globalAttributes.staffSize.value = 20;
+				globalAttributes.paperWidth.value.number = 10000;
+				globalAttributes.paperHeight.value.number = 1000;
+				globalAttributes.raggedLast.value = true;
+				globalAttributes.topMargin.value = 0;
+				globalAttributes.leftMargin.value = 0;
+
+				const source = lilyDocument.toString();
+				//console.log("source:", source);
+
+				try {
+					const result = await this.engrave(source);
+					//console.log("gauge:", result);
+					console.assert(result.svgs.length === 1, "invalid page count:", result);
+
+					this.gaugeSvgDoc = result.svgs[0];
+				}
+				catch (error) {
+					console.warn("Engraving failed:", error);
+				}
+			},
+
+
+			async engrave (source) {
+				const body = new FormData();
+				body.append("source", source);
+
+				const response = await fetch("/engrave", {
+					method: "POST",
+					body,
+				});
+				if (!response.ok) 
+					throw new Error(await response.text());
+
+				return response.json();
+			},
 		},
 
 
@@ -183,6 +238,7 @@
 
 
 			async chosenSourceIndex () {
+				this.gaugeSvgDoc = null;
 				this.checkAndSaveSource();
 
 				await this.$nextTick();
@@ -211,6 +267,7 @@
 			flex-direction: row;
 			align-items: center;
 			font-size: 36px;
+			overflow: hidden;
 
 			& > *
 			{
@@ -222,6 +279,11 @@
 			.source-list
 			{
 				min-width: 8em;
+			}
+
+			.gauge-view
+			{
+				height: 100%;
 			}
 
 			.dirty
