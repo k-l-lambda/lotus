@@ -1662,9 +1662,9 @@ embedded_scheme_expression
 
 scheme_expression
 	: SCM_TRUE
-		{$$ = $1;}
+		{$$ = true;}
 	| SCM_FALSE
-		{$$ = $1;}
+		{$$ = false;}
 	| bare_number
 		{$$ = $1;}
 	| INT

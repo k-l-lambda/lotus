@@ -117,6 +117,10 @@
 						<td>System-System Spacing</td>
 						<td><StoreInput type="number" v-model.number="lilyMarkups.systemSpacing" localKey="lotus-lilyMarkups.systemSpacing" /></td>
 					</tr>
+					<tr>
+						<td>Ragged Last</td>
+						<td><BoolStoreInput v-model="lilyMarkups.raggedLast" localKey="lotus-lilyMarkups.raggedLast" /></td>
+					</tr>
 				</tbody>
 			</table>
 		</Dialog>
@@ -153,6 +157,7 @@
 
 
 	const CM_TO_PX = 37.794;
+
 
 
 	export default {
@@ -220,6 +225,7 @@
 					autoPaperSize: true,
 					pageCount: 2,
 					systemSpacing: -1,
+					raggedLast: true,
 				},
 				lilyParser: null,
 				lilyDocumentDirty: false,
@@ -541,6 +547,9 @@
 
 				if (this.lilyMarkups.systemSpacing >= 0)
 					globalAttributes.systemSpacing.value = this.lilyMarkups.systemSpacing;
+
+				if (typeof this.lilyMarkups.raggedLast === "boolean")
+					globalAttributes.raggedLast.value = this.lilyMarkups.raggedLast;
 
 				this.lilySource = this.lilyDocument.toString();
 

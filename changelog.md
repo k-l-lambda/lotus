@@ -1,6 +1,8 @@
 
 TODO:
+	flexible typing demo
 	lilypond post processing
+		ragged-last = ##f
 		removeStaffGroup
 		fix partial measures
 		fix repeat \alternative measures
@@ -13,6 +15,11 @@ TODO:
 	source editor
 		cursor position
 
+
+
+*	2020.4.29
+
+	+	lilyDocument.ts: added global attribute of raggedLast.
 
 
 *	2020.4.28

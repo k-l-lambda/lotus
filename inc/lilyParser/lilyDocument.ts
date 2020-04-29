@@ -222,7 +222,7 @@ class Scheme extends BaseTerm {
 		if (BaseTerm.isTerm(this.exp))
 			return ["#", "\b", ...(this.exp as LilyTerm).serialize()];
 		else if (typeof this.exp === "boolean")
-			return ["##", "\b", this.exp ? "t" : "f"];
+			return ["#", "\b", this.exp ? "#t" : "#f"];
 		else
 			return ["#", "\b", this.exp];
 	}
@@ -565,6 +565,9 @@ export default class LilyDocument {
 
 			if (!paper.getField("paper-height")) 
 				paper.body.push(parseRaw(DEFAULT_PAPER_HEIGHT));
+
+			//if (!paper.getField("ragged-last"))
+			//	paper.body.push(new Assignment({key: "ragged-last", value: {proto: "Scheme", exp: true}}));
 		}
 
 		const paperWidth = paper.getField("paper-width");
@@ -579,7 +582,6 @@ export default class LilyDocument {
 
 				return null;
 			},
-
 
 			set value (value) {
 				const scm = {
@@ -610,11 +612,30 @@ export default class LilyDocument {
 			},
 		};
 
+		const raggedLast = {
+			get value () {
+				const item = paper.getField("ragged-last");
+				if (!item)
+					return null;
+
+				return item.value.exp;
+			},
+
+			set value (value) {
+				const item = paper.getField("ragged-last");
+				if (item)
+					item.value.exp = value;
+				else
+					paper.body.push(new Assignment({key: "ragged-last", value: {proto: "Scheme", exp: value}}));
+			},
+		};
+
 		const attributes = {
 			staffSize,
 			paperWidth,
 			paperHeight,
 			systemSpacing,
+			raggedLast,
 		};
 
 		if (readonly)
