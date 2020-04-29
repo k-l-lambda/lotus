@@ -19,6 +19,8 @@ TODO:
 
 *	2020.4.29
 
+	+	App view of flex-engraver added.
+
 	+	lilyDocument.ts: added global attribute of raggedLast.
 
 

@@ -14,6 +14,7 @@
 	const components = [
 		"playground",
 		"profiler",
+		"flex-engraver",
 	];
 
 
