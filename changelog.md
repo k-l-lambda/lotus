@@ -2,7 +2,6 @@
 TODO:
 	flexible typing demo
 	lilypond post processing
-		ragged-last = ##f
 		removeStaffGroup
 		fix partial measures
 		fix repeat \alternative measures
@@ -18,6 +17,8 @@ TODO:
 
 
 *	2020.4.29
+
+	+	flex-engraver.vue: resizable container added.
 
 	+	App view of flex-engraver added.
 
