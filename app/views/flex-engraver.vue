@@ -8,9 +8,14 @@
 		<header>
 			<StoreInput v-show="false" v-model="containerSize.offsetWidth" localKey="lotus-flexEngraverContainerWidth" />
 			<StoreInput v-show="false" v-model="containerSize.offsetHeight" localKey="lotus-flexEngraverContainerHeight" />
+			<select class="source-list" v-model="chosenSourceIndex">
+				<option v-for="(source, i) of sourceList" :key="i" :value="i">{{source.name}}</option>
+			</select>
+			<span class="dirty" @click="saveSource">{{sourceDirty ? "*" : " "}}</span>
+			<button @click="removeCurrentSource">&#x1f5d1;</button>
 		</header>
 		<main>
-			<SourceEditor />
+			<SourceEditor :source.sync="currentSource && currentSource.content" />
 			<div class="viewer">
 				<div class="sheet-container" ref="sheetContainer"
 					:style="{
@@ -65,18 +70,40 @@
 				},
 				dragHover: false,
 				sourceList: [],
+				chosenSourceIndex: 0,
+				sourceDirty: false,
 			};
+		},
+
+
+		computed: {
+			currentSource () {
+				return this.sourceList[this.chosenSourceIndex];
+			},
+
+
+			currentSourceContent () {
+				return this.currentSource && this.currentSource.content;
+			},
 		},
 
 
 		created () {
 			window.$main = this;
+
+			this.loadSource();
+			console.log("created.");
 		},
 
 
 		async mounted () {
 			await this.$nextTick();
 			this.updateContainerSize();
+		},
+
+
+		beforeDestroy () {
+			this.checkAndSaveSource();
 		},
 
 
@@ -108,10 +135,58 @@
 							name,
 							content,
 						});
+						this.sourceDirty = true;
 
 						break;
 					}
 				}
+			},
+
+
+			removeCurrentSource () {
+				this.sourceList.splice(this.chosenSourceIndex, 1);
+				this.chosenSourceIndex = Math.min(this.chosenSourceIndex, this.sourceList.length - 1);
+			},
+
+
+			loadSource () {
+				if (localStorage.lotusFlexEngraverSources) {
+					this.sourceList = JSON.parse(localStorage.lotusFlexEngraverSources);
+					console.log("Source list loaded.");
+				}
+
+				this.sourceDirty = false;
+			},
+
+
+			saveSource () {
+				localStorage.lotusFlexEngraverSources = JSON.stringify(this.sourceList);
+				console.log("Source list saved.");
+
+				this.sourceDirty = false;
+			},
+
+
+			checkAndSaveSource () {
+				if (this.sourceDirty)
+					this.saveSource();
+			},
+		},
+
+
+		watch: {
+			currentSourceContent (value, oldValue) {
+				//console.log("oldValue:", oldValue);
+				if (value && oldValue !== undefined)
+					this.sourceDirty = true;
+			},
+
+
+			async chosenSourceIndex () {
+				this.checkAndSaveSource();
+
+				await this.$nextTick();
+				this.sourceDirty = false;
 			},
 		},
 	};
@@ -132,6 +207,29 @@
 			width: 100%;
 			height: $header-height;
 			background: #fafafa;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			font-size: 36px;
+
+			& > *
+			{
+				display: inline-block;
+				font-size: inherit;
+				margin: 0 .5em;
+			}
+
+			.source-list
+			{
+				min-width: 8em;
+			}
+
+			.dirty
+			{
+				font-weight: bold;
+				color: orange;
+				cursor: pointer;
+			}
 		}
 
 		main

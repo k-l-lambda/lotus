@@ -1,8 +1,6 @@
 <template>
 	<body>
-		<keep-alive>
-			<component v-if="view" :is="view"></component>
-		</keep-alive>
+		<component v-if="view" :is="view"></component>
 	</body>
 </template>
 
