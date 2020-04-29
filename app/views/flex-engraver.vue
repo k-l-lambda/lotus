@@ -15,6 +15,7 @@
 			<span class="dirty" @click="saveSource">{{sourceDirty ? "*" : " "}}</span>
 			<button @click="removeCurrentSource">&#x1f5d1;</button>
 			<button @click="gauge">&#x1f4cf;</button>
+			<button @click="renderSheet">&#x1f3bc;</button>
 			<div class="gauge-view" v-if="gaugeSvgDoc">
 				<SheetSimple v-if="gaugeSvgDoc" :documents="[gaugeSvgDoc]" />
 			</div>
@@ -192,9 +193,12 @@
 				const lilyDocument = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
 				//console.log("lilyDocument:", lilyDocument);
 
+				const TEST_STAFF_SIZE = 20;
+				const PAPER_WIDTH = 10000;
+
 				const globalAttributes = lilyDocument.globalAttributes();
-				globalAttributes.staffSize.value = 20;
-				globalAttributes.paperWidth.value.number = 10000;
+				globalAttributes.staffSize.value = TEST_STAFF_SIZE;
+				globalAttributes.paperWidth.value.number = PAPER_WIDTH;
 				globalAttributes.paperHeight.value.number = 1000;
 				globalAttributes.raggedLast.value = true;
 				globalAttributes.topMargin.value = 0;
@@ -212,8 +216,9 @@
 
 					const sheetDocument = recoverJSON(result.doc, {StaffToken, SheetDocument});
 					const row = sheetDocument.pages[0].rows[0];
-					const naturalWidth = row.width;
-					const naturalHeight = row.bottom - row.top;
+					const sizeFactor = (PAPER_WIDTH / sheetDocument.pages[0].viewBox.width) / TEST_STAFF_SIZE;
+					const naturalWidth = row.width * sizeFactor;
+					const naturalHeight = (row.bottom - row.top) * sizeFactor;
 					//console.log("natural size:", naturalWidth, naturalHeight, sheetDocument);
 
 					const newLiy = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
@@ -250,6 +255,11 @@
 					throw new Error(await response.text());
 
 				return response.json();
+			},
+
+
+			async renderSheet () {
+				// TODO:
 			},
 		},
 
