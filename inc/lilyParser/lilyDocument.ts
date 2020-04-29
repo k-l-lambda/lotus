@@ -565,15 +565,12 @@ export default class LilyDocument {
 
 			if (!paper.getField("paper-height")) 
 				paper.body.push(parseRaw(DEFAULT_PAPER_HEIGHT));
-
-			//if (!paper.getField("ragged-last"))
-			//	paper.body.push(new Assignment({key: "ragged-last", value: {proto: "Scheme", exp: true}}));
 		}
 
 		const paperWidth = paper.getField("paper-width");
 		const paperHeight = paper.getField("paper-height");
 
-		const SYSTEM_SYSTEM_SPACING = "system-system-spacing";
+		/*const SYSTEM_SYSTEM_SPACING = "system-system-spacing";
 		const systemSpacing = {
 			get value () {
 				const sss = paper.getField(SYSTEM_SYSTEM_SPACING);
@@ -610,11 +607,11 @@ export default class LilyDocument {
 					}));
 				}
 			},
-		};
+		};*/
 
-		const raggedLast = {
+		const paperProperty = key => ({
 			get value () {
-				const item = paper.getField("ragged-last");
+				const item = paper.getField(key);
 				if (!item)
 					return null;
 
@@ -622,20 +619,20 @@ export default class LilyDocument {
 			},
 
 			set value (value) {
-				const item = paper.getField("ragged-last");
+				const item = paper.getField(key);
 				if (item)
 					item.value.exp = value;
 				else
-					paper.body.push(new Assignment({key: "ragged-last", value: {proto: "Scheme", exp: value}}));
+					paper.body.push(new Assignment({key, value: {proto: "Scheme", exp: value}}));
 			},
-		};
+		});
 
 		const attributes = {
 			staffSize,
 			paperWidth,
 			paperHeight,
-			systemSpacing,
-			raggedLast,
+			systemSpacing: paperProperty("system-system-spacing.basic-distance"),
+			raggedLast: paperProperty("ragged-last"),
 		};
 
 		if (readonly)
