@@ -141,6 +141,7 @@
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import loadLilyParser from "../loadLilyParser.js";
 	import {LilyDocument} from "../../inc/lilyParser";
+	import {CM_TO_PX} from "../../inc/constants.ts";
 
 	import {MidiRoll} from "@k-l-lambda/web-widgets";
 	import SourceEditor from "../components/source-editor.vue";
@@ -153,10 +154,6 @@
 	import CheckButton from "../components/check-button.vue";
 	import NotationsMatcher from "../components/notations-matcher.vue";
 	import Dialog from "../components/dialog.vue";
-
-
-
-	const CM_TO_PX = 37.794;
 
 
 
