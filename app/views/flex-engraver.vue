@@ -1,5 +1,10 @@
 <template>
-	<div class="flex-engraver">
+	<div class="flex-engraver"
+		:class="{'drag-hover': dragHover}"
+		@dragover.prevent="dragHover = true"
+		@dragleave="dragHover = false"
+		@drop.prevent="onDropFile"
+	>
 		<header>
 			<StoreInput v-show="false" v-model="containerSize.offsetWidth" localKey="lotus-flexEngraverContainerWidth" />
 			<StoreInput v-show="false" v-model="containerSize.offsetHeight" localKey="lotus-flexEngraverContainerHeight" />
@@ -27,6 +32,8 @@
 
 <script>
 	import resize from "vue-resize-directive";
+
+	import "../utils.js";
 
 	import SourceEditor from "../components/source-editor.vue";
 	import StoreInput from "../components/store-input.vue";
@@ -56,6 +63,8 @@
 					offsetWidth: 1215,
 					offsetHeight: 495,
 				},
+				dragHover: false,
+				sourceList: [],
 			};
 		},
 
@@ -82,6 +91,28 @@
 					this.containerSize.offsetHeight = this.$refs.sheetContainer.offsetHeight;
 				}
 			},
+
+
+			async onDropFile (event) {
+				this.dragHover = false;
+
+				const file = event.dataTransfer.files[0];
+				if (file) {
+					switch (file.type) {
+					case "text/x-lilypond":
+						const content = await file.readAs("Text");
+						//console.log("content:", file, content);
+						const name = file.name.replace(/\.ly$/, "");
+
+						this.sourceList.push({
+							name,
+							content,
+						});
+
+						break;
+					}
+				}
+			},
 		},
 	};
 </script>
@@ -100,13 +131,14 @@
 			position: absolute;
 			width: 100%;
 			height: $header-height;
-			background: #eee;
+			background: #fafafa;
 		}
 
 		main
 		{
 			padding-top: $header-height;
 			height: 100%;
+			background: #eee;
 
 			.source-editor
 			{
@@ -126,6 +158,7 @@
 					margin: 2em;
 					outline: solid 1px #ccc;
 					overflow: scroll;
+					background: white;
 				}
 
 				.container-size
@@ -136,6 +169,15 @@
 					right: 0;
 					transform: translate(-2em, 0);
 				}
+			}
+		}
+
+		&.drag-hover
+		{
+			header
+			{
+				background-color: #cfc;
+				outline: 4px #4f4 dashed;
 			}
 		}
 	}

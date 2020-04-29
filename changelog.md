@@ -18,6 +18,8 @@ TODO:
 
 *	2020.4.29
 
+	+	flex-engraver.vue: import source by dropping implemented.
+
 	+	flex-engraver.vue: resizable container added.
 
 	+	App view of flex-engraver added.
