@@ -18,6 +18,8 @@ TODO:
 
 *	2020.4.30
 
+	+	flex-engraver.vue: score json exporting added.
+
 	+	tests/ly/flex: added flex lilypond samples.
 
 	+	flex-engraver.vue: staff samples added.

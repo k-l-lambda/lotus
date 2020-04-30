@@ -18,6 +18,7 @@
 			<button @click="removeCurrentSource">&#x1f5d1;</button>
 			<button @click="gauge">&#x1f4cf;</button>
 			<button @click="renderSheet">&#x1f3bc;</button>
+			<button @click="exportScore">.json</button>
 			<div class="gauge-view" v-if="gaugeSvgDoc">
 				<SheetSimple v-if="gaugeSvgDoc" :documents="[gaugeSvgDoc]" />
 			</div>
@@ -59,7 +60,7 @@
 <script>
 	import resize from "vue-resize-directive";
 
-	import "../utils.js";
+	import {downloadUrl} from "../utils.js";
 	import {mutexDelay} from "../delay.js";
 	import loadLilyParser from "../loadLilyParser.js";
 	import {LilyDocument} from "../../inc/lilyParser";
@@ -330,9 +331,9 @@
 			},
 
 
-			async renderSheet () {
+			fitContainer () {
 				if (!this.lilyParser || !this.currentSourceContent)
-					return;
+					return null;
 
 				const lilyDocument = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
 
@@ -340,7 +341,7 @@
 				const naturalHeight = lilyDocument.root.getField("naturalHeight");
 				if (!naturalWidth || !naturalHeight) {
 					console.log("natural size is not set.", naturalWidth, naturalHeight);
-					return;
+					return null;
 				}
 
 				const nw = naturalWidth.value;
@@ -427,8 +428,14 @@
 				globalAttributes.raggedLast.value = systemCount <= 1 && horizontalNaturalCount < 1;
 
 				//console.log("lilyDocument:", lilyDocument);
-				const adjustedSource = lilyDocument.toString();
-				//console.log("adjustedSource:", adjustedSource);
+				return lilyDocument.toString();
+			},
+
+
+			async renderSheet () {
+				const adjustedSource = this.fitContainer();
+				if (!adjustedSource)
+					return;
 
 				this.containerEngraving = true;
 
@@ -439,6 +446,25 @@
 				this.containerSvgs = this.containerSvgs.map(removeLilypondBand);
 
 				this.containerEngraving = false;
+			},
+
+
+			async exportScore () {
+				const adjustedSource = this.fitContainer();
+				if (!adjustedSource) {
+					console.warn("no source.");
+					return;
+				}
+
+				const result = await this.engrave(adjustedSource, {tokenize: true});
+
+				const data = {
+					doc: recoverJSON(result.doc, {StaffToken, SheetDocument}),
+					midi: result.midi,
+					hashTable: result.hashTable,
+				};
+				const blob = new Blob([JSON.stringify(data)]);
+				downloadUrl(URL.createObjectURL(blob), "score.json");
 			},
 
 
