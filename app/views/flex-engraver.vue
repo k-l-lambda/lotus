@@ -9,6 +9,8 @@
 			<StoreInput v-show="false" v-model="containerSize.offsetWidth" localKey="lotus-flexEngraverContainerWidth" />
 			<StoreInput v-show="false" v-model="containerSize.offsetHeight" localKey="lotus-flexEngraverContainerHeight" />
 			<StoreInput v-show="false" v-model="chosenSourceIndex" localKey="lotus-flexEngraverChosenSourceIndex" />
+			<StoreInput v-show="false" v-model="staffSizeRange.min" localKey="lotus-flexEngraverstaffSizeRangeMin" />
+			<StoreInput v-show="false" v-model="staffSizeRange.max" localKey="lotus-flexEngraverstaffSizeRangeMaX" />
 			<select class="source-list" v-model="chosenSourceIndex">
 				<option v-for="(source, i) of sourceList" :key="i" :value="i">{{source.name}}</option>
 			</select>
@@ -39,6 +41,17 @@
 					<span>{{containerSize.height}}</span>
 				</div>
 			</div>
+			<div class="staff-size-viewer">
+				<h2>staff size range</h2>
+				<p>
+					min: <input type="number" v-model="staffSizeRange.min" @change="updateStaffSampleMin" />
+					<SheetSimple v-if="staffSampleSvgMin" :documents="[staffSampleSvgMin]" />
+				</p>
+				<p>
+					max: <input type="number" v-model="staffSizeRange.max" @change="updateStaffSampleMax" />
+					<SheetSimple v-if="staffSampleSvgMax" :documents="[staffSampleSvgMax]" />
+				</p>
+			</div>
 		</main>
 	</div>
 </template>
@@ -59,6 +72,28 @@
 	import StoreInput from "../components/store-input.vue";
 	import SheetSimple from "../components/sheet-simple.vue";
 	import Loading from "../components/loading-dots.vue";
+
+
+
+	const sampleLily = staffSize => `
+		#(set-global-staff-size ${staffSize})
+		\\paper {
+			paper-width = ${staffSize * 0.16}\\cm
+			paper-height = ${staffSize * 0.08}\\cm
+			top-margin = 0
+			bottom-margin = 0
+			left-margin = 0.2\\cm
+			right-margin = 0
+		}
+		\\layout
+		{
+			indent = 0
+		}
+		{c'1}
+	`;
+
+
+	const removeLilypondBand = svg => svg.replace(/(?:>)[^<>]+lilypond.org(?=<)/g, "");
 
 
 
@@ -98,6 +133,8 @@
 				},
 				containerSvgs: null,
 				containerEngraving: false,
+				staffSampleSvgMin: null,
+				staffSampleSvgMax: null,
 			};
 		},
 
@@ -126,6 +163,8 @@
 
 			this.lilyParser = await loadLilyParser();
 			console.log("Lilypond parser loaded.");
+
+			this.updateStaffSamples();
 		},
 
 
@@ -352,7 +391,7 @@
 						break;
 					}
 
-					console.log("systemCount iteration:", systemCount, staffSize, xsc);
+					//console.log("systemCount iteration:", systemCount, staffSize, xsc);
 				}
 
 				if (staffSize <= this.staffSizeRange.min) {
@@ -369,8 +408,11 @@
 				// horizontal center align for single system
 				if (systemCount === 1) {
 					const preferInnerWidth = staffSize * nw;
-					const leftMargin = (paperWidth - preferInnerWidth) / 2;
-					globalAttributes.leftMargin.value = {proto: "NumberUnit", number: leftMargin, unit: "\\cm"};
+					const horizontalMargin = 0.9 * (paperWidth - preferInnerWidth) / 2;
+					if (horizontalMargin > 1) {
+						globalAttributes.leftMargin.value = {proto: "NumberUnit", number: horizontalMargin, unit: "\\cm"};
+						globalAttributes.rightMargin.value = {proto: "NumberUnit", number: horizontalMargin, unit: "\\cm"};
+					}
 				}
 
 				globalAttributes.staffSize.value = staffSize;
@@ -388,7 +430,7 @@
 				this.containerSvgs = result.svgs;
 
 				// remove lilypond band
-				this.containerSvgs = this.containerSvgs.map(svg => svg.replace(/(?:>)[^<>]+lilypond.org(?=<)/g, ""));
+				this.containerSvgs = this.containerSvgs.map(removeLilypondBand);
 
 				this.containerEngraving = false;
 			},
@@ -397,6 +439,29 @@
 			async delayRenderSheet () {
 				if(await mutexDelay("renderSheet", 500))
 					this.renderSheet();
+			},
+
+
+			async engraveSample (staffSize) {
+				const source = sampleLily(staffSize);
+				const result = await this.engrave(source);
+				return result.svgs[0];
+			},
+
+
+			async updateStaffSampleMin () {
+				this.staffSampleSvgMin = removeLilypondBand(await this.engraveSample(this.staffSizeRange.min));
+			},
+
+
+			async updateStaffSampleMax () {
+				this.staffSampleSvgMax = removeLilypondBand(await this.engraveSample(this.staffSizeRange.max));
+			},
+
+
+			updateStaffSamples () {
+				this.updateStaffSampleMin();
+				this.updateStaffSampleMax();
 			},
 		},
 
@@ -415,6 +480,8 @@
 
 				await this.$nextTick();
 				this.sourceDirty = false;
+
+				this.renderSheet();
 			},
 
 
@@ -526,6 +593,18 @@
 					bottom: 0;
 					right: 0;
 					transform: translate(-2em, 0);
+				}
+			}
+
+			.staff-size-viewer
+			{
+				position: absolute;
+				right: 0;
+				bottom: 0;
+
+				input
+				{
+					width: 4em;
 				}
 			}
 		}
