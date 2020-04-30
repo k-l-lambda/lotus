@@ -324,9 +324,10 @@
 
 				let systemCount = 1;
 				let staffSize = null;
+				let horizontalNaturalCount = 1;
 
 				for (; systemCount < 1e+3; ++systemCount) {
-					const currentStaffSize = innerHeight / (nh * systemCount);
+					const currentStaffSize = innerHeight / ((nh + constants.SYSTEM_SYSTEM_SPACING) * systemCount);
 					if (currentStaffSize < this.staffSizeRange.min) {
 						if (!Number.isFinite(staffSize))
 							staffSize = currentStaffSize;
@@ -334,7 +335,7 @@
 						break;
 					}
 
-					staffSize = currentStaffSize;
+					staffSize = Math.min(currentStaffSize, this.staffSizeRange.max);
 
 					// compute system count by horizontal splitting
 					const xsc = (nw - constants.STAFF_HEAD_DEDUCTION) * staffSize / (innerWidth - constants.STAFF_HEAD_DEDUCTION * staffSize);
@@ -343,8 +344,10 @@
 						return;
 					}
 
-					if (xsc <= systemCount + 0.4) {
-						staffSize = Math.min(staffSize, this.staffSizeRange.max);
+					if (xsc < systemCount + 0.5) {
+						//staffSize = Math.min(staffSize, this.staffSizeRange.max);
+						systemCount = Math.max(Math.round(xsc), 1);
+						horizontalNaturalCount = xsc;
 						console.log("systemCount:", systemCount, xsc);
 						break;
 					}
@@ -357,11 +360,25 @@
 					return;
 				}
 
-				globalAttributes.staffSize.value = staffSize;
-				globalAttributes.paperWidth.value = parseRaw({proto: "NumberUnit", number: paperWidth, unit: "\\cm"});
-				globalAttributes.paperHeight.value = parseRaw({proto: "NumberUnit", number: paperHeight, unit: "\\cm"});
-				globalAttributes.raggedLast.value = false;
+				// vertical middle align
+				const preferInnerHeight = staffSize * (nh + constants.SYSTEM_SYSTEM_SPACING) * systemCount;
+				const topMargin = (paperHeight - preferInnerHeight) / 2;
+				//console.log("topMargin:", topMargin);
+				globalAttributes.topMargin.value = {proto: "NumberUnit", number: topMargin, unit: "\\cm"};
 
+				// horizontal center align for single system
+				if (systemCount === 1) {
+					const preferInnerWidth = staffSize * nw;
+					const leftMargin = (paperWidth - preferInnerWidth) / 2;
+					globalAttributes.leftMargin.value = {proto: "NumberUnit", number: leftMargin, unit: "\\cm"};
+				}
+
+				globalAttributes.staffSize.value = staffSize;
+				globalAttributes.paperWidth.value = {proto: "NumberUnit", number: paperWidth, unit: "\\cm"};
+				globalAttributes.paperHeight.value = {proto: "NumberUnit", number: paperHeight, unit: "\\cm"};
+				globalAttributes.raggedLast.value = systemCount <= 1 && horizontalNaturalCount < 1;
+
+				//console.log("lilyDocument:", lilyDocument);
 				const adjustedSource = lilyDocument.toString();
 				//console.log("adjustedSource:", adjustedSource);
 

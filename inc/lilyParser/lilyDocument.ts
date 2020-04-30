@@ -579,9 +579,9 @@ export default class LilyDocument {
 			set value (value) {
 				const item = paper.getField(key);
 				if (item)
-					item.value = value;
+					item.value = parseRaw(value);
 				else
-					paper.body.push(new Assignment({key, value: parseRaw(value)}));
+					paper.body.push(new Assignment({key, value}));
 			},
 		});
 
