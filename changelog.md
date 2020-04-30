@@ -18,6 +18,8 @@ TODO:
 
 *	2020.4.30
 
+	+	flex-engraver.vue: loading icon added.
+
 	+	flex-engraver.vue: container svg sheet added.
 
 

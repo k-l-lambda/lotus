@@ -31,6 +31,7 @@
 					@mousemove="updateContainerSize"
 				>
 					<SheetSimple v-if="containerSvgs" :documents="containerSvgs" />
+					<Loading v-show="containerEngraving" />
 				</div>
 				<div class="container-size">
 					<span>{{containerSize.width}}</span>
@@ -46,6 +47,7 @@
 	import resize from "vue-resize-directive";
 
 	import "../utils.js";
+	import {mutexDelay} from "../delay.js";
 	import loadLilyParser from "../loadLilyParser.js";
 	import {LilyDocument} from "../../inc/lilyParser";
 	import {parseRaw} from "../../inc/lilyParser/lilyDocument.ts";
@@ -56,6 +58,7 @@
 	import SourceEditor from "../components/source-editor.vue";
 	import StoreInput from "../components/store-input.vue";
 	import SheetSimple from "../components/sheet-simple.vue";
+	import Loading from "../components/loading-dots.vue";
 
 
 
@@ -72,6 +75,7 @@
 			SourceEditor,
 			StoreInput,
 			SheetSimple,
+			Loading,
 		},
 
 
@@ -93,6 +97,7 @@
 					max: 40,
 				},
 				containerSvgs: null,
+				containerEngraving: false,
 			};
 		},
 
@@ -105,6 +110,11 @@
 
 			currentSourceContent () {
 				return this.currentSource && this.currentSource.content;
+			},
+
+
+			containerSizeHash () {
+				return `${this.containerSize.width},${this.containerSize.height}`;
 			},
 		},
 
@@ -355,11 +365,21 @@
 				const adjustedSource = lilyDocument.toString();
 				//console.log("adjustedSource:", adjustedSource);
 
+				this.containerEngraving = true;
+
 				const result = await this.engrave(adjustedSource, {tokenize: false});
 				this.containerSvgs = result.svgs;
 
 				// remove lilypond band
 				this.containerSvgs = this.containerSvgs.map(svg => svg.replace(/(?:>)[^<>]+lilypond.org(?=<)/g, ""));
+
+				this.containerEngraving = false;
+			},
+
+
+			async delayRenderSheet () {
+				if(await mutexDelay("renderSheet", 500))
+					this.renderSheet();
 			},
 		},
 
@@ -379,6 +399,9 @@
 				await this.$nextTick();
 				this.sourceDirty = false;
 			},
+
+
+			containerSizeHash: "delayRenderSheet",
 		},
 	};
 </script>
@@ -460,6 +483,21 @@
 						.page
 						{
 							margin: 0;
+						}
+					}
+
+					.loading-dots
+					{
+						background-color: transparent;
+
+						.ellipsis
+						{
+							zoom: 200%;
+
+							&  > div
+							{
+								background-color: steelblue;
+							}
 						}
 					}
 				}
