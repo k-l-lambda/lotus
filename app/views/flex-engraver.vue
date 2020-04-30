@@ -371,6 +371,10 @@
 						if (!Number.isFinite(staffSize))
 							staffSize = currentStaffSize;
 
+						--systemCount;
+
+						console.log("too samll vertical prefered staff size:", currentStaffSize, systemCount);
+
 						break;
 					}
 
@@ -387,12 +391,14 @@
 						//staffSize = Math.min(staffSize, this.staffSizeRange.max);
 						systemCount = Math.max(Math.round(xsc), 1);
 						horizontalNaturalCount = xsc;
-						console.log("systemCount:", systemCount, xsc);
+
+						console.log("proper xsc:", xsc, systemCount);
 						break;
 					}
 
 					//console.log("systemCount iteration:", systemCount, staffSize, xsc);
 				}
+				console.log("systemCount:", systemCount, staffSize, horizontalNaturalCount);
 
 				if (staffSize <= this.staffSizeRange.min) {
 					console.warn("Vertical space too little:", staffSize);
@@ -401,7 +407,7 @@
 
 				// vertical middle align
 				const preferInnerHeight = staffSize * (nh + constants.SYSTEM_SYSTEM_SPACING) * systemCount;
-				const topMargin = (paperHeight - preferInnerHeight) / 2;
+				const topMargin = 0.8 * (paperHeight - preferInnerHeight) / 2;
 				//console.log("topMargin:", topMargin);
 				globalAttributes.topMargin.value = {proto: "NumberUnit", number: topMargin, unit: "\\cm"};
 
