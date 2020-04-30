@@ -30,6 +30,7 @@
 					}"
 					@mousemove="updateContainerSize"
 				>
+					<SheetSimple v-if="containerSvgs" :documents="containerSvgs" />
 				</div>
 				<div class="container-size">
 					<span>{{containerSize.width}}</span>
@@ -88,9 +89,10 @@
 				sourceDirty: false,
 				gaugeSvgDoc: null,
 				staffSizeRange: {
-					min: 20,
+					min: 10,
 					max: 40,
 				},
+				containerSvgs: null,
 			};
 		},
 
@@ -280,6 +282,9 @@
 
 
 			async renderSheet () {
+				if (!this.currentSourceContent)
+					return;
+
 				const lilyDocument = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
 
 				const naturalWidth = lilyDocument.root.getField("naturalWidth");
@@ -295,7 +300,7 @@
 				const globalAttributes = lilyDocument.globalAttributes();
 
 				const paperWidth = this.containerSize.width / constants.CM_TO_PX;
-				const paperHeight = this.containerSize.height / constants.CM_TO_PX;
+				const paperHeight = (this.containerSize.height - 4) / constants.CM_TO_PX;
 
 				const getNumberUnitValue = key => globalAttributes[key].value ? globalAttributes[key].value.number : null;
 
@@ -343,14 +348,18 @@
 				}
 
 				globalAttributes.staffSize.value = staffSize;
-				globalAttributes.paperWidth.value = paperWidth;
-				globalAttributes.paperHeight.value = paperHeight;
+				globalAttributes.paperWidth.value = parseRaw({proto: "NumberUnit", number: paperWidth, unit: "\\cm"});
+				globalAttributes.paperHeight.value = parseRaw({proto: "NumberUnit", number: paperHeight, unit: "\\cm"});
 				globalAttributes.raggedLast.value = false;
 
 				const adjustedSource = lilyDocument.toString();
-				console.log("adjustedSource:", adjustedSource);
+				//console.log("adjustedSource:", adjustedSource);
 
-				// TODO: engrave
+				const result = await this.engrave(adjustedSource, {tokenize: false});
+				this.containerSvgs = result.svgs;
+
+				// remove lilypond band
+				this.containerSvgs = this.containerSvgs.map(svg => svg.replace(/(?:>)[^<>]+lilypond.org(?=<)/g, ""));
 			},
 		},
 
@@ -445,6 +454,14 @@
 					outline: solid 1px #ccc;
 					overflow: scroll;
 					background: white;
+
+					.sheet
+					{
+						.page
+						{
+							margin: 0;
+						}
+					}
 				}
 
 				.container-size

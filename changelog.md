@@ -16,6 +16,11 @@ TODO:
 
 
 
+*	2020.4.30
+
+	+	flex-engraver.vue: container svg sheet added.
+
+
 *	2020.4.29
 
 	+	flex-engraver.vue: flexible staff size computing added.
