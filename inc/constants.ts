@@ -5,7 +5,7 @@ const LILY_TOP_MARGIN_DEFAULT = 0.5;
 const LILY_BOTTOM_MARGIN_DEFAULT = 0.6;
 const LILY_HORIZONTAL_MARGIN_DEFAULT = 1;
 
-const SYSTEM_SYSTEM_SPACING = 0.04;
+const SYSTEM_SYSTEM_SPACING = 0.08;
 
 const STAFF_HEAD_DEDUCTION = 0.06;	// extra width augment when system wrap added, cm per staff size
 

@@ -331,7 +331,7 @@
 
 
 			async renderSheet () {
-				if (!this.currentSourceContent)
+				if (!this.lilyParser || !this.currentSourceContent)
 					return;
 
 				const lilyDocument = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
@@ -541,6 +541,7 @@
 			padding-top: $header-height;
 			height: 100%;
 			background: #eee;
+			white-space: nowrap;
 
 			.source-editor
 			{

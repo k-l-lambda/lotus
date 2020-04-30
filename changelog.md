@@ -18,6 +18,8 @@ TODO:
 
 *	2020.4.30
 
+	+	tests/ly/flex: added flex lilypond samples.
+
 	+	flex-engraver.vue: staff samples added.
 
 	+	flex-engraver.vue: loading icon added.
