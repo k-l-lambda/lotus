@@ -50,7 +50,9 @@ PartPOneVoiceOne =  \relative d' {
             >>
         
         >>
-    \layout {}
+    \layout {
+		indent = #0
+    }
     % To create MIDI output, uncomment the following line:
     \midi {\tempo 4 = 100 }
     }

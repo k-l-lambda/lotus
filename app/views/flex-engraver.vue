@@ -41,6 +41,9 @@
 					&times;
 					<span>{{containerSize.height}}</span>
 				</div>
+				<div class="staff-size" v-if="fitStaffSize">
+					<em>{{fitStaffSize.toFixed(1)}}</em> pt
+				</div>
 			</div>
 			<div class="staff-size-viewer">
 				<h2>staff size range</h2>
@@ -136,6 +139,7 @@
 				containerEngraving: false,
 				staffSampleSvgMin: null,
 				staffSampleSvgMax: null,
+				fitStaffSize: null,
 			};
 		},
 
@@ -388,7 +392,7 @@
 						return;
 					}
 
-					if (xsc < systemCount + 0.5) {
+					if (xsc < systemCount + 0.2) {
 						//staffSize = Math.min(staffSize, this.staffSizeRange.max);
 						systemCount = Math.max(Math.round(xsc), 1);
 						horizontalNaturalCount = xsc;
@@ -407,8 +411,8 @@
 				}
 
 				// vertical middle align
-				const preferInnerHeight = staffSize * (nh + constants.SYSTEM_SYSTEM_SPACING) * systemCount;
-				const topMargin = 0.8 * (paperHeight - preferInnerHeight) / 2;
+				const preferInnerHeight = staffSize * (nh * systemCount + constants.SYSTEM_SYSTEM_SPACING * (systemCount - 1));
+				const topMargin = 0.9 * (paperHeight - preferInnerHeight) / 2;
 				//console.log("topMargin:", topMargin);
 				globalAttributes.topMargin.value = {proto: "NumberUnit", number: topMargin, unit: "\\cm"};
 
@@ -426,6 +430,8 @@
 				globalAttributes.paperWidth.value = {proto: "NumberUnit", number: paperWidth, unit: "\\cm"};
 				globalAttributes.paperHeight.value = {proto: "NumberUnit", number: paperHeight, unit: "\\cm"};
 				globalAttributes.raggedLast.value = systemCount <= 1 && horizontalNaturalCount < 1;
+
+				this.fitStaffSize = staffSize;
 
 				//console.log("lilyDocument:", lilyDocument);
 				return lilyDocument.toString();
@@ -575,6 +581,11 @@
 			background: #eee;
 			white-space: nowrap;
 
+			em
+			{
+				font-weight: bold;
+			}
+
 			.source-editor
 			{
 				height: calc(100% - #{$header-height});
@@ -624,8 +635,15 @@
 					display: inline-block;
 					position: absolute;
 					bottom: 0;
-					right: 0;
-					transform: translate(-2em, 0);
+					right: 2em;
+				}
+
+				.staff-size
+				{
+					display: inline-block;
+					position: absolute;
+					bottom: 0;
+					left: 2em;
 				}
 			}
 

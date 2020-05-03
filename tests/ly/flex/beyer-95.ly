@@ -82,6 +82,7 @@ PartPOneVoiceTwo = \relative f' {
 	>>
 	
 	\layout {
+		indent = #0
 	}
 	
 	\midi {
