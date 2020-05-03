@@ -16,6 +16,11 @@ TODO:
 
 
 
+*	2020.5.3
+
+	+	flex-engraver.vue: added system spacing gauge.
+
+
 *	2020.4.30
 
 	+	flex-engraver.vue: score json exporting added.

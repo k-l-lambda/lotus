@@ -253,6 +253,7 @@
 			async gauge () {
 				const TEST_STAFF_SIZE = 20;
 				const PAPER_WIDTH = 10000;
+				const PAPER_WIDTH_NARROW = 2;
 
 				const lilyDocument = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
 				//console.log("lilyDocument:", lilyDocument);
@@ -269,43 +270,48 @@
 				//console.log("source:", source);
 
 				try {
-					const result = await this.engrave(source, {tokenize: true});
-					//console.log("gauge:", result);
-					console.assert(result.svgs.length === 1, "invalid page count:", result);
+					const resultH = await this.engrave(source, {tokenize: true});
+					//console.log("gauge:", resultH);
 
-					this.gaugeSvgDoc = result.svgs[0];
+					this.gaugeSvgDoc = resultH.svgs[0];
 
-					const sheetDocument = recoverJSON(result.doc, {StaffToken, SheetDocument});
-					const row = sheetDocument.pages[0].rows[0];
-					const sizeFactor = (PAPER_WIDTH / sheetDocument.pages[0].viewBox.width) / TEST_STAFF_SIZE;
+					console.assert(resultH.svgs.length === 1, "invalid page count:", resultH);
+					const sheetDocumentH = recoverJSON(resultH.doc, {StaffToken, SheetDocument});
+					const row = sheetDocumentH.pages[0].rows[0];
+					const sizeFactor = (PAPER_WIDTH / sheetDocumentH.pages[0].viewBox.width) / TEST_STAFF_SIZE;
 					const naturalWidth = row.width * sizeFactor;
 					const naturalHeight = (row.bottom - row.top) * sizeFactor;
-					//console.log("natural size:", naturalWidth, naturalHeight, sheetDocument);
+					//console.log("natural size:", naturalWidth, naturalHeight, sheetDocumentH);
+
+					globalAttributes.paperWidth.value.number = PAPER_WIDTH_NARROW;
+					const resultV = await this.engrave(lilyDocument.toString(), {tokenize: true});
+					console.assert(resultV.svgs.length === 1, "invalid page count:", resultV);
+					const sheetDocumentV = recoverJSON(resultV.doc, {StaffToken, SheetDocument});
+					const rows = sheetDocumentV.pages[0].rows;
+					const heights = Array(rows.length - 1).fill(null).map((_, i) => rows[i + 1].y - rows[i].y);
+					//console.log("heights:", heights);
+					const systemSpacing = Math.max(row.bottom - row.top, ...heights) * sizeFactor - naturalHeight;
+					console.log("systemSpacing:", systemSpacing);
 
 					const newLiy = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
 					//console.log("newLiy:", newLiy);
 
-					const nw = lilyDocument.root.getField("naturalWidth");
-					if (nw)
-						nw.value = naturalWidth;
-					else {
-						newLiy.root.sections.push(parseRaw({
-							proto: "Assignment",
-							key: "naturalWidth",
-							value: naturalWidth,
-						}));
-					}
+					const appendAssignment = (key, value) => {
+						const assign = newLiy.root.getField(key);
+						if (assign)
+							assign.value = value;
+						else {
+							newLiy.root.sections.push(parseRaw({
+								proto: "Assignment",
+								key,
+								value: value,
+							}));
+						}
+					};
 
-					const nh = lilyDocument.root.getField("naturalHeight");
-					if (nh)
-						nh.value = naturalHeight;
-					else {
-						newLiy.root.sections.push(parseRaw({
-							proto: "Assignment",
-							key: "naturalHeight",
-							value: naturalHeight,
-						}));
-					}
+					appendAssignment("naturalWidth", naturalWidth);
+					appendAssignment("naturalHeight", naturalHeight);
+					appendAssignment("systemSpacing", systemSpacing);
 
 					//console.log("new doc:", newLiy.toString());
 					this.currentSource.content = newLiy.toString();
