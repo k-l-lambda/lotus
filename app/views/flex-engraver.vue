@@ -291,27 +291,14 @@
 					const heights = Array(rows.length - 1).fill(null).map((_, i) => rows[i + 1].y - rows[i].y);
 					//console.log("heights:", heights);
 					const systemSpacing = Math.max(row.bottom - row.top, ...heights) * sizeFactor - naturalHeight;
-					console.log("systemSpacing:", systemSpacing);
+					//console.log("systemSpacing:", systemSpacing);
 
 					const newLiy = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
 					//console.log("newLiy:", newLiy);
 
-					const appendAssignment = (key, value) => {
-						const assign = newLiy.root.getField(key);
-						if (assign)
-							assign.value = value;
-						else {
-							newLiy.root.sections.push(parseRaw({
-								proto: "Assignment",
-								key,
-								value: value,
-							}));
-						}
-					};
-
-					appendAssignment("naturalWidth", naturalWidth);
-					appendAssignment("naturalHeight", naturalHeight);
-					appendAssignment("systemSpacing", systemSpacing);
+					newLiy.root.appendAssignment("naturalWidth", naturalWidth);
+					newLiy.root.appendAssignment("naturalHeight", naturalHeight);
+					newLiy.root.appendAssignment("systemSpacing", systemSpacing);
 
 					//console.log("new doc:", newLiy.toString());
 					this.currentSource.content = newLiy.toString();
@@ -349,13 +336,15 @@
 
 				const naturalWidth = lilyDocument.root.getField("naturalWidth");
 				const naturalHeight = lilyDocument.root.getField("naturalHeight");
-				if (!naturalWidth || !naturalHeight) {
+				const systemSpacing = lilyDocument.root.getField("systemSpacing");
+				if (!naturalWidth || !naturalHeight || !systemSpacing) {
 					console.log("natural size is not set.", naturalWidth, naturalHeight);
 					return null;
 				}
 
 				const nw = naturalWidth.value;
 				const nh = naturalHeight.value;
+				const ss = systemSpacing.value;
 
 				const globalAttributes = lilyDocument.globalAttributes();
 
@@ -377,7 +366,7 @@
 				let horizontalNaturalCount = 1;
 
 				for (; systemCount < 1e+3; ++systemCount) {
-					const currentStaffSize = innerHeight / ((nh + constants.SYSTEM_SYSTEM_SPACING) * systemCount);
+					const currentStaffSize = innerHeight / ((nh * systemCount + ss * (systemCount - 1)));
 					if (currentStaffSize < this.staffSizeRange.min) {
 						if (!Number.isFinite(staffSize))
 							staffSize = currentStaffSize;
@@ -400,7 +389,7 @@
 
 					if (xsc < systemCount + 0.2) {
 						//staffSize = Math.min(staffSize, this.staffSizeRange.max);
-						systemCount = Math.max(Math.round(xsc), 1);
+						systemCount = Math.max(Math.floor(xsc), 1);
 						horizontalNaturalCount = xsc;
 
 						console.log("proper xsc:", xsc, systemCount);
@@ -417,7 +406,7 @@
 				}
 
 				// vertical middle align
-				const preferInnerHeight = staffSize * (nh * systemCount + constants.SYSTEM_SYSTEM_SPACING * (systemCount - 1));
+				const preferInnerHeight = staffSize * (nh * systemCount + ss * (systemCount - 1));
 				const topMargin = 0.9 * (paperHeight - preferInnerHeight) / 2;
 				//console.log("topMargin:", topMargin);
 				globalAttributes.topMargin.value = {proto: "NumberUnit", number: topMargin, unit: "\\cm"};

@@ -13,10 +13,11 @@
 	paper-height = 29.71\cm 
 	top-margin = 0.99\cm 
 	bottom-margin = 1.67\cm 
-	left-margin = 0.99\cm 
-	right-margin = 0.89\cm 
+	left-margin = 3\cm 
+	right-margin = 3\cm 
 	between-system-space = 3.54\cm 
 	page-top-space = 2.68\cm 
+	system-system-spacing.basic-distance = #20 
 }
 
 
@@ -240,3 +241,5 @@ PartPOneVoiceTwo = \relative des {
 naturalWidth = 3.106885333381713 
 
 naturalHeight = 0.18451639688090812 
+
+systemSpacing = 0.08566832712327879 
