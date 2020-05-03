@@ -18,6 +18,8 @@ TODO:
 
 *	2020.5.3
 
+	+	flex-engraver.vue: added option of fix staff size.
+
 	+	flex-engraver.vue: refined fitContainer by gauged system spacing.
 
 	+	flex-engraver.vue: added system spacing gauge.

@@ -9,8 +9,10 @@
 			<StoreInput v-show="false" v-model="containerSize.offsetWidth" localKey="lotus-flexEngraverContainerWidth" />
 			<StoreInput v-show="false" v-model="containerSize.offsetHeight" localKey="lotus-flexEngraverContainerHeight" />
 			<StoreInput v-show="false" v-model="chosenSourceIndex" localKey="lotus-flexEngraverChosenSourceIndex" />
-			<StoreInput v-show="false" v-model="staffSizeRange.min" localKey="lotus-flexEngraverstaffSizeRangeMin" />
-			<StoreInput v-show="false" v-model="staffSizeRange.max" localKey="lotus-flexEngraverstaffSizeRangeMaX" />
+			<StoreInput v-show="false" v-model="staffSizeRange.min" localKey="lotus-flexEngraverStaffSizeRangeMin" />
+			<StoreInput v-show="false" v-model="staffSizeRange.max" localKey="lotus-flexEngraverStaffSizeRangeMaX" />
+			<StoreInput v-show="false" v-model="fitStaffSize" localKey="lotus-flexEngraverFitStaffSize" />
+			<BoolStoreInput v-show="false" v-model="fixStaffSize" localKey="lotus-flexEngraverFixStaffSize" />
 			<select class="source-list" v-model="chosenSourceIndex">
 				<option v-for="(source, i) of sourceList" :key="i" :value="i">{{source.name}}</option>
 			</select>
@@ -42,7 +44,13 @@
 					<span>{{containerSize.height}}</span>
 				</div>
 				<div class="staff-size" v-if="fitStaffSize">
-					<em>{{fitStaffSize.toFixed(1)}}</em> pt
+					<input type="checkbox" v-model="fixStaffSize" title="fix staff size" />
+					<input class="fit-staff-size" type="number"
+						v-model="fitStaffSize"
+						style="width: 4em"
+						:readonly="!fixStaffSize"
+						@change="renderSheet"
+					/> pt
 				</div>
 			</div>
 			<div class="staff-size-viewer">
@@ -67,13 +75,13 @@
 	import {mutexDelay} from "../delay.js";
 	import loadLilyParser from "../loadLilyParser.js";
 	import {LilyDocument} from "../../inc/lilyParser";
-	import {parseRaw} from "../../inc/lilyParser/lilyDocument.ts";
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
 	import {StaffToken, SheetDocument} from "../../inc/staffSvg";
 	import * as constants from "../../inc/constants.ts";
 
 	import SourceEditor from "../components/source-editor.vue";
 	import StoreInput from "../components/store-input.vue";
+	import BoolStoreInput from "../components/bool-store-input.vue";
 	import SheetSimple from "../components/sheet-simple.vue";
 	import Loading from "../components/loading-dots.vue";
 
@@ -113,6 +121,7 @@
 		components: {
 			SourceEditor,
 			StoreInput,
+			BoolStoreInput,
 			SheetSimple,
 			Loading,
 		},
@@ -139,7 +148,8 @@
 				containerEngraving: false,
 				staffSampleSvgMin: null,
 				staffSampleSvgMax: null,
-				fitStaffSize: null,
+				fitStaffSize: 24,
+				fixStaffSize: false,
 			};
 		},
 
@@ -363,46 +373,54 @@
 
 				let systemCount = 1;
 				let staffSize = null;
-				let horizontalNaturalCount = 1;
+				if (this.fixStaffSize) {
+					staffSize = this.fitStaffSize;
+					//horizontalNaturalCount = (nw - constants.STAFF_HEAD_DEDUCTION) * staffSize / (innerWidth - constants.STAFF_HEAD_DEDUCTION * staffSize);
+					const ysc = (innerHeight / staffSize + ss) / (nh + ss);
+					systemCount = Math.max(Math.floor(ysc), 1);
+				}
+				else {
+					let horizontalNaturalCount = 1;
 
-				for (; systemCount < 1e+3; ++systemCount) {
-					const currentStaffSize = innerHeight / ((nh * systemCount + ss * (systemCount - 1)));
-					if (currentStaffSize < this.staffSizeRange.min) {
-						if (!Number.isFinite(staffSize))
-							staffSize = currentStaffSize;
+					for (; systemCount < 1e+3; ++systemCount) {
+						const currentStaffSize = innerHeight / ((nh * systemCount + ss * (systemCount - 1)));
+						if (currentStaffSize < this.staffSizeRange.min) {
+							if (!Number.isFinite(staffSize))
+								staffSize = currentStaffSize;
 
-						--systemCount;
+							--systemCount;
 
-						console.log("too samll vertical prefered staff size:", currentStaffSize, systemCount);
+							console.log("too samll vertical prefered staff size:", currentStaffSize, systemCount);
 
-						break;
+							break;
+						}
+
+						staffSize = Math.min(currentStaffSize, this.staffSizeRange.max);
+
+						// compute system count by horizontal splitting
+						const xsc = (nw - constants.STAFF_HEAD_DEDUCTION) * staffSize / (innerWidth - constants.STAFF_HEAD_DEDUCTION * staffSize);
+						if (xsc < 0) {
+							console.warn("Horizontal space too little:", xsc, innerWidth - constants.STAFF_HEAD_DEDUCTION * staffSize);
+							return;
+						}
+
+						if (xsc < systemCount + 0.2) {
+							//staffSize = Math.min(staffSize, this.staffSizeRange.max);
+							systemCount = Math.max(Math.floor(xsc), 1);
+							horizontalNaturalCount = xsc;
+
+							console.log("proper xsc:", xsc, systemCount);
+							break;
+						}
+
+						//console.log("systemCount iteration:", systemCount, staffSize, xsc);
 					}
+					console.log("systemCount:", systemCount, staffSize, horizontalNaturalCount);
 
-					staffSize = Math.min(currentStaffSize, this.staffSizeRange.max);
-
-					// compute system count by horizontal splitting
-					const xsc = (nw - constants.STAFF_HEAD_DEDUCTION) * staffSize / (innerWidth - constants.STAFF_HEAD_DEDUCTION * staffSize);
-					if (xsc < 0) {
-						console.warn("Horizontal space too little:", xsc, innerWidth - constants.STAFF_HEAD_DEDUCTION * staffSize);
+					if (staffSize <= this.staffSizeRange.min) {
+						console.warn("Vertical space too little:", staffSize);
 						return;
 					}
-
-					if (xsc < systemCount + 0.2) {
-						//staffSize = Math.min(staffSize, this.staffSizeRange.max);
-						systemCount = Math.max(Math.floor(xsc), 1);
-						horizontalNaturalCount = xsc;
-
-						console.log("proper xsc:", xsc, systemCount);
-						break;
-					}
-
-					//console.log("systemCount iteration:", systemCount, staffSize, xsc);
-				}
-				console.log("systemCount:", systemCount, staffSize, horizontalNaturalCount);
-
-				if (staffSize <= this.staffSizeRange.min) {
-					console.warn("Vertical space too little:", staffSize);
-					return;
 				}
 
 				// vertical middle align
@@ -424,9 +442,10 @@
 				globalAttributes.staffSize.value = staffSize;
 				globalAttributes.paperWidth.value = {proto: "NumberUnit", number: paperWidth, unit: "\\cm"};
 				globalAttributes.paperHeight.value = {proto: "NumberUnit", number: paperHeight, unit: "\\cm"};
-				globalAttributes.raggedLast.value = systemCount <= 1 && horizontalNaturalCount < 1;
+				globalAttributes.raggedLast.value = systemCount <= 1;
 
-				this.fitStaffSize = staffSize;
+				if (!this.fixStaffSize)
+					this.fitStaffSize = staffSize;
 
 				//console.log("lilyDocument:", lilyDocument);
 				return lilyDocument.toString();
@@ -519,6 +538,12 @@
 
 
 			containerSizeHash: "delayRenderSheet",
+
+
+			fixStaffSize (value) {
+				if (!value)
+					this.delayRenderSheet();
+			},
 		},
 	};
 </script>
@@ -631,6 +656,7 @@
 					position: absolute;
 					bottom: 0;
 					right: 2em;
+					font-size: 150%;
 				}
 
 				.staff-size
@@ -639,6 +665,17 @@
 					position: absolute;
 					bottom: 0;
 					left: 2em;
+					font-size: 150%;
+
+					input
+					{
+						font-size: inherit;
+					}
+
+					.fit-staff-size
+					{
+						border: 0;
+					}
 				}
 			}
 
