@@ -47,23 +47,20 @@
 					<em>{{fitStaffSize.toFixed(2)}}</em> pt
 					<span class="adjuster">
 						<input type="checkbox" v-model="fixStaffSize" title="fix staff size" />
-						<input class="slider" type="range" v-show="fixStaffSize"
+						<input class="slider" type="range" :disabled="!fixStaffSize"
 							v-model.number="fitStaffSize" :min="staffSizeRange.min" :max="staffSizeRange.max" step="any"
 							@change="delayRenderSheet"
 						/>
+						<span class="min">
+							<input type="number" v-model="staffSizeRange.min" @change="updateStaffSampleMin" />
+							<SheetSimple v-if="staffSampleSvgMin" :documents="[staffSampleSvgMin]" />
+						</span>
+						<span class="max">
+							<input type="number" v-model="staffSizeRange.max" @change="updateStaffSampleMax" />
+							<SheetSimple v-if="staffSampleSvgMax" :documents="[staffSampleSvgMax]" />
+						</span>
 					</span>
 				</div>
-			</div>
-			<div class="staff-size-viewer">
-				<h2>staff size range</h2>
-				<p>
-					min: <input type="number" v-model="staffSizeRange.min" @change="updateStaffSampleMin" />
-					<SheetSimple v-if="staffSampleSvgMin" :documents="[staffSampleSvgMin]" />
-				</p>
-				<p>
-					max: <input type="number" v-model="staffSizeRange.max" @change="updateStaffSampleMax" />
-					<SheetSimple v-if="staffSampleSvgMax" :documents="[staffSampleSvgMax]" />
-				</p>
 			</div>
 		</main>
 	</div>
@@ -355,7 +352,7 @@
 
 				const nw = naturalWidth.value;
 				const nh = naturalHeight.value;
-				const ss = systemSpacing.value;
+				const ss = systemSpacing.value + 0.04;
 
 				const globalAttributes = lilyDocument.globalAttributes();
 
@@ -374,15 +371,13 @@
 
 				let systemCount = 1;
 				let staffSize = null;
+
 				if (this.fixStaffSize) {
 					staffSize = this.fitStaffSize;
-					//horizontalNaturalCount = (nw - constants.STAFF_HEAD_DEDUCTION) * staffSize / (innerWidth - constants.STAFF_HEAD_DEDUCTION * staffSize);
 					const ysc = (innerHeight / staffSize + ss) / (nh + ss);
 					systemCount = Math.max(Math.floor(ysc), 1);
 				}
 				else {
-					let horizontalNaturalCount = 1;
-
 					for (; systemCount < 1e+3; ++systemCount) {
 						const currentStaffSize = innerHeight / ((nh * systemCount + ss * (systemCount - 1)));
 						if (currentStaffSize < this.staffSizeRange.min) {
@@ -407,8 +402,7 @@
 
 						if (xsc < systemCount + 0.2) {
 							//staffSize = Math.min(staffSize, this.staffSizeRange.max);
-							systemCount = Math.max(Math.floor(xsc), 1);
-							horizontalNaturalCount = xsc;
+							systemCount = Math.max(Math.round(xsc), 1);
 
 							console.log("proper xsc:", xsc, systemCount);
 							break;
@@ -416,13 +410,14 @@
 
 						//console.log("systemCount iteration:", systemCount, staffSize, xsc);
 					}
-					console.log("systemCount:", systemCount, staffSize, horizontalNaturalCount);
+					console.log("systemCount:", systemCount, staffSize);
 
 					if (staffSize <= this.staffSizeRange.min) {
 						console.warn("Vertical space too little:", staffSize);
 						return;
 					}
 				}
+				const horizontalNaturalCount = (nw - constants.STAFF_HEAD_DEDUCTION) * staffSize / (innerWidth - constants.STAFF_HEAD_DEDUCTION * staffSize);
 
 				// vertical middle align
 				const preferInnerHeight = staffSize * (nh * systemCount + ss * (systemCount - 1));
@@ -443,7 +438,7 @@
 				globalAttributes.staffSize.value = staffSize;
 				globalAttributes.paperWidth.value = {proto: "NumberUnit", number: paperWidth, unit: "\\cm"};
 				globalAttributes.paperHeight.value = {proto: "NumberUnit", number: paperHeight, unit: "\\cm"};
-				globalAttributes.raggedLast.value = systemCount <= 1;
+				globalAttributes.raggedLast.value = systemCount <= 1 && horizontalNaturalCount < 0.6;
 
 				if (!this.fixStaffSize)
 					this.fitStaffSize = staffSize;
@@ -680,12 +675,45 @@
 					.adjuster
 					{
 						display: inline-block;
+						position: relative;
 						margin: 0 .6em;
 						zoom: 1.5;
 
 						.slider
 						{
 							width: 200px;
+						}
+
+						.min, .max
+						{
+							display: inline-block;
+							position: absolute;
+							font-size: 16px;
+							top: 3em;
+							text-align: center;
+
+							input
+							{
+								width: 2em;
+							}
+
+							.sheet
+							{
+								position: absolute;
+								top: 120%;
+								left: 50%;
+								transform: translate(-50%, 0);
+							}
+						}
+
+						.min
+						{
+							left: 0;
+						}
+
+						.max
+						{
+							right: -2em;
 						}
 					}
 				}

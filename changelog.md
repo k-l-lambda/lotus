@@ -17,6 +17,8 @@ TODO:
 
 *	2020.5.5
 
+	+	flex-engraver.vue: refined staff size viewers.
+
 	+	flex-engraver.vue: added fit staff size slider.
 
 
