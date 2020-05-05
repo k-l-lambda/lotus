@@ -44,13 +44,14 @@
 					<span>{{containerSize.height}}</span>
 				</div>
 				<div class="staff-size" v-if="fitStaffSize">
-					<input type="checkbox" v-model="fixStaffSize" title="fix staff size" />
-					<input class="fit-staff-size" type="number"
-						v-model="fitStaffSize"
-						style="width: 4em"
-						:readonly="!fixStaffSize"
-						@change="renderSheet"
-					/> pt
+					<em>{{fitStaffSize.toFixed(2)}}</em> pt
+					<span class="adjuster">
+						<input type="checkbox" v-model="fixStaffSize" title="fix staff size" />
+						<input class="slider" type="range" v-show="fixStaffSize"
+							v-model.number="fitStaffSize" :min="staffSizeRange.min" :max="staffSizeRange.max" step="any"
+							@change="delayRenderSheet"
+						/>
+					</span>
 				</div>
 			</div>
 			<div class="staff-size-viewer">
@@ -359,7 +360,7 @@
 				const globalAttributes = lilyDocument.globalAttributes();
 
 				const paperWidth = this.containerSize.width / constants.CM_TO_PX;
-				const paperHeight = (this.containerSize.height - 4) / constants.CM_TO_PX;
+				const paperHeight = (this.containerSize.height - 9) / constants.CM_TO_PX;
 
 				const getNumberUnitValue = key => globalAttributes[key].value ? globalAttributes[key].value.number : null;
 
@@ -616,6 +617,7 @@
 			{
 				display: inline-block;
 				position: relative;
+				font-size: 36px;
 
 				.sheet-container
 				{
@@ -656,7 +658,6 @@
 					position: absolute;
 					bottom: 0;
 					right: 2em;
-					font-size: 150%;
 				}
 
 				.staff-size
@@ -665,7 +666,6 @@
 					position: absolute;
 					bottom: 0;
 					left: 2em;
-					font-size: 150%;
 
 					input
 					{
@@ -675,6 +675,18 @@
 					.fit-staff-size
 					{
 						border: 0;
+					}
+
+					.adjuster
+					{
+						display: inline-block;
+						margin: 0 .6em;
+						zoom: 1.5;
+
+						.slider
+						{
+							width: 200px;
+						}
 					}
 				}
 			}

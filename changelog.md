@@ -1,6 +1,5 @@
 
 TODO:
-	flexible typing demo
 	lilypond post processing
 		removeStaffGroup
 		fix partial measures
@@ -14,6 +13,11 @@ TODO:
 	source editor
 		cursor position
 
+
+
+*	2020.5.5
+
+	+	flex-engraver.vue: added fit staff size slider.
 
 
 *	2020.5.3

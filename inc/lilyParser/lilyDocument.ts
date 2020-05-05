@@ -84,7 +84,7 @@ class BaseTerm implements LilyTerm {
 
 
 	appendAssignment (key, value) {
-		console.assert(this.entries, "no entries on this term.");
+		console.assert(!!this.entries, "no entries on this term.");
 
 		const assign = this.getField(key);
 		if (assign)
