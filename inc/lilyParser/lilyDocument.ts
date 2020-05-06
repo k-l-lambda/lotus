@@ -32,15 +32,20 @@ class BaseTerm implements LilyTerm {
 		let indent = 0;
 		const result = [];
 
+		const pop = char => {
+			if (!char || result[result.length - 1] === char)
+				result.pop();
+		};
+
 		for (const word of words) {
 			if (word === "\b") {
 				// remove the last space
-				result.pop();
+				pop(" ");
 				continue;
 			}
 
 			if (/^(\}|>>)/.test(word))
-				result.pop(); // remove the last tab
+				pop("\t"); // remove the last tab
 
 			result.push(word);
 

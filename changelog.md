@@ -17,6 +17,10 @@ TODO:
 
 *	2020.5.6
 
+	+	lilyDocument.ts: refined pop in serialization join.
+
+	*	Lilypond parser may fail to parse brace close '}' without a leading space, in double angle << >>.
+
 	+	flex-engraver.vue: source copy button added.
 
 
