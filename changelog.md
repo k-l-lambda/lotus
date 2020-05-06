@@ -15,6 +15,11 @@ TODO:
 
 
 
+*	2020.5.6
+
+	+	flex-engraver.vue: source copy button added.
+
+
 *	2020.5.5
 
 	+	flex-engraver.vue: refined staff size viewers.

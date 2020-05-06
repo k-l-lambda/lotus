@@ -20,7 +20,8 @@
 			<button @click="removeCurrentSource">&#x1f5d1;</button>
 			<button @click="gauge">&#x1f4cf;</button>
 			<button @click="renderSheet">&#x1f3bc;</button>
-			<button @click="exportScore">.json</button>
+			<button @click="exportScore">json</button>
+			<button @click="copySource" title="copy lilypond source">&#x2398;</button>
 			<div class="gauge-view" v-if="gaugeSvgDoc">
 				<SheetSimple v-if="gaugeSvgDoc" :documents="[gaugeSvgDoc]" />
 			</div>
@@ -481,6 +482,14 @@
 				};
 				const blob = new Blob([JSON.stringify(data)]);
 				downloadUrl(URL.createObjectURL(blob), "score.json");
+			},
+
+
+			copySource () {
+				const adjustedSource = this.fitContainer();
+				navigator.clipboard.writeText(adjustedSource);
+
+				console.log("Source copyed.");
 			},
 
 
