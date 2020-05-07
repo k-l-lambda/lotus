@@ -17,6 +17,8 @@ TODO:
 
 *	2020.5.7
 
+	+	path-symbols.json: fixed time signature token name of CUT_C.
+
 	+	lilyDocument.ts: added method of removeStaffGroup.
 
 
