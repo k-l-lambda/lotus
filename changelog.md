@@ -16,6 +16,8 @@ TODO:
 
 *	2020.5.7
 
+	+	sheetBaker.ts: remove lilypond engraving signature in bakeRawSvg.
+
 	+	sheet-live.vue: added property of background images.
 
 	+	app/sheetBaker.ts created.

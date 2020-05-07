@@ -621,14 +621,14 @@
 
 
 			matcherNotations () {
-				if (this.bakingSheet)
+				if (this.bakingSheet && this.$refs.sheet)
 					this.bakeSheet();
 			},
 
 
 			bakingSheet (value) {
 				if (value) {
-					if (this.sheetDocument && this.$refs.sheet)
+					if (this.svgDocuments && this.$refs.sheet)
 						this.bakeSheet();
 				}
 				else
