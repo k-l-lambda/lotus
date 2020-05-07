@@ -1,6 +1,5 @@
 
 TODO:
-	SVG static elements baking to image
 	lilypond post processing
 		fix partial measures
 		fix repeat \alternative measures
@@ -15,6 +14,8 @@ TODO:
 
 
 *	2020.5.7
+
+	+	sheetBaker.ts: added bakeLiveSheet.
 
 	+	sheetBaker.ts: remove matched tokens in bakeRawSvg.
 	+	sheetBaker.ts: remove lilypond engraving signature in bakeRawSvg.

@@ -9,7 +9,7 @@
 			<CheckButton content="note highlight" v-model="noteHighlight" />
 		</header>
 		<main>
-			<SheetSigns v-if="svgHashTable" v-show="false" :hashTable="svgHashTable" />
+			<SheetSigns v-if="svgHashTable" ref="signs" v-show="false" :hashTable="svgHashTable" />
 			<SheetLive v-if="sheetDocument" ref="sheet"
 				:doc="sheetDocument"
 				:sheetNotation="sheetNotation"
@@ -20,6 +20,7 @@
 				@midi="onMidi"
 			/>
 		</main>
+		<canvas v-show="false" ref="canvas" />
 	</div>
 </template>
 
@@ -29,6 +30,7 @@
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
 	import StaffToken from "../../inc/staffSvg/staffToken.ts";
 	import SheetDocument from "../../inc/staffSvg/sheetDocument.ts";
+	import * as SheetBaker from "../sheetBaker.ts";
 
 	import SheetLive from "../components/sheet-live.vue";
 	import SheetSigns from "../components/sheet-signs.vue";
@@ -60,6 +62,11 @@
 				showCursor: true,
 				noteHighlight: true,
 			};
+		},
+
+
+		async created () {
+			window.$main = this;
 		},
 
 
@@ -116,6 +123,12 @@
 					else
 						this.midiPlayer.play();
 				}
+			},
+
+
+			async bakeSheet () {
+				const result = await SheetBaker.bakeLiveSheet(this.sheetDocument, this.$refs.signs, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas);
+				console.log("bakeSheet:", result);
 			},
 		},
 

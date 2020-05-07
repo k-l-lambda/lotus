@@ -1,9 +1,23 @@
 
+import Vue from "vue";
+
+import SheetLive from "./components/sheet-live.vue";
+
+
+
+const SheetLiveComponent = Vue.extend(SheetLive);
+
+
 const rasterizeSvg = async (svg, canvas) => {
 	const svgURL = "data:image/svg+xml," + encodeURIComponent(svg);
-	const image: any = await new Promise(resolve => {
+	console.log("svgURL:", svgURL);
+	const image: any = await new Promise((resolve, reject) => {
 		const image = new Image();
 		image.onload = () => resolve(image);
+		image.onerror = event => {
+			console.warn("Error when loading svg image:", svgURL);
+			reject(event);
+		};
 		image.src = svgURL;
 	});
 
@@ -62,7 +76,72 @@ const bakeRawSvgs = async (svgs: string[], matchedIds: Set<string>, canvas) => {
 };
 
 
+const replaceSigns = (node, signDict) => {
+	for (const child of node.children) {
+		if (child.tagName === "use") {
+			const href = child.getAttribute("xlink:href");
+			if (href) {
+				const id = href.substr(1);
+				const sign = signDict[id];
+				if (sign) {
+					const newSign = sign.cloneNode(true);
+					newSign.classList.add(...child.classList);
+
+					// append styles
+					if (newSign.classList.contains("staff-line") || newSign.classList.contains("line") || newSign.classList.contains("slur"))
+						newSign.children[0].setAttribute("stroke", "black");
+
+					node.insertBefore(newSign, child);
+					node.removeChild(child);
+				}
+			}
+		}
+		else
+			replaceSigns(child, signDict);
+	}
+};
+
+
+const bakeLiveSheet = async (sheetDocument, signs, matchedIds, canvas) => {
+	const elem = document.createElement("div");
+	const sheet = new SheetLiveComponent({
+		propsData: {
+			doc: sheetDocument,
+		},
+	}).$mount(elem);
+
+	const defs = signs.$el.children[0];
+	const signDict = [...defs.children].reduce((dict, sign) => ((dict[sign.id] = sign), dict), {});
+	//console.log("defs:", defs);
+
+	/*const style =  document.createElement("stye");
+	style.innerHTML = `
+		.token .staff-line line, .token .line line, .token .slur path
+		{
+			stroke: black;
+		}
+	`;*/
+
+	const urls = [];
+
+	const svgDoms = [...sheet.$el.children];
+	for (const svg of svgDoms) {
+		//svg.insertBefore(style.cloneNode(true), svg.firstChild);
+
+		replaceSigns(svg, signDict);
+		console.log("svg:", svg);
+
+		const url = await rasterizeSvg(svg.outerHTML, canvas);
+		console.log("url:", url);
+		urls.push(url);
+	};
+
+	return urls;
+};
+
+
 
 export {
 	bakeRawSvgs,
+	bakeLiveSheet,
 };

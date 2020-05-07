@@ -154,7 +154,7 @@
 	import loadLilyParser from "../loadLilyParser.js";
 	import {LilyDocument} from "../../inc/lilyParser";
 	import {CM_TO_PX} from "../../inc/constants.ts";
-	import * as sheetBaker from "../sheetBaker.ts";
+	import * as SheetBaker from "../sheetBaker.ts";
 
 	import {MidiRoll} from "@k-l-lambda/web-widgets";
 	import SourceEditor from "../components/source-editor.vue";
@@ -587,7 +587,7 @@
 				console.assert(this.svgDocuments, "svgDocuments is null.");
 				console.assert(this.$refs.sheet, "sheet is null.");
 
-				this.bakingImages = await sheetBaker.bakeRawSvgs(this.svgDocuments, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas);
+				this.bakingImages = await SheetBaker.bakeRawSvgs(this.svgDocuments, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas);
 			},
 		},
 
