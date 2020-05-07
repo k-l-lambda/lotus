@@ -16,6 +16,8 @@ TODO:
 
 *	2020.5.7
 
+	+	sheet-live.vue: added property of background images.
+
 	+	app/sheetBaker.ts created.
 
 	+	sheet-live.vue: added property of showActiveOnly.

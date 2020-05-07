@@ -6,6 +6,7 @@
 			:width="page.width"
 			:height="page.height"
 			:viewBox="`${page.viewBox.x} ${page.viewBox.y} ${page.viewBox.width} ${page.viewBox.height}`"
+			:style="{['background-image']: backgroundImages && `url(${backgroundImages[i]})`}"
 		>
 			<g class="row" v-for="(row, ii) of page.rows" :key="ii"
 				:transform="`translate(${row.x}, ${row.y})`"
@@ -87,7 +88,11 @@
 				type: Boolean,
 				default: true,
 			},
-			showActiveOnly: false,
+			showActiveOnly: {
+				type: Boolean,
+				default: false,
+			},
+			backgroundImages: Array,
 		},
 
 

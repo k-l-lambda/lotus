@@ -38,7 +38,9 @@
 				</fieldset>
 			</fieldset>
 			<fieldset>
-				<input type="checkbox" v-model="bakingSheet" />
+				<BoolStoreInput v-show="false" v-model="bakingSheet" sessionKey="lotus-bakingSheet" />
+				<CheckButton content="&#x1f35e;" v-model="bakingSheet" title="baking sheet" />
+				<CheckButton v-show="bakingSheet" content="&#x1f9b2;" v-model="hideBakingImages" title="hide baking images" />
 			</fieldset>
 		</header>
 		<main>
@@ -72,6 +74,7 @@
 						:showMark="true"
 						:showCursor="showCursor"
 						:showActiveOnly="bakingSheet"
+						:backgroundImages="!hideBakingImages && bakingImages"
 						@midi="onMidi"
 					/>
 				</div>
@@ -238,6 +241,8 @@
 				lilyParser: null,
 				lilyDocumentDirty: false,
 				bakingSheet: false,
+				bakingImages: null,
+				hideBakingImages: false,
 			};
 		},
 
@@ -578,8 +583,7 @@
 
 
 			async bakeSheet () {
-				const result = await sheetBaker.bakeRawSvgs(this.svgDocuments, this.$refs.sheet.matchedIds, this.$refs.canvas);
-				console.log("bakeSheet:", result);
+				this.bakingImages = await sheetBaker.bakeRawSvgs(this.svgDocuments, this.$refs.sheet.matchedIds, this.$refs.canvas);
 			},
 		},
 
