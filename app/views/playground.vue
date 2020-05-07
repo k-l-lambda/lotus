@@ -86,6 +86,10 @@
 						<td><BoolStoreInput v-model="xml2lyOptions.removeBreaks" localKey="lotus-xml2lyOptions.removeBreaks" /></td>
 					</tr>
 					<tr>
+						<td>Remove Staff Group</td>
+						<td><BoolStoreInput v-model="xml2lyOptions.removeStaffGroup" localKey="lotus-xml2lyOptions.removeStaffGroup" /></td>
+					</tr>
+					<tr>
 						<th>Engrave</th>
 						<td><hr /></td>
 					</tr>
@@ -214,6 +218,7 @@
 				settingPanelVisible: false,
 				xml2lyOptions: {
 					removeBreaks: true,
+					removeStaffGroup: true,
 				},
 				engraveWithLogs: false,
 				lilyMarkups: {
@@ -382,7 +387,7 @@
 
 					this.converting = false;
 
-					return result;
+					return this.postProcessSource(result);
 				}
 
 				this.converting = false;
@@ -552,6 +557,16 @@
 
 				await this.$nextTick();
 				this.lilyDocumentDirty = false;
+			},
+
+
+			postProcessSource (source) {
+				const lilyDocument = new LilyDocument(this.lilyParser.parse(source));
+
+				if (this.xml2lyOptions.removeStaffGroup)
+					lilyDocument.removeStaffGroup();
+
+				return lilyDocument.toString();
 			},
 		},
 

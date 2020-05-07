@@ -15,6 +15,11 @@ TODO:
 
 
 
+*	2020.5.7
+
+	+	lilyDocument.ts: added method of removeStaffGroup.
+
+
 *	2020.5.6
 
 	+	lilyDocument.ts: refined pop in serialization join.

@@ -129,8 +129,8 @@ class Root extends BaseTerm {
 	}
 
 
-	getBlock (head): BaseTerm {
-		return this.entries.find((entry: any) => entry.head === head || (entry.head === "\\" + head));
+	getBlock (head): Block {
+		return this.entries.find((entry: any) => entry.head === head || (entry.head === "\\" + head)) as Block;
 	}
 };
 
@@ -208,6 +208,20 @@ class SimultaneousList extends BaseTerm {
 			...cc(this.list.map(item => [...BaseTerm.optionalSerialize(item), "\n"])),
 			">>\n",
 		];
+	}
+
+
+	removeStaffGroup () {
+		for (let i = 0; i < this.list.length; ++i) {
+			const item: any = this.list[i];
+			if (item.head instanceof Command && item.head.args && item.head.args[0] === "StaffGroup")
+				this.list[i] = item.body;
+		}
+
+		this.list.forEach(item => {
+			if (item instanceof SimultaneousList)
+				item.removeStaffGroup();
+		});
 	}
 };
 
@@ -550,7 +564,7 @@ export default class LilyDocument {
 
 	globalAttributes ({readonly = false} = {}) {
 		const globalStaffSize = this.root.getField("set-global-staff-size");
-		let paper: any = this.root.getBlock("paper");
+		let paper = this.root.getBlock("paper");
 		const layoutStaffSize = paper && paper.getField("layout-set-staff-size");
 		let staffSize = globalStaffSize || layoutStaffSize;
 
@@ -640,5 +654,16 @@ export default class LilyDocument {
 			Object.keys(attributes).forEach(key => attributes[key] = attributes[key] && attributes[key].value);
 
 		return attributes;
+	}
+
+
+	removeStaffGroup () {
+		const score = this.root.getBlock("score");
+		if (score) {
+			score.body.forEach(item => {
+				if (item instanceof SimultaneousList)
+					item.removeStaffGroup();
+			});
+		}
 	}
 };
