@@ -15,6 +15,8 @@ TODO:
 
 *	2020.5.7
 
+	+	profiler.vue: sheet baking added.
+
 	+	sheetBaker.ts: added bakeLiveSheet.
 
 	+	sheetBaker.ts: remove matched tokens in bakeRawSvg.

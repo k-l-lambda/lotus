@@ -17,7 +17,10 @@
 				:midiPlayer.sync="midiPlayer"
 				:showCursor="showCursor"
 				:noteHighlight="noteHighlight"
+				:showActiveOnly="true"
+				:backgroundImages="bakingImages"
 				@midi="onMidi"
+				@update:matcherNotations="bakeSheet"
 			/>
 		</main>
 		<canvas v-show="false" ref="canvas" />
@@ -61,6 +64,7 @@
 				midiPlayer: null,
 				showCursor: true,
 				noteHighlight: true,
+				bakingImages: null,
 			};
 		},
 
@@ -127,8 +131,11 @@
 
 
 			async bakeSheet () {
-				const result = await SheetBaker.bakeLiveSheet(this.sheetDocument, this.$refs.signs, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas);
-				console.log("bakeSheet:", result);
+				console.assert(this.sheetDocument, "sheetDocument is null.");
+				console.assert(this.$refs.signs, "signs is null.");
+				console.assert(this.$refs.sheet, "sheet is null.");
+
+				this.bakingImages = await SheetBaker.bakeLiveSheet(this.sheetDocument, this.$refs.signs, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas);
 			},
 		},
 

@@ -10,7 +10,7 @@ const SheetLiveComponent = Vue.extend(SheetLive);
 
 const rasterizeSvg = async (svg, canvas) => {
 	const svgURL = "data:image/svg+xml," + encodeURIComponent(svg);
-	console.log("svgURL:", svgURL);
+	//console.log("svgURL:", svgURL);
 	const image: any = await new Promise((resolve, reject) => {
 		const image = new Image();
 		image.onload = () => resolve(image);
@@ -126,13 +126,20 @@ const bakeLiveSheet = async (sheetDocument, signs, matchedIds, canvas) => {
 
 	const svgDoms = [...sheet.$el.children];
 	for (const svg of svgDoms) {
+		// not working?
 		//svg.insertBefore(style.cloneNode(true), svg.firstChild);
 
+		// remove matched tokens
+		matchedIds.forEach(id => {
+			const token = svg.querySelector(`g[data-href='${id}']`);
+			if (token)
+				token.parentElement.removeChild(token);
+		});
+
 		replaceSigns(svg, signDict);
-		console.log("svg:", svg);
+		//console.log("svg:", svg);
 
 		const url = await rasterizeSvg(svg.outerHTML, canvas);
-		console.log("url:", url);
 		urls.push(url);
 	};
 

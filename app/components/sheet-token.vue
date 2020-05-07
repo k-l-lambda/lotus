@@ -2,6 +2,7 @@
 	<g class="token"
 		:transform="`translate(${token.x}, ${token.y})`"
 		:class="{on: token.on, ...classes}"
+		:data-href="token.href"
 	>
 		<use :class="token.classes" :xlink:href="`#sign-${token.hash}`" />
 	</g>
