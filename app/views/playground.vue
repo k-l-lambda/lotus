@@ -132,6 +132,7 @@
 				</tbody>
 			</table>
 		</Dialog>
+		<canvas v-show="false" ref="canvas" />
 	</div>
 </template>
 
@@ -150,6 +151,7 @@
 	import loadLilyParser from "../loadLilyParser.js";
 	import {LilyDocument} from "../../inc/lilyParser";
 	import {CM_TO_PX} from "../../inc/constants.ts";
+	import * as sheetBaker from "../sheetBaker.ts";
 
 	import {MidiRoll} from "@k-l-lambda/web-widgets";
 	import SourceEditor from "../components/source-editor.vue";
@@ -572,6 +574,12 @@
 					lilyDocument.removeStaffGroup();
 
 				return lilyDocument.toString();
+			},
+
+
+			async bakeSheet () {
+				const result = await sheetBaker.bakeRawSvgs(this.svgDocuments, this.$refs.sheet.matchedIds, this.$refs.canvas);
+				console.log("bakeSheet:", result);
 			},
 		},
 

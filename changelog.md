@@ -16,6 +16,8 @@ TODO:
 
 *	2020.5.7
 
+	+	app/sheetBaker.ts created.
+
 	+	sheet-live.vue: added property of showActiveOnly.
 
 	+	path-symbols.json: fixed time signature token name of CUT_C.
