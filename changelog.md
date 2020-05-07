@@ -16,6 +16,7 @@ TODO:
 
 *	2020.5.7
 
+	+	sheetBaker.ts: remove matched tokens in bakeRawSvg.
 	+	sheetBaker.ts: remove lilypond engraving signature in bakeRawSvg.
 
 	+	sheet-live.vue: added property of background images.

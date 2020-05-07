@@ -23,19 +23,29 @@ const rasterizeSvg = async (svg, canvas) => {
 const bakeRawSvg = (svg, matchedIds, canvas) => {
 	const dom = new DOMParser().parseFromString(svg, "text/xml");
 	const root: any = dom.childNodes[0];
-	//console.log("dom:", dom.childNodes[0]);
+	console.log("dom:", root, matchedIds);
 
-	// remove lilypond engraving signature
 	for (const node of root.childNodes) {
-		if (node.tagName === "text") {
-			if (/www\.lilypond\.org/.test(node.textContent)) {
+		switch (node.tagName) {
+		case "text":
+			// remove lilypond engraving signature
+			if (/www\.lilypond\.org/.test(node.textContent)) 
 				root.removeChild(node);
-				break;
+
+			break;
+		case "a":
+			// remove matched tokens
+			const href = node.getAttribute("xlink:href");
+			const captures = href.match(/:(\d+:\d+:\d+)$/);
+			if (captures) {
+				const id = captures[1];
+				if (matchedIds.has(id))
+					root.removeChild(node);
 			}
+
+			break;
 		}
 	}
-
-	// TODO: remove matched tokens
 
 	const doc = root.outerHTML;
 
