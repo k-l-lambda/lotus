@@ -216,7 +216,7 @@
 					this.midiPlayer.dispose();
 
 				this.midiPlayer = new MidiPlayer(this.midiNotation, {
-					cacheSpan: 200,
+					cacheSpan: 400,
 					onMidi: (data, timestamp) => this.onMidi(data, timestamp),
 					onTurnCursor: () => this.updateTokenStatus(),
 				});

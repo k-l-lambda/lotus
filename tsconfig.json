@@ -25,7 +25,8 @@
 			"scripthost"
 		],
 		"skipLibCheck": true,
-		"noImplicitAny": false
+		"noImplicitAny": false,
+		"resolveJsonModule": true
 	},
 	"include": [
 		"app/**/*.ts",
