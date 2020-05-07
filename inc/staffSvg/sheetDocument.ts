@@ -59,6 +59,15 @@ class SheetDocument {
 	}
 
 
+	updateMatchedTokens (matchedIds) {
+		this.rows.forEach(row => {
+			row.staves.forEach(staff =>
+				staff.measures.forEach(measure =>
+					measure.matchedTokens = measure.tokens.filter(token => token.href && matchedIds.has(token.href))));
+		});
+	}
+
+
 	toJSON () {
 		return {
 			__prototype: "SheetDocument",

@@ -14,7 +14,7 @@
 				<rect class="cursor" v-if="showCursor && cursorPosition && cursorPosition.row === row.index"
 					:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
 				/>
-				<g>
+				<g v-if="!showActiveOnly">
 					<SheetToken v-for="(token, i5) of row.tokens" :key="i5" :token="token" />
 				</g>
 				<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
@@ -22,20 +22,31 @@
 				>
 					<circle class="mark" v-if="showMark" />
 					<line class="mark" v-if="showMark && Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
-					<g>
+					<g v-if="!showActiveOnly">
 						<SheetToken v-for="(token, i5) of staff.tokens" :key="i5" :token="token" />
 					</g>
 					<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
 						<g class="mark" v-if="showMark">
 							<text :x="measure.headX">{{i4}}</text>
 						</g>
-						<SheetToken v-for="(token, i5) of measure.tokens" :key="i5" :token="token"
-							:classes="{
-								matched: matchedIds && matchedIds.has(token.href),
-								mismatched: token.is('NOTEHEAD') && matchedIds && !matchedIds.has(token.href),
-								tied: token.tied,
-							}"
-						/>
+						<g v-if="!showActiveOnly">
+							<SheetToken v-for="(token, i5) of measure.tokens" :key="i5" :token="token"
+								:classes="{
+									matched: matchedIds && matchedIds.has(token.href),
+									mismatched: token.is('NOTEHEAD') && matchedIds && !matchedIds.has(token.href),
+									tied: token.tied,
+								}"
+							/>
+						</g>
+						<g v-if="showActiveOnly && measure.matchedTokens">
+							<SheetToken v-for="(token, i5) of measure.matchedTokens" :key="i5" :token="token"
+								:classes="{
+									matched: matchedIds && matchedIds.has(token.href),
+									mismatched: token.is('NOTEHEAD') && matchedIds && !matchedIds.has(token.href),
+									tied: token.tied,
+								}"
+							/>
+						</g>
 					</g>
 				</g>
 			</g>
@@ -76,6 +87,7 @@
 				type: Boolean,
 				default: true,
 			},
+			showActiveOnly: false,
 		},
 
 
@@ -213,6 +225,8 @@
 				const matchedIds = new Set();
 				this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));
 				this.matchedIds = matchedIds;
+
+				this.doc.updateMatchedTokens(matchedIds);
 
 				this.scheduler = SheetScheduler.createFromNotation(this.midiNotation, this.linkedTokens);
 

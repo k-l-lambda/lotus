@@ -37,6 +37,9 @@
 					<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
 				</fieldset>
 			</fieldset>
+			<fieldset>
+				<input type="checkbox" v-model="bakingSheet" />
+			</fieldset>
 		</header>
 		<main>
 			<div class="source-container" :class="{loading: converting}">
@@ -68,6 +71,7 @@
 						:matcherNotations.sync="matcherNotations"
 						:showMark="true"
 						:showCursor="showCursor"
+						:showActiveOnly="bakingSheet"
 						@midi="onMidi"
 					/>
 				</div>
@@ -231,6 +235,7 @@
 				},
 				lilyParser: null,
 				lilyDocumentDirty: false,
+				bakingSheet: false,
 			};
 		},
 

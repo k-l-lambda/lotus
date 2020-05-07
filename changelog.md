@@ -1,12 +1,11 @@
 
 TODO:
+	SVG static elements baking to image
 	lilypond post processing
-		removeStaffGroup
 		fix partial measures
 		fix repeat \alternative measures
 	playground.sliceSource:
 		music duration parsing
-	SVG static elements baking to image
 	parse measure ticks from ly
 	staffSvg
 		tempo note head symbol
@@ -16,6 +15,8 @@ TODO:
 
 
 *	2020.5.7
+
+	+	sheet-live.vue: added property of showActiveOnly.
 
 	+	path-symbols.json: fixed time signature token name of CUT_C.
 
