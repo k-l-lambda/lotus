@@ -74,7 +74,7 @@
 						:showMark="true"
 						:showCursor="showCursor"
 						:showActiveOnly="bakingSheet"
-						:backgroundImages="!hideBakingImages && bakingImages"
+						:backgroundImages="hideBakingImages ? null : bakingImages"
 						@midi="onMidi"
 					/>
 				</div>
@@ -374,6 +374,7 @@
 				this.midi = null;
 				this.midiPlayer = null;
 				this.matcherNotations = null;
+				this.bakingImages = null;
 			},
 
 
@@ -583,7 +584,10 @@
 
 
 			async bakeSheet () {
-				this.bakingImages = await sheetBaker.bakeRawSvgs(this.svgDocuments, this.$refs.sheet.matchedIds, this.$refs.canvas);
+				console.assert(this.svgDocuments, "svgDocuments is null.");
+				console.assert(this.$refs.sheet, "sheet is null.");
+
+				this.bakingImages = await sheetBaker.bakeRawSvgs(this.svgDocuments, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas);
 			},
 		},
 
@@ -613,6 +617,22 @@
 			tokenizeStaff (value) {
 				if (value && this.lilySource && !this.sheetDocument)
 					this.engraverDirty = true;
+			},
+
+
+			matcherNotations () {
+				if (this.bakingSheet)
+					this.bakeSheet();
+			},
+
+
+			bakingSheet (value) {
+				if (value) {
+					if (this.sheetDocument && this.$refs.sheet)
+						this.bakeSheet();
+				}
+				else
+					this.bakingImages = null;
 			},
 		},
 	};

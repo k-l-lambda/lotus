@@ -16,7 +16,7 @@ const bakeRawSvg = async (svg, matchedIds, canvas) => {
 	context.drawImage(image, 0, 0);
 
 	const blob = await new Promise(resolve => canvas.toBlob(blob => resolve(blob), "image/png"));
-	console.log("blob:", blob);
+	//console.log("blob:", blob);
 
 	return URL.createObjectURL(blob);
 };
