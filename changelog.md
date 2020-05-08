@@ -13,6 +13,11 @@ TODO:
 
 
 
+*	2020.5.8
+
+	+	profiler.vue: added FPS statistics.
+
+
 *	2020.5.7
 
 	+	profiler.vue: sheet baking added.

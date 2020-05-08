@@ -7,6 +7,7 @@
 			<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
 			<CheckButton content="cursor" v-model="showCursor" />
 			<CheckButton content="note highlight" v-model="noteHighlight" />
+			<span v-if="fps" class="fps"><em>{{fps.toFixed(1)}}</em>fps</span>
 		</header>
 		<main>
 			<SheetSigns v-if="svgHashTable" ref="signs" v-show="false" :hashTable="svgHashTable" />
@@ -29,6 +30,7 @@
 
 <script>
 	import "../utils.js";
+	import {animationDelay} from "../delay.js";
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
 	import StaffToken from "../../inc/staffSvg/staffToken.ts";
@@ -65,12 +67,15 @@
 				showCursor: true,
 				noteHighlight: true,
 				bakingImages: null,
+				fps: null,
 			};
 		},
 
 
 		async created () {
 			window.$main = this;
+
+			this.watchFps();
 		},
 
 
@@ -137,6 +142,25 @@
 
 				this.bakingImages = await SheetBaker.bakeLiveSheet(this.sheetDocument, this.$refs.signs, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas);
 			},
+
+
+			async watchFps () {
+				let lastTime = performance.now();
+				let frames = 0;
+
+				while (true) {
+					await animationDelay();
+
+					++frames;
+					const now = performance.now();
+					if (now - lastTime > 1e+3) {
+						this.fps = frames * 1e+3 / (now - lastTime);
+
+						frames = 0;
+						lastTime = now;
+					}
+				}
+			},
 		},
 
 
@@ -149,6 +173,23 @@
 <style lang="scss">
 	@import "../css/common.scss";
 
+
+	header
+	{
+		.fps
+		{
+			display: inline-block;
+			margin: 0 1em;
+			color: #aaa;
+
+			em
+			{
+				color: black;
+				display: inline-block;
+				margin: 0 .2em;
+			}
+		}
+	}
 
 	main
 	{
