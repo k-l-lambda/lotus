@@ -15,6 +15,8 @@ TODO:
 
 *	2020.5.8
 
+	+	profiler.vue: added option of bakingSheet.
+
 	+	profiler.vue: added FPS statistics.
 
 

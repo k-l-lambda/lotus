@@ -5,8 +5,9 @@
 			<input type="file" @change="onScoreChange" />
 			<button @click="homePlayer">&#x23ee;</button>
 			<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
-			<CheckButton content="cursor" v-model="showCursor" />
-			<CheckButton content="note highlight" v-model="noteHighlight" />
+			<CheckButton content="&#xa56f;" v-model="showCursor" />
+			<CheckButton content="&#x2669;" v-model="noteHighlight" />
+			<CheckButton content="&#x1f35e;" v-model="bakingSheet" />
 			<span v-if="fps" class="fps"><em>{{fps.toFixed(1)}}</em>fps</span>
 		</header>
 		<main>
@@ -18,8 +19,8 @@
 				:midiPlayer.sync="midiPlayer"
 				:showCursor="showCursor"
 				:noteHighlight="noteHighlight"
-				:showActiveOnly="true"
-				:backgroundImages="bakingImages"
+				:showActiveOnly="bakingSheet"
+				:backgroundImages="bakingSheet ? bakingImages : null"
 				@midi="onMidi"
 				@update:matcherNotations="bakeSheet"
 			/>
@@ -66,6 +67,7 @@
 				midiPlayer: null,
 				showCursor: true,
 				noteHighlight: true,
+				bakingSheet: true,
 				bakingImages: null,
 				fps: null,
 			};
@@ -99,6 +101,7 @@
 				this.sheetDocument = null;
 				this.svgHashTable = null;
 				this.midi = null;
+				this.bakingImages = null;
 
 				if (this.sourceText) {
 					const data = recoverJSON(this.sourceText, {StaffToken, SheetDocument});
