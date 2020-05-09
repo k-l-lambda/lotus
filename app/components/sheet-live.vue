@@ -266,7 +266,7 @@
 </script>
 
 <style lang="scss" scoped>
-	@import "../css/sheetConstants.scss";
+	@import "../styles/sheetConstants.scss";
 
 
 	.sheet
@@ -301,5 +301,5 @@
 </style>
 
 <style>
-	@import "../css/music-font.css";
+	@import "../styles/music-font.css";
 </style>

@@ -174,7 +174,7 @@
 </script>
 
 <style lang="scss">
-	@import "../css/common.scss";
+	@import "../styles/common.scss";
 
 
 	header

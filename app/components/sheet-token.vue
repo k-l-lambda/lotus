@@ -21,7 +21,7 @@
 </script>
 
 <style lang="scss" scoped>
-	@import "../css/sheetConstants.scss";
+	@import "../styles/sheetConstants.scss";
 
 
 	.token

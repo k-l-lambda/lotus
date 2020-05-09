@@ -639,8 +639,8 @@
 </script>
 
 <style lang="scss">
-	@import "../css/common.scss";
-	@import "../css/chromaticSymbols.scss";
+	@import "../styles/common.scss";
+	@import "../styles/chromaticSymbols.scss";
 
 	
 	.drag-hover
