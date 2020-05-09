@@ -19,7 +19,7 @@
 				:midiPlayer.sync="midiPlayer"
 				:showCursor="showCursor"
 				:noteHighlight="noteHighlight"
-				:showActiveOnly="bakingSheet"
+				:bakingMode="bakingSheet"
 				:backgroundImages="bakingSheet ? bakingImages : null"
 				@midi="onMidi"
 				@update:matcherNotations="bakeSheet"

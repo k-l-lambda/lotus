@@ -13,6 +13,11 @@ TODO:
 
 
 
+*	2020.5.9
+
+	+	sheet-live.vue: added baking mode.
+
+
 *	2020.5.8
 
 	+	profiler.vue: added option of bakingSheet.

@@ -8,29 +8,29 @@
 			:viewBox="`${page.viewBox.x} ${page.viewBox.y} ${page.viewBox.width} ${page.viewBox.height}`"
 			:style="{['background-image']: backgroundImages && `url(${backgroundImages[i]})`}"
 		>
-			<g class="row" v-for="(row, ii) of page.rows" :key="ii"
-				:transform="`translate(${row.x}, ${row.y})`"
-			>
-				<rect class="mark" v-if="showMark" :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top" />
-				<rect class="cursor" v-if="showCursor && cursorPosition && cursorPosition.row === row.index"
-					:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
-				/>
-				<g v-if="!showActiveOnly">
-					<SheetToken v-for="(token, i5) of row.tokens" :key="i5" :token="token" />
-				</g>
-				<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
-					:transform="`translate(${staff.x}, ${staff.y})`"
+			<g v-if="!bakingMode">
+				<g class="row" v-for="(row, ii) of page.rows" :key="ii"
+					:transform="`translate(${row.x}, ${row.y})`"
 				>
-					<circle class="mark" v-if="showMark" />
-					<line class="mark" v-if="showMark && Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
-					<g v-if="!showActiveOnly">
-						<SheetToken v-for="(token, i5) of staff.tokens" :key="i5" :token="token" />
+					<rect class="mark" v-if="showMark" :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top" />
+					<rect class="cursor" v-if="showCursor && cursorPosition && cursorPosition.row === row.index"
+						:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
+					/>
+					<g>
+						<SheetToken v-for="(token, i5) of row.tokens" :key="i5" :token="token" />
 					</g>
-					<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
-						<g class="mark" v-if="showMark">
-							<text :x="measure.headX">{{i4}}</text>
+					<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
+						:transform="`translate(${staff.x}, ${staff.y})`"
+					>
+						<circle class="mark" v-if="showMark" />
+						<line class="mark" v-if="showMark && Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
+						<g>
+							<SheetToken v-for="(token, i5) of staff.tokens" :key="i5" :token="token" />
 						</g>
-						<g v-if="!showActiveOnly">
+						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
+							<g class="mark" v-if="showMark">
+								<text :x="measure.headX">{{i4}}</text>
+							</g>
 							<SheetToken v-for="(token, i5) of measure.tokens" :key="i5" :token="token"
 								:classes="{
 									matched: matchedIds && matchedIds.has(token.href),
@@ -39,14 +39,23 @@
 								}"
 							/>
 						</g>
-						<g v-if="showActiveOnly && measure.matchedTokens">
-							<SheetToken v-for="(token, i5) of measure.matchedTokens" :key="i5" :token="token"
-								:classes="{
-									matched: matchedIds && matchedIds.has(token.href),
-									mismatched: token.is('NOTEHEAD') && matchedIds && !matchedIds.has(token.href),
-									tied: token.tied,
-								}"
-							/>
+					</g>
+				</g>
+			</g>
+			<g v-if="bakingMode">
+				<g class="row" v-for="(row, ii) of page.rows" :key="ii"
+					:transform="`translate(${row.x}, ${row.y})`"
+				>
+					<rect class="cursor" v-if="showCursor && cursorPosition && cursorPosition.row === row.index"
+						:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
+					/>
+					<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
+						:transform="`translate(${staff.x}, ${staff.y})`"
+					>
+						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
+							<g v-for="(token, i5) of measure.tokens" :key="i5" :transform="`translate(${token.x}, ${token.y})`">
+								<!--text>.</text-->
+							</g>
 						</g>
 					</g>
 				</g>
@@ -88,7 +97,7 @@
 				type: Boolean,
 				default: true,
 			},
-			showActiveOnly: {
+			bakingMode: {
 				type: Boolean,
 				default: false,
 			},

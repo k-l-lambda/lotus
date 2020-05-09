@@ -73,7 +73,7 @@
 						:matcherNotations.sync="matcherNotations"
 						:showMark="true"
 						:showCursor="showCursor"
-						:showActiveOnly="bakingSheet"
+						:bakingMode="bakingSheet"
 						:backgroundImages="hideBakingImages ? null : bakingImages"
 						@midi="onMidi"
 					/>
