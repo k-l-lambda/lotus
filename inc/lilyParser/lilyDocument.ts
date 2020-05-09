@@ -104,6 +104,20 @@ class BaseTerm implements LilyTerm {
 	}
 
 
+	forEachTerm (termClass, handle) {
+		if (!this.entries)
+			return;
+
+		for (const entry of this.entries) {
+			if (entry instanceof termClass)
+				handle(entry);
+
+			if (entry instanceof BaseTerm)
+				entry.forEachTerm(termClass, handle);
+		}
+	}
+
+
 	static isTerm (x) {
 		return typeof x === "object" && x instanceof BaseTerm;
 	}
@@ -146,6 +160,11 @@ class Command extends BaseTerm {
 			...[].concat(...this.args.map(BaseTerm.optionalSerialize)),
 		];
 	}
+
+
+	get entries () {
+		return this.args.filter(arg => arg instanceof BaseTerm);
+	}
 };
 
 
@@ -184,7 +203,7 @@ class InlineBlock extends Block {
 
 
 class MusicBlock extends BaseTerm {
-	body: LilyTerm[];
+	body: BaseTerm[];
 
 
 	serialize () {
@@ -194,6 +213,11 @@ class MusicBlock extends BaseTerm {
 			"\n",
 			"}\n",
 		];
+	}
+
+
+	get entries () {
+		return this.body;
 	}
 };
 
@@ -347,6 +371,14 @@ class Assignment extends BaseTerm {
 			"=",
 			...cc(values),
 		];
+	}
+
+
+	get entries () {
+		if (this.value instanceof BaseTerm)
+			return [this.value];
+
+		return null;
 	}
 
 
@@ -665,5 +697,20 @@ export default class LilyDocument {
 					item.removeStaffGroup();
 			});
 		}
+	}
+
+
+	fixTinyTrillSpans () {
+		// TODO: replace successive \startTrillSpan & \stopTrillSpan with ^\trill
+	}
+
+
+	removeTrillSpans () {
+		const isTrillSpan = item => (item instanceof Command) && ["startTrillSpan", "stopTrillSpan"].includes(item.cmd);
+
+		this.root.forEachTerm(MusicBlock, block => {
+			//console.log("music block:", block);
+			block.body = block.body.filter(item => !isTrillSpan(item));
+		});
 	}
 };

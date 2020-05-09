@@ -97,6 +97,10 @@
 						<td><BoolStoreInput v-model="xml2lyOptions.removeStaffGroup" localKey="lotus-xml2lyOptions.removeStaffGroup" /></td>
 					</tr>
 					<tr>
+						<td>Remove Trill Spans</td>
+						<td><button @click="removeTrillSpans">do</button></td>
+					</tr>
+					<tr>
 						<th>Engrave</th>
 						<td><hr /></td>
 					</tr>
@@ -580,6 +584,18 @@
 					lilyDocument.removeStaffGroup();
 
 				return lilyDocument.toString();
+			},
+
+
+			async removeTrillSpans () {
+				this.updateLilyDocument();
+
+				this.lilyDocument.removeTrillSpans();
+
+				this.lilySource = this.lilyDocument.toString();
+
+				await this.$nextTick();
+				this.lilyDocumentDirty = false;
 			},
 
 

@@ -15,6 +15,8 @@ TODO:
 
 *	2020.5.9
 
+	+	lilyDocument.ts: added method of removeTrillSpans.
+
 	+	sheet-live.vue: added token status class for bake mode.
 
 	+	sheet-live.vue: added music font.
