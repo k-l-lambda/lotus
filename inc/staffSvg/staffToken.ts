@@ -142,4 +142,18 @@ export default class StaffToken {
 
 		return {line, start, end};
 	}
+
+
+	get fontChar () {
+		if (this.is("NOTEHEAD")) {
+			if (this.is("WHOLE"))
+				return "\u0141";
+			else if (this.is("HALF"))
+				return "\u017c";
+			else if (this.is("SOLID"))
+				return "\u0174";
+		}
+
+		return null;
+	}
 };

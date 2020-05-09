@@ -15,6 +15,8 @@ TODO:
 
 *	2020.5.9
 
+	+	sheet-live.vue: added music font.
+
 	+	sheet-live.vue: added baking mode.
 
 

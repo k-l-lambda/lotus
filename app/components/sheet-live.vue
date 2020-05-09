@@ -42,7 +42,7 @@
 					</g>
 				</g>
 			</g>
-			<g v-if="bakingMode">
+			<g v-if="bakingMode" class="bake">
 				<g class="row" v-for="(row, ii) of page.rows" :key="ii"
 					:transform="`translate(${row.x}, ${row.y})`"
 				>
@@ -53,8 +53,12 @@
 						:transform="`translate(${staff.x}, ${staff.y})`"
 					>
 						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
-							<g v-for="(token, i5) of measure.tokens" :key="i5" :transform="`translate(${token.x}, ${token.y})`">
-								<!--text>.</text-->
+							<g v-for="(token, i5) of measure.matchedTokens" :key="i5"
+								:transform="`translate(${token.x}, ${token.y})`"
+								class="token"
+								:class="token.classes"
+							>
+								<text>{{token.fontChar}}</text>
 							</g>
 						</g>
 					</g>
@@ -268,5 +272,23 @@
 		{
 			visibility: hidden;
 		}
+
+		.bake
+		{
+			font-family: lotus-music;
+
+			.token
+			{
+				text
+				{
+					font-size: 2.2px;
+					//content: "x";
+				}
+			}
+		}
 	}
+</style>
+
+<style>
+	@import "../css/music-font.css";
 </style>
