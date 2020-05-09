@@ -15,6 +15,8 @@ TODO:
 
 *	2020.5.9
 
+	+	package.json: added library target building script.
+
 	+	lilyDocument.ts: added method of removeTrillSpans.
 
 	+	sheet-live.vue: added token status class for bake mode.

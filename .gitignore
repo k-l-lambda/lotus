@@ -1,6 +1,8 @@
 node_modules/
 footages/
 dist/
+lib/
+lib.browser/
 yarn.lock
 *.local
 *.log
