@@ -56,7 +56,7 @@
 							<g v-for="(token, i5) of measure.matchedTokens" :key="i5"
 								:transform="`translate(${token.x}, ${token.y})`"
 								class="token"
-								:class="token.classes"
+								:class="{on: token.on}"
 							>
 								<text>{{token.fontChar}}</text>
 							</g>
@@ -266,6 +266,9 @@
 </script>
 
 <style lang="scss" scoped>
+	@import "../css/sheetConstants.scss";
+
+
 	.sheet
 	{
 		.mark
@@ -281,8 +284,16 @@
 			{
 				text
 				{
+					user-select: none;
 					font-size: 2.2px;
-					//content: "x";
+					fill: $token-default-color;
+				}
+
+				&.on text
+				{
+					fill: $token-on-color;
+					stroke-width: 0.1;
+					stroke: $token-on-color;
 				}
 			}
 		}

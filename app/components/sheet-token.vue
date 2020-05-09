@@ -21,28 +21,27 @@
 </script>
 
 <style lang="scss" scoped>
-	$default-color: black;
-	$on-color: #0af;
+	@import "../css/sheetConstants.scss";
 
 
 	.token
 	{
 		.staff-line, .line, .slur
 		{
-			stroke: $default-color;
+			stroke: $token-default-color;
 		}
 
 		use
 		{
-			fill: $default-color;
+			fill: $token-default-color;
 			//stroke-width: 0;
 		}
 
 		&.on use
 		{
-			fill: $on-color;
+			fill: $token-on-color;
 			stroke-width: 0.1;
-			stroke: $on-color;
+			stroke: $token-on-color;
 		}
 	}
 </style>
