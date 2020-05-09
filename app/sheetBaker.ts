@@ -37,7 +37,7 @@ const rasterizeSvg = async (svg, canvas) => {
 const bakeRawSvg = (svg, matchedIds, canvas) => {
 	const dom = new DOMParser().parseFromString(svg, "text/xml");
 	const root: any = dom.childNodes[0];
-	console.log("dom:", root, matchedIds);
+	//console.log("dom:", root, matchedIds);
 
 	for (const node of root.childNodes) {
 		switch (node.tagName) {
