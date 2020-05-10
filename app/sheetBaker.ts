@@ -102,7 +102,7 @@ const replaceSigns = (node, signDict) => {
 };
 
 
-const bakeLiveSheet = async (sheetDocument, signs, matchedIds, canvas) => {
+const bakeLiveSheetGen = async function* (sheetDocument, signs, matchedIds, canvas) {
 	const elem = document.createElement("div");
 	const sheet = new SheetLiveComponent({
 		propsData: {
@@ -122,8 +122,6 @@ const bakeLiveSheet = async (sheetDocument, signs, matchedIds, canvas) => {
 		}
 	`;*/
 
-	const urls = [];
-
 	const svgDoms = [...sheet.$el.children];
 	for (const svg of svgDoms) {
 		// not working?
@@ -139,9 +137,16 @@ const bakeLiveSheet = async (sheetDocument, signs, matchedIds, canvas) => {
 		replaceSigns(svg, signDict);
 		//console.log("svg:", svg);
 
-		const url = await rasterizeSvg(svg.outerHTML, canvas);
-		urls.push(url);
+		yield await rasterizeSvg(svg.outerHTML, canvas);
 	};
+};
+
+
+const bakeLiveSheet = async (sheetDocument, signs, matchedIds, canvas) => {
+	const urls = [];
+
+	for await (const url of bakeLiveSheetGen(sheetDocument, signs, matchedIds, canvas))
+		urls.push(url);
 
 	return urls;
 };
@@ -150,5 +155,6 @@ const bakeLiveSheet = async (sheetDocument, signs, matchedIds, canvas) => {
 
 export {
 	bakeRawSvgs,
+	bakeLiveSheetGen,
 	bakeLiveSheet,
 };

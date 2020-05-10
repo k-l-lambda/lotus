@@ -111,6 +111,9 @@
 					this.svgHashTable = data.hashTable;
 					this.midi = data.midi;
 
+					if (!this.midi)
+						console.warn("No midi data, baking will fail.");
+
 					if (this.sheetDocument)
 						this.sheetNotation = StaffNotation.parseNotationFromSheetDocument(this.sheetDocument);
 				}
@@ -143,7 +146,10 @@
 				console.assert(this.$refs.signs, "signs is null.");
 				console.assert(this.$refs.sheet, "sheet is null.");
 
-				this.bakingImages = await SheetBaker.bakeLiveSheet(this.sheetDocument, this.$refs.signs, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas);
+				//this.bakingImages = await SheetBaker.bakeLiveSheet(this.sheetDocument, this.$refs.signs, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas);
+				this.bakingImages = [];
+				for await (const url of SheetBaker.bakeLiveSheetGen(this.sheetDocument, this.$refs.signs, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas))
+					this.bakingImages.push(url);
 			},
 
 
