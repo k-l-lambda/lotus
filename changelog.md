@@ -13,6 +13,12 @@ TODO:
 
 
 
+*	2020.5.10
+
+	+	lilyCommands.ts: added env variable of MIDI_FILE_EXTEND.
+			Lilypond on Windows platform use mid instead of midi.
+
+
 *	2020.5.9
 
 	+	lilyDocument.ts: added method of removeTrillSpans.
