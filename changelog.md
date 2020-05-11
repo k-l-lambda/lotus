@@ -1,5 +1,6 @@
 
 TODO:
+	playground: parse source document title
 	lilypond post processing
 		fix partial measures
 		fix repeat \alternative measures
@@ -11,6 +12,14 @@ TODO:
 	source editor
 		cursor position
 
+
+
+*	2020.5.10
+
+	+	profilter.vue: bake sheet by generator.
+
+	+	lilyCommands.ts: added env variable of MIDI_FILE_EXTEND.
+			Lilypond on Windows platform use mid instead of midi.
 
 
 *	2020.5.9

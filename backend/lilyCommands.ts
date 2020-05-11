@@ -11,6 +11,7 @@ import asyncCall from "../inc/asyncCall";
 
 const TEMP_DIR = process.env.TEMP_DIR;
 const LILYPOND_DIR = process.env.LILYPOND_DIR;
+const MIDI_FILE_EXTEND = process.env.MIDI_FILE_EXTEND;
 
 
 const genHashString = (len = 8) => Buffer.from(Math.random().toString()).toString("base64").substr(3, 3 + len);
@@ -112,12 +113,12 @@ const engraveSvg = async source => {
 	const hash = genHashString();
 	const sourceFilename = `${TEMP_DIR}engrave-${hash}.ly`;
 	//const outputFilename = `./engrave-${hash}`;
-	const midiFilename = `${TEMP_DIR}engrave-${hash}.midi`;
+	const midiFilename = `${TEMP_DIR}engrave-${hash}.${MIDI_FILE_EXTEND}`;
 
 	await asyncCall(fs.writeFile, sourceFilename, source);
 	//console.log("ly source written:", sourceFilename);
 
-	const result = await child_process.exec(`cd ${TEMP_DIR} && ${LILYPOND_DIR}lilypond -dbackend=svg .${sourceFilename}`);
+	const result = await child_process.exec(`cd ${TEMP_DIR} && "${LILYPOND_DIR}lilypond" -dbackend=svg .${sourceFilename}`);
 
 	const svgFiles: string[] = await asyncCall(glob, `${TEMP_DIR}engrave-${hash}*.svg`);
 	svgFiles.sort((n1, n2) => nameNumber(n1) - nameNumber(n2));
