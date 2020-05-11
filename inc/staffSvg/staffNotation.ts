@@ -230,6 +230,43 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 };
 
 
+const assignNotationEventsIds = midiNotation => {
+	const events = midiNotation.notes.reduce((events, note) => {
+		events.push({ticks: note.startTick, subtype: "noteOn", pitch: note.pitch, ids: note.ids});
+		events.push({ticks: note.endTick, subtype: "noteOff", pitch: note.pitch, ids: note.ids});
+
+		return events;
+	}, []).sort((e1, e2) => e1.ticks - e2.ticks);
+
+	let index = -1;
+	let ticks = -Infinity;
+	for (const event of midiNotation.events) {
+		while (event.ticks > ticks && index < events.length) {
+			++index;
+			ticks = events[index] && events[index].ticks;
+		}
+
+		if (index >= events.length)
+			break;
+
+		if (event.ticks < ticks)
+			continue;
+
+		for (let i = index; i < events.length; ++i) {
+			const ne = events[i];
+			if (ne.ticks > ticks)
+				break;
+			else {
+				if (event.data.subtype === ne.subtype && event.data.noteNumber === ne.pitch) {
+					event.data.ids = ne.ids;
+					break;
+				}
+			}
+		}
+	}
+};
+
+
 const matchNotations = async (midiNotation, svgNotation) => {
 	// map svgNotation without duplicated ones
 	const noteMap = {};
@@ -298,39 +335,7 @@ const matchNotations = async (midiNotation, svgNotation) => {
 	//console.log("after.path.forEach:", performance.now());
 
 	// assign ids onto MIDI events
-	const events = midiNotation.notes.reduce((events, note) => {
-		events.push({ticks: note.startTick, subtype: "noteOn", pitch: note.pitch, ids: note.ids});
-		events.push({ticks: note.endTick, subtype: "noteOff", pitch: note.pitch, ids: note.ids});
-
-		return events;
-	}, []).sort((e1, e2) => e1.ticks - e2.ticks);
-
-	let index = -1;
-	let ticks = -Infinity;
-	for (const event of midiNotation.events) {
-		while (event.ticks > ticks && index < events.length) {
-			++index;
-			ticks = events[index] && events[index].ticks;
-		}
-
-		if (index >= events.length)
-			break;
-
-		if (event.ticks < ticks)
-			continue;
-
-		for (let i = index; i < events.length; ++i) {
-			const ne = events[i];
-			if (ne.ticks > ticks)
-				break;
-			else {
-				if (event.data.subtype === ne.subtype && event.data.noteNumber === ne.pitch) {
-					event.data.ids = ne.ids;
-					break;
-				}
-			}
-		}
-	}
+	assignNotationEventsIds(midiNotation);
 
 	//console.log("after.ids:", performance.now());
 	//console.log("midiNotation:", midiNotation.events);
@@ -339,8 +344,22 @@ const matchNotations = async (midiNotation, svgNotation) => {
 };
 
 
+const assignIds = (midiNotation, noteIds) => {
+	noteIds.forEach((ids, i) => {
+		const note = midiNotation.notes[i];
+		if (note && ids)
+			note.ids = ids;
+	});
+
+	assignNotationEventsIds(midiNotation);
+
+	return {noteIds};
+};
+
+
 
 export {
 	parseNotationFromSheetDocument,
 	matchNotations,
+	assignIds,
 };

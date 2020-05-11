@@ -15,6 +15,7 @@
 			<SheetLive v-if="sheetDocument" ref="sheet"
 				:doc="sheetDocument"
 				:sheetNotation="sheetNotation"
+				:noteIds="noteIds"
 				:midi="midi"
 				:midiPlayer.sync="midiPlayer"
 				:showCursor="showCursor"
@@ -111,11 +112,12 @@
 					this.sheetDocument = data.doc;
 					this.svgHashTable = data.hashTable;
 					this.midi = data.midi;
+					this.noteIds = data.noteIds;
 
 					if (!this.midi)
 						console.warn("No midi data, baking will fail.");
 
-					if (this.sheetDocument)
+					if (this.sheetDocument && !this.noteIds)
 						this.sheetNotation = StaffNotation.parseNotationFromSheetDocument(this.sheetDocument);
 				}
 			},

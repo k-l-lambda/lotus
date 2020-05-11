@@ -16,6 +16,8 @@ TODO:
 
 *	2020.5.11
 
+	+	staffNotation.ts: assignIds added.
+
 	+	playground.vue: export note ids in score json.
 
 	+	staffNotation.ts: refined MIDI notation events ids assignment.

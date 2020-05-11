@@ -92,6 +92,7 @@
 			doc: Object,
 			midi: Object,
 			sheetNotation: Object,
+			noteIds: Array,
 			showMark: Boolean,
 			showCursor: {
 				type: Boolean,
@@ -204,6 +205,7 @@
 
 
 			async updateMidiNotation () {
+				//console.log("t1:", performance.now());
 				this.midiNotation = null;
 				this.scheduler = null;
 				this.matchedIds.clear();
@@ -217,8 +219,10 @@
 					this.midiNotation = MusicNotation.Notation.parseMidi(this.midi);
 					this.updateMidiPlayer();
 
+					//console.log("t2:", performance.now());
 					await this.$nextTick();
-					if (this.midiNotation && this.sheetNotation) 
+					//console.log("t3:", performance.now());
+					if (this.midiNotation && (this.noteIds || this.sheetNotation)) 
 						this.matchNotations();
 				}
 			},
@@ -237,8 +241,10 @@
 
 
 			async matchNotations () {
-				const matcherNotations = await StaffNotation.matchNotations(this.midiNotation, this.sheetNotation);
+				const matcherNotations = this.noteIds ? StaffNotation.assignIds(this.midiNotation, this.noteIds)
+					: await StaffNotation.matchNotations(this.midiNotation, this.sheetNotation);
 				//console.log("matching:", this.midiNotation.notes.map(n => n.ids && n.ids[0]));
+				//console.log("t4:", performance.now());
 
 				const matchedIds = new Set();
 				this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));
@@ -246,7 +252,9 @@
 
 				this.doc.updateMatchedTokens(matchedIds);
 
+				//console.log("t5:", performance.now());
 				this.scheduler = SheetScheduler.createFromNotation(this.midiNotation, this.linkedTokens);
+				//console.log("t6:", performance.now());
 
 				this.$emit("update:matcherNotations", matcherNotations);
 			},
