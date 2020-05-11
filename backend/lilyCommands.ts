@@ -118,7 +118,7 @@ const engraveSvg = async source => {
 	await asyncCall(fs.writeFile, sourceFilename, source);
 	//console.log("ly source written:", sourceFilename);
 
-	const result = await child_process.exec(`cd ${TEMP_DIR} && "${LILYPOND_DIR}lilypond" -dbackend=svg .${sourceFilename}`);
+	const result = await child_process.exec(`cd ${TEMP_DIR} && ${LILYPOND_DIR}lilypond -dbackend=svg .${sourceFilename}`);
 
 	const svgFiles: string[] = await asyncCall(glob, `${TEMP_DIR}engrave-${hash}*.svg`);
 	svgFiles.sort((n1, n2) => nameNumber(n1) - nameNumber(n2));

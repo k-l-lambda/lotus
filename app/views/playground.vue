@@ -527,10 +527,15 @@
 
 
 			exportScore () {
+				console.assert(this.$refs.sheet, "sheet is null.");
+
+				const noteIds = this.$refs.sheet.midiNotation.notes.map(note => note.ids);
+
 				const data = {
 					doc: this.sheetDocument,
 					midi: this.midi,
 					hashTable: this.svgHashTable,
+					noteIds,
 				};
 				const blob = new Blob([JSON.stringify(data)]);
 				downloadUrl(URL.createObjectURL(blob), "score.json");

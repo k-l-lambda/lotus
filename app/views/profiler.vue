@@ -75,6 +75,7 @@
 
 
 		async created () {
+			console.log("t0:", performance.now());
 			window.$main = this;
 
 			this.watchFps();
@@ -146,10 +147,14 @@
 				console.assert(this.$refs.signs, "signs is null.");
 				console.assert(this.$refs.sheet, "sheet is null.");
 
+				console.log("t7:", performance.now());
+
 				//this.bakingImages = await SheetBaker.bakeLiveSheet(this.sheetDocument, this.$refs.signs, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas);
 				this.bakingImages = [];
 				for await (const url of SheetBaker.bakeLiveSheetGen(this.sheetDocument, this.$refs.signs, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas))
 					this.bakingImages.push(url);
+
+				console.log("t8:", performance.now());
 			},
 
 
