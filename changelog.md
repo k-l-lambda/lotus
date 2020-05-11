@@ -14,6 +14,11 @@ TODO:
 
 
 
+*	2020.5.11
+
+	+	staffNotation.ts: refined MIDI notation events ids assignment.
+
+
 *	2020.5.10
 
 	+	profilter.vue: bake sheet by generator.
