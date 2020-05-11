@@ -252,9 +252,7 @@
 
 				this.doc.updateMatchedTokens(matchedIds);
 
-				//console.log("t5:", performance.now());
 				this.scheduler = SheetScheduler.createFromNotation(this.midiNotation, this.linkedTokens);
-				//console.log("t6:", performance.now());
 
 				this.$emit("update:matcherNotations", matcherNotations);
 			},

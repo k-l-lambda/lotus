@@ -119,6 +119,8 @@
 
 					if (this.sheetDocument && !this.noteIds)
 						this.sheetNotation = StaffNotation.parseNotationFromSheetDocument(this.sheetDocument);
+
+					console.log("t0.1:", performance.now());
 				}
 			},
 
