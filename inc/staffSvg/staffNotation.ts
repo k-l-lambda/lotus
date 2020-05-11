@@ -297,28 +297,14 @@ const matchNotations = async (midiNotation, svgNotation) => {
 	});
 	//console.log("after.path.forEach:", performance.now());
 
-	/*for (const note of midiNotation.notes) {
-		if (!note.ids)
-			continue;
-
-		const on = midiNotation.events.find(event => event.data.subtype === "noteOn"
-			&& event.data.noteNumber === note.pitch
-			&& event.ticks === note.startTick);
-		if (on)
-			on.data.ids = note.ids;
-
-		const off = midiNotation.events.find(event => event.data.subtype === "noteOff"
-			&& event.data.noteNumber === note.pitch
-			&& event.ticks === note.endTick);
-		if (off)
-			off.data.ids = note.ids;
-	}*/
+	// assign ids onto MIDI events
 	const events = midiNotation.notes.reduce((events, note) => {
 		events.push({ticks: note.startTick, subtype: "noteOn", pitch: note.pitch, ids: note.ids});
 		events.push({ticks: note.endTick, subtype: "noteOff", pitch: note.pitch, ids: note.ids});
 
 		return events;
-	}, []).sort((e1, e2) => e1.pitch - e2.pitch);
+	}, []).sort((e1, e2) => e1.ticks - e2.ticks);
+
 	let index = -1;
 	let ticks = -Infinity;
 	for (const event of midiNotation.events) {
@@ -334,18 +320,20 @@ const matchNotations = async (midiNotation, svgNotation) => {
 			continue;
 
 		for (let i = index; i < events.length; ++i) {
-			const ne = events[index];
-			if (ne > ticks)
+			const ne = events[i];
+			if (ne.ticks > ticks)
 				break;
-			else{
-				if (event.data.subtype === ne.subtype && event.data.noteNumber === ne.pitch)
+			else {
+				if (event.data.subtype === ne.subtype && event.data.noteNumber === ne.pitch) {
 					event.data.ids = ne.ids;
+					break;
+				}
 			}
 		}
 	}
 
 	//console.log("after.ids:", performance.now());
-	//console.log("midiNotation:", midiNotation);
+	//console.log("midiNotation:", midiNotation.events);
 
 	return {criterion, sample, path};
 };
