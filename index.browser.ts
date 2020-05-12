@@ -6,6 +6,7 @@ import * as lilyParser from "./inc/lilyParser";
 
 import SheetLive from "./app/components/sheet-live.vue";
 import SheetSigns from "./app/components/sheet-signs.vue";
+import * as SheetBaker from "./app/sheetBaker.ts";
 
 
 
@@ -16,4 +17,5 @@ export {
 	lilyParser,
 	SheetLive,
 	SheetSigns,
+	SheetBaker,
 };
