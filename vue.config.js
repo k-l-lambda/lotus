@@ -14,7 +14,6 @@ module.exports = {
 		},
 	},
 	chainWebpack: config => {
-		config;
 		// text file loader
 		config.module
 			.rule("raw-text")
