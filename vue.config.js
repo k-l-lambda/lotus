@@ -28,6 +28,9 @@ module.exports = {
 			.add(/.*\.min\.js$/)
 			.end();*/
 	},
+	css: {
+		extract: false,
+	},
 	devServer: {
 		proxy: `http://localhost:${process.env.PORT}`,
 		https: !!process.env.HTTPS,
