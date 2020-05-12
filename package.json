@@ -10,8 +10,7 @@
     "dev:inspect": "ts-node-dev --project ./tsconfig.node.json --inspect -- ./main.ts",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "build-node": "tsc --project ./tsconfig.node.json",
-    "build-lib": "vue-cli-service build --target lib --dest lib index.ts && vue-cli-service build --target lib --dest lib.browser index.browser.ts",
+    "build:lib": "vue-cli-service build --target lib --dest lib index.ts && vue-cli-service build --target lib --dest lib.browser index.browser.ts",
     "ts-dev": "ts-node-dev --project ./tsconfig.node.json",
     "ts-dev:inspect": "ts-node-dev --project ./tsconfig.node.json --inspect --"
   },
