@@ -5,6 +5,7 @@ import organizeTokens from "./organizeTokens";
 import LogRecorder from "../logRecorder";
 import StaffToken from "./staffToken";
 import SheetDocument from "./sheetDocument";
+import {recoverJSON} from "../jsonRecovery";
 
 
 
@@ -23,12 +24,16 @@ const parseSvgPage = (dom, ly, {logger = new LogRecorder(), attributes, ...optio
 };
 
 
+const recoverScoreJSON = text => recoverJSON(text, {StaffToken, SheetDocument});
+
+
 
 export {
 	svgToElements,
 	tokenizeElements,
 	organizeTokens,
 	parseSvgPage,
+	recoverScoreJSON,
 	StaffToken,
 	SheetDocument,
 };

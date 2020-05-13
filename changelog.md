@@ -1,5 +1,5 @@
 
-TODO:
+## TODO
 	playground: parse source document title
 	lilypond post processing
 		fix partial measures
@@ -12,6 +12,11 @@ TODO:
 	source editor
 		cursor position
 
+
+
+*	2020.5.13
+
+	+	staffSvg: added recoverScoreJSON.
 
 
 *	2020.5.11
