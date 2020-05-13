@@ -6,7 +6,7 @@
 			:width="page.width"
 			:height="page.height"
 			:viewBox="`${page.viewBox.x} ${page.viewBox.y} ${page.viewBox.width} ${page.viewBox.height}`"
-			:style="{['background-image']: backgroundImages && `url(${backgroundImages[i]})`}"
+			:style="{['background-image']: backgroundImages && backgroundImages[i] && `url(${backgroundImages[i]})`}"
 		>
 			<g v-if="!bakingMode">
 				<g class="row" v-for="(row, ii) of page.rows" :key="ii"
