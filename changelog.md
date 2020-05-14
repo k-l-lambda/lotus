@@ -14,6 +14,11 @@
 
 
 
+*	2020.5.14
+
+	+	vue.config.js: added webpack config externals.
+
+
 *	2020.5.13
 
 	+	staffSvg: added recoverScoreJSON.

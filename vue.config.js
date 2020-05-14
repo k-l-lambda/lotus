@@ -21,6 +21,10 @@ module.exports = {
 			.use("url-loader")
 			.loader("url-loader");
 
+		config.externals({
+			"@k-l-lambda/web-widgets": "@k-l-lambda/web-widgets",
+		});
+	
 		/*// ignore third-party packed js
 		config.module
 			.rule("js")
