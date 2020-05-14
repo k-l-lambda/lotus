@@ -22,7 +22,7 @@ module.exports = {
 			.loader("url-loader");
 
 		config.externals({
-			"@k-l-lambda/web-widgets": "@k-l-lambda/web-widgets",
+			musicWidgets: "@k-l-lambda/web-widgets",
 		});
 	
 		/*// ignore third-party packed js

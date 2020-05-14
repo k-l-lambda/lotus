@@ -20,7 +20,7 @@
 </template>
 
 <script>
-	import PinaoRoll from "@k-l-lambda/web-widgets/source/components/svg-piano-roll.vue";
+	import {SvgPianoRoll} from "@k-l-lambda/web-widgets";
 
 
 
@@ -36,7 +36,7 @@
 
 
 		components: {
-			PinaoRoll,
+			PinaoRoll: SvgPianoRoll,
 		},
 
 

@@ -145,8 +145,7 @@
 
 <script>
 	import resize from "vue-resize-directive";
-	import {MIDI, MidiAudio} from "@k-l-lambda/web-widgets";
-	import {sliceMidi} from "@k-l-lambda/web-widgets/source/inc/MidiUtils.js";
+	import {MIDI, MidiAudio, MidiUtils} from "@k-l-lambda/web-widgets";
 
 	import {downloadUrl} from "../utils.js";
 	import {mutexDelay} from "../delay.js";
@@ -491,7 +490,7 @@
 				if (!this.midi)
 					return null;
 
-				const partMidi = sliceMidi(this.midi, startTick, endTick);
+				const partMidi = MidiUtils.sliceMidi(this.midi, startTick, endTick);
 				console.log("partMidi:", partMidi);
 
 				const body = new FormData();

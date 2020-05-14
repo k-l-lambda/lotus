@@ -16,6 +16,8 @@
 
 *	2020.5.14
 
+	+	Upgrade web-widgets to 0.3.17.
+
 	+	vue.config.js: added webpack config externals.
 
 

@@ -133,7 +133,9 @@ const engraveSvg = async source => {
 		const buffer = await asyncCall(fs.readFile, midiFilename);
 		midi = MIDI.parseMidiData(buffer);
 	}
-	catch (_) {}
+	catch (err) {
+		console.log("[engraveSvg]	midi file reading failed:", midiFilename, err);
+	}
 
 	return {
 		logs: result.stderr,

@@ -1,5 +1,5 @@
 
-import Matcher from "@k-l-lambda/web-widgets/source/inc/Matcher";
+import {Matcher} from "@k-l-lambda/web-widgets";
 
 import LogRecorder from "../logRecorder";
 
