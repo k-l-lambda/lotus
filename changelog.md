@@ -17,6 +17,8 @@
 
 *	2020.5.15
 
+	+	sheet-live.vue: setNoteStatus added.
+
 	+	sheet-live.vue: statusMap added.
 
 

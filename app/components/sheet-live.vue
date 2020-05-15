@@ -78,7 +78,11 @@
 
 
 
-	const elemById = id => document.querySelector(`.token *[data-href='${id}']`);
+	const placeholderElement = () => ({
+		classList: new Set(),
+	});
+
+	const elemById = id => document.querySelector(`.token *[data-href='${id}']`) || placeholderElement();
 
 
 
@@ -195,15 +199,23 @@
 			},
 
 
+			setNoteStatus (noteIndex, className, on) {
+				if (this.midiNotation) {
+					const note = this.midiNotation.notes[noteIndex];
+					if (note)
+						note.ids.forEach(on ? id => this.statusMap.get(id).add(className) : id => this.statusMap.get(id).remove(className));
+					else
+						console.warn("invalid note index:", noteIndex, this.midiNotation.notes.length);
+				}
+			},
+
+
 			updateTokenStatus () {
 				if (this.midiNotation && this.noteHighlight) {
 					for (const note of this.midiNotation.notes) {
 						const on = this.midiPlayer.progressTime >= note.start && this.midiPlayer.progressTime < note.start + note.duration;
 						if (note.ids) {
 							note.ids.forEach(id => {
-								/*const token = this.linkedTokens.get(id);
-								if (token)
-									Vue.set(token, "on", on);*/
 								const status = this.statusMap.get(id);
 								if (on)
 									status.add("on");
