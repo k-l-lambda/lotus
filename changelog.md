@@ -1,5 +1,6 @@
 
 ## TODO
+	additional note marking on staff
 	playground: parse source document title
 	lilypond post processing
 		fix partial measures
@@ -12,6 +13,11 @@
 	source editor
 		cursor position
 
+
+
+*	2020.5.15
+
+	+	sheet-live.vue: statusMap added.
 
 
 *	2020.5.14

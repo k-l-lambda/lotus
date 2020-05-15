@@ -33,8 +33,8 @@
 							</g>
 							<SheetToken v-for="(token, i5) of measure.tokens" :key="i5" :token="token"
 								:classes="{
-									matched: matchedIds && matchedIds.has(token.href),
-									mismatched: token.is('NOTEHEAD') && matchedIds && !matchedIds.has(token.href),
+									matched: statusMap.has(token.href),
+									mismatched: token.is('NOTEHEAD') && !statusMap.has(token.href),
 									tied: token.tied,
 								}"
 							/>
@@ -56,9 +56,8 @@
 							<g v-for="(token, i5) of measure.matchedTokens" :key="i5"
 								:transform="`translate(${token.x}, ${token.y})`"
 								class="token"
-								:class="{on: token.on}"
 							>
-								<text>{{token.fontChar}}</text>
+								<text :data-href="token.href">{{token.fontChar}}</text>
 							</g>
 						</g>
 					</g>
@@ -76,6 +75,10 @@
 	import SheetScheduler from "../../inc/staffSvg/scheduler.ts";
 
 	import SheetToken from "./sheet-token.vue";
+
+
+
+	const elemById = id => document.querySelector(`.token *[data-href='${id}']`);
 
 
 
@@ -114,7 +117,8 @@
 			return {
 				midiPlayer: null,
 				scheduler: null,
-				matchedIds: new Set(),
+				//matchedIds: new Set(),
+				statusMap: new Map(),
 			};
 		},
 
@@ -152,17 +156,22 @@
 
 				return this.scheduler.lookupPosition(this.progressTicks);
 			},
+
+
+			matchedIds () {
+				//return new Set(this.statusMap.keys());
+				return this.statusMap;
+			},
 		},
 
 
 		created () {
-			//this.updateSheetNotation();
 			this.updateMidiNotation();
 		},
 
 
 		methods: {
-			onMidi (data, timestamp) {
+			onPlayerMidi (data, timestamp) {
 				this.$emit("midi", data, timestamp);
 
 				if (this.noteHighlight) {
@@ -170,7 +179,7 @@
 					setTimeout(() => {
 						//console.log("midi event:", data);
 						if (data.ids) {
-							const tokens = data.ids.map(id => this.linkedTokens.get(id));
+							/*const tokens = data.ids.map(id => this.linkedTokens.get(id));
 
 							switch (data.subtype) {
 							case "noteOn":
@@ -179,6 +188,17 @@
 								break;
 							case "noteOff":
 								tokens.forEach(token => token.on = false);
+
+								break;
+							}*/
+							switch (data.subtype) {
+							case "noteOn":
+							case "noteOff":
+								const on = data.subtype === "noteOn";
+								if (on)
+									data.ids.forEach(id => this.statusMap.get(id).add("on"));
+								else
+									data.ids.forEach(id => this.statusMap.get(id).remove("on"));
 
 								break;
 							}
@@ -194,9 +214,14 @@
 						const on = this.midiPlayer.progressTime >= note.start && this.midiPlayer.progressTime < note.start + note.duration;
 						if (note.ids) {
 							note.ids.forEach(id => {
-								const token = this.linkedTokens.get(id);
+								/*const token = this.linkedTokens.get(id);
 								if (token)
-									Vue.set(token, "on", on);
+									Vue.set(token, "on", on);*/
+								const status = this.statusMap.get(id);
+								if (on)
+									status.add("on");
+								else
+									status.remove("on");
 							});
 						}
 					}
@@ -208,7 +233,8 @@
 				//console.log("t1:", performance.now());
 				this.midiNotation = null;
 				this.scheduler = null;
-				this.matchedIds.clear();
+				//this.matchedIds.clear();
+				this.statusMap.clear();
 
 				if (this.midiPlayer) {
 					this.midiPlayer.dispose();
@@ -234,7 +260,7 @@
 
 				this.midiPlayer = new MidiPlayer(this.midiNotation, {
 					cacheSpan: 400,
-					onMidi: (data, timestamp) => this.onMidi(data, timestamp),
+					onMidi: (data, timestamp) => this.onPlayerMidi(data, timestamp),
 					onTurnCursor: () => this.updateTokenStatus(),
 				});
 			},
@@ -246,11 +272,13 @@
 				//console.log("matching:", this.midiNotation.notes.map(n => n.ids && n.ids[0]));
 				//console.log("t4:", performance.now());
 
-				const matchedIds = new Set();
+				/*const matchedIds = new Set();
 				this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));
-				this.matchedIds = matchedIds;
+				this.matchedIds = matchedIds;*/
 
-				this.doc.updateMatchedTokens(matchedIds);
+				this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => this.statusMap.set(id, elemById(id).classList)));
+
+				this.doc.updateMatchedTokens(this.matchedIds);
 
 				this.scheduler = SheetScheduler.createFromNotation(this.midiNotation, this.linkedTokens);
 
@@ -260,7 +288,6 @@
 
 
 		watch: {
-			//doc: "updateSheetNotation",
 			midi: "updateMidiNotation",
 
 
@@ -295,7 +322,7 @@
 					fill: $token-default-color;
 				}
 
-				&.on text
+				& text.on
 				{
 					fill: $token-on-color;
 					stroke-width: 0.1;
