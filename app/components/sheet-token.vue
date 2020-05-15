@@ -1,10 +1,10 @@
 <template>
 	<g class="token"
 		:transform="`translate(${token.x}, ${token.y})`"
-		:class="{on: token.on, ...classes}"
+		:class="classes"
 		:data-href="token.href"
 	>
-		<use :class="token.classes" :xlink:href="`#sign-${token.hash}`" />
+		<use :class="token.classes" :data-href="token.href" :xlink:href="`#sign-${token.hash}`" />
 	</g>
 </template>
 
@@ -37,11 +37,14 @@
 			//stroke-width: 0;
 		}
 
-		&.on use
+		&.matched
 		{
-			fill: $token-on-color;
-			stroke-width: 0.1;
-			stroke: $token-on-color;
+			use.on
+			{
+				fill: $token-on-color;
+				stroke-width: 0.1;
+				stroke: $token-on-color;
+			}
 		}
 	}
 </style>

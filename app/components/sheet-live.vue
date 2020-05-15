@@ -117,7 +117,6 @@
 			return {
 				midiPlayer: null,
 				scheduler: null,
-				//matchedIds: new Set(),
 				statusMap: new Map(),
 			};
 		},
@@ -179,18 +178,6 @@
 					setTimeout(() => {
 						//console.log("midi event:", data);
 						if (data.ids) {
-							/*const tokens = data.ids.map(id => this.linkedTokens.get(id));
-
-							switch (data.subtype) {
-							case "noteOn":
-								tokens.forEach(token => token.on = true);
-
-								break;
-							case "noteOff":
-								tokens.forEach(token => token.on = false);
-
-								break;
-							}*/
 							switch (data.subtype) {
 							case "noteOn":
 							case "noteOff":
@@ -233,7 +220,6 @@
 				//console.log("t1:", performance.now());
 				this.midiNotation = null;
 				this.scheduler = null;
-				//this.matchedIds.clear();
 				this.statusMap.clear();
 
 				if (this.midiPlayer) {
@@ -266,19 +252,20 @@
 			},
 
 
+			updateStatusMap () {
+				if (this.midiNotation)
+					this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => this.statusMap.set(id, elemById(id).classList)));
+			},
+
+
 			async matchNotations () {
 				const matcherNotations = this.noteIds ? StaffNotation.assignIds(this.midiNotation, this.noteIds)
 					: await StaffNotation.matchNotations(this.midiNotation, this.sheetNotation);
 				//console.log("matching:", this.midiNotation.notes.map(n => n.ids && n.ids[0]));
 				//console.log("t4:", performance.now());
 
-				/*const matchedIds = new Set();
-				this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));
-				this.matchedIds = matchedIds;*/
-
-				this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => this.statusMap.set(id, elemById(id).classList)));
-
-				this.doc.updateMatchedTokens(this.matchedIds);
+				this.updateStatusMap();
+				this.doc.updateMatchedTokens(this.statusMap);
 
 				this.scheduler = SheetScheduler.createFromNotation(this.midiNotation, this.linkedTokens);
 
@@ -293,6 +280,14 @@
 
 			midiPlayer (value) {
 				this.$emit("update:midiPlayer", value);
+			},
+
+
+			async bakingMode () {
+				await this.$nextTick();
+
+				this.updateStatusMap();
+				this.updateTokenStatus();
 			},
 		},
 	};
@@ -320,13 +315,13 @@
 					user-select: none;
 					font-size: 2.2px;
 					fill: $token-default-color;
-				}
 
-				& text.on
-				{
-					fill: $token-on-color;
-					stroke-width: 0.1;
-					stroke: $token-on-color;
+					&.on
+					{
+						fill: $token-on-color;
+						stroke-width: 0.1;
+						stroke: $token-on-color;
+					}
 				}
 			}
 		}
