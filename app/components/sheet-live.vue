@@ -78,8 +78,12 @@
 
 
 
+	class PlaceholderTokenList extends Set {
+		remove () {}
+	};
+
 	const placeholderElement = () => ({
-		classList: new Set(),
+		classList: new PlaceholderTokenList(),
 	});
 
 	const elemById = id => document.querySelector(`.token *[data-href='${id}']`) || placeholderElement();
@@ -210,6 +214,12 @@
 					else
 						console.warn("invalid note index:", noteIndex, this.midiNotation.notes.length);
 				}
+			},
+
+
+			clearNoteStatus () {
+				for (const status of this.statusMap.values())
+					status.value = "";
 			},
 
 
