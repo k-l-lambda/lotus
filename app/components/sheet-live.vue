@@ -55,7 +55,7 @@
 						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
 							<g v-for="(token, i5) of measure.matchedTokens" :key="i5"
 								:transform="`translate(${token.x}, ${token.y})`"
-								class="token"
+								class="token matched"
 							>
 								<text :data-href="token.href">{{token.fontChar}}</text>
 							</g>
@@ -181,6 +181,9 @@
 					const delay = Math.max(timestamp - performance.now(), 0);
 					setTimeout(() => {
 						//console.log("midi event:", data);
+						if (!this.midiPlayer.isPlaying)
+							return;
+
 						if (data.ids) {
 							switch (data.subtype) {
 							case "noteOn":
