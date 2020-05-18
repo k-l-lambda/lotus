@@ -15,6 +15,11 @@
 
 
 
+*	2020.5.18
+
+	+	sheetDocument.ts: addMarking added.
+
+
 *	2020.5.15
 
 	+	sheet-live.vue: clearNoteStatus added.

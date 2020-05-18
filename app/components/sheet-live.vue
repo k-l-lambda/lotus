@@ -60,6 +60,14 @@
 								<text :data-href="token.href">{{token.fontChar}}</text>
 							</g>
 						</g>
+						<g class="markings">
+							<g v-for="marking of staff.markings" :key="marking.id"
+								:transform="`translate(${marking.x}, ${marking.y})`"
+								:class="marking.cls"
+							>
+								<text>{{marking.text}}</text>
+							</g>
+						</g>
 					</g>
 				</g>
 			</g>
@@ -348,6 +356,15 @@
 						stroke: $token-on-color;
 					}
 				}
+			}
+		}
+
+		.markings
+		{
+			text
+			{
+				user-select: none;
+				font-size: 2.2px;
 			}
 		}
 	}

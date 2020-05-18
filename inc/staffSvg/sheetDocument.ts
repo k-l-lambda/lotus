@@ -5,6 +5,15 @@ declare class StaffToken {
 };
 
 
+interface StaffMarking {
+	id: string;
+	text: string;
+	cls?: string;
+	x: number;
+	y: number;
+};
+
+
 interface SheetMeasures {
 	tokens: StaffToken[];
 };
@@ -12,6 +21,8 @@ interface SheetMeasures {
 
 interface SheetStaff {
 	measures: SheetMeasures[];
+
+	markings: StaffMarking[];
 };
 
 
@@ -49,12 +60,15 @@ class SheetDocument {
 				.reduce((max, token) => Math.max(max, token.x), 0);
 
 			row.staves = row.staves.filter(s => s);
-			row.staves.forEach(staff =>
+			row.staves.forEach(staff => {
 				staff.measures.forEach(measure =>
 					measure.tokens.forEach(token => {
 						token.row = index;
 						token.endX = measure.noteRange.end;
-					})));
+					}));
+
+				staff.markings = [];
+			});
 		});
 	}
 
@@ -65,6 +79,29 @@ class SheetDocument {
 				staff.measures.forEach(measure =>
 					measure.matchedTokens = measure.tokens.filter(token => token.href && matchedIds.has(token.href))));
 		});
+	}
+
+
+	addMarking (rowIndex, staffIndex, data) {
+		const row = this.rows[rowIndex];
+		if (!row) {
+			console.warn("row index out of range:", rowIndex, this.rows.length);
+			return;
+		}
+
+		const staff = row.staves[staffIndex];
+		if (!staff) {
+			console.warn("staff index out of range:", staffIndex, row.staves.length);
+			return;
+		}
+
+		staff.markings.push(data);
+	}
+
+
+	removeMarking (id) {
+		this.rows.forEach(row => row.staves.forEach(staff =>
+			staff.markings = staff.markings.filter(marking => marking.id !== id)));
 	}
 
 
