@@ -62,7 +62,7 @@
 						</g>
 						<g class="markings">
 							<g v-for="marking of staff.markings" :key="marking.id"
-								:transform="`translate(${marking.x}, ${marking.y})`"
+								:transform="`translate(${marking.x}, ${marking.y + staff.yRoundOffset})`"
 								:class="marking.cls"
 							>
 								<text>{{marking.text}}</text>

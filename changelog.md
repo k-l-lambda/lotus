@@ -17,6 +17,8 @@
 
 *	2020.5.18
 
+	+	sheetDocument.ts: yRoundOffset on sheet staff added.
+
 	+	sheetDocument.ts: addMarking added.
 
 

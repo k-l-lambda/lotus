@@ -23,6 +23,11 @@ interface SheetStaff {
 	measures: SheetMeasures[];
 
 	markings: StaffMarking[];
+
+	// the third staff line Y coordinate value
+	//	The third staff line Y supposed to be zero, but regarding to the line stroke width,
+	//	there is some error for original values in SVG document (which erased by coordinate rounding).
+	yRoundOffset: number; // 0.0657 for default
 };
 
 
@@ -68,6 +73,7 @@ class SheetDocument {
 					}));
 
 				staff.markings = [];
+				staff.yRoundOffset = 0;
 			});
 		});
 	}
@@ -76,8 +82,15 @@ class SheetDocument {
 	updateMatchedTokens (matchedIds) {
 		this.rows.forEach(row => {
 			row.staves.forEach(staff =>
-				staff.measures.forEach(measure =>
-					measure.matchedTokens = measure.tokens.filter(token => token.href && matchedIds.has(token.href))));
+				staff.measures.forEach(measure => {
+					measure.matchedTokens = measure.tokens.filter(token => token.href && matchedIds.has(token.href));
+					
+					if (!staff.yRoundOffset) {
+						const token = measure.matchedTokens[0];
+						if (token)
+							staff.yRoundOffset = token.y - token.ry;
+					}
+				}));
 		});
 	}
 
@@ -102,6 +115,11 @@ class SheetDocument {
 	removeMarking (id) {
 		this.rows.forEach(row => row.staves.forEach(staff =>
 			staff.markings = staff.markings.filter(marking => marking.id !== id)));
+	}
+
+
+	clearMarkings () {
+		this.rows.forEach(row => row.staves.forEach(staff => staff.markings = []));
 	}
 
 
