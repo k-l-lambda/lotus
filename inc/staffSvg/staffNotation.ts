@@ -83,7 +83,12 @@ class PitchContextTable {
 			}
 		}
 
-		items.forEach((item, i) => item.endTick = (i < items.length - 1 ? items[i + 1].tick : Infinity));
+		// assign end ticks
+		items.forEach((item, i) => item.endTick = (i + 1 < items.length ? items[i + 1].tick : Infinity));
+
+		// start from 0
+		if (items[0])
+			items[0].tick = 0;
 
 		return new PitchContextTable({items});
 	}

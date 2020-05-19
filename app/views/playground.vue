@@ -68,9 +68,9 @@
 					<SheetLive v-if="tokenizeStaff && sheetDocument" ref="sheet"
 						:doc="sheetDocument"
 						:sheetNotation="sheetNotation"
-						:midi="midi"
+						:midiNotation="midiNotation"
+						:pitchContextGroup="pitchContextGroup"
 						:midiPlayer.sync="midiPlayer"
-						:matcherNotations.sync="matcherNotations"
 						:showMark="true"
 						:showCursor="showCursor"
 						:bakingMode="bakingSheet"
@@ -221,6 +221,7 @@
 				svgHashTable: null,
 				midi: null,
 				midiNotation: null,
+				pitchContextGroup: null,
 				chromaticSymbols: false,
 				midiPlayer: null,
 				rollVisible: false,
@@ -377,6 +378,7 @@
 				this.svgHashTable = null;
 				this.midi = null;
 				this.midiNotation = null;
+				this.pitchContextGroup = null;
 				this.midiPlayer = null;
 				this.matcherNotations = null;
 				this.bakingImages = null;
@@ -448,8 +450,8 @@
 						this.updateSheetNotation();
 
 						if (this.midi) {
-							this.midiNotation = MusicNotation.Notation.parseMidi(this.midi);
-							this.matchNotations();
+							const midiNotation = MusicNotation.Notation.parseMidi(this.midi);
+							this.matchNotations(midiNotation);
 						}
 					}
 					else
@@ -532,18 +534,23 @@
 			},
 
 
-			async matchNotations () {
-				console.assert(this.midiNotation, "midiNotation is null.");
+			async matchNotations (midiNotation) {
+				console.assert(midiNotation, "midiNotation is null.");
 				console.assert(this.sheetNotation, "sheetNotation is null.");
 
-				this.matcherNotations = await StaffNotation.matchNotations(this.midiNotation, this.sheetNotation);
+				this.matcherNotations = await StaffNotation.matchNotations(midiNotation, this.sheetNotation);
 
-				const matchedIds = new Set();
-				this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));
+				this.matchedIds = new Set();
+				midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => this.matchedIds.add(id)));
 
-				this.sheetDocument.updateMatchedTokens(matchedIds);
+				this.sheetDocument.updateMatchedTokens(this.matchedIds);
+
+				this.midiNotation = midiNotation;
 
 				this.pitchContextGroup = StaffNotation.createPitchContextGroup(this.sheetNotation.pitchContexts, this.midiNotation);
+
+				if (this.bakingSheet && this.$refs.sheet)
+					this.bakeSheet();
 			},
 
 
@@ -627,9 +634,9 @@
 
 			async bakeSheet () {
 				console.assert(this.svgDocuments, "svgDocuments is null.");
-				console.assert(this.$refs.sheet, "sheet is null.");
+				console.assert(this.matchedIds, "matchedIds is null.");
 
-				this.bakingImages = await SheetBaker.bakeRawSvgs(this.svgDocuments, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas);
+				this.bakingImages = await SheetBaker.bakeRawSvgs(this.svgDocuments, this.matchedIds, this.$refs.canvas);
 			},
 		},
 
@@ -662,15 +669,15 @@
 			},
 
 
-			matcherNotations () {
+			/*matcherNotations () {
 				if (this.bakingSheet && this.$refs.sheet)
 					this.bakeSheet();
-			},
+			},*/
 
 
 			bakingSheet (value) {
 				if (value) {
-					if (this.svgDocuments && this.$refs.sheet)
+					if (this.svgDocuments && this.matchedIds)
 						this.bakeSheet();
 				}
 				else

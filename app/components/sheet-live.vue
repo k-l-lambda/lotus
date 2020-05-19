@@ -109,9 +109,9 @@
 
 		props: {
 			doc: Object,
-			midi: Object,
+			midiNotation: Object,
 			sheetNotation: Object,
-			noteIds: Array,
+			pitchContextGroup: Array,
 			showMark: Boolean,
 			showCursor: {
 				type: Boolean,
@@ -171,17 +171,11 @@
 
 				return this.scheduler.lookupPosition(this.progressTicks);
 			},
-
-
-			matchedIds () {
-				//return new Set(this.statusMap.keys());
-				return this.statusMap;
-			},
 		},
 
 
 		created () {
-			this.updateMidiNotation();
+			this.preparePlayer();
 		},
 
 
@@ -249,9 +243,8 @@
 			},
 
 
-			async updateMidiNotation () {
+			async preparePlayer () {
 				//console.log("t1:", performance.now());
-				this.midiNotation = null;
 				this.scheduler = null;
 				this.statusMap.clear();
 
@@ -260,16 +253,14 @@
 					this.midiPlayer = null;
 				}
 
-				if (this.midi) {
-					this.midiNotation = MusicNotation.Notation.parseMidi(this.midi);
+				if (this.midiNotation) {
 					this.updateMidiPlayer();
 
-					//console.log("t2:", performance.now());
-					await this.$nextTick();
-					//console.log("t3:", performance.now());
-					if (this.midiNotation && (this.noteIds || this.sheetNotation)) 
-						this.matchNotations();
+					this.updateStatusMap();
+
+					this.scheduler = SheetScheduler.createFromNotation(this.midiNotation, this.linkedTokens);
 				}
+				
 			},
 
 
@@ -291,24 +282,25 @@
 			},
 
 
-			async matchNotations () {
-				const matcherNotations = this.noteIds ? StaffNotation.assignIds(this.midiNotation, this.noteIds)
-					: await StaffNotation.matchNotations(this.midiNotation, this.sheetNotation);
-				//console.log("matching:", this.midiNotation.notes.map(n => n.ids && n.ids[0]));
-				//console.log("t4:", performance.now());
+			addMarkingByTick (tick, pitch, staffIndex, {id, cls, text = "\u0174"} = {}) {
+				if (!this.pitchContextGroup) {
+					console.warn("[addMarkingByTick]	pitchContextGroup is required.");
+					return;
+				}
 
-				this.updateStatusMap();
-				this.doc.updateMatchedTokens(this.statusMap);
+				const position = this.scheduler.lookupPosition(tick);
+				if (!position) {
+					console.warn("[addMarkingByTick]	invalid tick:", tick);
+					return;
+				}
 
-				this.scheduler = SheetScheduler.createFromNotation(this.midiNotation, this.linkedTokens);
-
-				this.$emit("update:matcherNotations", matcherNotations);
+				// TODO:
 			},
 		},
 
 
 		watch: {
-			midi: "updateMidiNotation",
+			midiNotation: "preparePlayer",
 
 
 			midiPlayer (value) {

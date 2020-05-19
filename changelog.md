@@ -17,6 +17,8 @@
 
 *	2020.5.19
 
+	+	sheet-live.vue: simplified data preprocessing.
+
 	+	staffNotation.ts: PitchContextTable added.
 
 	+	staffNotation.ts: pitch contexts on NotationTrack added.

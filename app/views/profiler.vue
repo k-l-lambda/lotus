@@ -114,6 +114,8 @@
 					this.midi = data.midi;
 					this.noteIds = data.noteIds;
 
+					// TODO: StaffNotation.assignIds(this.midiNotation, this.noteIds)
+
 					if (!this.midi)
 						console.warn("No midi data, baking will fail.");
 
