@@ -61,11 +61,12 @@
 							</g>
 						</g>
 						<g class="markings">
-							<g v-for="marking of staff.markings" :key="marking.id"
+							<g v-for="marking of staff.markings" :key="marking.index"
 								:transform="`translate(${marking.x}, ${marking.y + staff.yRoundOffset})`"
 								:class="marking.cls"
 							>
 								<text>{{marking.text}}</text>
+								<text class="alter" v-if="marking.alterText" x="-0.2" y="0">{{marking.alterText}}</text>
 							</g>
 						</g>
 					</g>
@@ -300,10 +301,9 @@
 				}
 
 				const context = contextTable.lookup(tick);
-				const symbol = context.pitchToY(pitch);
-				console.log("symbol:", symbol);
+				const {y, alter} = context.pitchToY(pitch);
 
-				// TODO: this.doc.addMarking
+				this.doc.addMarking(position.row, staffIndex, {x: position.x + xoffset, y, text, alter, id, cls});
 			},
 
 
@@ -320,6 +320,16 @@
 					id = note.ids[0];
 
 				this.addMarkingByTick(note.startTick, pitch, note.staffTrack, {id, cls, text, xoffset: 1.2});
+			},
+
+
+			removeMarking (id) {
+				this.doc.removeMarking(id);
+			},
+
+
+			clearMarkings () {
+				this.doc.clearMarkings();
 			},
 		},
 
@@ -382,6 +392,11 @@
 			{
 				user-select: none;
 				font-size: 2.2px;
+			}
+
+			.alter
+			{
+				text-anchor: end;
 			}
 		}
 	}

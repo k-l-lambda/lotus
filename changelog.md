@@ -17,6 +17,8 @@
 
 *	2020.5.19
 
+	+	sheet-live.vue: methods of add/remove marking implemented.
+
 	+	staffNotation.ts: PitchContext.pitchToY implemented.
 
 	+	sheet-live.vue: simplified data preprocessing.

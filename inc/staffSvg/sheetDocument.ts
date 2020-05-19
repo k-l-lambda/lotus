@@ -42,6 +42,47 @@ interface SheetPage {
 };
 
 
+/*const ALTER_PREFIXES = {
+	[-2]: "\u266D\u266D",
+	[-1]: "\u266D",
+	[0]: "\u266E",
+	[1]: "\u266F",
+	[2]: "\uD834\uDD2A",
+};*/
+const ALTER_PREFIXES = {
+	[-2]: "\u0125",
+	[-1]: "\u0122",
+	[0]: "\u0123",
+	[1]: "\u0121",
+	[2]: "\u0124",
+};
+
+
+let sheetMarkingIndex = 0;
+
+
+class SheetMarking {
+	alter?: number;
+	index: number;	// as v-for key
+
+	id?: string;
+	x?: number;
+	y?: number;
+	cls?: string;
+
+
+	constructor (fields) {
+		this.index = sheetMarkingIndex++;
+		Object.assign(this, fields);
+	}
+
+
+	get alterText () {
+		return Number.isInteger(this.alter) ? ALTER_PREFIXES[this.alter] : null;
+	}
+};
+
+
 class SheetDocument {
 	pages: SheetPage[];
 
@@ -108,7 +149,7 @@ class SheetDocument {
 			return;
 		}
 
-		staff.markings.push(data);
+		staff.markings.push(new SheetMarking(data));
 	}
 
 
