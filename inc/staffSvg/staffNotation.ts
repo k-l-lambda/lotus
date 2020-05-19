@@ -1,4 +1,5 @@
 
+import sha1 from "sha1";
 import {Matcher} from "@k-l-lambda/web-widgets";
 
 import LogRecorder from "../logRecorder";
@@ -45,6 +46,11 @@ class PitchContext {
 	pitchToY (pitch: number): number {
 		// TODO:
 	}
+
+
+	get hash () {
+		return sha1(JSON.stringify(this));
+	}
 };
 
 
@@ -53,6 +59,14 @@ class NotationTrack {
 	notes: NotationNote[] = [];
 
 	contexts: PitchContext[] = [];
+
+
+	get lastPitchContext () {
+		if (this.contexts.length)
+			return this.contexts[this.contexts.length - 1];
+
+		return null;
+	}
 
 
 	appendNote (time, data) {
@@ -86,11 +100,12 @@ class StaffContext {
 		if (this.dirty) {
 			const context = new PitchContext({
 				clef: this.clef,
-				keyAlters: this.keyAlters,
+				keyAlters: [...this.keyAlters],
 				octaveShift: this.octaveShift,
-				alters: this.alters,
+				alters: [...this.alters],
 			});
-			this.track.contexts.push(context);
+			if (!this.track.lastPitchContext || context.hash !== this.track.lastPitchContext.hash)
+				this.track.contexts.push(context);
 
 			this.dirty = false;
 		}
