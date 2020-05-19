@@ -54,6 +54,52 @@ class PitchContext {
 };
 
 
+interface PitchContextItem {
+	tick: number;
+	endTick: number;
+	context: PitchContext;
+};
+
+
+class PitchContextTable {
+	items: PitchContextItem[];
+
+
+	static createFromNotation (contexts: PitchContext[], midiNotation, track: number) {
+		const items = [];
+
+		let index = -1;
+		const notes = midiNotation.notes.filter(note => note.staffTrack === track);
+		for (const note of notes) {
+			while (note.contextIndex > index) {
+				++index;
+				const context = contexts[index];
+				console.assert(context, "invalid contextIndex:", index, note.contextIndex, contexts.length);
+
+				items.push({
+					tick: note.startTick,
+					context,
+				});
+			}
+		}
+
+		items.forEach((item, i) => item.endTick = (i < items.length - 1 ? items[i + 1].tick : Infinity));
+
+		return new PitchContextTable({items});
+	}
+
+
+	constructor ({items}) {
+		this.items = items;
+	}
+
+
+	lookup (tick) {
+		return this.items.find(item => tick >= item.tick && tick < item.endTick);
+	}
+};
+
+
 class NotationTrack {
 	endTime = 0;
 	notes: NotationNote[] = [];
@@ -378,7 +424,7 @@ const matchNotations = async (midiNotation, svgNotation) => {
 				noteMap[index].ids.push(note.id);
 			}
 			else {
-				const sn = {start: note.time * 16, pitch: note.pitch, id: note.id};
+				const sn = {start: note.time * 16, pitch: note.pitch, id: note.id, track: note.track, contextIndex: note.contextIndex};
 				noteMap[index] = sn;
 				notePMap[sn.pitch] = sn;
 				notes.push(sn);
@@ -422,6 +468,8 @@ const matchNotations = async (midiNotation, svgNotation) => {
 			const cn = criterion.notes[ci];
 			const ids = cn.ids || [cn.id];
 			midiNotation.notes[si].ids = ids;
+			midiNotation.notes[si].staffTrack = cn.track;
+			midiNotation.notes[si].contextIndex = cn.contextIndex;
 		}
 	});
 	//console.log("after.path.forEach:", performance.now());
@@ -449,9 +497,15 @@ const assignIds = (midiNotation, noteIds) => {
 };
 
 
+const createPitchContextGroup = (contextGroup: PitchContext[][], midiNotation): PitchContextTable[] =>
+	contextGroup.map((contexts, track) => PitchContextTable.createFromNotation(contexts, midiNotation, track));
+
+
 
 export {
 	parseNotationFromSheetDocument,
 	matchNotations,
 	assignIds,
+	PitchContextTable,
+	createPitchContextGroup,
 };

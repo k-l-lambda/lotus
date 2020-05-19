@@ -17,6 +17,8 @@
 
 *	2020.5.19
 
+	+	staffNotation.ts: PitchContextTable added.
+
 	+	staffNotation.ts: pitch contexts on NotationTrack added.
 
 

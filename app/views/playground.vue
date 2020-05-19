@@ -145,7 +145,7 @@
 
 <script>
 	import resize from "vue-resize-directive";
-	import {MIDI, MidiAudio, MidiUtils} from "@k-l-lambda/web-widgets";
+	import {MIDI, MidiAudio, MidiUtils, MusicNotation} from "@k-l-lambda/web-widgets";
 
 	import {downloadUrl} from "../utils.js";
 	import {mutexDelay} from "../delay.js";
@@ -220,6 +220,7 @@
 				sheetNotation: null,
 				svgHashTable: null,
 				midi: null,
+				midiNotation: null,
 				chromaticSymbols: false,
 				midiPlayer: null,
 				rollVisible: false,
@@ -375,6 +376,7 @@
 				this.sheetNotation = null;
 				this.svgHashTable = null;
 				this.midi = null;
+				this.midiNotation = null;
 				this.midiPlayer = null;
 				this.matcherNotations = null;
 				this.bakingImages = null;
@@ -444,6 +446,11 @@
 						this.midi = result.midi;
 
 						this.updateSheetNotation();
+
+						if (this.midi) {
+							this.midiNotation = MusicNotation.Notation.parseMidi(this.midi);
+							this.matchNotations();
+						}
 					}
 					else
 						this.clearSheet();
@@ -522,6 +529,21 @@
 
 					console.log("sheet notation parsed:", logger.toJSON());
 				}
+			},
+
+
+			async matchNotations () {
+				console.assert(this.midiNotation, "midiNotation is null.");
+				console.assert(this.sheetNotation, "sheetNotation is null.");
+
+				this.matcherNotations = await StaffNotation.matchNotations(this.midiNotation, this.sheetNotation);
+
+				const matchedIds = new Set();
+				this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));
+
+				this.sheetDocument.updateMatchedTokens(matchedIds);
+
+				this.pitchContextGroup = StaffNotation.createPitchContextGroup(this.sheetNotation.pitchContexts, this.midiNotation);
 			},
 
 

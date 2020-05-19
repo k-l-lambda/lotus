@@ -79,7 +79,7 @@ class SheetDocument {
 	}
 
 
-	updateMatchedTokens (matchedIds) {
+	updateMatchedTokens (matchedIds: Set<string>) {
 		this.rows.forEach(row => {
 			row.staves.forEach(staff =>
 				staff.measures.forEach(measure => {

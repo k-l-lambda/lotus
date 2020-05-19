@@ -26,7 +26,7 @@ export default class Scheduler {
 	tickTable: TickItem[];
 
 
-	static createFromNotation (midiNotation, tokenMap) {
+	static createFromNotation (midiNotation, tokenMap: Map<string, StaffToken>) {
 		const tokenTable: {[key: number]: StaffToken[]} = {};
 
 		midiNotation.notes.forEach(note => {
