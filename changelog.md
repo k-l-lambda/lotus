@@ -17,6 +17,8 @@
 
 *	2020.5.19
 
+	+	playground.vue: refined exportScore.
+
 	+	sheet-live.vue: methods of add/remove marking implemented.
 
 	+	staffNotation.ts: PitchContext.pitchToY implemented.

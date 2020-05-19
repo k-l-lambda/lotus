@@ -66,6 +66,17 @@ class PitchContext {
 	}
 
 
+	toJSON () {
+		return {
+			__prototype: "PitchContext",
+			clef: this.clef,
+			keyAlters: this.keyAlters,
+			octaveShift: this.octaveShift,
+			alters: this.alters,
+		};
+	}
+
+
 	get keySignature () {
 		return this.keyAlters.filter(a => Number.isInteger(a)).reduce((sum, a) => sum + a, 0);
 	}
@@ -570,6 +581,7 @@ export {
 	parseNotationFromSheetDocument,
 	matchNotations,
 	assignIds,
+	PitchContext,
 	PitchContextTable,
 	createPitchContextGroup,
 };

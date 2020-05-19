@@ -144,6 +144,7 @@
 </template>
 
 <script>
+	import _ from "lodash";
 	import resize from "vue-resize-directive";
 	import {MIDI, MidiAudio, MidiUtils, MusicNotation} from "@k-l-lambda/web-widgets";
 
@@ -555,15 +556,17 @@
 
 
 			exportScore () {
-				console.assert(this.$refs.sheet, "sheet is null.");
+				console.assert(this.sheetDocument, "sheetDocument is null.");
+				console.assert(this.pitchContextGroup, "pitchContextGroup is null.");
 
-				const noteIds = this.$refs.sheet.midiNotation.notes.map(note => note.ids);
+				const noteLinkings = this.$refs.sheet.midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
 
 				const data = {
 					doc: this.sheetDocument,
 					midi: this.midi,
 					hashTable: this.svgHashTable,
-					noteIds,
+					noteLinkings,
+					pitchContextGroup: this.pitchContextGroup,
 				};
 				const blob = new Blob([JSON.stringify(data)]);
 				downloadUrl(URL.createObjectURL(blob), "score.json");
