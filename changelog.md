@@ -17,6 +17,8 @@
 
 *	2020.5.19
 
+	+	staffNotation.ts: PitchContext.pitchToY implemented.
+
 	+	sheet-live.vue: simplified data preprocessing.
 
 	+	staffNotation.ts: PitchContextTable added.

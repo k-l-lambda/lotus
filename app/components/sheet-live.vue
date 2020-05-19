@@ -77,9 +77,8 @@
 
 <script>
 	import Vue from "vue";
-	import {MusicNotation, MidiPlayer} from "@k-l-lambda/web-widgets";
+	import {MidiPlayer} from "@k-l-lambda/web-widgets";
 
-	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import SheetScheduler from "../../inc/staffSvg/scheduler.ts";
 
 	import SheetToken from "./sheet-token.vue";
@@ -282,9 +281,15 @@
 			},
 
 
-			addMarkingByTick (tick, pitch, staffIndex, {id, cls, text = "\u0174"} = {}) {
+			addMarkingByTick (tick, pitch, staffIndex, {id, cls, text = "\u0174", xoffset = 0} = {}) {
 				if (!this.pitchContextGroup) {
 					console.warn("[addMarkingByTick]	pitchContextGroup is required.");
+					return;
+				}
+
+				const contextTable = this.pitchContextGroup[staffIndex];
+				if (!contextTable) {
+					console.warn("[addMarkingByTick]	invalid staffIndex:", staffIndex, this.pitchContextGroup.length);
 					return;
 				}
 
@@ -294,7 +299,27 @@
 					return;
 				}
 
-				// TODO:
+				const context = contextTable.lookup(tick);
+				const symbol = context.pitchToY(pitch);
+				console.log("symbol:", symbol);
+
+				// TODO: this.doc.addMarking
+			},
+
+
+			addMarkingByNote (noteIndex, pitch, {id = null, cls, text = "\u0174"} = {}) {
+				console.assert(this.midiNotation, "[addMarkingByNote]	midiNotation is null.");
+
+				const note = this.midiNotation.notes[noteIndex];
+				if (!note) {
+					console.warn("[addMarkingByNote]	invalid noteIndex:", noteIndex, this.midiNotation.notes.length);
+					return;
+				}
+
+				if (!id)
+					id = note.ids[0];
+
+				this.addMarkingByTick(note.startTick, pitch, note.staffTrack, {id, cls, text, xoffset: 1.2});
 			},
 		},
 

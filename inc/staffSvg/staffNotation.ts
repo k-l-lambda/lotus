@@ -9,15 +9,23 @@ import LogRecorder from "../logRecorder";
 const TICKS_PER_BEAT = 480;
 
 const GROUP_N_TO_PITCH = [0, 2, 4, 5, 7, 9, 11];
+const MIDDLE_C = 60;
 
 
 const mod7 = x => {
-	while (x >= 7)
-		x -= 7;
-	while (x < 0)
-		x += 7;
+	let y = x % 7;
+	while (y < 0)
+		y += 7;
 
-	return x;
+	return y;
+};
+
+const mod12 = x => {
+	let y = x % 12;
+	while (y < 0)
+		y += 12;
+
+	return y;
 };
 
 
@@ -29,6 +37,21 @@ interface NotationNote {
 	tied: boolean;
 	contextIndex: number;
 };
+
+
+/*
+	Coordinates:
+
+		note:
+			zero: the middle C line (maybe altered)
+			positive: high (right on piano keyboard)
+			unit: a step in scales of the current staff key
+
+		staff Y:
+			zero: the third (middle) line among 5 staff lines
+			positive: down
+			unit: a interval between 2 neighbor staff lines
+*/
 
 
 class PitchContext {
@@ -43,8 +66,44 @@ class PitchContext {
 	}
 
 
-	pitchToY (pitch: number): number {
-		// TODO:
+	get keySignature () {
+		return this.keyAlters.filter(a => Number.isInteger(a)).reduce((sum, a) => sum + a, 0);
+	}
+
+
+	noteToY (note: number): number {
+		return -note / 2 - this.clef - this.octaveShift * 3.5;
+	}
+
+
+	pitchToNote (pitch: number, {preferredAlter = null} = {}) {
+		if (!preferredAlter)
+			preferredAlter = this.keySignature < 0 ? -1 : 1;
+
+		const group = Math.floor((pitch - MIDDLE_C) / 12);
+		const gp = mod12(pitch);
+		const alteredGp = GROUP_N_TO_PITCH.includes(gp) ? gp : mod12(gp - preferredAlter);
+		const gn = GROUP_N_TO_PITCH.indexOf(alteredGp);
+		console.assert(gn >= 0, "invalid preferredAlter:", pitch, preferredAlter, alteredGp);
+
+		const naturalNote = group * 7 + gn;
+
+		const alterValue = gp - alteredGp;
+		const keyAlterValue = this.keyAlters[gn] || 0;
+		const onAcc = Number.isInteger(this.alters[naturalNote]);
+
+		const alter = onAcc ? alterValue :
+			(alterValue === keyAlterValue ? null : alterValue);
+
+		return {note: naturalNote, alter};
+	}
+
+
+	pitchToY (pitch: number, {preferredAlter = null} = {}) {
+		const {note, alter} = this.pitchToNote(pitch, {preferredAlter});
+		const y = this.noteToY(note);
+
+		return {y, alter};
 	}
 
 
@@ -100,7 +159,7 @@ class PitchContextTable {
 
 
 	lookup (tick) {
-		return this.items.find(item => tick >= item.tick && tick < item.endTick);
+		return this.items.find(item => tick >= item.tick && tick < item.endTick).context;
 	}
 };
 
@@ -230,7 +289,7 @@ class StaffContext {
 
 
 	yToNote (y) {
-		return (-y - this.clef) * 2;
+		return (-y - this.octaveShift * 3.5 - this.clef) * 2;
 	}
 
 
@@ -247,10 +306,10 @@ class StaffContext {
 
 
 	noteToPitch (note) {
-		const group = Math.floor(note / 7) - this.octaveShift;
+		const group = Math.floor(note / 7);
 		const gn = mod7(note);
 
-		return (group + 5) * 12 + GROUP_N_TO_PITCH[gn] + this.alterOnNote(note);
+		return MIDDLE_C + group * 12 + GROUP_N_TO_PITCH[gn] + this.alterOnNote(note);
 	}
 
 
