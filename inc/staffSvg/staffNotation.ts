@@ -20,9 +20,39 @@ const mod7 = x => {
 };
 
 
+interface NotationNote {
+	track?: number;
+	time: number;
+	pitch: number;
+	id: number;
+	tied: boolean;
+	contextIndex: number;
+};
+
+
+class PitchContext {
+	clef = -3;
+	keyAlters = [];
+	octaveShift = 0;
+	alters = [];
+
+
+	constructor (data) {
+		Object.assign(this, data);
+	}
+
+
+	pitchToY (pitch: number): number {
+		// TODO:
+	}
+};
+
+
 class NotationTrack {
 	endTime = 0;
-	notes = [];
+	notes: NotationNote[] = [];
+
+	contexts: PitchContext[] = [];
 
 
 	appendNote (time, data) {
@@ -44,19 +74,46 @@ class StaffContext {
 	alters = [];
 	track = new NotationTrack();
 
+	dirty = true;
+
 
 	constructor ({logger}) {
 		this.logger = logger;
 	}
 
 
+	snapshot () {
+		if (this.dirty) {
+			const context = new PitchContext({
+				clef: this.clef,
+				keyAlters: this.keyAlters,
+				octaveShift: this.octaveShift,
+				alters: this.alters,
+			});
+			this.track.contexts.push(context);
+
+			this.dirty = false;
+		}
+
+		return this.track.contexts.length - 1;
+	}
+
+
 	resetKeyAlters () {
-		this.keyAlters = [];
+		if (this.keyAlters.length) {
+			this.keyAlters = [];
+
+			this.dirty = true;
+		}
 	}
 
 
 	resetAlters () {
-		this.alters = [];
+		if (this.alters.length) {
+			this.alters = [];
+
+			this.dirty = true;
+		}
 	}
 
 
@@ -65,29 +122,44 @@ class StaffContext {
 
 		const n = mod7(this.yToNote(y));
 		this.keyAlters[n] = value;
+
+		this.dirty = true;
 	}
 
 
 	setAlter (y, value) {
 		//console.log("setAlter:", y, value);
 		this.alters[this.yToNote(y)] = value;
+
+		this.dirty = true;
 	}
 
 
 	setClef (y, value) {
-		this.clef = -y - value / 2;
+		const clef = -y - value / 2;
+		if (clef !== this.clef) {
+			this.clef = clef;
+
+			this.dirty = true;
+		}
 	}
 
 
 	setOctaveShift (value) {
-		this.octaveShift = value;
+		if (this.octaveShift !== value) {
+			this.octaveShift = value;
 
-		this.logger.append("octaveShift", value);
+			this.dirty = true;
+	
+			this.logger.append("octaveShift", value);
+		}
 	}
 
 
 	setBeatsPerMeasure (value) {
 		this.beatsPerMeasure = value;
+
+		// this won't change pitch context
 	}
 
 
@@ -151,12 +223,15 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 				context.setBeatsPerMeasure(token.timeSignatureValue);
 		}
 		else if (token.is("NOTEHEAD")) {
+			const contextIndex = context.snapshot();
+
 			const note = {
 				x: token.rx - measure.noteRange.begin,
 				y: token.ry,
 				pitch: context.yToPitch(token.ry),
 				id: token.href,
 				tied: token.tied,
+				contextIndex,
 			};
 			notes.push(note);
 
@@ -184,6 +259,7 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 			pitch: note.pitch,
 			id: note.id,
 			tied: note.tied,
+			contextIndex: note.contextIndex,
 		});
 	});
 
@@ -226,6 +302,7 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 	return {
 		endTime: contexts[0].track.endTime,
 		notes,
+		pitchContexts: contexts.map(context => context.track.contexts),
 	};
 };
 

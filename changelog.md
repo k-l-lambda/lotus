@@ -15,6 +15,11 @@
 
 
 
+*	2020.5.19
+
+	+	staffNotation.ts: pitch contexts on NotationTrack added.
+
+
 *	2020.5.18
 
 	+	sheetDocument.ts: yRoundOffset on sheet staff added.
