@@ -14,16 +14,15 @@
 			<SheetSigns v-if="svgHashTable" ref="signs" v-show="false" :hashTable="svgHashTable" />
 			<SheetLive v-if="sheetDocument" ref="sheet"
 				:doc="sheetDocument"
-				:sheetNotation="sheetNotation"
-				:noteIds="noteIds"
 				:midi="midi"
+				:midiNotation="midiNotation"
+				:pitchContextGroup="pitchContextGroup"
 				:midiPlayer.sync="midiPlayer"
 				:showCursor="showCursor"
 				:noteHighlight="noteHighlight"
 				:bakingMode="bakingSheet"
 				:backgroundImages="bakingSheet ? bakingImages : null"
 				@midi="onMidi"
-				@update:matcherNotations="bakeSheet"
 			/>
 		</main>
 		<canvas v-show="false" ref="canvas" />
@@ -31,12 +30,13 @@
 </template>
 
 <script>
+	import {MusicNotation} from "@k-l-lambda/web-widgets";
+
 	import "../utils.js";
 	import {animationDelay} from "../delay.js";
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
-	import StaffToken from "../../inc/staffSvg/staffToken.ts";
-	import SheetDocument from "../../inc/staffSvg/sheetDocument.ts";
+	import {StaffToken, SheetDocument, PitchContext} from "../../inc/staffSvg";
 	import * as SheetBaker from "../sheetBaker.ts";
 
 	import SheetLive from "../components/sheet-live.vue";
@@ -62,9 +62,10 @@
 			return {
 				sourceText: null,
 				sheetDocument: null,
-				sheetNotation: null,
 				svgHashTable: null,
 				midi: null,
+				midiNotation: null,
+				pitchContextGroup: null,
 				midiPlayer: null,
 				showCursor: true,
 				noteHighlight: true,
@@ -106,23 +107,37 @@
 				this.bakingImages = null;
 
 				if (this.sourceText) {
-					const data = recoverJSON(this.sourceText, {StaffToken, SheetDocument});
+					const data = recoverJSON(this.sourceText, {StaffToken, SheetDocument, PitchContext});
 					//console.log("data:", data);
 
 					this.sheetDocument = data.doc;
 					this.svgHashTable = data.hashTable;
 					this.midi = data.midi;
-					this.noteIds = data.noteIds;
-
-					// TODO: StaffNotation.assignIds(this.midiNotation, this.noteIds)
+					this.pitchContextGroup = data.pitchContextGroup;
 
 					if (!this.midi)
 						console.warn("No midi data, baking will fail.");
 
-					if (this.sheetDocument && !this.noteIds)
-						this.sheetNotation = StaffNotation.parseNotationFromSheetDocument(this.sheetDocument);
+					//if (this.sheetDocument && !this.noteIds)
+					//	this.sheetNotation = StaffNotation.parseNotationFromSheetDocument(this.sheetDocument);
 
 					console.log("t0.1:", performance.now());
+
+					if (this.midi) {
+						const midiNotation = MusicNotation.Notation.parseMidi(this.midi);
+
+						if (data.noteLinkings) {
+							data.noteLinkings.forEach((fields, i) => Object.assign(midiNotation.notes[i], fields));
+
+							StaffNotation.assignNotationEventsIds(midiNotation);
+						}
+
+						this.midiNotation = midiNotation;
+					}
+
+					console.log("t0.2:", performance.now());
+
+					this.$nextTick().then(() => this.bakeSheet());
 				}
 			},
 
@@ -155,9 +170,13 @@
 
 				console.log("t7:", performance.now());
 
+				// TODO: refine matchedIds
+				const matchedIds = new Set();
+				this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));
+
 				//this.bakingImages = await SheetBaker.bakeLiveSheet(this.sheetDocument, this.$refs.signs, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas);
 				this.bakingImages = [];
-				for await (const url of SheetBaker.bakeLiveSheetGen(this.sheetDocument, this.$refs.signs, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas))
+				for await (const url of SheetBaker.bakeLiveSheetGen(this.sheetDocument, this.$refs.signs, matchedIds, this.$refs.canvas))
 					this.bakingImages.push(url);
 
 				console.log("t8:", performance.now());

@@ -144,7 +144,7 @@ class PitchContextTable {
 			while (note.contextIndex > index) {
 				++index;
 				const context = contexts[index];
-				console.assert(context, "invalid contextIndex:", index, note.contextIndex, contexts.length);
+				console.assert(!!context, "invalid contextIndex:", index, note.contextIndex, contexts.length);
 
 				items.push({
 					tick: note.startTick,
@@ -567,8 +567,6 @@ const assignIds = (midiNotation, noteIds) => {
 	});
 
 	assignNotationEventsIds(midiNotation);
-
-	return {noteIds};
 };
 
 
@@ -580,6 +578,7 @@ const createPitchContextGroup = (contextGroup: PitchContext[][], midiNotation): 
 export {
 	parseNotationFromSheetDocument,
 	matchNotations,
+	assignNotationEventsIds,
 	assignIds,
 	PitchContext,
 	PitchContextTable,

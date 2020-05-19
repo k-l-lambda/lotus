@@ -110,7 +110,6 @@
 		props: {
 			doc: Object,
 			midiNotation: Object,
-			sheetNotation: Object,
 			pitchContextGroup: Array,
 			showMark: Boolean,
 			showCursor: {

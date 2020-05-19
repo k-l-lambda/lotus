@@ -17,6 +17,8 @@
 
 *	2020.5.19
 
+	+	profiler.vue: refined data processing.
+
 	+	playground.vue: refined exportScore.
 
 	+	sheet-live.vue: methods of add/remove marking implemented.
