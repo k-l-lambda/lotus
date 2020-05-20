@@ -1,6 +1,5 @@
 
 ## TODO
-	additional note marking on staff
 	playground: parse source document title
 	lilypond post processing
 		fix partial measures
@@ -16,6 +15,8 @@
 
 
 *	2020.5.20
+
+	+	app/scoreBundle.ts created.
 
 	+	sheetBaker.ts: construct SheetSignsComponent inside bakeLiveSheetGen.
 

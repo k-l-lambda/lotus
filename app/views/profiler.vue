@@ -13,7 +13,6 @@
 		<main>
 			<SheetLive v-if="sheetDocument" ref="sheet"
 				:doc="sheetDocument"
-				:midi="midi"
 				:midiNotation="midiNotation"
 				:pitchContextGroup="pitchContextGroup"
 				:midiPlayer.sync="midiPlayer"
@@ -33,13 +32,13 @@
 
 	import "../utils.js";
 	import {animationDelay} from "../delay.js";
-	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
+	/*import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
 	import {StaffToken, SheetDocument, PitchContext} from "../../inc/staffSvg";
-	import * as SheetBaker from "../sheetBaker.ts";
+	import * as SheetBaker from "../sheetBaker.ts";*/
+	import ScoreBundle from "../scoreBundle.ts";
 
 	import SheetLive from "../components/sheet-live.vue";
-	import SheetSigns from "../components/sheet-signs.vue";
 	import StoreInput from "../components/store-input.vue";
 	import CheckButton from "../components/check-button.vue";
 
@@ -51,7 +50,6 @@
 
 		components: {
 			SheetLive,
-			SheetSigns,
 			StoreInput,
 			CheckButton,
 		},
@@ -61,8 +59,8 @@
 			return {
 				sourceText: null,
 				sheetDocument: null,
-				svgHashTable: null,
-				midi: null,
+				//svgHashTable: null,
+				//midi: null,
 				midiNotation: null,
 				pitchContextGroup: null,
 				midiPlayer: null,
@@ -76,7 +74,8 @@
 
 
 		async created () {
-			console.log("t0:", performance.now());
+			this.logTime("created");
+
 			window.$main = this;
 
 			this.watchFps();
@@ -84,6 +83,11 @@
 
 
 		methods: {
+			logTime (message) {
+				console.log("[PROFILER]", message, performance.now());
+			},
+
+
 			async onScoreChange (event) {
 				//console.log("onScoreChange:", event);
 				const file = event.target.files[0];
@@ -99,14 +103,16 @@
 			},
 
 
-			loadSheet () {
+			async loadSheet () {
 				this.sheetDocument = null;
-				this.svgHashTable = null;
-				this.midi = null;
+				//this.svgHashTable = null;
+				//this.midi = null;
+				this.midiNotation = null;
+				this.pitchContextGroup = null;
 				this.bakingImages = null;
-				this.matchedIds = null;
+				//this.matchedIds = null;
 
-				if (this.sourceText) {
+				/*if (this.sourceText) {
 					const data = recoverJSON(this.sourceText, {StaffToken, SheetDocument, PitchContext});
 					//console.log("data:", data);
 
@@ -141,6 +147,27 @@
 
 						console.log("t7.1:", performance.now());
 					});
+				}*/
+				if (this.sourceText) {
+					const scoreBundle = new ScoreBundle(this.sourceText, {onStatus: message => this.logTime(message)});
+					this.sheetDocument = scoreBundle.scoreJSON.doc;
+					this.pitchContextGroup = scoreBundle.scoreJSON.pitchContextGroup;
+					this.midiNotation = scoreBundle.midiNotation;
+
+					this.logTime("bundle parsed");
+
+					// wait the initial frame before baking
+					await this.$nextTick();
+
+					this.logTime("rendering initialized");
+
+					this.bakingImages = [];
+					const baker = scoreBundle.bakeSheet(this.$refs.canvas);
+					this.logTime("baker loaded");
+					for await (const url of baker)
+						this.bakingImages.push(url);
+
+					this.logTime("baking finished");
 				}
 			},
 
@@ -166,7 +193,7 @@
 			},
 
 
-			async bakeSheet () {
+			/*async bakeSheet () {
 				console.assert(this.sheetDocument, "sheetDocument is null.");
 				console.assert(this.svgHashTable, "svgHashTable is null.");
 				console.assert(this.matchedIds, "matchedIds is null.");
@@ -185,7 +212,7 @@
 					this.bakingImages.push(url);
 
 				console.log("t8:", performance.now());
-			},
+			},*/
 
 
 			async watchFps () {
