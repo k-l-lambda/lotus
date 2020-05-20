@@ -136,7 +136,11 @@
 
 					console.log("t0.2:", performance.now());
 
-					this.$nextTick().then(() => this.bakeSheet());
+					this.$nextTick().then(() => {
+						this.bakeSheet();
+
+						console.log("t7.1:", performance.now());
+					});
 				}
 			},
 

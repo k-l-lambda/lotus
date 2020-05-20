@@ -131,7 +131,6 @@ const bakeLiveSheetGen = async function* ({sheetDocument, signs, hashTable, matc
 				hashTable,
 			},
 		}).$mount(document.createElement("div"));
-		console.log("signs:", signs);
 	}
 
 	const defs = signs.$el.children[0];
