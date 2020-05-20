@@ -105,6 +105,7 @@
 				this.svgHashTable = null;
 				this.midi = null;
 				this.bakingImages = null;
+				this.matchedIds = null;
 
 				if (this.sourceText) {
 					const data = recoverJSON(this.sourceText, {StaffToken, SheetDocument, PitchContext});
@@ -128,6 +129,8 @@
 
 						if (data.noteLinkings) {
 							data.noteLinkings.forEach((fields, i) => Object.assign(midiNotation.notes[i], fields));
+
+							this.matchedIds = data.noteLinkings.reduce((ids, note) => (note.ids && note.ids.forEach(id => ids.add(id)), ids), new Set());
 
 							StaffNotation.assignNotationEventsIds(midiNotation);
 						}
@@ -166,17 +169,13 @@
 			async bakeSheet () {
 				console.assert(this.sheetDocument, "sheetDocument is null.");
 				console.assert(this.$refs.signs, "signs is null.");
-				console.assert(this.$refs.sheet, "sheet is null.");
+				console.assert(this.matchedIds, "matchedIds is null.");
 
 				console.log("t7:", performance.now());
 
-				// TODO: refine matchedIds
-				const matchedIds = new Set();
-				this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));
-
 				//this.bakingImages = await SheetBaker.bakeLiveSheet(this.sheetDocument, this.$refs.signs, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas);
 				this.bakingImages = [];
-				for await (const url of SheetBaker.bakeLiveSheetGen(this.sheetDocument, this.$refs.signs, matchedIds, this.$refs.canvas))
+				for await (const url of SheetBaker.bakeLiveSheetGen(this.sheetDocument, this.$refs.signs, this.matchedIds, this.$refs.canvas))
 					this.bakingImages.push(url);
 
 				console.log("t8:", performance.now());

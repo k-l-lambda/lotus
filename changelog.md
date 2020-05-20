@@ -15,6 +15,11 @@
 
 
 
+*	2020.5.20
+
+	+	profiler.vue: refined matchedIds computing.
+
+
 *	2020.5.19
 
 	+	profiler.vue: refined data processing.
