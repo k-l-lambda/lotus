@@ -17,6 +17,8 @@
 
 *	2020.5.20
 
+	+	sheetBaker.ts: construct SheetSignsComponent inside bakeLiveSheetGen.
+
 	+	profiler.vue: refined matchedIds computing.
 
 

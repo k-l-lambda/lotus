@@ -2,10 +2,15 @@
 import Vue from "vue";
 
 import SheetLive from "./components/sheet-live.vue";
+import SheetSigns from "./components/sheet-signs.vue";
 
+
+
+declare class SheetDocument {};
 
 
 const SheetLiveComponent = Vue.extend(SheetLive);
+const SheetSignsComponent = Vue.extend(SheetSigns);
 
 
 const rasterizeSvg = async (svg, canvas) => {
@@ -102,19 +107,38 @@ const replaceSigns = (node, signDict) => {
 };
 
 
-const bakeLiveSheetGen = async function* (sheetDocument, signs, matchedIds, canvas) {
-	const elem = document.createElement("div");
+const bakeLiveSheetGen = async function* ({sheetDocument, signs, hashTable, matchedIds, canvas}: {
+	sheetDocument: SheetDocument,
+	signs?: any,
+	hashTable?: {[key: string]: any},
+	matchedIds: Set<string>,
+	canvas: HTMLCanvasElement,
+}) {
+	console.assert(!!sheetDocument, "sheetDocument is null.");
+	console.assert(!!matchedIds, "matchedIds is null.");
+	console.assert(!!canvas, "canvas is null.");
+	console.assert(signs || hashTable, "signs & hashTable is both null.");
+
 	const sheet = new SheetLiveComponent({
 		propsData: {
 			doc: sheetDocument,
 		},
-	}).$mount(elem);
+	}).$mount(document.createElement("div"));
+
+	if (!signs) {
+		signs = new SheetSignsComponent({
+			propsData: {
+				hashTable,
+			},
+		}).$mount(document.createElement("div"));
+		console.log("signs:", signs);
+	}
 
 	const defs = signs.$el.children[0];
 	const signDict = [...defs.children].reduce((dict, sign) => ((dict[sign.id] = sign), dict), {});
 	//console.log("defs:", defs);
 
-	/*const style =  document.createElement("stye");
+	/*const style = document.createElement("stye");
 	style.innerHTML = `
 		.token .staff-line line, .token .line line, .token .slur path
 		{
@@ -142,10 +166,10 @@ const bakeLiveSheetGen = async function* (sheetDocument, signs, matchedIds, canv
 };
 
 
-const bakeLiveSheet = async (sheetDocument, signs, matchedIds, canvas) => {
+const bakeLiveSheet = async options => {
 	const urls = [];
 
-	for await (const url of bakeLiveSheetGen(sheetDocument, signs, matchedIds, canvas))
+	for await (const url of bakeLiveSheetGen(options))
 		urls.push(url);
 
 	return urls;

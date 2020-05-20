@@ -11,7 +11,6 @@
 			<span v-if="fps" class="fps"><em>{{fps.toFixed(1)}}</em>fps</span>
 		</header>
 		<main>
-			<SheetSigns v-if="svgHashTable" ref="signs" v-show="false" :hashTable="svgHashTable" />
 			<SheetLive v-if="sheetDocument" ref="sheet"
 				:doc="sheetDocument"
 				:midi="midi"
@@ -119,9 +118,6 @@
 					if (!this.midi)
 						console.warn("No midi data, baking will fail.");
 
-					//if (this.sheetDocument && !this.noteIds)
-					//	this.sheetNotation = StaffNotation.parseNotationFromSheetDocument(this.sheetDocument);
-
 					console.log("t0.1:", performance.now());
 
 					if (this.midi) {
@@ -168,14 +164,20 @@
 
 			async bakeSheet () {
 				console.assert(this.sheetDocument, "sheetDocument is null.");
-				console.assert(this.$refs.signs, "signs is null.");
+				console.assert(this.svgHashTable, "svgHashTable is null.");
 				console.assert(this.matchedIds, "matchedIds is null.");
 
 				console.log("t7:", performance.now());
 
-				//this.bakingImages = await SheetBaker.bakeLiveSheet(this.sheetDocument, this.$refs.signs, this.$refs.sheet && this.$refs.sheet.matchedIds, this.$refs.canvas);
 				this.bakingImages = [];
-				for await (const url of SheetBaker.bakeLiveSheetGen(this.sheetDocument, this.$refs.signs, this.matchedIds, this.$refs.canvas))
+				const baker = SheetBaker.bakeLiveSheetGen({
+					sheetDocument: this.sheetDocument,
+					//signs: this.$refs.signs,
+					hashTable: this.svgHashTable,
+					matchedIds: this.matchedIds,
+					canvas: this.$refs.canvas,
+				});
+				for await (const url of baker)
 					this.bakingImages.push(url);
 
 				console.log("t8:", performance.now());
