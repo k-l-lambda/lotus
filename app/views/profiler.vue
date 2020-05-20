@@ -28,14 +28,8 @@
 </template>
 
 <script>
-	import {MusicNotation} from "@k-l-lambda/web-widgets";
-
 	import "../utils.js";
 	import {animationDelay} from "../delay.js";
-	/*import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
-	import {recoverJSON} from "../../inc/jsonRecovery.ts";
-	import {StaffToken, SheetDocument, PitchContext} from "../../inc/staffSvg";
-	import * as SheetBaker from "../sheetBaker.ts";*/
 	import ScoreBundle from "../scoreBundle.ts";
 
 	import SheetLive from "../components/sheet-live.vue";
@@ -59,8 +53,6 @@
 			return {
 				sourceText: null,
 				sheetDocument: null,
-				//svgHashTable: null,
-				//midi: null,
 				midiNotation: null,
 				pitchContextGroup: null,
 				midiPlayer: null,
@@ -105,49 +97,10 @@
 
 			async loadSheet () {
 				this.sheetDocument = null;
-				//this.svgHashTable = null;
-				//this.midi = null;
 				this.midiNotation = null;
 				this.pitchContextGroup = null;
 				this.bakingImages = null;
-				//this.matchedIds = null;
 
-				/*if (this.sourceText) {
-					const data = recoverJSON(this.sourceText, {StaffToken, SheetDocument, PitchContext});
-					//console.log("data:", data);
-
-					this.sheetDocument = data.doc;
-					this.svgHashTable = data.hashTable;
-					this.midi = data.midi;
-					this.pitchContextGroup = data.pitchContextGroup;
-
-					if (!this.midi)
-						console.warn("No midi data, baking will fail.");
-
-					console.log("t0.1:", performance.now());
-
-					if (this.midi) {
-						const midiNotation = MusicNotation.Notation.parseMidi(this.midi);
-
-						if (data.noteLinkings) {
-							data.noteLinkings.forEach((fields, i) => Object.assign(midiNotation.notes[i], fields));
-
-							this.matchedIds = data.noteLinkings.reduce((ids, note) => (note.ids && note.ids.forEach(id => ids.add(id)), ids), new Set());
-
-							StaffNotation.assignNotationEventsIds(midiNotation);
-						}
-
-						this.midiNotation = midiNotation;
-					}
-
-					console.log("t0.2:", performance.now());
-
-					this.$nextTick().then(() => {
-						this.bakeSheet();
-
-						console.log("t7.1:", performance.now());
-					});
-				}*/
 				if (this.sourceText) {
 					const scoreBundle = new ScoreBundle(this.sourceText, {onStatus: message => this.logTime(message)});
 					this.sheetDocument = scoreBundle.scoreJSON.doc;
@@ -191,28 +144,6 @@
 						this.midiPlayer.play();
 				}
 			},
-
-
-			/*async bakeSheet () {
-				console.assert(this.sheetDocument, "sheetDocument is null.");
-				console.assert(this.svgHashTable, "svgHashTable is null.");
-				console.assert(this.matchedIds, "matchedIds is null.");
-
-				console.log("t7:", performance.now());
-
-				this.bakingImages = [];
-				const baker = SheetBaker.bakeLiveSheetGen({
-					sheetDocument: this.sheetDocument,
-					//signs: this.$refs.signs,
-					hashTable: this.svgHashTable,
-					matchedIds: this.matchedIds,
-					canvas: this.$refs.canvas,
-				});
-				for await (const url of baker)
-					this.bakingImages.push(url);
-
-				console.log("t8:", performance.now());
-			},*/
 
 
 			async watchFps () {

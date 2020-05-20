@@ -1,5 +1,6 @@
 
 ## TODO
+	note color bug
 	playground: parse source document title
 	lilypond post processing
 		fix partial measures
