@@ -339,6 +339,12 @@
 			clearMarkings () {
 				this.doc.clearMarkings();
 			},
+
+
+			onDocChanged () {
+				this.clearNoteStatus();
+				this.clearMarkings();
+			},
 		},
 
 
@@ -357,6 +363,9 @@
 				this.updateStatusMap();
 				this.updateTokenStatus();
 			},
+
+
+			doc: "onDocChanged",
 		},
 	};
 </script>
