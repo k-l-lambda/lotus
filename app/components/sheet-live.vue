@@ -210,8 +210,10 @@
 			setNoteStatus (noteIndex, className, on) {
 				if (this.midiNotation) {
 					const note = this.midiNotation.notes[noteIndex];
-					if (note)
-						note.ids.forEach(on ? id => this.statusMap.get(id).add(className) : id => this.statusMap.get(id).remove(className));
+					if (note) {
+						if (note.ids)
+							note.ids.forEach(on ? id => this.statusMap.get(id).add(className) : id => this.statusMap.get(id).remove(className));
+					}
 					else
 						console.warn("invalid note index:", noteIndex, this.midiNotation.notes.length);
 				}
@@ -318,8 +320,12 @@
 					return;
 				}
 
-				if (!id)
+				if (!id) {
+					if (!note.ids)
+						return null;
+
 					id = note.ids[0];
+				}
 
 				return this.addMarkingByTick(note.startTick, pitch, note.staffTrack, {id, cls, text, xoffset: 1.2});
 			},
