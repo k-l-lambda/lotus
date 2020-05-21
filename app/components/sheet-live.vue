@@ -305,7 +305,7 @@
 				const context = contextTable.lookup(tick);
 				const {y, alter} = context.pitchToY(pitch);
 
-				this.doc.addMarking(position.row, staffIndex, {x: position.x + xoffset, y, text, alter, id, cls});
+				return this.doc.addMarking(position.row, staffIndex, {x: position.x + xoffset, y, text, alter, id, cls});
 			},
 
 
@@ -321,7 +321,7 @@
 				if (!id)
 					id = note.ids[0];
 
-				this.addMarkingByTick(note.startTick, pitch, note.staffTrack, {id, cls, text, xoffset: 1.2});
+				return this.addMarkingByTick(note.startTick, pitch, note.staffTrack, {id, cls, text, xoffset: 1.2});
 			},
 
 

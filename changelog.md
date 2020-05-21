@@ -17,6 +17,8 @@
 
 *	2020.5.21
 
+	+	sheet-live.vue: return marking for add marking methods.
+
 	+	staffNotation.ts: fixed Infinity JSON serilization issue.
 
 	+	sheet-live.vue: fixed status map updating.

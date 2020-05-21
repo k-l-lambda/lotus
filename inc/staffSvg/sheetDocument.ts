@@ -149,7 +149,10 @@ class SheetDocument {
 			return;
 		}
 
-		staff.markings.push(new SheetMarking(data));
+		const marking = new SheetMarking(data);
+		staff.markings.push(marking);
+
+		return marking;
 	}
 
 
