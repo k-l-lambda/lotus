@@ -17,6 +17,8 @@
 
 *	2020.5.21
 
+	+	staffNotation.ts: fixed Infinity JSON serilization issue.
+
 	+	sheet-live.vue: fixed status map updating.
 
 

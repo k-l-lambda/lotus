@@ -39,6 +39,9 @@ interface NotationNote {
 };
 
 
+const stringifyNumber = x => Number.isFinite(x) ? x : x.toString();
+
+
 /*
 	Coordinates:
 
@@ -164,15 +167,32 @@ class PitchContextTable {
 	}
 
 
+	// workaround 'Infinity' JSON representation issue.
+	static itemToJSON (item) {
+		return {
+			...item,
+			endTick: stringifyNumber(item.endTick),
+		};
+	}
+
+
+	static itemFromJSON (item) {
+		return {
+			...item,
+			endTick: Number(item.endTick),
+		};
+	}
+
+
 	constructor ({items}) {
-		this.items = items;
+		this.items = items.map(PitchContextTable.itemFromJSON);
 	}
 
 
 	toJSON () {
 		return {
 			__prototype: this.constructor.name,
-			items: this.items,
+			items: this.items.map(PitchContextTable.itemToJSON),
 		};
 	}
 
