@@ -2,7 +2,7 @@
 import {MusicNotation} from "@k-l-lambda/web-widgets";
 
 import {recoverJSON} from "../inc/jsonRecovery";
-import {StaffToken, SheetDocument, PitchContext} from "../inc/staffSvg";
+import {StaffToken, SheetDocument, PitchContext, PitchContextTable} from "../inc/staffSvg";
 import * as StaffNotation from "../inc/staffSvg/staffNotation";
 import * as SheetBaker from "./sheetBaker";
 
@@ -24,7 +24,7 @@ export default class ScoreBundle {
 
 
 	constructor (source, {onStatus = (..._) => _} = {}) {
-		this.scoreJSON = recoverJSON(source, {StaffToken, SheetDocument, PitchContext});
+		this.scoreJSON = recoverJSON(source, {StaffToken, SheetDocument, PitchContext, PitchContextTable});
 		this.onStatus = onStatus;
 
 		if (!this.scoreJSON.midi)

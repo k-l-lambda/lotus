@@ -68,7 +68,7 @@ class PitchContext {
 
 	toJSON () {
 		return {
-			__prototype: "PitchContext",
+			__prototype: this.constructor.name,
 			clef: this.clef,
 			keyAlters: this.keyAlters,
 			octaveShift: this.octaveShift,
@@ -166,6 +166,14 @@ class PitchContextTable {
 
 	constructor ({items}) {
 		this.items = items;
+	}
+
+
+	toJSON () {
+		return {
+			__prototype: this.constructor.name,
+			items: this.items,
+		};
 	}
 
 

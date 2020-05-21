@@ -5,7 +5,7 @@ import organizeTokens from "./organizeTokens";
 import LogRecorder from "../logRecorder";
 import StaffToken from "./staffToken";
 import SheetDocument from "./sheetDocument";
-import {PitchContext} from "./staffNotation";
+import {PitchContext, PitchContextTable} from "./staffNotation";
 import {recoverJSON} from "../jsonRecovery";
 
 
@@ -38,4 +38,5 @@ export {
 	StaffToken,
 	SheetDocument,
 	PitchContext,
+	PitchContextTable,
 };
