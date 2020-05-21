@@ -15,6 +15,11 @@
 
 
 
+*	2020.5.21
+
+	+	sheet-live.vue: fixed status map updating.
+
+
 *	2020.5.20
 
 	+	app/scoreBundle.ts created.

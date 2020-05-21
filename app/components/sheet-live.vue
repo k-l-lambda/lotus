@@ -255,6 +255,9 @@
 				if (this.midiNotation) {
 					this.updateMidiPlayer();
 
+					// wait DOM update
+					await this.$nextTick();
+
 					this.updateStatusMap();
 
 					this.scheduler = SheetScheduler.createFromNotation(this.midiNotation, this.linkedTokens);
