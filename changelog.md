@@ -1,6 +1,5 @@
 
 ## TODO
-	note color bug
 	playground: parse source document title
 	lilypond post processing
 		fix partial measures
@@ -9,7 +8,8 @@
 		music duration parsing
 	parse measure ticks from ly
 	staffSvg
-		tempo note head symbol
+		deduce measure information
+		tempo note head symbol out of staves
 	source editor
 		cursor position
 
