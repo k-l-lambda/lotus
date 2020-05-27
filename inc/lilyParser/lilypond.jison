@@ -581,6 +581,9 @@ markup_word
 	| unsigned_number
 		{$$ = $1;}
 	// extra formla
+	| REAL
+		{$$ = $1;}
+	// extra formla
 	| UNKNOWN_CHAR
 		{$$ = $1;}
 	// extra formla
