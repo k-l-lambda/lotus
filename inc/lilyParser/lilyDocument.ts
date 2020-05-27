@@ -636,6 +636,9 @@ export default class LilyDocument {
 
 		const paperPropertyCommon = key => ({
 			get value () {
+				if (!paper)
+					return null;
+
 				const item = paper.getField(key);
 				if (!item)
 					return null;
@@ -644,6 +647,8 @@ export default class LilyDocument {
 			},
 
 			set value (value) {
+				console.log(paper, "paper is null.");
+
 				const item = paper.getField(key);
 				if (item)
 					item.value = parseRaw(value);
@@ -654,6 +659,9 @@ export default class LilyDocument {
 
 		const paperPropertySchemeToken = key => ({
 			get value () {
+				if (!paper)
+					return null;
+
 				const item = paper.getField(key);
 				if (!item)
 					return null;
@@ -662,6 +670,8 @@ export default class LilyDocument {
 			},
 
 			set value (value) {
+				console.log(paper, "paper is null.");
+
 				const item = paper.getField(key);
 				if (item)
 					item.value.exp = value;

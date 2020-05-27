@@ -15,6 +15,11 @@
 
 
 
+*	2020.5.27
+
+	+	lilyDocument.ts: added null paper protection for globalAttributes.
+
+
 *	2020.5.21
 
 	+	sheet-live.vue: clear note status when document changed.
