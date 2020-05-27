@@ -77,7 +77,7 @@ HYPHEN				\-\-
 BOM_UTF8			\357\273\277
 
 PHONET				[abcdefgrR]
-PITCH				{PHONET}(([i][s])*|([e][s])*|[s]*|[f]*)(?=[\W\d])
+PITCH				{PHONET}(([i][s])*|([e][s])*|[s]*|[f]*)(?=[\W\d_])
 PLACEHOLDER_PITCH	[s](?=[\W\d])
 //DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
 
@@ -103,6 +103,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 //">"							return 'ANGLE_CLOSE';
 "<<"						return 'DOUBLE_ANGLE_OPEN';
 ">>"						return 'DOUBLE_ANGLE_CLOSE';
+
+"\\\\"						return 'E_BACKSLASH';
 
 {E_UNSIGNED}				return 'E_UNSIGNED';
 
@@ -181,6 +183,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\partial"					return 'CMD_PARTIAL';
 "\\mark"					return 'CMD_MARK';
 "\\include"					return 'CMD_INCLUDE';
+"\\tupletSpan"				return 'CMD_TUPLETSPAN';
+"\\tuplet"					return 'CMD_TUPLET';
 
 // markup commands
 "\\version"					return 'CMD_VERSION';
@@ -413,11 +417,12 @@ identifier_init_nonumber
 		{$$ = $1;}
 	| output_def
 		{$$ = $1;}
+	| context_modification
+		{$$ = $1;}
 	//| book_block
 	//| bookpart_block
 	//| context_def_spec_block
 	//| partial_markup
-	//| context_modification
 	//| partial_function ETC
 	;
 
@@ -576,6 +581,9 @@ markup_word
 	| unsigned_number
 		{$$ = $1;}
 	// extra formla
+	| REAL
+		{$$ = $1;}
+	// extra formla
 	| UNKNOWN_CHAR
 		{$$ = $1;}
 	// extra formla
@@ -584,6 +592,8 @@ markup_word
 	// extra formla
 	| zero_command
 		{$$ = $1;}
+	| unitary_cmd number_expression
+		{$$ = command($1, $2);}
 	| scm_identifier
 		{$$ = $1;}
 	// extra formla
@@ -664,6 +674,8 @@ bare_number_common
 	//| NUMBER_IDENTIFIER
 	//| REAL NUMBER_IDENTIFIER
 	| number_identifier
+		{$$ = $1;}
+	| FRACTION
 		{$$ = $1;}
 	;
 
@@ -928,8 +940,18 @@ grouped_music_list
 simultaneous_music
 	: SIMULTANEOUS braced_music_list
 		{$$ = command($1, $2);}
-	| DOUBLE_ANGLE_OPEN music_list DOUBLE_ANGLE_CLOSE
+	//| DOUBLE_ANGLE_OPEN music_list DOUBLE_ANGLE_CLOSE
+	//	{$$ = simultaneousList($2);}
+	| DOUBLE_ANGLE_OPEN multiple_voices_music_list DOUBLE_ANGLE_CLOSE
 		{$$ = simultaneousList($2);}
+	;
+
+// extra syntax
+multiple_voices_music_list
+	: music_list
+		{$$ = $1;}
+	| multiple_voices_music_list E_BACKSLASH music_embedded
+		{$$ = [...$1, "\\", $3];}
 	;
 
 sequential_music
@@ -1004,8 +1026,10 @@ context_change
 music_property_def
 	: OVERRIDE grob_prop_path '=' scalar
 		{$$ = command($1, assignment($2, $4));}
-	| REVERT simple_revert_context revert_arg
-		{$$ = command($1, $2, $3);}
+	//| REVERT simple_revert_context revert_arg
+	//	{$$ = command($1, $2, $3);}
+	| REVERT revert_arg
+		{$$ = command($1, $2);}
 	| SET context_prop_spec '=' scalar
 		{$$ = command($1, assignment($2, $4));}
 	| UNSET context_prop_spec
@@ -1013,7 +1037,30 @@ music_property_def
 	;
 
 revert_arg
-	: revert_arg_backup BACKUP symbol_list_arg
+	//: revert_arg_backup BACKUP symbol_list_arg
+	: revert_arg_backup
+		{$$ = $1;}
+	;
+
+revert_arg_backup
+	: revert_arg_part
+		{$$ = $1;}
+	;
+
+revert_arg_part
+	: symbol_list_part
+		{$$ = $1;}
+	| revert_arg_backup '.' symbol_list_part
+		{$$ = $1 + "." + $2;}
+	//| revert_arg_backup BACKUP SCM_ARG '.' symbol_list_part
+	//| revert_arg_backup BACKUP SCM_ARG ',' symbol_list_part
+	//| revert_arg_backup BACKUP SCM_ARG symbol_list_part
+	;
+
+symbol_list_arg
+	: SYMBOL_LIST
+	| SYMBOL_LIST '.' symbol_list_rev
+	| SYMBOL_LIST ',' symbol_list_rev
 	;
 
 simple_revert_context
@@ -1162,6 +1209,10 @@ zero_command
 		{$$ = command($1);}
 	| CMD_WITH_URL
 		{$$ = command($1);}
+	| CMD_STEMUP
+		{$$ = command($1);}
+	| CMD_STEMDOWN
+		{$$ = command($1);}
 	;
 
 expressive_mark
@@ -1211,6 +1262,10 @@ unitary_cmd
 	| CMD_MARK
 		{$$ = $1;}
 	| CMD_INCLUDE
+		{$$ = $1;}
+	| CMD_TUPLETSPAN
+		{$$ = $1;}
+	| CMD_TUPLET
 		{$$ = $1;}
 	;
 
@@ -1285,16 +1340,47 @@ post_events
 	;
 
 note_chord_element
-	: "<" pitches ">" optional_notemode_duration
-		{$$ = chord($2, $4, {withAngle: true});}
+	//: chord_body optional_notemode_duration post_events
+	: chord_body optional_notemode_duration
+		{$$ = chord($1, $2, {withAngle: true});}
 	;
 
+chord_body
+	: "<" chord_body_elements ">"
+		{$$ = $2;}
+	//| FIGURE_OPEN figure_list FIGURE_CLOSE
+	;
+
+chord_body_elements
+	: %empty
+		{$$ = [];}
+	| chord_body_elements chord_body_element
+		{$$ = $1.concat([$2]);}
+	;
+
+chord_body_element
+	//: pitch_or_tonic_pitch exclamations questions octave_check post_events %prec ':'
+	: pitch_or_tonic_pitch exclamations questions post_events
+		//{$$ = chord([$1], null, {exclamations: $2, questions: $3, post_events: $4});}
+		{$$ = $1 + $2 + $3 + $4;}
+	//| DRUM_PITCH post_events %prec ':' 
+	//| music_function_chord_body
+	//| post_event
+	;
+
+pitch_or_tonic_pitch
+	: pitch
+		{$$ = $1;}
+	//| steno_tonic_pitch
+	;
+
+/*// extra syntax
 pitches
 	:	pitches pitch
 		{$$ = $1.concat([$2]);}
 	|	pitch
 		{$$ = [$1];}
-	;
+	;*/
 
 pitch
 	: PITCH quotes
