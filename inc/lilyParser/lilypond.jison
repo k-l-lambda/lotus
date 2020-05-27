@@ -77,7 +77,7 @@ HYPHEN				\-\-
 BOM_UTF8			\357\273\277
 
 PHONET				[abcdefgrR]
-PITCH				{PHONET}(([i][s])*|([e][s])*|[s]*|[f]*)(?=[\W\d])
+PITCH				{PHONET}(([i][s])*|([e][s])*|[s]*|[f]*)(?=[\W\d_])
 PLACEHOLDER_PITCH	[s](?=[\W\d])
 //DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
 
@@ -1338,16 +1338,46 @@ post_events
 
 note_chord_element
 	//: chord_body optional_notemode_duration post_events
-	: "<" pitches ">" optional_notemode_duration
-		{$$ = chord($2, $4, {withAngle: true});}
+	: chord_body optional_notemode_duration
+		{$$ = chord($1, $2, {withAngle: true});}
 	;
 
+chord_body
+	: "<" chord_body_elements ">"
+		{$$ = $2;}
+	//| FIGURE_OPEN figure_list FIGURE_CLOSE
+	;
+
+chord_body_elements
+	: %empty
+		{$$ = [];}
+	| chord_body_elements chord_body_element
+		{$$ = $1.concat([$2]);}
+	;
+
+chord_body_element
+	//: pitch_or_tonic_pitch exclamations questions octave_check post_events %prec ':'
+	: pitch_or_tonic_pitch exclamations questions post_events
+		//{$$ = chord([$1], null, {exclamations: $2, questions: $3, post_events: $4});}
+		{$$ = $1 + $2 + $3 + $4;}
+	//| DRUM_PITCH post_events %prec ':' 
+	//| music_function_chord_body
+	//| post_event
+	;
+
+pitch_or_tonic_pitch
+	: pitch
+		{$$ = $1;}
+	//| steno_tonic_pitch
+	;
+
+/*// extra syntax
 pitches
 	:	pitches pitch
 		{$$ = $1.concat([$2]);}
 	|	pitch
 		{$$ = [$1];}
-	;
+	;*/
 
 pitch
 	: PITCH quotes
