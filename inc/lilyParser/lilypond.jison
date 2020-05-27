@@ -937,8 +937,18 @@ grouped_music_list
 simultaneous_music
 	: SIMULTANEOUS braced_music_list
 		{$$ = command($1, $2);}
-	| DOUBLE_ANGLE_OPEN music_list DOUBLE_ANGLE_CLOSE
+	//| DOUBLE_ANGLE_OPEN music_list DOUBLE_ANGLE_CLOSE
+	//	{$$ = simultaneousList($2);}
+	| DOUBLE_ANGLE_OPEN multiple_voices_music_list DOUBLE_ANGLE_CLOSE
 		{$$ = simultaneousList($2);}
+	;
+
+// extra syntax
+multiple_voices_music_list
+	: music_list
+		{$$ = $1;}
+	| multiple_voices_music_list E_BACKSLASH music_embedded
+		{$$ = [...$1, "\\", $3];}
 	;
 
 sequential_music
