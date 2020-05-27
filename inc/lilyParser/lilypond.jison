@@ -104,6 +104,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "<<"						return 'DOUBLE_ANGLE_OPEN';
 ">>"						return 'DOUBLE_ANGLE_CLOSE';
 
+"\\\\"						return 'E_BACKSLASH';
+
 {E_UNSIGNED}				return 'E_UNSIGNED';
 
 "\\with-url"				return 'CMD_WITH_URL';
@@ -181,6 +183,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\partial"					return 'CMD_PARTIAL';
 "\\mark"					return 'CMD_MARK';
 "\\include"					return 'CMD_INCLUDE';
+"\\tupletSpan"				return 'CMD_TUPLETSPAN';
+"\\tuplet"					return 'CMD_TUPLET';
 
 // markup commands
 "\\version"					return 'CMD_VERSION';
@@ -413,11 +417,12 @@ identifier_init_nonumber
 		{$$ = $1;}
 	| output_def
 		{$$ = $1;}
+	| context_modification
+		{$$ = $1;}
 	//| book_block
 	//| bookpart_block
 	//| context_def_spec_block
 	//| partial_markup
-	//| context_modification
 	//| partial_function ETC
 	;
 
@@ -584,6 +589,8 @@ markup_word
 	// extra formla
 	| zero_command
 		{$$ = $1;}
+	| unitary_cmd number_expression
+		{$$ = command($1, $2);}
 	| scm_identifier
 		{$$ = $1;}
 	// extra formla
@@ -664,6 +671,8 @@ bare_number_common
 	//| NUMBER_IDENTIFIER
 	//| REAL NUMBER_IDENTIFIER
 	| number_identifier
+		{$$ = $1;}
+	| FRACTION
 		{$$ = $1;}
 	;
 
@@ -1004,8 +1013,10 @@ context_change
 music_property_def
 	: OVERRIDE grob_prop_path '=' scalar
 		{$$ = command($1, assignment($2, $4));}
-	| REVERT simple_revert_context revert_arg
-		{$$ = command($1, $2, $3);}
+	//| REVERT simple_revert_context revert_arg
+	//	{$$ = command($1, $2, $3);}
+	| REVERT revert_arg
+		{$$ = command($1, $2);}
 	| SET context_prop_spec '=' scalar
 		{$$ = command($1, assignment($2, $4));}
 	| UNSET context_prop_spec
@@ -1013,7 +1024,30 @@ music_property_def
 	;
 
 revert_arg
-	: revert_arg_backup BACKUP symbol_list_arg
+	//: revert_arg_backup BACKUP symbol_list_arg
+	: revert_arg_backup
+		{$$ = $1;}
+	;
+
+revert_arg_backup
+	: revert_arg_part
+		{$$ = $1;}
+	;
+
+revert_arg_part
+	: symbol_list_part
+		{$$ = $1;}
+	| revert_arg_backup '.' symbol_list_part
+		{$$ = $1 + "." + $2;}
+	//| revert_arg_backup BACKUP SCM_ARG '.' symbol_list_part
+	//| revert_arg_backup BACKUP SCM_ARG ',' symbol_list_part
+	//| revert_arg_backup BACKUP SCM_ARG symbol_list_part
+	;
+
+symbol_list_arg
+	: SYMBOL_LIST
+	| SYMBOL_LIST '.' symbol_list_rev
+	| SYMBOL_LIST ',' symbol_list_rev
 	;
 
 simple_revert_context
@@ -1162,6 +1196,10 @@ zero_command
 		{$$ = command($1);}
 	| CMD_WITH_URL
 		{$$ = command($1);}
+	| CMD_STEMUP
+		{$$ = command($1);}
+	| CMD_STEMDOWN
+		{$$ = command($1);}
 	;
 
 expressive_mark
@@ -1211,6 +1249,10 @@ unitary_cmd
 	| CMD_MARK
 		{$$ = $1;}
 	| CMD_INCLUDE
+		{$$ = $1;}
+	| CMD_TUPLETSPAN
+		{$$ = $1;}
+	| CMD_TUPLET
 		{$$ = $1;}
 	;
 
@@ -1285,6 +1327,7 @@ post_events
 	;
 
 note_chord_element
+	//: chord_body optional_notemode_duration post_events
 	: "<" pitches ">" optional_notemode_duration
 		{$$ = chord($2, $4, {withAngle: true});}
 	;
