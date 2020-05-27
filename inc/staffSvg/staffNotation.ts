@@ -264,7 +264,7 @@ class StaffContext {
 
 
 	resetKeyAlters () {
-		if (this.keyAlters.length) {
+		if (Object.keys(this.keyAlters).length) {
 			this.keyAlters = [];
 
 			this.dirty = true;
@@ -273,7 +273,7 @@ class StaffContext {
 
 
 	resetAlters () {
-		if (this.alters.length) {
+		if (Object.keys(this.alters).length) {
 			this.alters = [];
 
 			this.dirty = true;
@@ -292,7 +292,7 @@ class StaffContext {
 
 
 	setAlter (y, value) {
-		//console.log("setAlter:", y, value);
+		//console.log("setAlter:", y, this.yToNote(y), value);
 		this.alters[this.yToNote(y)] = value;
 
 		this.dirty = true;

@@ -1,5 +1,6 @@
 
 ## TODO
+	minus index array to JSON issue, pitchContextGroup
 	playground: parse source document title
 	lilypond post processing
 		fix partial measures
@@ -16,6 +17,8 @@
 
 
 *	2020.5.27
+
+	+	staffNotation.ts: fixed alters reseting bug.
 
 	+	lilyDocument.ts: added null paper protection for globalAttributes.
 
