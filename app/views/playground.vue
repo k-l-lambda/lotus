@@ -67,7 +67,6 @@
 					<SheetSigns v-if="svgHashTable" v-show="false" :hashTable="svgHashTable" />
 					<SheetLive v-if="tokenizeStaff && sheetDocument" ref="sheet"
 						:doc="sheetDocument"
-						:sheetNotation="sheetNotation"
 						:midiNotation="midiNotation"
 						:pitchContextGroup="pitchContextGroup"
 						:midiPlayer.sync="midiPlayer"
@@ -218,7 +217,7 @@
 				autoEngrave: true,
 				tokenizeStaff: true,
 				sheetDocument: null,
-				sheetNotation: null,
+				//sheetNotation: null,
 				svgHashTable: null,
 				midi: null,
 				midiNotation: null,

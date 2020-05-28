@@ -7,7 +7,7 @@ class DictArray extends Array {
 			console.assert(typeof jsonObj === "object", "invalid input type:", jsonObj);
 
 			if (Array.isArray(jsonObj))
-				jsonObj.forEach((v, i) => this[i] = v);
+				Object.keys(jsonObj).forEach(index => this[index] = jsonObj[index]);
 			else
 				Object.entries(jsonObj).forEach(([key, value]) => this[key] = value);
 		}
@@ -16,6 +16,17 @@ class DictArray extends Array {
 
 	toJSON () {
 		return Object.keys(this).reduce((dict, index) => (dict[index] = this[index], dict), {__prototype: "DictArray"});
+	}
+
+
+	clear () {
+		Object.keys(this).forEach(index => delete this[index]);
+		this.length = 0;
+	}
+
+
+	clone () {
+		return new DictArray(this);
 	}
 };
 

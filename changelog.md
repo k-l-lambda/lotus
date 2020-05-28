@@ -1,6 +1,5 @@
 
 ## TODO
-	minus index array to JSON issue, pitchContextGroup
 	playground: parse source document title
 	lilypond post processing
 		fix partial measures
@@ -17,6 +16,8 @@
 
 
 *	2020.5.28
+
+	+	staffNotation.ts: fixed alter array minus index serilization issue.
 
 	+	inc/DictArray.ts created.
 

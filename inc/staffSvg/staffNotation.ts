@@ -3,6 +3,7 @@ import sha1 from "sha1";
 import {Matcher} from "@k-l-lambda/web-widgets";
 
 import LogRecorder from "../logRecorder";
+import DictArray from "../DictArray";
 
 
 
@@ -59,12 +60,13 @@ const stringifyNumber = x => Number.isFinite(x) ? x : x.toString();
 
 class PitchContext {
 	clef = -3;
-	keyAlters = [];
+	keyAlters: DictArray;
 	octaveShift = 0;
-	alters = [];
+	alters: DictArray;
 
 
 	constructor (data) {
+		//console.assert(data.keyAlters instanceof DictArray, "unexpected keyAlters:", data);
 		Object.assign(this, data);
 	}
 
@@ -73,9 +75,9 @@ class PitchContext {
 		return {
 			__prototype: this.constructor.name,
 			clef: this.clef,
-			keyAlters: this.keyAlters,
+			keyAlters: new DictArray(this.keyAlters),
 			octaveShift: this.octaveShift,
-			alters: this.alters,
+			alters: new DictArray(this.alters),
 		};
 	}
 
@@ -232,9 +234,9 @@ class StaffContext {
 
 	beatsPerMeasure = 4;
 	clef = -3;
-	keyAlters = [];
+	keyAlters = new DictArray();
 	octaveShift = 0;
-	alters = [];
+	alters = new DictArray();
 	track = new NotationTrack();
 
 	dirty = true;
@@ -249,9 +251,9 @@ class StaffContext {
 		if (this.dirty) {
 			const context = new PitchContext({
 				clef: this.clef,
-				keyAlters: [...this.keyAlters],
+				keyAlters: this.keyAlters.clone(),
 				octaveShift: this.octaveShift,
-				alters: [...this.alters],
+				alters: this.alters.clone(),
 			});
 			if (!this.track.lastPitchContext || context.hash !== this.track.lastPitchContext.hash)
 				this.track.contexts.push(context);
@@ -267,7 +269,7 @@ class StaffContext {
 		this.logger.append("resetKeyAlters", Object.keys(this.keyAlters).length);
 
 		if (Object.keys(this.keyAlters).length) {
-			this.keyAlters = [];
+			this.keyAlters.clear();
 
 			this.dirty = true;
 		}
@@ -278,7 +280,7 @@ class StaffContext {
 		this.logger.append("resetAlters", Object.keys(this.alters).length);
 
 		if (Object.keys(this.alters).length) {
-			this.alters = [];
+			this.alters.clear();
 
 			this.dirty = true;
 		}
@@ -467,7 +469,6 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 
 			row.staves.forEach((staff, i) => {
 				logger.append("parseStaff", i);
-
 				if (contexts[i])
 					parseNotationInStaff(contexts[i], staff);
 			});
