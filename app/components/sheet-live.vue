@@ -22,7 +22,7 @@
 					<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
 						:transform="`translate(${staff.x}, ${staff.y})`"
 					>
-						<rect class="mark head" :x="0" :y="-2" :width="staff.headWidth" :height="4" />
+						<rect class="mark head" v-if="showMark" :x="0" :y="-2" :width="staff.headWidth" :height="4" />
 						<circle class="mark" v-if="showMark" />
 						<line class="mark" v-if="showMark && Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
 						<g>
