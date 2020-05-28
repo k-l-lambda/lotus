@@ -549,7 +549,7 @@
 
 				this.pitchContextGroup = StaffNotation.createPitchContextGroup(this.sheetNotation.pitchContexts, this.midiNotation);
 
-				if (this.bakingSheet && this.$refs.sheet)
+				if (this.bakingSheet)
 					this.bakeSheet();
 			},
 
@@ -557,8 +557,9 @@
 			exportScore () {
 				console.assert(this.sheetDocument, "sheetDocument is null.");
 				console.assert(this.pitchContextGroup, "pitchContextGroup is null.");
+				console.assert(this.midiNotation, "midiNotation is null.");
 
-				const noteLinkings = this.$refs.sheet.midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
+				const noteLinkings = this.midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
 
 				const data = {
 					doc: this.sheetDocument,
@@ -669,12 +670,6 @@
 				if (value && this.lilySource && !this.sheetDocument)
 					this.engraverDirty = true;
 			},
-
-
-			/*matcherNotations () {
-				if (this.bakingSheet && this.$refs.sheet)
-					this.bakeSheet();
-			},*/
 
 
 			bakingSheet (value) {
