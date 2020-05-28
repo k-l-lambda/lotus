@@ -196,7 +196,7 @@ const parseTokenRow = (tokens, logger) => {
 			notes: notes.filter(note => note.x > left && note.x < x),
 		};
 	}).filter(({notes}) => notes.length).map(({x, notes}) => ({
-		headX: notes[0].x - 3,
+		headX: notes[0].x - 1.5,
 		noteRange: {begin: notes[0].x, end: x},
 	}));
 	logger.append("parseTokenRow.measureRanges", measureRanges);

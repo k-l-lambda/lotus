@@ -18,6 +18,8 @@
 
 *	2020.5.28
 
+	+	organizeTokens.ts: refined head X for measure.
+
 	+	organizeTokens.ts: added head width on sheet document staff.
 
 	+	staffNotation.ts: append more logs in notation parsing.
