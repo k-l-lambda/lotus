@@ -264,6 +264,8 @@ class StaffContext {
 
 
 	resetKeyAlters () {
+		this.logger.append("resetKeyAlters", Object.keys(this.keyAlters).length);
+
 		if (Object.keys(this.keyAlters).length) {
 			this.keyAlters = [];
 
@@ -273,6 +275,8 @@ class StaffContext {
 
 
 	resetAlters () {
+		this.logger.append("resetAlters", Object.keys(this.alters).length);
+
 		if (Object.keys(this.alters).length) {
 			this.alters = [];
 
@@ -287,13 +291,18 @@ class StaffContext {
 		const n = mod7(this.yToNote(y));
 		this.keyAlters[n] = value;
 
+		this.logger.append("setKeyAlter", {n, value});
+
 		this.dirty = true;
 	}
 
 
 	setAlter (y, value) {
 		//console.log("setAlter:", y, this.yToNote(y), value);
-		this.alters[this.yToNote(y)] = value;
+		const n = this.yToNote(y);
+		this.alters[n] = value;
+
+		this.logger.append("setAlter", {n, value});
 
 		this.dirty = true;
 	}
@@ -449,10 +458,19 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 	const contexts = Array(document.pages[0].rows[0].staves.length).fill(null).map(() => new StaffContext({logger}));
 
 	for (const page of document.pages) {
+		logger.append("parsePage", document.pages.indexOf(page));
+
 		for (const row of page.rows) {
+			logger.append("parseRow", page.rows.indexOf(row));
+
 			console.assert(row.staves.length === contexts.length, "staves size mismatched:", contexts.length, row.staves.length, row);
 
-			row.staves.forEach((staff, i) => contexts[i] && parseNotationInStaff(contexts[i], staff));
+			row.staves.forEach((staff, i) => {
+				logger.append("parseStaff", i);
+
+				if (contexts[i])
+					parseNotationInStaff(contexts[i], staff);
+			});
 		}
 	}
 

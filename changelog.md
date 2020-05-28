@@ -16,6 +16,11 @@
 
 
 
+*	2020.5.28
+
+	+	staffNotation.ts: append more logs in notation parsing.
+
+
 *	2020.5.27
 
 	+	staffNotation.ts: fixed alters reseting bug.
