@@ -18,6 +18,8 @@
 
 *	2020.5.28
 
+	+	inc/DictArray.ts created.
+
 	+	organizeTokens.ts: refined head X for measure.
 
 	+	organizeTokens.ts: added head width on sheet document staff.
