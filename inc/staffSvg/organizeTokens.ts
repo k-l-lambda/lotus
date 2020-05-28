@@ -271,8 +271,11 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 		};
 	});
 
+	const headWidth = measures[0] ? measures[0].headX : 0;
+
 	return {
 		x: 0, y,
+		headWidth,
 		top,
 		tokens: localTokens.filter(isStaffToken),
 		measures,

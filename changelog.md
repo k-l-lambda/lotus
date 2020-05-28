@@ -18,6 +18,8 @@
 
 *	2020.5.28
 
+	+	organizeTokens.ts: added head width on sheet document staff.
+
 	+	staffNotation.ts: append more logs in notation parsing.
 
 
