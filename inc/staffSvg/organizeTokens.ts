@@ -245,10 +245,12 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 
 		const nearest = notes.reduce((best, note) => {
 			const dx = note.x - position.x;
-			const dy = (note.y - position.y) * 2;
-			const distance = Math.sqrt(dx * dx + dy * dy);
-			if (distance < best.distance)
-				return {distance, note};
+			if (dx > -1) {
+				const dy = (note.y - position.y) * 2;
+				const distance = Math.sqrt(dx * dx + dy * dy);
+				if (distance < best.distance)
+					return {distance, note};
+			}
 
 			return best;
 		}, {distance: 8});

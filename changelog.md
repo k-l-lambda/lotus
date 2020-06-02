@@ -18,6 +18,8 @@
 
 *	2020.6.2
 
+	+	organizeTokens.ts: refined tied note search.
+
 	+	app/mixins/quit-cleaner.ts created.
 
 	+	sheet-token.vue: add tooltips on token.
