@@ -1,5 +1,6 @@
 
 ## TODO
+	measure notes in Notation
 	playground: parse source document title
 	lilypond post processing
 		fix partial measures
@@ -13,6 +14,11 @@
 	source editor
 		cursor position
 
+
+
+*	2020.6.2
+
+	+	sheet-token.vue: add tooltips on token.
 
 
 *	2020.5.28

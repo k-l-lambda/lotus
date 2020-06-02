@@ -32,12 +32,14 @@
 							<g class="mark" v-if="showMark">
 								<text :x="measure.headX">{{i4}}</text>
 							</g>
-							<SheetToken v-for="(token, i5) of measure.tokens" :key="i5" :token="token"
+							<SheetToken v-for="(token, i5) of measure.tokens" :key="i5"
+								:token="token"
 								:classes="{
 									matched: statusMap.has(token.href),
 									mismatched: token.is('NOTEHEAD') && !statusMap.has(token.href),
 									tied: token.tied,
 								}"
+								:showTitle="showMark"
 							/>
 						</g>
 					</g>

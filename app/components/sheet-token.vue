@@ -5,6 +5,7 @@
 		:data-href="token.href"
 	>
 		<use :class="token.classes" :data-href="token.href" :xlink:href="`#sign-${token.hash}`" />
+		<title v-if="showTitle && token.href">{{token.href}}</title>
 	</g>
 </template>
 
@@ -16,6 +17,7 @@
 		props: {
 			token: Object,
 			classes: Object,
+			showTitle: Boolean,
 		},
 	};
 </script>
