@@ -2,22 +2,23 @@
 ## TODO
 	parse tie token by lily document
 	measure notes in Notation
+	parse measure ticks from ly
 	playground: parse source document title
 	lilypond post processing
 		fix partial measures
 		fix repeat \alternative measures
 	playground.sliceSource:
 		music duration parsing
-	parse measure ticks from ly
 	staffSvg
 		deduce measure information
-		tempo note head symbol out of staves
 	source editor
 		cursor position
 
 
 
 *	2020.6.2
+
+	+	staffNotation.ts: exclude tempo note heads out of notation.
 
 	+	staffNotation.ts: reset old key alters in one staff.
 

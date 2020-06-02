@@ -310,7 +310,7 @@ const organizeTokens = (tokens, ly: string, {logger, viewBox, width, height}: an
 	tokens.forEach(token => {
 		const pos = token.sourcePosition;
 		if (pos)
-			token.source = lyLines[pos.line - 1].substr(pos.start, pos.end - pos.start);
+			token.source = lyLines[pos.line - 1].substr(pos.start, Math.max(pos.end - pos.start, 8));
 	});
 
 	const meaningfulTokens = tokens.filter(token => !token.is("NULL"));

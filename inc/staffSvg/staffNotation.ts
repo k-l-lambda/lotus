@@ -404,6 +404,10 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 				context.setBeatsPerMeasure(token.timeSignatureValue);
 		}
 		else if (token.is("NOTEHEAD")) {
+			// ignore tempo note heads
+			if (token.source.substr(0, 6) === "\\tempo")
+				continue;
+
 			const contextIndex = context.snapshot();
 
 			const note = {
