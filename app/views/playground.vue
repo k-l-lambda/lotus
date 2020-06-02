@@ -171,6 +171,8 @@
 	import NotationsMatcher from "../components/notations-matcher.vue";
 	import Dialog from "../components/dialog.vue";
 
+	import QuitClearner from "../mixins/quit-cleaner";
+
 
 
 	export default {
@@ -180,6 +182,11 @@
 		directives: {
 			resize,
 		},
+
+
+		mixins: [
+			QuitClearner,
+		],
 
 
 		components: {
@@ -282,17 +289,21 @@
 
 
 		async mounted () {
-			document.addEventListener("keydown", event => {
+			const keyDownHandler = event => {
 				switch (event.code) {
 				case "F8":
 					this.engrave();
+
+					event.preventDefault();
 
 					break;
 				}
 
 				//if (["INPUT", "TEXTAREA"].includes(document.activeElement.nodeName))
 				//	return;
-			});
+			};
+			document.addEventListener("keydown", keyDownHandler);
+			this.appendCleaner(() => document.removeEventListener("keydown", keyDownHandler));
 
 			await this.$nextTick();
 			this.watchEngrave();
@@ -415,6 +426,11 @@
 
 
 			async engrave () {
+				if (this.engraving) {
+					console.warn("already engraving, cancelled.");
+					return;
+				}
+
 				this.engraving = true;
 
 				const body = new FormData();
