@@ -18,6 +18,8 @@
 
 *	2020.6.2
 
+	+	organizeTokens.ts: fixed token judgment of tie.
+
 	+	staffNotation.ts: clusterize SVG notation time to refine notation matching.
 
 	+	organizeTokens.ts: refined tied note search.
