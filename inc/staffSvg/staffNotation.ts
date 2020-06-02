@@ -290,6 +290,12 @@ class StaffContext {
 	setKeyAlter (y, value) {
 		//console.log("setKeyAlter:", y, value);
 
+		// reset old key alters in one staff
+		this.keyAlters.forEach((v, n) => {
+			if (v * value < 0)
+				this.keyAlters[n] = 0;
+		});
+
 		const n = mod7(this.yToNote(y));
 		this.keyAlters[n] = value;
 

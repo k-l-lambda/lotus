@@ -1,5 +1,6 @@
 
 ## TODO
+	parse tie token by lily document
 	measure notes in Notation
 	playground: parse source document title
 	lilypond post processing
@@ -17,6 +18,8 @@
 
 
 *	2020.6.2
+
+	+	staffNotation.ts: reset old key alters in one staff.
 
 	+	organizeTokens.ts: fixed token judgment of tie.
 
