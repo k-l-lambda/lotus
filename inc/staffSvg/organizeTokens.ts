@@ -228,7 +228,7 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 	logger.append("parseTokenStaff.localTokens", localTokens);
 
 	// mark tied notes
-	const ties = localTokens.filter(token => token.is("SLUR") && token.source[0] === "~");
+	const ties = localTokens.filter(token => token.is("SLUR") && (token.source[0] === "~" || token.source[1] === "~"));
 	logger.append("parseTokenStaff.ties", ties);
 
 	ties.forEach(tie => {
