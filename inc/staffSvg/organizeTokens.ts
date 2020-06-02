@@ -256,6 +256,8 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 			nearest.note.tied = true;
 			logger.append("parseTokenStaff.tiedNote", {nearest, tie});
 		}
+		else
+			logger.append("parseTokenStaff.omitTie", {tie});
 	});
 
 	const measures = measureRanges.map((range, i) => {
