@@ -647,7 +647,7 @@ export default class LilyDocument {
 			},
 
 			set value (value) {
-				console.log(paper, "paper is null.");
+				console.assert(!!paper, "paper is null.");
 
 				const item = paper.getField(key);
 				if (item)
@@ -670,7 +670,7 @@ export default class LilyDocument {
 			},
 
 			set value (value) {
-				console.log(paper, "paper is null.");
+				console.assert(!!paper, "paper is null.");
 
 				const item = paper.getField(key);
 				if (item)

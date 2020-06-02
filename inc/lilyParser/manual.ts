@@ -1,4 +1,6 @@
 
+// NOTE: deprecated
+
 const BRACKETS_BEGIN_PATTERNS = [
 	/^([^{]*\s+)?(\w+\s+=[^{]*)\{(.*)$/s,
 	/^([^{]*)(\\\w+[^\\]+)\{(.*)$/s,
