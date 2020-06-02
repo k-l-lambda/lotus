@@ -18,6 +18,8 @@
 
 *	2020.6.2
 
+	+	staffNotation.ts: clusterize SVG notation time to refine notation matching.
+
 	+	organizeTokens.ts: refined tied note search.
 
 	+	app/mixins/quit-cleaner.ts created.

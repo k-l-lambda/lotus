@@ -419,18 +419,19 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 
 	//console.log("notes:", notes);
 	notes.forEach(note => {
+		// TODO: refine notes' time in chord
 		if (xs[note.x - 1.5] && xs[note.x - 1.5].has(note.y))
 			note.x -= 1.5;
 		else if (xs[note.x - 1.25] && xs[note.x - 1.25].has(note.y))
 			note.x -= 1.25;
-		else if (xs[note.x + 1.25] && xs[note.x + 1.25].has(note.y - 0.5))
+		/*else if (xs[note.x + 1.25] && xs[note.x + 1.25].has(note.y - 0.5))
 			note.x += 1.25;
 		else if (xs[note.x - 0.5])
 			note.x -= 0.5;
 		else if (xs[note.x - 0.25])
-			note.x -= 0.25;
+			note.x -= 0.25;*/
 
-		context.track.appendNote(duration * note.x / (measure.noteRange.end - measure.noteRange.begin), {
+		context.track.appendNote(note.x, {
 			pitch: note.pitch,
 			id: note.id,
 			tied: note.tied,
@@ -479,14 +480,26 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 
 	// merge tracks
 	contexts.forEach((context, t) => context.track.notes.forEach(note => note.track = t));
-
 	const notes = [].concat(...contexts.map(context => context.track.notes)).sort((n1, n2) => n1.time - n2.time);
+
+	clusterizeNotes(notes);
 
 	return {
 		endTime: contexts[0].track.endTime,
 		notes,
 		pitchContexts: contexts.map(context => context.track.contexts),
 	};
+};
+
+
+const xClusterize = x => Math.tanh((x / 1.5) ** 12);
+
+
+// get time closed for notes in a chord
+const clusterizeNotes = notes => {
+	notes.forEach((note, i) => note.deltaTime = xClusterize(i > 0 ? note.time - notes[i - 1].time : 0));
+
+	notes.forEach((note, i) => i > 0 && (note.time = notes[i - 1].time + note.deltaTime * 240));
 };
 
 
@@ -546,7 +559,7 @@ const matchNotations = async (midiNotation, svgNotation) => {
 				noteMap[index].ids.push(note.id);
 			}
 			else {
-				const sn = {start: note.time * 16, pitch: note.pitch, id: note.id, track: note.track, contextIndex: note.contextIndex};
+				const sn = {start: note.time, pitch: note.pitch, id: note.id, track: note.track, contextIndex: note.contextIndex};
 				noteMap[index] = sn;
 				notePMap[sn.pitch] = sn;
 				notes.push(sn);
@@ -568,7 +581,7 @@ const matchNotations = async (midiNotation, svgNotation) => {
 	}, []);
 
 	const sample = {
-		notes: midiNotation.notes.map(({startTick, pitch}, index) => ({index, start: startTick * 16, pitch})),
+		notes: midiNotation.notes.map(({startTick, pitch}, index) => ({index, start: startTick * 4, pitch})),
 	};
 
 	Matcher.genNotationContext(criterion);
@@ -580,8 +593,12 @@ const matchNotations = async (midiNotation, svgNotation) => {
 
 	//console.log("before.runNavigation:", performance.now());
 	const navigator = await Matcher.runNavigation(criterion, sample);
+	//console.log("navigator:", navigator);
 	//console.log("after.runNavigation:", performance.now());
+
 	const path = navigator.path();
+	//const path = navigator.sample.notes.map(note => note.matches[0] ? note.matches[0].ci : -1);
+
 	//console.log("path:", path);
 	//console.log("after.path:", performance.now());
 
