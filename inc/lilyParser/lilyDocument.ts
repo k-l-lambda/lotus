@@ -517,6 +517,22 @@ class Markup extends BaseTerm {
 };
 
 
+class Lyric extends BaseTerm {
+	content: string;
+	duration?: string;
+	post_events?: any[];
+
+
+	serialize () {
+		return [
+			this.content,
+			...BaseTerm.optionalSerialize(this.duration),
+			...cc((this.post_events || []).map(BaseTerm.optionalSerialize)),
+		];
+	}
+}
+
+
 class Unexpect extends BaseTerm {
 	constructor (data) {
 		super(data);
@@ -546,6 +562,7 @@ const termDictionary = {
 	PostEvent,
 	Fingering,
 	Markup,
+	Lyric,
 };
 
 

@@ -21,6 +21,8 @@
 
 *	2020.6.3
 
+	+	lilyDocument.ts: added grammar of lyric_element_music.
+
 	+	batchScoreMaker.ts: batch xml to ly added.
 
 	+	backend/scoreMaker.ts created.

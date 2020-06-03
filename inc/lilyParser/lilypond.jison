@@ -44,6 +44,8 @@
 	const fingering = value => ({proto: "Fingering", value: preferNumber(value)});
 
 	const markup = (head, body) => ({proto: "Markup", head, body});
+
+	const lyric = (content, options) => ({proto: "Lyric", content, ...options});
 %}
 
 
@@ -996,7 +998,22 @@ music
 		{$$ = $1;}
 	| pitch_as_music
 		{$$ = $1;}
-	//| lyric_element_music
+	| lyric_element_music
+	;
+
+lyric_element_music
+	: lyric_element optional_notemode_duration post_events
+		{$$ = lyric($1, {duration: $2, post_events: $3});}
+	;
+
+lyric_element
+	: full_markup
+		{$$ = $1;}
+	| SYMBOL
+		{$$ = $1;}
+	| STRING
+		{$$ = $1;}
+	//| LYRIC_ELEMENT
 	;
 
 pitch_as_music
