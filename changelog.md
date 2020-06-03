@@ -21,6 +21,8 @@
 
 *	2020.6.3
 
+	+	batchScoreMaker.ts: batch xml to ly added.
+
 	+	backend/scoreMaker.ts created.
 
 	+	playground.vue: exportMarkupLily added.
