@@ -185,6 +185,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\include"					return 'CMD_INCLUDE';
 "\\tupletSpan"				return 'CMD_TUPLETSPAN';
 "\\tuplet"					return 'CMD_TUPLET';
+"\\skip"					return 'CMD_SKIP';
+"\\skip"(?=\d)				return 'CMD_SKIP';
 
 // markup commands
 "\\version"					return 'CMD_VERSION';
@@ -1266,6 +1268,8 @@ unitary_cmd
 	| CMD_TUPLETSPAN
 		{$$ = $1;}
 	| CMD_TUPLET
+		{$$ = $1;}
+	| CMD_SKIP
 		{$$ = $1;}
 	;
 
