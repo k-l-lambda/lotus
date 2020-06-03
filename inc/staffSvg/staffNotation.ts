@@ -417,6 +417,7 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 				id: token.href,
 				tied: token.tied,
 				contextIndex,
+				type: token.noteType,
 			};
 			notes.push(note);
 
@@ -446,6 +447,7 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 			id: note.id,
 			tied: note.tied,
 			contextIndex: note.contextIndex,
+			type: note.type,
 		});
 	});
 
@@ -505,11 +507,15 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 const xClusterize = x => Math.tanh((x / 1.5) ** 12);
 
 
+// 2nd degree chord note head intervals for WHOLE : HALF : SOLID = 1.25 : 1.32 : 1.78
+const noteTypeIntervalFactors = [1.25 / 1.78, 1.25 / 1.32, 1];
+
+
 // get time closed for notes in a chord
 const clusterizeNotes = notes => {
-	notes.forEach((note, i) => note.deltaTime = xClusterize(i > 0 ? note.time - notes[i - 1].time : 0));
+	notes.forEach((note, i) => note.deltaTime = xClusterize(i > 0 ? (note.time - notes[i - 1].time) * noteTypeIntervalFactors[note.type]: 0));
 
-	notes.forEach((note, i) => i > 0 && (note.time = notes[i - 1].time + note.deltaTime * 240));
+	notes.forEach((note, i) => i > 0 && (note.time = notes[i - 1].time + note.deltaTime * 480));
 };
 
 
@@ -591,7 +597,7 @@ const matchNotations = async (midiNotation, svgNotation) => {
 	}, []);
 
 	const sample = {
-		notes: midiNotation.notes.map(({startTick, pitch}, index) => ({index, start: startTick * 4, pitch})),
+		notes: midiNotation.notes.map(({startTick, pitch}, index) => ({index, start: startTick * 16, pitch})),
 	};
 
 	Matcher.genNotationContext(criterion);

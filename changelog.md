@@ -1,5 +1,6 @@
 
 ## TODO
+	batch engrave tools
 	parse tie token by lily document
 	measure notes in Notation
 	parse measure ticks from ly
@@ -14,6 +15,11 @@
 	source editor
 		cursor position
 
+
+
+*	2020.6.3
+
+	+	staffNotation.ts: refined clusterizeNotes by note head type.
 
 
 *	2020.6.2

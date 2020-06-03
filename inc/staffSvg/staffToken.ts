@@ -156,4 +156,14 @@ export default class StaffToken {
 
 		return null;
 	}
+
+
+	get noteType () {
+		if (this.is("WHOLE"))
+			return 0;
+		else if (this.is("HALF"))
+			return 1;
+		else if (this.is("SOLID"))
+			return 2;
+	}
 };
