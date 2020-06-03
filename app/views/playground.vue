@@ -611,8 +611,8 @@
 					globalAttributes.staffSize.value = this.lilyMarkups.staffSize;
 
 				if (this.lilyMarkups.autoPaperSize) {
-					globalAttributes.paperWidth.value.set(this.autoPageSize.width / CM_TO_PX, "\\cm");
-					globalAttributes.paperHeight.value.set(this.autoPageSize.height / CM_TO_PX, "\\cm");
+					globalAttributes.paperWidth.value.set({number: this.autoPageSize.width / CM_TO_PX, unit: "\\cm"});
+					globalAttributes.paperHeight.value.set({number: this.autoPageSize.height / CM_TO_PX, unit: "\\cm"});
 				}
 
 				if (this.lilyMarkups.systemSpacing >= 0)

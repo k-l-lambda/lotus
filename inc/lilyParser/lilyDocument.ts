@@ -448,7 +448,7 @@ class NumberUnit extends BaseTerm {
 	}
 
 
-	set (number, unit) {
+	set ({number, unit}) {
 		this.number = Number(number.toFixed(2));
 
 		if (unit !== undefined)

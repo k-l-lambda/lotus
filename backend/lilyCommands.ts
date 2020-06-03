@@ -80,7 +80,7 @@ const postProcessLy = (ly, {
 };
 
 
-const xml2ly = async (xml: string | Buffer, options: LilyProcessOptions) => {
+const xml2ly = async (xml: string | Buffer, options: LilyProcessOptions): Promise<string> => {
 	const hash = genHashString();
 	const xmlFileName = `${TEMP_DIR}xml2ly-${hash}.xml`;
 	await asyncCall(fs.writeFile, xmlFileName, xml);
