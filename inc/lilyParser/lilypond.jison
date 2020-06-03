@@ -892,6 +892,10 @@ basic_music
 		{$$ = $1;}
 	| music_bare
 		{$$ = $1;}
+	| LYRICSTO simple_string lyric_mode_music
+		{$$ = command($1, $2, $3);}
+	| LYRICSTO symbol '=' simple_string lyric_mode_music
+		{$$ = command($1, assignment($2, $4), $5);}
 	;
 
 music_bare
