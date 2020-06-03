@@ -11,7 +11,9 @@
 	playground.sliceSource:
 		music duration parsing
 	staffSvg
-		deduce measure information
+		staves split confliction	(One Summer's Day)
+		chord notes interval multi-voices interference	(One Summer's Day)
+		octave & alter token order issue
 	source editor
 		cursor position
 
