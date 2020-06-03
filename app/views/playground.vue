@@ -97,7 +97,7 @@
 					</tr>
 					<tr>
 						<td>Remove Trill Spans</td>
-						<td><button @click="removeTrillSpans">do</button></td>
+						<td><button @click="removeTrillSpans">remove</button></td>
 					</tr>
 					<tr>
 						<th>Engrave</th>
@@ -134,6 +134,10 @@
 					<tr>
 						<td>Ragged Last</td>
 						<td><BoolStoreInput v-model="lilyMarkups.raggedLast" localKey="lotus-lilyMarkups.raggedLast" /></td>
+					</tr>
+					<tr>
+						<td>Export a Markup File</td>
+						<td><button @click="exportMarkupLily">export .ly</button></td>
 					</tr>
 				</tbody>
 			</table>
@@ -600,12 +604,8 @@
 			},
 
 
-			async markupSource () {
-				this.updateLilyDocument();
-
-				console.assert(this.lilyDocument, "lilyDocument is null.");
-
-				const globalAttributes = this.lilyDocument.globalAttributes();
+			markupLilyDocument (doc) {
+				const globalAttributes = doc.globalAttributes();
 
 				if (this.lilyMarkups.staffSize)
 					globalAttributes.staffSize.value = this.lilyMarkups.staffSize;
@@ -620,6 +620,15 @@
 
 				if (typeof this.lilyMarkups.raggedLast === "boolean")
 					globalAttributes.raggedLast.value = this.lilyMarkups.raggedLast;
+			},
+
+
+			async markupSource () {
+				this.updateLilyDocument();
+
+				console.assert(this.lilyDocument, "lilyDocument is null.");
+
+				this.markupLilyDocument(this.lilyDocument);
 
 				this.lilySource = this.lilyDocument.toString();
 
@@ -647,6 +656,16 @@
 
 				await this.$nextTick();
 				this.lilyDocumentDirty = false;
+			},
+
+
+			exportMarkupLily () {
+				const lilyDocument = new LilyDocument(this.lilyParser.parse("\\version \"2.20.0\""));
+				this.markupLilyDocument(lilyDocument);
+
+				const blob = new Blob([lilyDocument.toString()]);
+
+				return downloadUrl(URL.createObjectURL(blob), "markup.ly");
 			},
 
 

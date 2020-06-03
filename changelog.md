@@ -21,6 +21,8 @@
 
 *	2020.6.3
 
+	+	playground.vue: exportMarkupLily added.
+
 	+	staffNotation.ts: refined clusterizeNotes by note head type.
 
 
