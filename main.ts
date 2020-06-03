@@ -3,7 +3,7 @@ import express from "express";
 import http from "http";
 
 import "./env.js";
-import backend from "./backend";
+import {service} from "./backend";
 
 
 
@@ -20,7 +20,7 @@ app.use("*.html", (_, res) => {
 app.use("/", express.static("./dist"));
 
 
-Object.entries(backend)
+Object.entries(service)
 	.forEach(([path, value]) => Object.entries(value)
 		.forEach(([method, handler]) => app[method](path, handler)));
 

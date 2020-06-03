@@ -30,6 +30,17 @@ const initialize = async () => {
 initialize();
 
 
+interface LilyProcessOptions {
+	pointClick?: boolean;
+	midi?: boolean;
+	removeBreak?: boolean;
+	removePageBreak?: boolean;
+	removeInstrumentName?: boolean;
+	removeTempo?: boolean;
+	tupletReplace?: boolean;
+};
+
+
 const postProcessLy = (ly, {
 	pointClick = true,
 	midi = true,
@@ -69,7 +80,7 @@ const postProcessLy = (ly, {
 };
 
 
-const xml2ly = async (xml, options) => {
+const xml2ly = async (xml: string | Buffer, options: LilyProcessOptions) => {
 	const hash = genHashString();
 	const xmlFileName = `${TEMP_DIR}xml2ly-${hash}.xml`;
 	await asyncCall(fs.writeFile, xmlFileName, xml);
@@ -85,7 +96,7 @@ const xml2ly = async (xml, options) => {
 };
 
 
-const midi2ly = async (midi, options) => {
+const midi2ly = async (midi, options: LilyProcessOptions) => {
 	const hash = genHashString();
 	//const midiFileName = `${TEMP_DIR}midi2ly-${hash}.midi`;
 	//await asyncCall(fs.writeFile, midiFileName, midi);

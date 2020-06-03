@@ -224,7 +224,6 @@
 				autoEngrave: true,
 				tokenizeStaff: true,
 				sheetDocument: null,
-				//sheetNotation: null,
 				svgHashTable: null,
 				midi: null,
 				midiNotation: null,

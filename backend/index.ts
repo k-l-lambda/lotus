@@ -34,8 +34,7 @@ const formidableHandle = (name, req, res, handle) =>
 	});
 
 
-
-export default {
+const service = {
 	"/musicxml2ly": {
 		post: (req, res) => formidableHandle("musicxml2ly", req, res,
 			({xml, options}) => lilyCommands.xml2ly(xml, options && JSON.parse(options))),
@@ -77,4 +76,12 @@ export default {
 				});
 			}),
 	},
+};
+
+
+
+export {
+	service,
+	lilyCommands,
+	loadLilyParser,
 };
