@@ -21,6 +21,8 @@
 
 *	2020.6.4
 
+	+	profiler.vue: restore non-baking mode.
+
 	+	scoreMaker.ts: markScore implemented.
 
 	+	lilyCommands.ts: XML preprocessing added.

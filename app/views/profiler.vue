@@ -11,6 +11,7 @@
 			<span v-if="fps" class="fps"><em>{{fps.toFixed(1)}}</em>fps</span>
 		</header>
 		<main>
+			<SheetSigns v-if="!bakingSheet && svgHashTable" v-show="false" :hashTable="svgHashTable" />
 			<SheetLive v-if="sheetDocument" ref="sheet"
 				:doc="sheetDocument"
 				:midiNotation="midiNotation"
@@ -33,6 +34,7 @@
 	import ScoreBundle from "../scoreBundle.ts";
 
 	import SheetLive from "../components/sheet-live.vue";
+	import SheetSigns from "../components/sheet-signs.vue";
 	import StoreInput from "../components/store-input.vue";
 	import CheckButton from "../components/check-button.vue";
 
@@ -44,6 +46,7 @@
 
 		components: {
 			SheetLive,
+			SheetSigns,
 			StoreInput,
 			CheckButton,
 		},
@@ -53,6 +56,7 @@
 			return {
 				sourceText: null,
 				sheetDocument: null,
+				svgHashTable: null,
 				midiNotation: null,
 				pitchContextGroup: null,
 				midiPlayer: null,
@@ -106,6 +110,7 @@
 					this.sheetDocument = scoreBundle.scoreJSON.doc;
 					this.pitchContextGroup = scoreBundle.scoreJSON.pitchContextGroup;
 					this.midiNotation = scoreBundle.midiNotation;
+					this.svgHashTable = scoreBundle.scoreJSON.hashTable;
 
 					this.logTime("bundle parsed");
 
