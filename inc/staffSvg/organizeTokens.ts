@@ -1,5 +1,5 @@
 
-import {POS_PRECISION} from "./utils";
+import {POS_PRECISION, constants} from "./utils";
 
 
 
@@ -297,11 +297,11 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 		const alters = tokens.filter(token => token.is("ALTER")).sort((a1, a2) => a2.x - a1.x);
 		logger.append("measure.alters", {alters, range});
 
-		let xbegin = range.noteRange.begin - 1.5;
+		let xbegin = range.noteRange.begin;
 		for (const alter of alters) {
-			if (alter.x > xbegin) {
+			if (alter.x + constants.ALTER_WIDTHS[alter.alterValue] >= xbegin) {
 				range.headX = Math.min(range.headX, alter.x);
-				xbegin = alter.x - 1.2;
+				xbegin = alter.x;
 			}
 			else
 				break;

@@ -5,7 +5,7 @@ import {Matcher} from "@k-l-lambda/web-widgets";
 
 import LogRecorder from "../logRecorder";
 import DictArray from "../DictArray";
-import {roundNumber, CLOSED_NOTEHEAD_INTERVAL_FIRST_DEG} from "./utils";
+import {roundNumber, constants} from "./utils";
 
 
 
@@ -436,9 +436,9 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 	notes.forEach(note => {
 		// TODO: refine notes' time in chord
 		if (xs[note.rx - 1.5] && xs[note.rx - 1.5].has(note.y))
-			note.x -= CLOSED_NOTEHEAD_INTERVAL_FIRST_DEG;
+			note.x -= constants.CLOSED_NOTEHEAD_INTERVAL_FIRST_DEG;
 		else if (xs[note.rx - 1.25] && xs[note.rx - 1.25].has(note.y))
-			note.x -= CLOSED_NOTEHEAD_INTERVAL_FIRST_DEG;
+			note.x -= constants.CLOSED_NOTEHEAD_INTERVAL_FIRST_DEG;
 		/*else if (xs[note.rx + 1.25] && xs[note.rx + 1.25].has(note.y - 0.5))
 			note.x += 1.25;
 		else if (xs[note.rx - 0.5])
@@ -513,13 +513,9 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 const xClusterize = x => Math.tanh((x / 1.5) ** 12);
 
 
-// 2nd degree chord note head intervals for WHOLE : HALF : SOLID = 1.78 : 1.32 : 1.25
-const noteTypeIntervalFactors = [1.25 / 1.78, 1.25 / 1.32, 1];
-
-
 // get time closed for notes in a chord
 const clusterizeNotes = notes => {
-	notes.forEach((note, i) => note.deltaTime = xClusterize(i > 0 ? (note.time - notes[i - 1].time) * noteTypeIntervalFactors[note.type]: 0));
+	notes.forEach((note, i) => note.deltaTime = xClusterize(i > 0 ? (note.time - notes[i - 1].time) * constants.NOTE_TYPE_INTERVAL_FACTORS[note.type]: 0));
 
 	notes.forEach((note, i) => i > 0 && (note.time = notes[i - 1].time + note.deltaTime * 480));
 };
