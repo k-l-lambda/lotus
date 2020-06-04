@@ -24,6 +24,8 @@
 
 *	2020.6.4
 
+	+	staffNotation.ts: refined note time, use x rather than rx.
+
 	+	organizeTokens.ts: fixed parseTokenRow to avoid wrong staves split by fake MEASURE_SEPARATOR.
 
 	+	organizeTokens.ts: fixed tokensRowsSplit to avoid too low boundary value.

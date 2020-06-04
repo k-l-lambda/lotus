@@ -1,4 +1,5 @@
 
+import _ from "lodash";
 import sha1 from "sha1";
 import {Matcher} from "@k-l-lambda/web-widgets";
 
@@ -411,7 +412,7 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 			const contextIndex = context.snapshot();
 
 			const note = {
-				x: token.rx - measure.noteRange.begin,
+				x: token.x - measure.noteRange.begin,
 				y: token.ry,
 				pitch: context.yToPitch(token.ry),
 				id: token.href,
@@ -494,6 +495,8 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 	contexts.forEach((context, t) => context.track.notes.forEach(note => note.track = t));
 	const notes = [].concat(...contexts.map(context => context.track.notes)).sort((n1, n2) => n1.time - n2.time);
 
+	logger.append("notesBeforeClusterize", notes.map(note => _.pick(note, ["time", "pitch"])));
+
 	clusterizeNotes(notes);
 
 	return {
@@ -507,7 +510,7 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 const xClusterize = x => Math.tanh((x / 1.5) ** 12);
 
 
-// 2nd degree chord note head intervals for WHOLE : HALF : SOLID = 1.25 : 1.32 : 1.78
+// 2nd degree chord note head intervals for WHOLE : HALF : SOLID = 1.78 : 1.32 : 1.25
 const noteTypeIntervalFactors = [1.25 / 1.78, 1.25 / 1.32, 1];
 
 
