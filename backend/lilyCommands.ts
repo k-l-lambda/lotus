@@ -3,6 +3,7 @@
 import fs from "fs";
 import glob from "glob";
 import child_process from "child-process-promise";
+import {DOMParser, XMLSerializer} from "xmldom";
 import {MIDI} from "@k-l-lambda/web-widgets";
 
 import asyncCall from "../inc/asyncCall";
@@ -31,6 +32,10 @@ initialize();
 
 
 interface LilyProcessOptions {
+	// xml
+	removeMeasureImplicit?: boolean;
+
+	// lilypond
 	pointClick?: boolean;
 	midi?: boolean;
 	removeBreak?: boolean;
@@ -38,6 +43,37 @@ interface LilyProcessOptions {
 	removeInstrumentName?: boolean;
 	removeTempo?: boolean;
 	tupletReplace?: boolean;
+};
+
+
+const traverse = (node, handle) => {
+	handle(node);
+
+	if (node.childNodes) {
+		for (let i = 0; i < node.childNodes.length; ++i)
+			traverse(node.childNodes[i], handle);
+	}
+};
+
+
+const preprocessXml = (xml, {
+	removeMeasureImplicit = true,
+} = {}): string => {
+	if (!removeMeasureImplicit)
+		return xml;
+
+	const dom = new DOMParser().parseFromString(xml, "text/xml");
+
+	if (removeMeasureImplicit) {
+		traverse(dom, node => {
+			if (node.tagName === "measure")
+				node.removeAttribute("implicit");
+		});
+	}
+
+	//console.log("dom:", dom);
+
+	return new XMLSerializer().serializeToString(dom);
 };
 
 
@@ -81,6 +117,8 @@ const postProcessLy = (ly, {
 
 
 const xml2ly = async (xml: string | Buffer, options: LilyProcessOptions): Promise<string> => {
+	xml = preprocessXml(xml, options);
+
 	const hash = genHashString();
 	const xmlFileName = `${TEMP_DIR}xml2ly-${hash}.xml`;
 	await asyncCall(fs.writeFile, xmlFileName, xml);
@@ -161,4 +199,5 @@ export {
 	xml2ly,
 	midi2ly,
 	engraveSvg,
+	preprocessXml,
 };

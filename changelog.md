@@ -19,6 +19,11 @@
 
 
 
+*	2020.6.4
+
+	+	lilyCommands.ts: XML preprocessing added.
+
+
 *	2020.6.3
 
 	+	lilyDocument.ts: added grammar of lyric_element_music.
