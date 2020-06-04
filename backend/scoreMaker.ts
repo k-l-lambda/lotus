@@ -57,7 +57,20 @@ const markScore = async (source: string, {midi, logger}: {midi?: Buffer, logger?
 	midi = midi || engraving.midi;
 	const midiNotation = MusicNotation.Notation.parseMidi(midi);
 
-	await staffSvg.StaffNotation.matchNotations(midiNotation, sheetNotation);
+	const matcher = await staffSvg.StaffNotation.matchNotations(midiNotation, sheetNotation);
+
+	if (logger) {
+		const cis = new Set(Array(matcher.criterion.notes.length).keys());
+		matcher.path.forEach(ci => cis.delete(ci));
+
+		const omitC = cis.size;
+		const omitS = matcher.path.filter(ci => ci < 0).length;
+
+		const coverage = ((matcher.criterion.notes.length - omitC) / matcher.criterion.notes.length)
+			* ((matcher.sample.notes.length - omitS) / matcher.sample.notes.length);
+
+		logger.append("markScore.match", {coverage, omitC, omitS, path: matcher.path});
+	}
 
 	const matchedIds: Set<string> = new Set();
 	midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));

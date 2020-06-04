@@ -21,6 +21,8 @@
 
 *	2020.6.4
 
+	+	scoreMaker.ts: added matcher coverage statistics.
+
 	+	profiler.vue: restore non-baking mode.
 
 	+	scoreMaker.ts: markScore implemented.
