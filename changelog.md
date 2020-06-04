@@ -21,6 +21,8 @@
 
 *	2020.6.4
 
+	+	batchScoreMaker.ts: score bundling added.
+
 	+	scoreMaker.ts: added matcher coverage statistics.
 
 	+	profiler.vue: restore non-baking mode.
