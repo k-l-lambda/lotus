@@ -1,8 +1,18 @@
 
+/// <reference path="../inc/logRecorder.ts" />
+/// <reference path="../inc/scoreJSON.d.ts" />
+
+import _ from "lodash";
+import {DOMParser} from "xmldom";
+import {MusicNotation} from "@k-l-lambda/web-widgets";
+
 import {xml2ly, engraveSvg} from "./lilyCommands";
 import loadLilyParser from "./loadLilyParserNode";
 import {LilyDocument} from "../inc/lilyParser";
+import * as staffSvg from "../inc/staffSvg";
 
+
+interface LilyProcessOptions {};
 
 
 const xmlToLyWithMarkup = async (xml: string | Buffer, options: LilyProcessOptions, markup: string): Promise<string> => {
@@ -35,8 +45,36 @@ const xmlToLyWithMarkup = async (xml: string | Buffer, options: LilyProcessOptio
 };
 
 
-const markScore = async (source: string, midi: Buffer): Promise<string> => {
-	// TODO:
+const markScore = async (source: string, {midi, logger}: {midi?: Buffer, logger?: LogRecorder} = {}): Promise<ScoreJSON> => {
+	const engraving = await engraveSvg(source);
+
+	const lilyParser = await loadLilyParser();
+	const lilyDocument = new LilyDocument(lilyParser.parse(source));
+	const {doc, hashTable} = staffSvg.createSheetDocumentFromSvgs(engraving.svgs, source, lilyDocument, {logger, DOMParser});
+
+	const sheetNotation = staffSvg.StaffNotation.parseNotationFromSheetDocument(doc, {logger});
+
+	midi = midi || engraving.midi;
+	const midiNotation = MusicNotation.Notation.parseMidi(midi);
+
+	await staffSvg.StaffNotation.matchNotations(midiNotation, sheetNotation);
+
+	const matchedIds: Set<string> = new Set();
+	midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));
+
+	doc.updateMatchedTokens(matchedIds);
+
+	const pitchContextGroup = staffSvg.StaffNotation.createPitchContextGroup(sheetNotation.pitchContexts, midiNotation);
+
+	const noteLinkings = midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
+
+	return {
+		doc,
+		midi,
+		hashTable,
+		noteLinkings,
+		pitchContextGroup,
+	};
 };
 
 

@@ -199,5 +199,5 @@ export {
 	xml2ly,
 	midi2ly,
 	engraveSvg,
-	preprocessXml,
+	//preprocessXml,
 };

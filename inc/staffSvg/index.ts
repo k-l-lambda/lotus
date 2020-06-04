@@ -5,8 +5,7 @@ import organizeTokens from "./organizeTokens";
 import LogRecorder from "../logRecorder";
 import StaffToken from "./staffToken";
 import SheetDocument from "./sheetDocument";
-import {PitchContext, PitchContextTable} from "./staffNotation";
-import {recoverJSON} from "../jsonRecovery";
+import * as StaffNotation from "./staffNotation";
 
 
 
@@ -25,14 +24,38 @@ const parseSvgPage = (dom, ly, {logger = new LogRecorder(), attributes, ...optio
 };
 
 
+declare class LilyDocument {
+	globalAttributes(options: {readonly?: boolean});
+}
+
+
+const createSheetDocumentFromSvgs = (svgs: string[], ly: string, lilyDocument: LilyDocument, {logger, DOMParser}: {logger?: LogRecorder, DOMParser?: any} = {}): {
+	doc: SheetDocument,
+	hashTable: {[key: string]: object},
+} => {
+	const attributes = lilyDocument.globalAttributes({readonly: true});
+
+	const pages = svgs.map(svg => parseSvgPage(svg, ly, {DOMParser, logger, attributes}));
+	const doc = new SheetDocument({
+		pages: pages.map(page => page.structure),
+	});
+	const hashTable = pages.reduce((sum, page) => ({...sum, ...page.hashTable}), {});
+
+	return {
+		doc,
+		hashTable,
+	};
+};
+
+
 
 export {
 	svgToElements,
 	tokenizeElements,
 	organizeTokens,
 	parseSvgPage,
+	createSheetDocumentFromSvgs,
 	StaffToken,
 	SheetDocument,
-	PitchContext,
-	PitchContextTable,
+	StaffNotation,
 };

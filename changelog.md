@@ -21,6 +21,8 @@
 
 *	2020.6.4
 
+	+	scoreMaker.ts: markScore implemented.
+
 	+	lilyCommands.ts: XML preprocessing added.
 
 

@@ -1,22 +1,17 @@
 
+/// <reference path="../inc/scoreJSON.d.ts" />
+
 import {MusicNotation} from "@k-l-lambda/web-widgets";
 
 import {recoverJSON} from "../inc/jsonRecovery";
-import {StaffToken, SheetDocument, PitchContext, PitchContextTable} from "../inc/staffSvg";
-import * as StaffNotation from "../inc/staffSvg/staffNotation";
+import {StaffToken, SheetDocument, StaffNotation} from "../inc/staffSvg";
 import * as SheetBaker from "./sheetBaker";
 import DictArray from "../inc/DictArray";
 
 
 
 export default class ScoreBundle {
-	scoreJSON: {
-		doc: SheetDocument;
-		hashTable: {[key: string]: any};
-		midi: object;
-		noteLinkings: any[];
-		pitchContextGroup: object[];
-	};
+	scoreJSON: ScoreJSON;
 
 	midiNotation: object;
 	matchedIds: Set<string>;
@@ -25,6 +20,8 @@ export default class ScoreBundle {
 
 
 	constructor (source, {onStatus = (..._) => _} = {}) {
+		const {PitchContext, PitchContextTable} = StaffNotation;
+
 		this.scoreJSON = recoverJSON(source, {StaffToken, SheetDocument, PitchContext, PitchContextTable, DictArray});
 		this.onStatus = onStatus;
 
@@ -39,7 +36,7 @@ export default class ScoreBundle {
 			if (this.scoreJSON.noteLinkings) {
 				this.scoreJSON.noteLinkings.forEach((fields, i) => Object.assign(midiNotation.notes[i], fields));
 
-				this.matchedIds = this.scoreJSON.noteLinkings.reduce((ids, note) => (note.ids && note.ids.forEach(id => ids.add(id)), ids), new Set());
+				this.matchedIds = this.scoreJSON.noteLinkings.reduce((ids, note) => (note.ids && note.ids.forEach(id => ids.add(id)), ids), new Set()) as Set<string>;
 
 				StaffNotation.assignNotationEventsIds(midiNotation);
 			}
