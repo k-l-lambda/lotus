@@ -293,6 +293,20 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 		const tokens = localTokens.filter(token => !isStaffToken(token) && token.x > left
 			&& (token.x < range.noteRange.end || i === measureRanges.length - 1));
 
+		// shift fore headX by alters
+		const alters = tokens.filter(token => token.is("ALTER")).sort((a1, a2) => a2.x - a1.x);
+		logger.append("measure.alters", {alters, range});
+
+		let xbegin = range.noteRange.begin - 1.5;
+		for (const alter of alters) {
+			if (alter.x > xbegin) {
+				range.headX = Math.min(range.headX, alter.x);
+				xbegin = alter.x - 1.2;
+			}
+			else
+				break;
+		}
+
 		return {
 			tokens,
 			noteRange: range.noteRange,

@@ -24,6 +24,8 @@
 
 *	2020.6.4
 
+	+	organizeTokens.ts: shift fore measure headX by alter tokens.
+
 	+	staffNotation.ts: refined note time, use x rather than rx.
 
 	+	organizeTokens.ts: fixed parseTokenRow to avoid wrong staves split by fake MEASURE_SEPARATOR.
