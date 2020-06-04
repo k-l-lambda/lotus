@@ -21,6 +21,8 @@
 
 *	2020.6.4
 
+	+	batchScoreMaker.ts: MIDI file loading added.
+
 	+	batchScoreMaker.ts: score bundling added.
 
 	+	scoreMaker.ts: added matcher coverage statistics.

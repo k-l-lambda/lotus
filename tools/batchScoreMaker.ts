@@ -1,6 +1,7 @@
 
 import fs from "fs";
 import {argv} from "yargs";
+import {MIDI} from "@k-l-lambda/web-widgets";
 
 import "../env.js";
 import * as ScoreMaker from "../backend/scoreMaker";
@@ -59,7 +60,19 @@ const main = async () => {
 		lyFiles.forEach(path => lilyFiles.add(path));
 	}
 
-	// TODO: load midi files
+	const midiFiles = new Map();
+
+	if (argv.midiSameFilename) {
+		const midiFilePostfix = argv.midiExtendName || "midi";
+
+		for (const lyPath of lilyFiles) {
+			const midiPath = lyPath.replace(/\.\w+$/, "." + midiFilePostfix);
+			if (fs.existsSync(midiPath)) 
+				midiFiles.set(lyPath, midiPath);
+			else
+				console.warn("midi file not exist:", midiPath);
+		}
+	}
 
 	if (argv.inputLyDir || argv.bundleScore) {
 		const counting = {
@@ -79,7 +92,17 @@ const main = async () => {
 				const logger = new LogRecorder({enabled: true});
 
 				const ly = fs.readFileSync(lyPath).toString();
-				const score = await ScoreMaker.markScore(ly, {logger});
+
+				let midi = null;
+				const midiPath = midiFiles.get(lyPath);
+				if (midiPath) {
+					const buffer = await asyncCall(fs.readFile, midiPath);
+					midi = MIDI.parseMidiData(buffer);
+
+					console.log("midi loaded:", midiPath);
+				}
+
+				const score = await ScoreMaker.markScore(ly, {midi, logger});
 
 				const matchStat = logger.records.reverse().find(record => record.desc === "markScore.match");
 				console.assert(matchStat, "No matchStat in logger.");
@@ -115,6 +138,8 @@ const main = async () => {
 		issues.sort((i1, i2) => i1.coverage - i2.coverage);
 		console.log("issues:", issues);
 	}
+
+	console.log("batchScoreMaker done.");
 };
 
 
