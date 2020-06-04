@@ -5,6 +5,7 @@ import {Matcher} from "@k-l-lambda/web-widgets";
 
 import LogRecorder from "../logRecorder";
 import DictArray from "../DictArray";
+import {roundNumber, CLOSED_NOTEHEAD_INTERVAL_FIRST_DEG} from "./utils";
 
 
 
@@ -389,6 +390,7 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 			continue;
 
 		if (token.is("ALTER")) {
+			//if (token.source && token.source.substr(0, 4) === "\\key")
 			if (token.x < measure.headX)
 				context.setKeyAlter(token.ry, token.alterValue);
 			else
@@ -412,7 +414,8 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 			const contextIndex = context.snapshot();
 
 			const note = {
-				x: token.x - measure.noteRange.begin,
+				x: roundNumber(token.x, 1e-4) - measure.noteRange.begin,
+				rx: token.rx - measure.noteRange.begin,
 				y: token.ry,
 				pitch: context.yToPitch(token.ry),
 				id: token.href,
@@ -422,8 +425,8 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 			};
 			notes.push(note);
 
-			xs[note.x] = xs[note.x] || new Set();
-			xs[note.x].add(token.ry);
+			xs[note.rx] = xs[note.rx] || new Set();
+			xs[note.rx].add(token.ry);
 		}
 	}
 
@@ -432,15 +435,15 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 	//console.log("notes:", notes);
 	notes.forEach(note => {
 		// TODO: refine notes' time in chord
-		if (xs[note.x - 1.5] && xs[note.x - 1.5].has(note.y))
-			note.x -= 1.5;
-		else if (xs[note.x - 1.25] && xs[note.x - 1.25].has(note.y))
-			note.x -= 1.25;
-		/*else if (xs[note.x + 1.25] && xs[note.x + 1.25].has(note.y - 0.5))
+		if (xs[note.rx - 1.5] && xs[note.rx - 1.5].has(note.y))
+			note.x -= CLOSED_NOTEHEAD_INTERVAL_FIRST_DEG;
+		else if (xs[note.rx - 1.25] && xs[note.rx - 1.25].has(note.y))
+			note.x -= CLOSED_NOTEHEAD_INTERVAL_FIRST_DEG;
+		/*else if (xs[note.rx + 1.25] && xs[note.rx + 1.25].has(note.y - 0.5))
 			note.x += 1.25;
-		else if (xs[note.x - 0.5])
+		else if (xs[note.rx - 0.5])
 			note.x -= 0.5;
-		else if (xs[note.x - 0.25])
+		else if (xs[note.rx - 0.25])
 			note.x -= 0.25;*/
 
 		context.track.appendNote(note.x, {
