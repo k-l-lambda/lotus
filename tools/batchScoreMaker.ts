@@ -83,6 +83,8 @@ const main = async () => {
 
 		const issues = [];
 
+		let index = 0;
+
 		for (const lyPath of lilyFiles) {
 			//console.log("lyPath:", lyPath);
 
@@ -136,6 +138,8 @@ const main = async () => {
 
 				++counting.failure;
 			}
+
+			console.log("Making progress:", ++index, "/", lilyFiles.size);
 		}
 
 		console.log("Score making finished, perfect:", counting.perfect, ", success:", counting.success, "failure:", counting.failure);
