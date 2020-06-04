@@ -129,6 +129,11 @@ const main = async () => {
 				console.error(err);
 				console.warn("Error when making score", scorePath);
 
+				issues.push({
+					lyPath,
+					coverage: -1,
+				});
+
 				++counting.failure;
 			}
 		}
