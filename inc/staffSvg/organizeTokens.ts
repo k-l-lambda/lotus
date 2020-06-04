@@ -100,7 +100,7 @@ const tokensRowsSplit = (tokens, logger) => {
 
 	const rowBoundaries = pageTile.reduce((boundaries, index, y) => {
 		if (index >= boundaries.length)
-			boundaries.push(y);
+			boundaries.push(y - 1);
 
 		return boundaries;
 	}, []);
@@ -325,7 +325,10 @@ const organizeTokens = (tokens, ly: string, {logger, viewBox, width, height}: an
 	});
 
 	const meaningfulTokens = tokens.filter(token => !token.is("NULL"));
+	logger.append("organizeTokens.meaningfulTokens", meaningfulTokens);
+
 	const rowTokens = tokensRowsSplit(meaningfulTokens, logger);
+	logger.append("organizeTokens.rowTokens", rowTokens);
 
 	const rows = rowTokens.map(tokens => parseTokenRow(tokens, logger));
 

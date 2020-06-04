@@ -24,6 +24,8 @@
 
 *	2020.6.4
 
+	+	organizeTokens.ts: fixed tokensRowsSplit to avoid too low boundary value.
+
 	+	organizeTokens.ts: fixed tokensRowsSplit row range expanding by additional lines.
 
 	+	batchScoreMaker.ts: MIDI file loading added.
