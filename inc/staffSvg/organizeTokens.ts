@@ -121,7 +121,21 @@ const isRowToken = token => token.is("STAVES_CONNECTION") || token.is("BRACE") |
 
 const parseTokenRow = (tokens, logger) => {
 	const separatorYs : Set<number> = new Set();
-	tokens.filter(token => token.is("MEASURE_SEPARATOR")).forEach(token => separatorYs.add(token.ry));
+	const meanSeparators = tokens.filter(token => token.is("MEASURE_SEPARATOR"));
+	meanSeparators.forEach(token => separatorYs.add(token.ry));
+
+	// remove separator Y from fake MEASURE_SEPARATOR
+	for (const y of Array.from(separatorYs).sort()) {
+		if (separatorYs.has(y - 4) && separatorYs.has(y + 4)) {
+			separatorYs.delete(y);
+
+			meanSeparators.filter(token => token.ry === y).forEach(token => {
+				token.removeSymbol("MEASURE_SEPARATOR");
+				token.addSymbol("VERTICAL_LINE");
+			});
+		}
+	}
+
 	logger.append("parseTokenRow.separatorYs", Array.from(separatorYs));
 
 	const staffLines = tokens.filter(token => token.is("STAFF_LINE")).reduce((lines, token) => {

@@ -24,6 +24,8 @@
 
 *	2020.6.4
 
+	+	organizeTokens.ts: fixed parseTokenRow to avoid wrong staves split by fake MEASURE_SEPARATOR.
+
 	+	organizeTokens.ts: fixed tokensRowsSplit to avoid too low boundary value.
 
 	+	organizeTokens.ts: fixed tokensRowsSplit row range expanding by additional lines.

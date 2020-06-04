@@ -47,6 +47,18 @@ export default class StaffToken {
 	}
 
 
+	addSymbol (symbol) {
+		this.symbols.add(symbol);
+		this.symbol = Array.from(this.symbols).join(" ");
+	}
+
+
+	removeSymbol (symbol) {
+		this.symbols.delete(symbol);
+		this.symbol = Array.from(this.symbols).join(" ");
+	}
+
+
 	translate (options) {
 		const data : any = {...this};
 		if (options.x) {
