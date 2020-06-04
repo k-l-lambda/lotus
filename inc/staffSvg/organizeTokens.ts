@@ -63,18 +63,27 @@ const tokensRowsSplit = (tokens, logger) => {
 
 	logger.append("tokensRowsSplit.pageTile.0", [...pageTile]);
 
-	const addlineYs = tokens.filter(token => token.is("ADDITIONAL_LINE")).map(token => Math.round(token.y)).sort((y1, y2) => y1 - y2);
+	const addlineYs: number[] = Array.from(new Set(
+		tokens.filter(token => token.is("ADDITIONAL_LINE")).map(token => Math.round(token.y)),
+	)).sort((y1: number, y2: number) => y1 - y2) as number[];
 	logger.append("tokensRowsSplit.addlineYs", addlineYs);
+
+	// expand row range by additional lines
 	addlineYs.forEach(y => {
-		if (pageTile[y] >= 0)
-			pageTile[y + 1] = pageTile[y];
+		if (pageTile[y - 1] >= 0) {
+			pageTile[y] = pageTile[y - 1];
+			pageTile[y + 1] = pageTile[y - 1];
+		}
 	});
 	addlineYs.reverse().forEach(y => {
-		if (pageTile[y] >= 0)
-			pageTile[y - 1] = pageTile[y];
+		if (pageTile[y + 1] >= 0) {
+			pageTile[y] = pageTile[y + 1];
+			pageTile[y - 1] = pageTile[y + 1];
+		}
 	});
 	logger.append("tokensRowsSplit.pageTile.1", [...pageTile]);
 
+	// fill interval between 8va and row top
 	const octaveAs = tokens.filter(token => token.is("OCTAVE A"));
 	octaveAs.forEach(token => {
 		const nextIndex = pageTile.find((index, y) => y > token.y && index >= 0);

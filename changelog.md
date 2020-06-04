@@ -21,6 +21,8 @@
 
 *	2020.6.4
 
+	+	organizeTokens.ts: fixed tokensRowsSplit row range expanding by additional lines.
+
 	+	batchScoreMaker.ts: MIDI file loading added.
 
 	+	batchScoreMaker.ts: score bundling added.
