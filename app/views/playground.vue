@@ -252,6 +252,7 @@
 					pageCount: 2,
 					systemSpacing: -1,
 					raggedLast: true,
+					standaloneTitle: false, // TODO: not implemented
 				},
 				lilyParser: null,
 				lilyDocumentDirty: false,

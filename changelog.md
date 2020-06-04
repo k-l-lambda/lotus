@@ -1,6 +1,9 @@
 
 ## TODO
-	batch engrave tools
+	LilyDocument:
+		remove empty track
+		standalone title: score.header.breakbefore = ##t
+	score menu page
 	parse tie token by lily document
 	measure notes in Notation
 	parse measure ticks from ly
