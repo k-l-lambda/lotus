@@ -14,6 +14,7 @@
 	playground.sliceSource:
 		music duration parsing
 	staffSvg
+		repeat measures
 		staves split confliction	(One Summer's Day)
 		chord notes interval multi-voices interference	(One Summer's Day)
 		octave & alter token order issue
@@ -23,6 +24,8 @@
 
 
 *	2020.6.5
+
+	+	staffNotation.ts: added NaN protection for pitch deduce.
 
 	+	staffSvg: added symbol for note head type of cross.
 

@@ -347,6 +347,8 @@ class StaffContext {
 
 
 	yToNote (y) {
+		console.assert(Number.isInteger(y * 2), "invalid y:", y);
+
 		return (-y - this.octaveShift * 3.5 - this.clef) * 2;
 	}
 
@@ -367,7 +369,13 @@ class StaffContext {
 		const group = Math.floor(note / 7);
 		const gn = mod7(note);
 
-		return MIDDLE_C + group * 12 + GROUP_N_TO_PITCH[gn] + this.alterOnNote(note);
+		const pitch = MIDDLE_C + group * 12 + GROUP_N_TO_PITCH[gn] + this.alterOnNote(note);
+		if (!Number.isFinite(pitch)) {
+			console.warn("invalid pitch value:", pitch, note, group, gn);
+			return -1;
+		}
+
+		return pitch;
 	}
 
 
