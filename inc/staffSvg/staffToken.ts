@@ -164,6 +164,8 @@ export default class StaffToken {
 				return "\u017c";
 			else if (this.is("SOLID"))
 				return "\u0174";
+			else if (this.is("CROSS"))
+				return "\u014e";
 		}
 
 		return null;
@@ -177,5 +179,7 @@ export default class StaffToken {
 			return 1;
 		else if (this.is("SOLID"))
 			return 2;
+		else if (this.is("CROSS"))
+			return 3;
 	}
 };

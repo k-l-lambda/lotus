@@ -5,8 +5,8 @@ const STROKE_PRECISION = 0.01;
 
 const CLOSED_NOTEHEAD_INTERVAL_FIRST_DEG = 1.3052;
 
-// 2nd degree chord note head intervals for WHOLE : HALF : SOLID = 1.81 : 1.32 : 1.25
-const NOTE_TYPE_INTERVAL_FACTORS = [1.25 / 1.81, 1.25 / 1.32, 1];
+// 2nd degree chord note head intervals for WHOLE : HALF : SOLID : CROSS = 1.81 : 1.32 : 1.25 : ?
+const NOTE_TYPE_INTERVAL_FACTORS = [1.25 / 1.81, 1.25 / 1.32, 1, 1];
 
 const ALTER_WIDTHS = {
 	[-2]: 1.80,

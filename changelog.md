@@ -22,6 +22,11 @@
 
 
 
+*	2020.6.5
+
+	+	staffSvg: added symbol for note head type of cross.
+
+
 *	2020.6.4
 
 	+	organizeTokens.ts: shift fore measure headX by alter tokens.

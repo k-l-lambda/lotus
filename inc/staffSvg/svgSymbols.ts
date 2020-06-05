@@ -65,6 +65,10 @@ const conditionSymbol = (symbol, condition, fields: (any) => object = () => ({})
 
 
 const symbolRules = [
+	pathFramesSymbol("NOTE NOTEHEAD CROSS", [
+		"M163 31l125 101c2 2 5 3 8 3s6 -1 8 -3l18 -14c3 -2 4 -6 4 -10s-1 -8 -4 -10l-121 -98l121 -98c3 -2 4 -6 4 -10s-1 -8 -4 -10l-18 -14c-2 -2 -5 -3 -8 -3s-6 1 -8 3l-125 101l-125 -101c-2 -2 -5 -3 -8 -3s-6 1 -8 3l-17 14c-3 2 -5 6 -5 10s2 8 5 10l120 98l-120 98		c-3 2 -5 6 -5 10s2 8 5 10l17 14c2 2 5 3 8 3s6 -1 8 -3z",
+	].map(simplifyPath)),
+
 	conditionSymbol("MEASURE_SEPARATOR", elem => elem.identity.type === "rect"
 		&& elem.sw === 0.19 && (elem.identity.rh === 4.05 || elem.identity.rh === 4)),
 	conditionSymbol("MEASURE_SEPARATOR BOLD", elem => elem.identity.type === "rect"
