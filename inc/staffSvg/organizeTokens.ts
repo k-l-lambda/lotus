@@ -28,6 +28,10 @@ const tokensRowsSplit = (tokens, logger) => {
 		const lines = tokens.filter(token => token.is("STAFF_LINE"));
 		lines.forEach(line => pageTile[Math.round(line.y)] = 0);
 
+		// non-staff page
+		if (!lines.length)
+			return [];
+
 		let index = -1;
 		let outStaff = true;
 		for (let y = 0; y < pageTile.length; ++y) {

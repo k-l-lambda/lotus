@@ -11,7 +11,8 @@ import * as StaffNotation from "./staffNotation";
 
 const parseSvgPage = (dom, ly, {logger = new LogRecorder(), attributes, ...options}) => {
 	const elem = svgToElements(dom, {logger, ...options});
-	//console.log("elem:", elem);
+	logger.append("parseSvgPage.elem", elem);
+
 	const {tokens, hashTable} = tokenizeElements(elem.children, attributes, logger);
 
 	const [x, y, width, height] = elem.viewBox.match(/[\d-.]+/g).map(Number);

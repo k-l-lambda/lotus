@@ -479,10 +479,10 @@ const parseNotationInStaff = (context : StaffContext, staff) => {
 
 
 const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} = {}) => {
-	if (!document.pages[0].rows[0].staves.length)
+	if (!document.trackCount)
 		return null;
 
-	const contexts = Array(document.pages[0].rows[0].staves.length).fill(null).map(() => new StaffContext({logger}));
+	const contexts = Array(document.trackCount).fill(null).map(() => new StaffContext({logger}));
 
 	for (const page of document.pages) {
 		logger.append("parsePage", document.pages.indexOf(page));

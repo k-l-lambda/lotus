@@ -100,6 +100,11 @@ class SheetDocument {
 	}
 
 
+	get trackCount () {
+		return Math.max(...this.rows.map(row => row.staves.length));
+	}
+
+
 	updateTokenIndex () {
 		this.rows.forEach((row, index) => {
 			row.index = index;

@@ -14,6 +14,7 @@
 	playground.sliceSource:
 		music duration parsing
 	staffSvg
+		global text in sheet document
 		clusterize notes by note stem
 		repeat measures
 		staves split confliction	(One Summer's Day)
@@ -25,6 +26,8 @@
 
 
 *	2020.6.5
+
+	+	staffSvg: allow empty staff page.
 
 	+	batchScoreMaker.ts: added switch of skipExist.
 
