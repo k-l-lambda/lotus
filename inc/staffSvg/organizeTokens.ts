@@ -173,11 +173,15 @@ const parseTokenRow = (tokens, logger) => {
 	const splitters = [];
 	for (let i = 0; i < staffYs.length - 1; ++i) {
 		let up = staffYs[i] + 2;
-		while (additionalLinesYs.has(up + 1) || additionalLinesYs.has(up + 0.75))
+		if (!additionalLinesYs.has(up + 1))
+			up -= 0.25;
+		while (additionalLinesYs.has(up + 1))
 			++up;
 
 		let down = staffYs[i + 1] - 2;
-		while (additionalLinesYs.has(down - 1) /*|| additionalLinesYs.has(down - 1.25)*/)
+		if (!additionalLinesYs.has(down - 1))
+			down -= 0.25;
+		while (additionalLinesYs.has(down - 1))
 			--down;
 
 		//const splitter = Math.min(Math.max((staffYs[i] + staffYs[i + 1]) / 2, up + 1), down - 1) - rowY;
