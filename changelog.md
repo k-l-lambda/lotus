@@ -14,6 +14,7 @@
 	playground.sliceSource:
 		music duration parsing
 	staffSvg
+		clusterize notes by note stem
 		repeat measures
 		staves split confliction	(One Summer's Day)
 		chord notes interval multi-voices interference	(One Summer's Day)
