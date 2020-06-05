@@ -22,6 +22,7 @@ const main = async () => {
 		const counting = {
 			success: 0,
 			failure: 0,
+			skip: 0,
 		};
 
 		// TODO: set xml options according to argv
@@ -32,6 +33,13 @@ const main = async () => {
 			//console.log("xmlPath:", xmlPath);
 			const lyPath = xmlPath.replace(/\.\w+$/, ".ly");
 			//const filename = lyPath.split("/").pop();
+
+			if (argv.skipExist) {
+				if (fs.existsSync(lyPath)) {
+					++counting.skip;
+					continue;
+				}
+			}
 
 			try {
 				const xml = fs.readFileSync(xmlPath).toString();
@@ -46,13 +54,13 @@ const main = async () => {
 			}
 			catch (err) {
 				console.error(err);
-				console.warn("Error when converting xml", xmlPath);
+				console.warn("Error when converting xml:", xmlPath);
 
 				++counting.failure;
 			}
 		}
 
-		console.log("XML to ly finished, success:", counting.success, "failure:", counting.failure);
+		console.log("XML to ly finished, success:", counting.success, "failure:", counting.failure, "skip:", counting.skip);
 	}
 
 	if (argv.inputLyDir) {
@@ -79,6 +87,7 @@ const main = async () => {
 			success: 0,
 			perfect: 0,
 			failure: 0,
+			skip: 0,
 		};
 
 		const issues = [];
@@ -89,6 +98,13 @@ const main = async () => {
 			//console.log("lyPath:", lyPath);
 
 			const scorePath = lyPath.replace(/\.\w+$/, ".score.json");
+
+			if (argv.skipExist) {
+				if (fs.existsSync(lyPath)) {
+					++counting.skip;
+					continue;
+				}
+			}
 
 			try {
 				const logger = new LogRecorder({enabled: true});

@@ -26,6 +26,8 @@
 
 *	2020.6.5
 
+	+	batchScoreMaker.ts: added switch of skipExist.
+
 	+	staffSvg: fixed octave close line Y offset issue.
 
 	+	staffNotation.ts: added NaN protection for pitch deduce.
