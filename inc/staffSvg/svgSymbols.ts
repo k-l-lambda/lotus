@@ -156,6 +156,9 @@ const postConditionSymbol = (symbol, condition, addSymbol) => (elem, result) => 
 const postSymbolRules = [
 	postConditionSymbol("NUMBER", elem => elemScale(elem, 0.004), "TIME_SIG"),
 
+	postConditionSymbol("CLOSE", elem => elem.identity.height > 0, "UP"),
+	postConditionSymbol("CLOSE", elem => elem.identity.height < 0, "DOWN"),
+
 	postSymbolProcess("SLUR", (elem, result) => {
 		const captures = elem.identity.d.match(/M[\d.-]+ ([\d.-]+).*L([\d.-]+) ([\d.-]+)/);
 		if (captures) {

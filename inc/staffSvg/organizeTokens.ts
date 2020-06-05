@@ -192,7 +192,7 @@ const parseTokenRow = (tokens, logger) => {
 	//console.log("splitters:", splitters);
 	const appendToken = token => {
 		let index = 0;
-		while (token.ry > splitters[index])
+		while (token.ry + token.logicOffsetY > splitters[index])
 			++index;
 
 		staffTokens[index] = staffTokens[index] || [];

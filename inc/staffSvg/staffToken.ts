@@ -74,6 +74,18 @@ export default class StaffToken {
 	}
 
 
+	// to assist staves splitting
+	get logicOffsetY () {
+		if (this.is("OCTAVE CLOSE UP"))
+			return 2;
+
+		if (this.is("OCTAVE CLOSE DOWN"))
+			return -2;
+
+		return 0;
+	}
+
+
 	get classes () {
 		return Array.from(this.symbols).map((s: string) => s.toLowerCase().replace(/_/g, "-")).join(" ");
 	}

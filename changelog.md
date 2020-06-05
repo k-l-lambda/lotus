@@ -25,6 +25,8 @@
 
 *	2020.6.5
 
+	+	staffSvg: fixed octave close line Y offset issue.
+
 	+	staffNotation.ts: added NaN protection for pitch deduce.
 
 	+	staffSvg: added symbol for note head type of cross.
