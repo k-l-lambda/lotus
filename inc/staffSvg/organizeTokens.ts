@@ -257,9 +257,9 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 	ties.forEach(tie => {
 		let offsetY = 0;
 		if (tie.is("UP"))
-			offsetY = 0.5;
+			offsetY = 0.3;
 		if (tie.is("DOWN"))
-			offsetY = -0.5;
+			offsetY = -0.3;
 
 		const position = {
 			x: tie.x + tie.target.x - 0.3,
