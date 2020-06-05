@@ -6,6 +6,7 @@ import SheetSigns from "./components/sheet-signs.vue";
 
 
 
+// eslint-disable-next-line
 declare class SheetDocument {};
 
 

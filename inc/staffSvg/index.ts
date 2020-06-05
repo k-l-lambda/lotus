@@ -24,6 +24,7 @@ const parseSvgPage = (dom, ly, {logger = new LogRecorder(), attributes, ...optio
 };
 
 
+// eslint-disable-next-line
 declare class LilyDocument {
 	globalAttributes(options: {readonly?: boolean});
 }
