@@ -496,7 +496,7 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 
 	// merge tracks
 	contexts.forEach((context, t) => context.track.notes.forEach(note => note.track = t));
-	const notes = [].concat(...contexts.map(context => context.track.notes)).sort((n1, n2) => n1.time - n2.time);
+	const notes = [].concat(...contexts.map(context => context.track.notes)).sort((n1, n2) => (n1.time - n2.time) + (n1.pitch - n2.pitch) * -1e-3);
 
 	logger.append("notesBeforeClusterize", notes.map(note => _.pick(note, ["time", "pitch"])));
 
@@ -515,7 +515,19 @@ const xClusterize = x => Math.tanh((x / 1.5) ** 12);
 
 // get time closed for notes in a chord
 const clusterizeNotes = notes => {
-	notes.forEach((note, i) => note.deltaTime = xClusterize(i > 0 ? (note.time - notes[i - 1].time) * constants.NOTE_TYPE_INTERVAL_FACTORS[note.type]: 0));
+	notes.forEach((note, i) => {
+		if (i < 1)
+			note.deltaTime = 0;
+		else {
+			const delta = note.time - notes[i - 1].time;
+			const noteType = Math.min(note.type, notes[i - 1].type);
+
+			//if (note.track === notes[i - 1].track)
+			note.deltaTime = xClusterize(delta * constants.NOTE_TYPE_INTERVAL_FACTORS[noteType]);
+			//else
+			//	note.deltaTime = delta;
+		}
+	});
 
 	notes.forEach((note, i) => i > 0 && (note.time = notes[i - 1].time + note.deltaTime * 480));
 };
