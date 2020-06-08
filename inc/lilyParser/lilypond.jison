@@ -230,7 +230,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 //{REAL}						return 'REAL';
 {UNSIGNED}					return 'UNSIGNED';
 
-{INT}						return 'INT';
+//{INT}						return 'INT';
 
 // CHORD_MODIFIER
 "maj7"						return 'CHORD_MODIFIER';
@@ -716,12 +716,19 @@ bare_number_common
 		{$$ = $1;}
 	;
 
+INT
+	: UNSIGNED
+		{$$ = Number($1);}
+	| "-" UNSIGNED
+		{$$ = -Number($1);}
+	;
+
 // equivalent for NUMBER_IDENTIFIER in lilypond's parser.yy
 number_identifier
 	: REAL number_unit
 		{$$ = numberUnit($1, $2);}
-	| INT number_unit
-		{$$ = numberUnit($1, $2);}
+	//| INT number_unit
+	//	{$$ = numberUnit($1, $2);}
 	| UNSIGNED number_unit
 		{$$ = numberUnit($1, $2);}
 	;
@@ -1378,8 +1385,8 @@ value
 		{$$ = $1;}
 	| UNSIGNED
 		{$$ = $1;}
-	| INT
-		{$$ = $1;}
+	//| INT
+	//	{$$ = $1;}
 	| REAL
 		{$$ = $1;}
 	| STRING

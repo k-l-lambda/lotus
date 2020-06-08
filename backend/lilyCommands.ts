@@ -126,7 +126,7 @@ const postProcessLy = (ly, {
 
 const xml2ly = async (xml: string | Buffer, options: LilyProcessOptions): Promise<string> => {
 	xml = preprocessXml(xml, options);
-	console.log("xml:", options, xml.substr(0, 100));
+	//console.log("xml:", options, xml.substr(0, 100));
 
 	const hash = genHashString();
 	const xmlFileName = `${TEMP_DIR}xml2ly-${hash}.xml`;
