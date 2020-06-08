@@ -574,6 +574,9 @@ markup_word
 	| HYPHEN
 		{$$ = $1;}
 	// extra formla
+	| "="
+		{$$ = $1;}
+	// extra formla
 	| "'"
 		{$$ = $1;}
 	// extra formla
