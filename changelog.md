@@ -25,6 +25,11 @@
 
 
 
+*	2020.6.8
+
+	+	batchScoreMaker.ts: option of pauseOnError added.
+
+
 *	2020.6.5
 
 	+	staffSvg: allow empty staff page.

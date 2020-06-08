@@ -57,6 +57,11 @@ const main = async () => {
 				console.warn("Error when converting xml:", xmlPath);
 
 				++counting.failure;
+
+				if (argv.pauseOnError) {
+					console.log("Paused on error, any key to continue.");
+					await new Promise(resolve => process.stdin.once("data", data => resolve(data)));
+				}
 			}
 		}
 
@@ -153,6 +158,11 @@ const main = async () => {
 				});
 
 				++counting.failure;
+
+				if (argv.pauseOnError) {
+					console.log("Paused on error, any key to continue.");
+					await new Promise(resolve => process.stdin.once("data", data => resolve(data)));
+				}
 			}
 
 			console.log("Making progress:", ++index, "/", lilyFiles.size);
