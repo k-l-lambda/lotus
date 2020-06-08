@@ -15,8 +15,14 @@ import * as staffSvg from "../inc/staffSvg";
 interface LilyProcessOptions {};
 
 
-const xmlToLyWithMarkup = async (xml: string | Buffer, options: LilyProcessOptions, markup: string): Promise<string> => {
-	const lily = await xml2ly(xml, options);
+const xmlToLyWithMarkup = async (xml: Buffer, options: LilyProcessOptions, markup: string): Promise<string> => {
+	const bom = (xml[0] << 8 | xml[1]);
+	const utf16 = bom === 0xfffe;
+	let content = xml.toString(utf16 ? "utf16le" : "utf8");
+	if (utf16)
+		content = content.replace(/encoding='UTF-16'/i, "encoding='UTF-8'");
+
+	const lily = await xml2ly(content, options);
 
 	// copy markup
 	if (markup) {

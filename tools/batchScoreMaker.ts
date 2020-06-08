@@ -42,7 +42,7 @@ const main = async () => {
 			}
 
 			try {
-				const xml = fs.readFileSync(xmlPath).toString();
+				const xml = fs.readFileSync(xmlPath);
 				const ly = await ScoreMaker.xmlToLyWithMarkup(xml, xmlOptions, markup);
 
 				if (!argv.noLyWrite && !argv.noWrite) {
