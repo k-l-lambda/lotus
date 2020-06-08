@@ -58,11 +58,15 @@ const traverse = (node, handle) => {
 
 const preprocessXml = (xml, {
 	removeMeasureImplicit = true,
+	replaceEncoding = true,
 } = {}): string => {
-	if (!removeMeasureImplicit)
+	if (!removeMeasureImplicit && !replaceEncoding)
 		return xml;
 
 	const dom = new DOMParser().parseFromString(xml, "text/xml");
+
+	if (replaceEncoding)
+		dom.childNodes[0].data = dom.childNodes[0].data.replace(/UTF-16/, "UTF-8");
 
 	if (removeMeasureImplicit) {
 		traverse(dom, node => {
