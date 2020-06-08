@@ -27,6 +27,8 @@
 
 *	2020.6.8
 
+	+	lilyParser: added chordmode grammar.
+
 	+	lilyCommands.ts: added option of replaceEncoding for preprocessXml.
 
 	+	scoreMaker.ts: convert UTF-16 encodeing xml file.

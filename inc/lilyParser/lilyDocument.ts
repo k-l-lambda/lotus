@@ -438,6 +438,14 @@ class Chord extends BaseTerm {
 };
 
 
+class BriefChord extends BaseTerm {
+	body: any;
+	post_events: any[];
+
+	// TODO:
+};
+
+
 class NumberUnit extends BaseTerm {
 	number: number;
 	unit: string;
@@ -553,6 +561,7 @@ const termDictionary = {
 	SchemePointer,
 	Assignment,
 	Chord,
+	BriefChord,
 	NumberUnit,
 	MusicBlock,
 	SimultaneousList,

@@ -15,6 +15,8 @@
 
 	const chord = (pitches, duration, options = {}) => ({proto: "Chord", pitches, duration, options: {...options, proto: "_PLAIN"}});
 
+	const briefChord = (body, {post_events = null} = {}) => ({proto: "BriefChord", body, post_events});
+
 	const block = (block, head, body = []) => ({proto: "Block", block, head, body});
 
 	const inlineBlock = body => ({proto: "InlineBlock", body});
@@ -100,6 +102,12 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 
 {EXTENDER}					return 'EXTENDER';
 {HYPHEN}					return 'HYPHEN';
+
+//"/+"						return CHORD_BASS;
+//"^"							return CHORD_CARET;
+//":"							return CHORD_COLON;
+//"-"							return CHORD_MINUS;
+//"/"							return CHORD_SLASH;
 
 //"<"							return 'ANGLE_OPEN';
 //">"							return 'ANGLE_CLOSE';
@@ -223,6 +231,16 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 {UNSIGNED}					return 'UNSIGNED';
 
 {INT}						return 'INT';
+
+// CHORD_MODIFIER
+"maj7"						return 'CHORD_MODIFIER';
+"maj"						return 'CHORD_MODIFIER';
+"aug"						return 'CHORD_MODIFIER';
+"dim7"						return 'CHORD_MODIFIER';
+"dim"						return 'CHORD_MODIFIER';
+[m][7](?=[\W])				return 'CHORD_MODIFIER';
+[m][5](?=[\W])				return 'CHORD_MODIFIER';
+m(?=[\W])					return 'CHORD_MODIFIER';
 
 {SYMBOL}					return 'SYMBOL';
 
@@ -563,6 +581,9 @@ markup_word
 	: STRING
 		{$$ = $1;}
 	| SYMBOL
+		{$$ = $1;}
+	// extra formla
+	| CHORD_MODIFIER
 		{$$ = $1;}
 	// extra formla
 	| "."
@@ -924,6 +945,29 @@ mode_changed_music
 		{$$ = command($1, $2);}
 	| mode_changing_head_with_context optional_context_mods grouped_music_list
 		{$$ = command($1, ...$2, $3);}
+	// extra formla
+	| CHORDMODE chordmode_braced_music_list
+		{$$ = command($1, $2);}
+	;
+
+// extra syntax
+chordmode_braced_music_list
+	: '{' chordmode_music_list '}'
+		{$$ = musicBlock($2);}
+	;
+
+chordmode_music_list
+	: %empty
+		{$$ = [];}
+	| chordmode_music_list chordmode_music
+		{$$ = $1.concat([$2]);}
+	;
+
+chordmode_music
+	: new_chord post_events
+		{$$ = briefChord($1, {post_events: $2});}
+	| music_assign
+		{$$ = $1;}
 	;
 
 mode_changing_head_with_context
@@ -944,8 +988,8 @@ mode_changing_head
 		{$$ = $1;}
 	| FIGUREMODE
 		{$$ = $1;}
-	| CHORDMODE
-		{$$ = $1;}
+	//| CHORDMODE
+	//	{$$ = $1;}
 	| LYRICMODE
 		{$$ = $1;}
 	;
@@ -1353,6 +1397,106 @@ pitch_or_music
 	: pitch exclamations questions optional_notemode_duration optional_rest post_events
 		{$$ = chord([$1], $4, {exclamations: $2, questions: $3, rest: $5, post_events: $6});}
 	//| new_chord post_events
+	//	{$$ = briefChord($1, {post_events: $2});}
+	;
+
+new_chord
+	//: steno_tonic_pitch maybe_notemode_duration
+	: pitch optional_notemode_duration
+		{$$ = {pitch: $1, duration: $2};}
+	//| steno_tonic_pitch optional_notemode_duration chord_separator chord_items
+	| pitch optional_notemode_duration chord_separator chord_items
+		{$$ = {pitch: $1, duration: $2, separator: $3, items: $4};}
+	;
+
+chord_items
+	: %empty
+		{$$ = [];}
+	| chord_items chord_item
+		{$$ = $1.concat($2);}
+	;
+
+chord_item
+	: chord_separator
+		{$$ = $1;}
+	| step_numbers
+		{$$ = $1;}
+	| CHORD_MODIFIER
+		{$$ = $1;}
+	;
+
+/*// m, m7, dim, dim7, aug, maj, maj7
+CHORD_MODIFIER
+	: SYMBOL
+		{$$ = $1;}
+	| SYMBOL UNSIGNED
+		{$$ = $1 + $2;}
+	;*/
+
+step_numbers
+	: step_number
+		{$$ = $1;}
+	| step_numbers '.' step_number
+		{$$ = $1 + $2 + $3;}
+	;
+
+step_number
+	: UNSIGNED
+		{$$ = $1;}
+	| UNSIGNED '+'
+		{$$ = $1 + $2;}
+	| UNSIGNED CHORD_MINUS
+		{$$ = $1 + $2;}
+	;
+
+maybe_notemode_duration
+	: %empty
+		{$$ = null;}
+	| duration
+		{$$ = $1;}
+	;
+
+steno_tonic_pitch
+	: TONICNAME_PITCH quotes
+		{$$ = $1 + $2;}
+	;
+
+CHORD_BASS
+	: "/" "+"
+		{$$ = $1 + $2;}
+	;
+
+CHORD_CARET
+	: "^"
+		{$$ = $1;}
+	;
+
+CHORD_COLON
+	: ":"
+		{$$ = $1;}
+	;
+
+CHORD_MINUS
+	: "-"
+		{$$ = $1;}
+	;
+
+CHORD_SLASH
+	: "/"
+		{$$ = $1;}
+	;
+
+chord_separator
+	: CHORD_COLON
+		{$$ = $1;}
+	| CHORD_CARET
+		{$$ = $1;}
+	//| CHORD_SLASH steno_tonic_pitch
+	| CHORD_SLASH pitch
+		{$$ = $1 + $2;}
+	//| CHORD_BASS steno_tonic_pitch
+	| CHORD_BASS pitch
+		{$$ = $1 + $2;}
 	;
 
 exclamations
