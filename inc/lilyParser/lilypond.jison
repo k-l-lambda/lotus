@@ -571,6 +571,9 @@ markup_word
 	| "-"
 		{$$ = $1;}
 	// extra formla
+	| "_"
+		{$$ = $1;}
+	// extra formla
 	| HYPHEN
 		{$$ = $1;}
 	// extra formla
@@ -608,6 +611,9 @@ markup_word
 		{$$ = $1;}
 	// extra formla
 	| music_property_def
+		{$$ = $1;}
+	// extra formla
+	| PLACEHOLDER_PITCH
 		{$$ = $1;}
 	| context_change
 		{$$ = $1;}
