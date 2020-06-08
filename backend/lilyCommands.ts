@@ -34,6 +34,7 @@ initialize();
 interface LilyProcessOptions {
 	// xml
 	removeMeasureImplicit?: boolean;
+	replaceEncoding?: boolean;
 
 	// lilypond
 	pointClick?: boolean;
@@ -65,8 +66,11 @@ const preprocessXml = (xml, {
 
 	const dom = new DOMParser().parseFromString(xml, "text/xml");
 
-	if (replaceEncoding)
-		dom.childNodes[0].data = dom.childNodes[0].data.replace(/UTF-16/, "UTF-8");
+	if (replaceEncoding) {
+		const headNode = Array.prototype.find.call(dom.childNodes, node => node.tagName === "xml");
+		if (headNode)
+			headNode.data = headNode.data.replace(/UTF-16/, "UTF-8");
+	}
 
 	if (removeMeasureImplicit) {
 		traverse(dom, node => {
@@ -122,6 +126,7 @@ const postProcessLy = (ly, {
 
 const xml2ly = async (xml: string | Buffer, options: LilyProcessOptions): Promise<string> => {
 	xml = preprocessXml(xml, options);
+	console.log("xml:", options, xml.substr(0, 100));
 
 	const hash = genHashString();
 	const xmlFileName = `${TEMP_DIR}xml2ly-${hash}.xml`;

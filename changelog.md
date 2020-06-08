@@ -27,6 +27,8 @@
 
 *	2020.6.8
 
+	+	lilyCommands.ts: added option of replaceEncoding for preprocessXml.
+
 	+	scoreMaker.ts: convert UTF-16 encodeing xml file.
 
 	+	organizeTokens.ts: preprocessed tempo noteheads.
