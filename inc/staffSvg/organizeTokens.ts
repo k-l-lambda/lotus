@@ -315,6 +315,13 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 				break;
 		}
 
+		// process tempo noteheads
+		const tempoNotes = tokens.filter(token => token.source && token.source.substr(0, 6) === "\\tempo" && token.is("NOTEHEAD"));
+		tempoNotes.forEach(note => {
+			note.removeSymbol("NOTEHEAD");
+			note.addSymbol("TEMPO_NOTEHEAD");
+		});
+
 		return {
 			tokens,
 			noteRange: range.noteRange,

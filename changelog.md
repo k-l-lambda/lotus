@@ -27,6 +27,8 @@
 
 *	2020.6.8
 
+	+	organizeTokens.ts: preprocessed tempo noteheads.
+
 	+	batchScoreMaker.ts: option of pauseOnError added.
 
 
