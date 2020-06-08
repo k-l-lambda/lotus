@@ -571,6 +571,9 @@ markup_word
 	| "-"
 		{$$ = $1;}
 	// extra formla
+	| HYPHEN
+		{$$ = $1;}
+	// extra formla
 	| "'"
 		{$$ = $1;}
 	// extra formla
