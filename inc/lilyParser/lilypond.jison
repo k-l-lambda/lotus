@@ -15,7 +15,7 @@
 
 	const chord = (pitches, duration, options = {}) => ({proto: "Chord", pitches, duration, options: {...options, proto: "_PLAIN"}});
 
-	const briefChord = (body, {post_events = null} = {}) => ({proto: "BriefChord", body, post_events});
+	const briefChord = (body, {post_events = null} = {}) => ({proto: "BriefChord", body: {...body, proto: "_PLAIN"}, post_events});
 
 	const block = (block, head, body = []) => ({proto: "Block", block, head, body});
 

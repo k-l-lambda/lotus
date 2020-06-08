@@ -438,11 +438,27 @@ class Chord extends BaseTerm {
 };
 
 
+interface BriefChordBody {
+	pitch: string;
+	duration: string;
+	separator: string;
+	items: string[];
+};
+
+
 class BriefChord extends BaseTerm {
-	body: any;
+	body: BriefChordBody;
 	post_events: any[];
 
-	// TODO:
+
+	serialize () {
+		const {pitch, duration, separator, items} = this.body;
+
+		return [
+			[pitch, duration, separator, ...(items || [])].join(""),
+			...cc((this.post_events || []).map(BaseTerm.optionalSerialize)),
+		];
+	}
 };
 
 
