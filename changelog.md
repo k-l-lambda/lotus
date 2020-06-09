@@ -25,6 +25,11 @@
 
 
 
+*	2020.6.9
+
+	+	sheet-live.vue: event of cursor page shift added.
+
+
 *	2020.6.8
 
 	+	lilyParser: added chordmode grammar.

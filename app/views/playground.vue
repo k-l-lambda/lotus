@@ -75,6 +75,7 @@
 						:bakingMode="bakingSheet"
 						:backgroundImages="hideBakingImages ? null : bakingImages"
 						@midi="onMidi"
+						@cursorPageShift="onCursorPageShift"
 					/>
 				</div>
 				<Loading v-show="engraving" />
@@ -384,6 +385,11 @@
 						break;
 					}
 				}
+			},
+
+
+			onCursorPageShift (pageIndex) {
+				console.log("onCursorPageShift:", pageIndex);
 			},
 
 

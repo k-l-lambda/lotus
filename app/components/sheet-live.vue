@@ -173,6 +173,20 @@
 
 				return this.scheduler.lookupPosition(this.progressTicks);
 			},
+
+
+			cursorPageIndex () {
+				if (!this.cursorPosition || !this.doc)
+					return null;
+
+				const row = this.doc.rows[this.cursorPosition.row];
+				console.assert(row, "invalid cursor row index:", this.cursorPosition);
+
+				if (!row)
+					return null;
+
+				return row.pageIndex;
+			},
 		},
 
 
@@ -369,6 +383,11 @@
 
 
 			doc: "onDocChanged",
+
+
+			cursorPageIndex (value) {
+				this.$emit("cursorPageShift", value);
+			},
 		},
 	};
 </script>

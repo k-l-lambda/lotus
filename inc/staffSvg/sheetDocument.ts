@@ -34,6 +34,7 @@ interface SheetStaff {
 
 interface SheetRows {
 	index?: number;
+	pageIndex?: number;
 	staves: SheetStaff[];
 };
 
@@ -106,6 +107,8 @@ class SheetDocument {
 
 
 	updateTokenIndex () {
+		this.pages.forEach((page, index) => page.rows.forEach(row => row.pageIndex = index));
+
 		this.rows.forEach((row, index) => {
 			row.index = index;
 			row.width = row.tokens.concat(...row.staves.map(staff => staff.tokens))
