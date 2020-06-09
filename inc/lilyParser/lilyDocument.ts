@@ -638,6 +638,7 @@ export default class LilyDocument {
 
 	globalAttributes ({readonly = false} = {}) {
 		const globalStaffSize = this.root.getField("set-global-staff-size");
+		const header = this.root.getBlock("header");
 		let paper = this.root.getBlock("paper");
 		const layoutStaffSize = paper && paper.getField("layout-set-staff-size");
 		let staffSize = globalStaffSize || layoutStaffSize;
@@ -724,6 +725,8 @@ export default class LilyDocument {
 
 		const attributes = {
 			staffSize,
+			title: header && header.getField("title"),
+			composer: header && header.getField("composer"),
 			paperWidth: paperPropertyCommon("paper-width"),
 			paperHeight: paperPropertyCommon("paper-height"),
 			topMargin: paperPropertyCommon("top-margin"),

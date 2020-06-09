@@ -7,7 +7,6 @@
 	parse tie token by lily document
 	measure notes in Notation
 	parse measure ticks from ly
-	playground: parse source document title
 	lilypond post processing
 		fix partial measures
 		fix repeat \alternative measures
@@ -26,6 +25,8 @@
 
 
 *	2020.6.9
+
+	+	playground.vue: saved title from lily document.
 
 	+	sheet-live.vue: event of cursor page shift added.
 

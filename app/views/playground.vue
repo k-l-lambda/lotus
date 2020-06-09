@@ -9,6 +9,9 @@
 		<header class="controls">
 			<StoreInput v-show="false" v-model="lilySource" sessionKey="lotus-lilySource" />
 			<fieldset>
+				<span v-if="title" class="title">{{title}}</span>
+			</fieldset>
+			<fieldset>
 				<button @click="saveSource" title="save source">&#x1f4be;</button>
 				<button @click="settingPanelVisible = true">&#x2699;</button>
 				<button v-show="lilyMarkups.enabled" @click="markupSource" title="markup lilypond source">{}</button>
@@ -229,6 +232,7 @@
 				autoEngrave: true,
 				tokenizeStaff: true,
 				sheetDocument: null,
+				title: null,
 				svgHashTable: null,
 				midi: null,
 				midiNotation: null,
@@ -290,6 +294,8 @@
 
 			this.lilyParser = await loadLilyParser();
 			console.log("lily parser loaded.");
+
+			this.updateLilyDocument();
 		},
 
 
@@ -345,6 +351,8 @@
 
 						this.clearSheet();
 
+						this.updateLilyDocument();
+
 						this.engrave();
 
 						break;
@@ -354,6 +362,8 @@
 						this.lilySource = await this.musicxml2ly(xml);
 
 						this.clearSheet();
+
+						this.updateLilyDocument();
 
 						this.engrave();
 
@@ -394,6 +404,7 @@
 
 
 			clearSheet () {
+				this.title = null;
 				this.sheetDocument = null;
 				this.sheetNotation = null;
 				this.svgHashTable = null;
@@ -595,13 +606,18 @@
 					pitchContextGroup: this.pitchContextGroup,
 				};
 				const blob = new Blob([JSON.stringify(data)]);
-				downloadUrl(URL.createObjectURL(blob), "score.json");
+
+				this.updateLilyDocument();
+				downloadUrl(URL.createObjectURL(blob), `${this.title || ""}.score.json`);
 			},
 
 
 			updateLilyDocument () {
 				if ((!this.lilyDocument || this.lilyDocumentDirty) && this.lilyParser) {
 					this.lilyDocument = new LilyDocument(this.lilyParser.parse(this.lilySource));
+
+					const titleExp = this.lilyDocument.globalAttributes({readonly: true}).title;
+					this.title = titleExp.replace(/"/g, ""); // TODO: parse string expression in LilyDocument
 
 					//console.log("lily document", this.lilyDocument);
 					//console.log(this.lilyDocument.toString());
@@ -758,6 +774,14 @@
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
+
+		header
+		{
+			.title
+			{
+				font-weight: bold;
+			}
+		}
 
 		& > main
 		{
