@@ -14,8 +14,6 @@ import LogRecorder from "../inc/logRecorder";
 const main = async () => {
 	//console.log("argv:", argv);
 
-	const markup = argv.markup ? fs.readFileSync(argv.markup).toString() : null;
-
 	const lilyFiles: Set<string> = new Set();
 
 	if (argv.inputXmlDir) {
@@ -24,6 +22,8 @@ const main = async () => {
 			failure: 0,
 			skip: 0,
 		};
+
+		const markup = argv.xmlMarkup ? fs.readFileSync(argv.xmlMarkup).toString() : null;
 
 		// TODO: set xml options according to argv
 		const xmlOptions = {};
@@ -43,10 +43,11 @@ const main = async () => {
 
 			try {
 				const xml = fs.readFileSync(xmlPath);
-				const ly = await ScoreMaker.xmlToLyWithMarkup(xml, xmlOptions, markup);
+				const ly = await ScoreMaker.xmlBufferToLy(xml, xmlOptions);
+				const markupLy = markup ? await ScoreMaker.copyMarkup(ly, markup) : ly;
 
 				if (!argv.noLyWrite && !argv.noWrite) {
-					asyncCall(fs.writeFile, lyPath, ly).then(() => console.log("wrote:", lyPath));
+					asyncCall(fs.writeFile, lyPath, markupLy).then(() => console.log("wrote:", lyPath));
 					lilyFiles.add(lyPath);
 				}
 
@@ -99,6 +100,8 @@ const main = async () => {
 
 		let index = 0;
 
+		const markup = argv.markup ? fs.readFileSync(argv.markup).toString() : null;
+
 		for (const lyPath of lilyFiles) {
 			//console.log("lyPath:", lyPath);
 
@@ -114,7 +117,8 @@ const main = async () => {
 			try {
 				const logger = new LogRecorder({enabled: true});
 
-				const ly = fs.readFileSync(lyPath).toString();
+				const originalLy = fs.readFileSync(lyPath).toString();
+				const ly = markup ? await ScoreMaker.copyMarkup(originalLy, markup) : originalLy;
 
 				let midi = null;
 				const midiPath = midiFiles.get(lyPath);

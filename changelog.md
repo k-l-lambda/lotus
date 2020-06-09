@@ -26,6 +26,8 @@
 
 *	2020.6.9
 
+	+	scoreMaker.ts: copyMarkup added.
+
 	+	scoreMaker.ts: added meta data in score bundle.
 
 	+	playground.vue: exported meta data in score bundle.

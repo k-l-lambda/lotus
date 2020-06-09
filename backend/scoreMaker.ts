@@ -15,37 +15,35 @@ import * as staffSvg from "../inc/staffSvg";
 interface LilyProcessOptions {};
 
 
-const xmlToLyWithMarkup = async (xml: Buffer, options: LilyProcessOptions, markup: string): Promise<string> => {
+const copyMarkup = async (source: string, markup: string) => {
+	const parser = await loadLilyParser();
+	const docMarkup = new LilyDocument(parser.parse(markup));
+	const docSource = new LilyDocument(parser.parse(source));
+
+	const attrS = docSource.globalAttributes();
+	const attrM = docMarkup.globalAttributes({readonly: true});
+
+	[
+		"staffSize", "paperWidth", "paperHeight", "systemSpacing", "raggedLast",
+	].forEach(field => {
+		if (attrM[field]) {
+			if (typeof attrS[field].value === "object" && attrS[field].value && attrS[field].value.set)
+				attrS[field].value.set(attrM[field]);
+			else
+				attrS[field].value = attrM[field];
+		}
+	});
+
+	return docSource.toString();
+};
+
+
+const xmlBufferToLy = async (xml: Buffer, options: LilyProcessOptions): Promise<string> => {
 	const bom = (xml[0] << 8 | xml[1]);
 	const utf16 = bom === 0xfffe;
 	const content = xml.toString(utf16 ? "utf16le" : "utf8");
 
-	const lily = await xml2ly(content, {replaceEncoding: utf16, ...options});
-
-	// copy markup
-	if (markup) {
-		const parser = await loadLilyParser();
-		const docMarkup = new LilyDocument(parser.parse(markup));
-		const docSource = new LilyDocument(parser.parse(lily));
-	
-		const attrS = docSource.globalAttributes();
-		const attrM = docMarkup.globalAttributes({readonly: true});
-
-		[
-			"staffSize", "paperWidth", "paperHeight", "systemSpacing", "raggedLast",
-		].forEach(field => {
-			if (attrM[field]) {
-				if (typeof attrS[field].value === "object" && attrS[field].value && attrS[field].value.set)
-					attrS[field].value.set(attrM[field]);
-				else
-					attrS[field].value = attrM[field];
-			}
-		});
-
-		return docSource.toString();
-	}
-
-	return lily;
+	return await xml2ly(content, {replaceEncoding: utf16, ...options});
 };
 
 
@@ -110,6 +108,7 @@ const markScore = async (source: string, {midi, logger}: {midi?: Buffer, logger?
 
 
 export {
-	xmlToLyWithMarkup,
+	copyMarkup,
+	xmlBufferToLy,
 	markScore,
 };
