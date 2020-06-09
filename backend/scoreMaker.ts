@@ -2,6 +2,12 @@
 /// <reference path="../inc/logRecorder.ts" />
 /// <reference path="../inc/scoreJSON.d.ts" />
 
+// eslint-disable-next-line
+import {MIDI} from "@k-l-lambda/web-widgets";
+// eslint-disable-next-line
+import LogRecorder from "../inc/logRecorder";
+
+
 import _ from "lodash";
 import {DOMParser} from "xmldom";
 import {MusicNotation} from "@k-l-lambda/web-widgets";
@@ -51,7 +57,7 @@ const xmlBufferToLy = async (xml: Buffer, options: LilyProcessOptions): Promise<
 const unescapeStringExp = exp => typeof exp === "string" ? exp.replace(/"/g, "") : exp;
 
 
-const markScore = async (source: string, {midi, logger}: {midi?: Buffer, logger?: LogRecorder} = {}): Promise<ScoreJSON> => {
+const markScore = async (source: string, {midi, logger}: {midi?: MIDI.MidiData, logger?: LogRecorder} = {}): Promise<ScoreJSON> => {
 	const engraving = await engraveSvg(source);
 
 	const lilyParser = await loadLilyParser();
