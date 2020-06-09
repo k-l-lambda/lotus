@@ -10,9 +10,11 @@ import asyncCall from "../inc/asyncCall";
 
 
 
-const TEMP_DIR = process.env.TEMP_DIR;
-const LILYPOND_DIR = process.env.LILYPOND_DIR;
-const MIDI_FILE_EXTEND = process.env.MIDI_FILE_EXTEND;
+let env = process.env;
+const setEnvironment = e => {
+	env = e;
+	initialize();
+};
 
 
 const genHashString = (len = 8) => Buffer.from(Math.random().toString()).toString("base64").substr(3, 3 + len);
@@ -21,8 +23,10 @@ const genHashString = (len = 8) => Buffer.from(Math.random().toString()).toStrin
 const initialize = async () => {
 	// empty temporary directory
 	try {
-		await child_process.exec(`rm ${TEMP_DIR}*`);
-		console.log("Temporary directory clear.");
+		if (env.TEMP_DIR) {
+			await child_process.exec(`rm ${env.TEMP_DIR}*`);
+			console.log("Temporary directory clear.");
+		}
 	}
 	catch (_) {
 	}
@@ -129,12 +133,12 @@ const xml2ly = async (xml: string | Buffer, options: LilyProcessOptions): Promis
 	//console.log("xml:", options, xml.substr(0, 100));
 
 	const hash = genHashString();
-	const xmlFileName = `${TEMP_DIR}xml2ly-${hash}.xml`;
+	const xmlFileName = `${env.TEMP_DIR}xml2ly-${hash}.xml`;
 	await asyncCall(fs.writeFile, xmlFileName, xml);
 
-	const lyFileName = `${TEMP_DIR}xml2ly-${hash}.ly`;
+	const lyFileName = `${env.TEMP_DIR}xml2ly-${hash}.ly`;
 
-	await child_process.exec(`${LILYPOND_DIR}musicxml2ly ${xmlFileName} -o ${lyFileName}`);
+	await child_process.exec(`${env.LILYPOND_DIR}musicxml2ly ${xmlFileName} -o ${lyFileName}`);
 	//console.log("musicxml2ly:", result.stdout, result.stderr);
 
 	const ly = await asyncCall(fs.readFile, lyFileName);
@@ -145,12 +149,12 @@ const xml2ly = async (xml: string | Buffer, options: LilyProcessOptions): Promis
 
 const midi2ly = async (midi, options: LilyProcessOptions) => {
 	const hash = genHashString();
-	//const midiFileName = `${TEMP_DIR}midi2ly-${hash}.midi`;
+	//const midiFileName = `${env.TEMP_DIR}midi2ly-${hash}.midi`;
 	//await asyncCall(fs.writeFile, midiFileName, midi);
 
-	const lyFileName = `${TEMP_DIR}midi2ly-${hash}-midi.ly`;
+	const lyFileName = `${env.TEMP_DIR}midi2ly-${hash}-midi.ly`;
 
-	const result = await child_process.exec(`${LILYPOND_DIR}midi2ly ${midi.path} -o ${lyFileName}`);
+	const result = await child_process.exec(`${env.LILYPOND_DIR}midi2ly ${midi.path} -o ${lyFileName}`);
 	console.log("midi2ly:", result.stdout, result.stderr);
 
 	const ly = await asyncCall(fs.readFile, lyFileName);
@@ -169,16 +173,16 @@ const nameNumber = name => Number(name.match(/-(\d+)\./)[1]);
 
 const engraveSvg = async source => {
 	const hash = genHashString();
-	const sourceFilename = `${TEMP_DIR}engrave-${hash}.ly`;
+	const sourceFilename = `${env.TEMP_DIR}engrave-${hash}.ly`;
 	//const outputFilename = `./engrave-${hash}`;
-	const midiFilename = `${TEMP_DIR}engrave-${hash}.${MIDI_FILE_EXTEND}`;
+	const midiFilename = `${env.TEMP_DIR}engrave-${hash}.${env.MIDI_FILE_EXTEND}`;
 
 	await asyncCall(fs.writeFile, sourceFilename, source);
 	//console.log("ly source written:", sourceFilename);
 
-	const result = await child_process.exec(`cd ${TEMP_DIR} && ${LILYPOND_DIR}lilypond -dbackend=svg .${sourceFilename}`);
+	const result = await child_process.exec(`cd ${env.TEMP_DIR} && ${env.LILYPOND_DIR}lilypond -dbackend=svg .${sourceFilename}`);
 
-	const svgFiles: string[] = await asyncCall(glob, `${TEMP_DIR}engrave-${hash}*.svg`);
+	const svgFiles: string[] = await asyncCall(glob, `${env.TEMP_DIR}engrave-${hash}*.svg`);
 	svgFiles.sort((n1, n2) => nameNumber(n1) - nameNumber(n2));
 	//console.log("svgFiles:", svgFiles);
 
@@ -208,5 +212,5 @@ export {
 	xml2ly,
 	midi2ly,
 	engraveSvg,
-	//preprocessXml,
+	setEnvironment,
 };

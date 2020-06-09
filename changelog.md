@@ -26,6 +26,8 @@
 
 *	2020.6.9
 
+	+	backend: added function of setEnvironment.
+
 	+	scoreMaker.ts: copyMarkup added.
 
 	+	scoreMaker.ts: added meta data in score bundle.

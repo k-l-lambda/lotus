@@ -80,8 +80,12 @@ const service = {
 };
 
 
+const setEnvironment = env => lilyCommands.setEnvironment(env);
+
+
 
 export {
+	setEnvironment,
 	service,
 	lilyCommands,
 	loadLilyParser,
