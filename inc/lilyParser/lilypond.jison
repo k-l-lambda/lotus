@@ -1137,7 +1137,7 @@ revert_arg_part
 	: symbol_list_part
 		{$$ = $1;}
 	| revert_arg_backup '.' symbol_list_part
-		{$$ = $1 + "." + $2;}
+		{$$ = $1 + "." + $3;}
 	//| revert_arg_backup BACKUP SCM_ARG '.' symbol_list_part
 	//| revert_arg_backup BACKUP SCM_ARG ',' symbol_list_part
 	//| revert_arg_backup BACKUP SCM_ARG symbol_list_part
