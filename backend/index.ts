@@ -7,6 +7,7 @@ import * as staffSvg from "../inc/staffSvg";
 import loadLilyParser from "./loadLilyParserNode";
 import {LilyDocument} from "../inc/lilyParser";
 import LogRecorder from "../inc/logRecorder";
+import * as ScoreMaker from "./scoreMaker";
 
 
 
@@ -84,4 +85,5 @@ export {
 	service,
 	lilyCommands,
 	loadLilyParser,
+	ScoreMaker,
 };
