@@ -50,7 +50,7 @@ const xmlToLyWithMarkup = async (xml: Buffer, options: LilyProcessOptions, marku
 
 
 // TODO:
-const unescapeStringExp = exp => exp ? exp.replace(/"/g, "") : exp;
+const unescapeStringExp = exp => typeof exp === "string" ? exp.replace(/"/g, "") : exp;
 
 
 const markScore = async (source: string, {midi, logger}: {midi?: Buffer, logger?: LogRecorder} = {}): Promise<ScoreJSON> => {
