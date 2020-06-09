@@ -26,6 +26,8 @@
 
 *	2020.6.9
 
+	+	playground.vue: exported meta data in score bundle.
+
 	+	playground.vue: saved title from lily document.
 
 	+	sheet-live.vue: event of cursor page shift added.

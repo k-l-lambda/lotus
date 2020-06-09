@@ -1,4 +1,8 @@
 
+import {CM_TO_PX} from "../constants";
+
+
+
 // eslint-disable-next-line
 declare class StaffToken {
 	row?: number;
@@ -40,6 +44,9 @@ interface SheetRows {
 
 
 interface SheetPage {
+	width: string;
+	height: string;
+
 	rows: SheetRows[];
 };
 
@@ -85,6 +92,16 @@ class SheetMarking {
 };
 
 
+const parseUnitExp = exp => {
+	if (/[\d.]+mm/.test(exp)) {
+		const [value] = exp.match(/[\d.]+/);
+		return Number(value) * 0.1 * CM_TO_PX;
+	}
+
+	return Number(exp);
+};
+
+
 class SheetDocument {
 	pages: SheetPage[];
 
@@ -103,6 +120,18 @@ class SheetDocument {
 
 	get trackCount () {
 		return Math.max(...this.rows.map(row => row.staves.length));
+	}
+
+
+	get pageSize () {
+		const page = this.pages && this.pages[0];
+		if (!page)
+			return null;
+
+		return {
+			width: parseUnitExp(page.width),
+			height: parseUnitExp(page.height),
+		};
 	}
 
 

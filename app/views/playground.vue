@@ -596,9 +596,19 @@
 				console.assert(this.pitchContextGroup, "pitchContextGroup is null.");
 				console.assert(this.midiNotation, "midiNotation is null.");
 
+				this.updateLilyDocument();
+				const attributes = this.lilyDocument.globalAttributes({readonly: true});
+
+				const meta = {
+					title: attributes.title,
+					composer: attributes.composer,
+					pageSize: this.sheetDocument.pageSize,
+				};
+
 				const noteLinkings = this.midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
 
 				const data = {
+					meta,
 					doc: this.sheetDocument,
 					midi: this.midi,
 					hashTable: this.svgHashTable,
@@ -607,7 +617,6 @@
 				};
 				const blob = new Blob([JSON.stringify(data)]);
 
-				this.updateLilyDocument();
 				downloadUrl(URL.createObjectURL(blob), `${this.title || ""}.score.json`);
 			},
 
