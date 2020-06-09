@@ -49,6 +49,10 @@ const xmlToLyWithMarkup = async (xml: Buffer, options: LilyProcessOptions, marku
 };
 
 
+// TODO:
+const unescapeStringExp = exp => exp.replace(/"/g, "");
+
+
 const markScore = async (source: string, {midi, logger}: {midi?: Buffer, logger?: LogRecorder} = {}): Promise<ScoreJSON> => {
 	const engraving = await engraveSvg(source);
 
@@ -57,6 +61,14 @@ const markScore = async (source: string, {midi, logger}: {midi?: Buffer, logger?
 	const {doc, hashTable} = staffSvg.createSheetDocumentFromSvgs(engraving.svgs, source, lilyDocument, {logger, DOMParser});
 
 	const sheetNotation = staffSvg.StaffNotation.parseNotationFromSheetDocument(doc, {logger});
+
+	const attributes = lilyDocument.globalAttributes({readonly: true});
+
+	const meta = {
+		title: unescapeStringExp(attributes.title),
+		composer: unescapeStringExp(attributes.composer),
+		pageSize: doc.pageSize,
+	};
 
 	midi = midi || engraving.midi;
 	const midiNotation = MusicNotation.Notation.parseMidi(midi);
@@ -86,6 +98,7 @@ const markScore = async (source: string, {midi, logger}: {midi?: Buffer, logger?
 	const noteLinkings = midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
 
 	return {
+		meta,
 		doc,
 		midi,
 		hashTable,
