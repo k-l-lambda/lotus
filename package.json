@@ -2,7 +2,7 @@
   "name": "lotus",
   "version": "0.4.6",
   "description": "Lotus is a sheet music toolset, an enhancement of LilyPond.",
-  "main": "lib/lotus.common.js",
+  "main": "lib/index.js",
   "browser": "lib.browser/lotus.umd.js",
   "scripts": {
     "start": "ts-node --project ./tsconfig.node.json ./main.ts",
@@ -10,7 +10,7 @@
     "dev:inspect": "ts-node-dev --project ./tsconfig.node.json --inspect -- ./main.ts",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "build:lib": "vue-cli-service build --target lib --dest lib index.ts && vue-cli-service build --target lib --dest lib.browser index.browser.ts",
+    "build:lib": "vue-cli-service build --target lib --dest lib.browser index.browser.ts && tsc --build ./tsconfig.node.json && ts-node-dev --project ./tsconfig.node.json ./tools/buildLilyParser.ts",
     "ts-dev": "ts-node-dev --project ./tsconfig.node.json",
     "ts-dev:inspect": "ts-node-dev --project ./tsconfig.node.json --inspect --"
   },
