@@ -19,10 +19,10 @@ export default class ScoreBundle {
 	bakingImages: string[];
 
 
-	constructor (source, {onStatus = (..._) => _} = {}) {
+	constructor (source, {onStatus = ((..._) => _), jsonHandle = json => json} = {}) {
 		const {PitchContext, PitchContextTable} = StaffNotation;
 
-		this.scoreJSON = recoverJSON(source, {StaffToken, SheetDocument, PitchContext, PitchContextTable, DictArray});
+		this.scoreJSON = jsonHandle(recoverJSON(source, {StaffToken, SheetDocument, PitchContext, PitchContextTable, DictArray}));
 		this.onStatus = onStatus;
 
 		if (!this.scoreJSON.midi)
