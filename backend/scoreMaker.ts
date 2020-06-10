@@ -44,7 +44,7 @@ const copyMarkup = async (source: string, markup: string, lilyParser: GrammarPar
 };
 
 
-const xmlBufferToLy = async (xml: Buffer, options: LilyProcessOptions): Promise<string> => {
+const xmlBufferToLy = async (xml: Buffer, options: LilyProcessOptions = {}): Promise<string> => {
 	const bom = (xml[0] << 8 | xml[1]);
 	const utf16 = bom === 0xfffe;
 	const content = xml.toString(utf16 ? "utf16le" : "utf8");
