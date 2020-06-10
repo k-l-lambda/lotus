@@ -26,6 +26,8 @@
 
 *	2020.6.10
 
+	+	scoreMaker.ts: externalize lily parser.
+
 	*	When tsconfig.target set to es5, class extends from native classes may have wrong behavior.
 
 	+	tools/buildLilyParser.ts created.

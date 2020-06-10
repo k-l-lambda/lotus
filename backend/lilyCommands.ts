@@ -213,4 +213,5 @@ export {
 	midi2ly,
 	engraveSvg,
 	setEnvironment,
+	LilyProcessOptions,
 };

@@ -1,29 +1,30 @@
 
+import _ from "lodash";
+import {DOMParser} from "xmldom";
+import {MusicNotation} from "@k-l-lambda/web-widgets";
 // eslint-disable-next-line
 import {MIDI} from "@k-l-lambda/web-widgets";
+
+import {xml2ly, engraveSvg} from "./lilyCommands";
+import {LilyDocument} from "../inc/lilyParser";
+import * as staffSvg from "../inc/staffSvg";
 // eslint-disable-next-line
 import LogRecorder from "../inc/logRecorder";
 // eslint-disable-next-line
 import ScoreJSON from "../inc/scoreJSON";
+// eslint-disable-next-line
+import {LilyProcessOptions} from "./lilyCommands";
 
 
-import _ from "lodash";
-import {DOMParser} from "xmldom";
-import {MusicNotation} from "@k-l-lambda/web-widgets";
 
-import {xml2ly, engraveSvg} from "./lilyCommands";
-import loadLilyParser from "./loadLilyParserNode";
-import {LilyDocument} from "../inc/lilyParser";
-import * as staffSvg from "../inc/staffSvg";
+interface GrammarParser {
+	parse (source: string): any;
+};
 
 
-interface LilyProcessOptions {};
-
-
-const copyMarkup = async (source: string, markup: string) => {
-	const parser = await loadLilyParser();
-	const docMarkup = new LilyDocument(parser.parse(markup));
-	const docSource = new LilyDocument(parser.parse(source));
+const copyMarkup = async (source: string, markup: string, lilyParser: GrammarParser) => {
+	const docMarkup = new LilyDocument(lilyParser.parse(markup));
+	const docSource = new LilyDocument(lilyParser.parse(source));
 
 	const attrS = docSource.globalAttributes();
 	const attrM = docMarkup.globalAttributes({readonly: true});
@@ -56,10 +57,9 @@ const xmlBufferToLy = async (xml: Buffer, options: LilyProcessOptions): Promise<
 const unescapeStringExp = exp => typeof exp === "string" ? exp.replace(/"/g, "") : exp;
 
 
-const markScore = async (source: string, {midi, logger}: {midi?: MIDI.MidiData, logger?: LogRecorder} = {}): Promise<ScoreJSON> => {
+const markScore = async (source: string, lilyParser: GrammarParser, {midi, logger}: {midi?: MIDI.MidiData, logger?: LogRecorder} = {}): Promise<ScoreJSON> => {
 	const engraving = await engraveSvg(source);
 
-	const lilyParser = await loadLilyParser();
 	const lilyDocument = new LilyDocument(lilyParser.parse(source));
 	const {doc, hashTable} = staffSvg.createSheetDocumentFromSvgs(engraving.svgs, source, lilyDocument, {logger, DOMParser});
 

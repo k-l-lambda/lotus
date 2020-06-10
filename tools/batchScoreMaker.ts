@@ -6,6 +6,7 @@ import {MIDI} from "@k-l-lambda/web-widgets";
 import "../env.js";
 import * as ScoreMaker from "../backend/scoreMaker";
 import walkDir from "../backend/walkDir";
+import loadLilyParser from "../backend/loadLilyParserNode";
 import asyncCall from "../inc/asyncCall";
 import LogRecorder from "../inc/logRecorder";
 
@@ -13,6 +14,8 @@ import LogRecorder from "../inc/logRecorder";
 
 const main = async () => {
 	//console.log("argv:", argv);
+
+	const lilyParser = await loadLilyParser();
 
 	const lilyFiles: Set<string> = new Set();
 
@@ -44,7 +47,7 @@ const main = async () => {
 			try {
 				const xml = fs.readFileSync(xmlPath);
 				const ly = await ScoreMaker.xmlBufferToLy(xml, xmlOptions);
-				const markupLy = markup ? await ScoreMaker.copyMarkup(ly, markup) : ly;
+				const markupLy = markup ? await ScoreMaker.copyMarkup(ly, markup, lilyParser) : ly;
 
 				if (!argv.noLyWrite && !argv.noWrite) {
 					asyncCall(fs.writeFile, lyPath, markupLy).then(() => console.log("wrote:", lyPath));
@@ -118,7 +121,7 @@ const main = async () => {
 				const logger = new LogRecorder({enabled: true});
 
 				const originalLy = fs.readFileSync(lyPath).toString();
-				const ly = markup ? await ScoreMaker.copyMarkup(originalLy, markup) : originalLy;
+				const ly = markup ? await ScoreMaker.copyMarkup(originalLy, markup, lilyParser) : originalLy;
 
 				let midi = null;
 				const midiPath = midiFiles.get(lyPath);
@@ -129,7 +132,7 @@ const main = async () => {
 					console.log("midi loaded:", midiPath);
 				}
 
-				const score = await ScoreMaker.markScore(ly, {midi, logger});
+				const score = await ScoreMaker.markScore(ly, lilyParser, {midi, logger});
 
 				const matchStat = logger.records.reverse().find(record => record.desc === "markScore.match");
 				console.assert(matchStat, "No matchStat in logger.");
