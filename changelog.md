@@ -24,6 +24,11 @@
 
 
 
+*	2020.6.10
+
+	+	tools/buildLilyParser.ts created.
+
+
 *	2020.6.9
 
 	+	backend: added function of setEnvironment.

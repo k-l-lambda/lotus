@@ -88,6 +88,5 @@ export {
 	setEnvironment,
 	service,
 	lilyCommands,
-	loadLilyParser,
 	ScoreMaker,
 };
