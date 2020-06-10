@@ -1,11 +1,10 @@
 
-/// <reference path="../inc/logRecorder.ts" />
-/// <reference path="../inc/scoreJSON.d.ts" />
-
 // eslint-disable-next-line
 import {MIDI} from "@k-l-lambda/web-widgets";
 // eslint-disable-next-line
 import LogRecorder from "../inc/logRecorder";
+// eslint-disable-next-line
+import ScoreJSON from "../inc/scoreJSON";
 
 
 import _ from "lodash";

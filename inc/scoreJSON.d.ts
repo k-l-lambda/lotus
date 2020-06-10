@@ -1,4 +1,8 @@
 
+import {MIDI} from "@k-l-lambda/web-widgets";
+
+
+
 declare class SheetDocument {}
 declare class PitchContextTable {}
 
@@ -24,7 +28,11 @@ interface ScoreJSON {
 	meta: ScoreMeta,
 	doc: SheetDocument;
 	hashTable: {[key: string]: any};
-	midi: object;
+	midi: MIDI.MidiData;
 	noteLinkings: NoteLinking[];
 	pitchContextGroup: PitchContextTable[];
 }
+
+
+
+export default ScoreJSON;

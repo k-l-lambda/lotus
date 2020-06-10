@@ -1,12 +1,12 @@
 
-/// <reference path="../inc/scoreJSON.d.ts" />
-
 import {MusicNotation} from "@k-l-lambda/web-widgets";
 
 import {recoverJSON} from "../inc/jsonRecovery";
 import {StaffToken, SheetDocument, StaffNotation} from "../inc/staffSvg";
 import * as SheetBaker from "./sheetBaker";
 import DictArray from "../inc/DictArray";
+// eslint-disable-next-line
+import ScoreJSON from "../inc/scoreJSON";
 
 
 
