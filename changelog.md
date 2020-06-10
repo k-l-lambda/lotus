@@ -26,6 +26,8 @@
 
 *	2020.6.10
 
+	+	sheetBaker.ts: added DTD on svg document for canvas image to avoid entity parsing issues.
+
 	+	scoreBundle.ts: added option of jsonHandle.
 
 	+	scoreMaker.ts: externalize lily parser.
