@@ -603,6 +603,8 @@
 					title: attributes.title,
 					composer: attributes.composer,
 					pageSize: this.sheetDocument.pageSize,
+					pageCount: this.sheetDocument.pages.length,
+					staffSize: attributes.staffSize,
 				};
 
 				const noteLinkings = this.midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));

@@ -1,7 +1,7 @@
 
 ## TODO
 	LilyDocument:
-		remove empty track
+		remove empty track	(6.1 落叶.ly)
 		standalone title: score.header.breakbefore = ##t
 	score menu page
 	parse tie token by lily document
@@ -22,6 +22,11 @@
 	source editor
 		cursor position
 
+
+
+*	2020.6.11
+
+	+	scoreMaker.ts: export page count & staff size into score json.
 
 
 *	2020.6.10

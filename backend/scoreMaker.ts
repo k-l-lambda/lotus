@@ -71,6 +71,8 @@ const markScore = async (source: string, lilyParser: GrammarParser, {midi, logge
 		title: unescapeStringExp(attributes.title),
 		composer: unescapeStringExp(attributes.composer),
 		pageSize: doc.pageSize,
+		pageCount: doc.pages.length,
+		staffSize: attributes.staffSize,
 	};
 
 	midi = midi || engraving.midi;
