@@ -720,7 +720,7 @@ INT
 	: UNSIGNED
 		{$$ = Number($1);}
 	| "-" UNSIGNED
-		{$$ = -Number($1);}
+		{$$ = -Number($2);}
 	;
 
 // equivalent for NUMBER_IDENTIFIER in lilypond's parser.yy
@@ -1022,7 +1022,7 @@ multiple_voices_music_list
 	: music_list
 		{$$ = $1;}
 	| multiple_voices_music_list E_BACKSLASH music_embedded
-		{$$ = [...$1, "\\", $3];}
+		{$$ = [...$1, $2, $3];}
 	;
 
 sequential_music
@@ -1942,7 +1942,7 @@ scheme_expression
 	| bare_number
 		{$$ = $1;}
 	| INT
-		{$$ = Number($1);}
+		{$$ = $1;}
 	| "(" scheme_expression "." scheme_expression ")"
 		{$$ = schemePair($2, $4);}
 	| "(" scheme_expression scheme_args ")"
