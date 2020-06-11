@@ -628,7 +628,7 @@
 					this.lilyDocument = new LilyDocument(this.lilyParser.parse(this.lilySource));
 
 					const titleExp = this.lilyDocument.globalAttributes({readonly: true}).title;
-					this.title = titleExp.replace(/"/g, ""); // TODO: parse string expression in LilyDocument
+					this.title = titleExp && titleExp.replace(/"/g, ""); // TODO: parse string expression in LilyDocument
 
 					//console.log("lily document", this.lilyDocument);
 					//console.log(this.lilyDocument.toString());
