@@ -435,6 +435,23 @@ class Chord extends BaseTerm {
 			...postfix,
 		];
 	}
+
+
+	toJSON () {
+		// exclude options.location
+		let options = this.options;
+		if (options && options.location) {
+			const {location, ...rest} = options;
+			void location;
+			options = rest;
+		}
+
+		return {
+			pitches: this.pitches,
+			duration: this.duration,
+			options,
+		};
+	}
 };
 
 

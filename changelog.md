@@ -27,6 +27,8 @@
 
 *	2020.6.11
 
+	+	lilyDocument.ts: Chord.toJSON added.
+
 	+	scoreMaker.ts: export page count & staff size into score json.
 
 
