@@ -282,6 +282,9 @@ class Scheme extends BaseTerm {
 			return ["#", "\b", ...(this.exp as LilyTerm).serialize()];
 		else if (typeof this.exp === "boolean")
 			return ["#", "\b", this.exp ? "#t" : "#f"];
+		// TODO: enhance grammar to parse empty scheme list
+		//else if (this.exp === null)
+		//	return ["#", "\b", "'()"];
 		else
 			return ["#", "\b", this.exp];
 	}
@@ -697,11 +700,11 @@ export default class LilyDocument {
 		const paperPropertyCommon = key => ({
 			get value () {
 				if (!paper)
-					return null;
+					return undefined;
 
 				const item = paper.getField(key);
 				if (!item)
-					return null;
+					return undefined;
 
 				return item.value;
 			},
@@ -720,11 +723,11 @@ export default class LilyDocument {
 		const paperPropertySchemeToken = key => ({
 			get value () {
 				if (!paper)
-					return null;
+					return undefined;
 
 				const item = paper.getField(key);
 				if (!item)
-					return null;
+					return undefined;
 
 				return item.value.exp;
 			},
