@@ -32,7 +32,7 @@ const copyMarkup = async (source: string, markup: string, lilyParser: GrammarPar
 	[
 		"staffSize", "paperWidth", "paperHeight", "systemSpacing", "raggedLast",
 	].forEach(field => {
-		if (attrM[field]) {
+		if (attrM[field] !== undefined) {
 			if (typeof attrS[field].value === "object" && attrS[field].value && attrS[field].value.set)
 				attrS[field].value.set(attrM[field]);
 			else
