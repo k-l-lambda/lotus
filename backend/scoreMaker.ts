@@ -22,10 +22,11 @@ interface GrammarParser {
 };
 
 
-const markupLily = async (source: string, markup: string, lilyParser: GrammarParser) => {
+const markupLily = (source: string, markup: string, lilyParser: GrammarParser): string => {
 	const docMarkup = new LilyDocument(lilyParser.parse(markup));
 	const docSource = new LilyDocument(lilyParser.parse(source));
 
+	// copy attributes
 	const attrS = docSource.globalAttributes();
 	const attrM = docMarkup.globalAttributes({readonly: true});
 
@@ -39,6 +40,18 @@ const markupLily = async (source: string, markup: string, lilyParser: GrammarPar
 				attrS[field].value = attrM[field];
 		}
 	});
+
+	// execute commands list
+	const commands = docMarkup.root.getField("LotusCommands");
+	const cmdList = commands && commands.value && commands.value.args && commands.value.args[0].body;
+	if (cmdList && Array.isArray(cmdList)) {
+		for (const command of cmdList) {
+			if (docSource[command])
+				docSource[command]();
+			else
+				console.warn("unexpected markup command:", command);
+		}
+	}
 
 	return docSource.toString();
 };

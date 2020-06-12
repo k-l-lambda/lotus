@@ -27,6 +27,8 @@
 
 *	2020.6.12
 
+	+	scoreMaker.ts: markup command list added.
+
 	+	lilyDocument.ts: removeBreaks, removePageBreaks added.
 
 	+	playground.vue: inspect lily button added.
