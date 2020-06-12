@@ -68,8 +68,7 @@ const xmlBufferToLy = async (xml: Buffer, options: LilyProcessOptions = {}): Pro
 };
 
 
-// TODO:
-const unescapeStringExp = exp => typeof exp === "string" ? exp.replace(/"/g, "") : exp;
+const unescapeStringExp = exp => exp && exp.toString();
 
 
 const markScore = async (source: string, lilyParser: GrammarParser, {midi, logger}: {midi?: MIDI.MidiData, logger?: LogRecorder} = {}): Promise<ScoreJSON> => {
