@@ -149,6 +149,21 @@ class Root extends BaseTerm {
 };
 
 
+class LiteralString extends BaseTerm {
+	exp: string
+
+
+	serialize () {
+		return [this.exp];
+	}
+
+
+	toString () {
+		return eval(this.exp);
+	}
+};
+
+
 class Command extends BaseTerm {
 	cmd: string;
 	args: any[];
@@ -164,6 +179,16 @@ class Command extends BaseTerm {
 
 	get entries () {
 		return this.args.filter(arg => arg instanceof BaseTerm);
+	}
+};
+
+
+class MarkupCommand extends Command {
+	toString () {
+		const strs = [];
+		this.forEachTerm(LiteralString, term => strs.push(term.toString()));
+
+		return strs.join("\n");
 	}
 };
 
@@ -588,7 +613,9 @@ class Unexpect extends BaseTerm {
 
 const termDictionary = {
 	Root,
+	LiteralString,
 	Command,
+	MarkupCommand,
 	Block,
 	InlineBlock,
 	Scheme,

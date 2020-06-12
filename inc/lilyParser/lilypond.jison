@@ -11,7 +11,11 @@
 		return list;
 	};
 
+	const string = exp => ({proto: "LiteralString", exp});
+
 	const command = (cmd, ...args) => ({proto: "Command", cmd: cmd.substr(1), args});
+
+	const markupCommand = (cmd, ...args) => ({proto: "MarkupCommand", cmd: cmd.substr(1), args});
 
 	const chord = (pitches, duration, options = {}) => ({proto: "Chord", pitches, duration, options: {...options, proto: "_PLAIN"}});
 
@@ -290,7 +294,7 @@ lilypond
 	;
 
 version
-	: CMD_VERSION STRING
+	: CMD_VERSION literal_string
 		{$$ = command($1, $2);}
 	;
 
@@ -349,7 +353,7 @@ assignment
 	;
 
 assignment_id
-	: STRING
+	: literal_string
 		{$$ = $1;}
 	| SYMBOL
 		{$$ = $1;}
@@ -384,7 +388,7 @@ symbol_list_part_bare
 	;
 
 symbol_list_element
-	: STRING
+	: literal_string
 		{$$ = $1;}
 	| UNSIGNED
 		{$$ = $1;}
@@ -449,7 +453,7 @@ identifier_init_nonumber
 	;
 
 string
-	: STRING
+	: literal_string
 		{$$ = $1;}
 	| SYMBOL
 		{$$ = $1;}
@@ -458,7 +462,7 @@ string
 	;
 
 text
-	: STRING
+	: literal_string
 		{$$ = $1;}
 	| SYMBOL
 		{$$ = $1;}
@@ -578,7 +582,7 @@ simple_markup
 	;
 
 markup_word
-	: STRING
+	: literal_string
 		{$$ = $1;}
 	| SYMBOL
 		{$$ = $1;}
@@ -665,7 +669,7 @@ markup_command_basic_arguments
 	//| EXPECT_SCM markup_command_list_arguments embedded_scm
 	//| EXPECT_SCM markup_command_list_arguments mode_changed_music
 	//| EXPECT_SCM markup_command_list_arguments MUSIC_IDENTIFIER
-	//| EXPECT_SCM markup_command_list_arguments STRING
+	//| EXPECT_SCM markup_command_list_arguments literal_string
 	//| EXPECT_NO_MORE_ARGS
 	;
 
@@ -1078,7 +1082,7 @@ lyric_element
 		{$$ = $1;}
 	| SYMBOL
 		{$$ = $1;}
-	| STRING
+	| literal_string
 		{$$ = $1;}
 	//| LYRIC_ELEMENT
 	;
@@ -1259,7 +1263,7 @@ unsigned_number
 	;
 
 simple_string
-	: STRING
+	: literal_string
 		{$$ = $1;}
 	| SYMBOL
 		{$$ = $1;}
@@ -1389,7 +1393,7 @@ value
 	//	{$$ = $1;}
 	| REAL
 		{$$ = $1;}
-	| STRING
+	| literal_string
 		{$$ = $1;}
 	| SYMBOL
 		{$$ = $1;}
@@ -1649,7 +1653,7 @@ direction_reqd_event
 gen_text_def
 	: full_markup
 		{$$ = $1;}
-	| STRING
+	| literal_string
 		{$$ = $1;}
 	| SYMBOL
 		{$$ = $1;}
@@ -1720,7 +1724,7 @@ fingering
 
 full_markup
 	: markup_mode markup_top
-		{$$ = command($1, ...$2);}
+		{$$ = markupCommand($1, ...$2);}
 	| markup_mode_word
 		{$$ = $1;}
 	;
@@ -1862,7 +1866,7 @@ property_operation
 	;
 
 symbol
-	: STRING
+	: literal_string
 		{$$ = $1;}
 	| SYMBOL
 		{$$ = $1;}
@@ -1972,4 +1976,10 @@ optional_rest
 		{$$ = null;}
 	| REST
 		{$$ = $1;}
+	;
+
+// extra syntax, the substitution of STRING
+literal_string
+	: STRING
+		{$$ = string($1);}
 	;

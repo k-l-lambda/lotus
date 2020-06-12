@@ -27,6 +27,8 @@
 
 *	2020.6.12
 
+	+	lilyDocument.ts: added term classes of MarkupCommand, LiteralString.
+
 	+	scoreMaker.ts: markup command list added.
 
 	+	lilyDocument.ts: removeBreaks, removePageBreaks added.
