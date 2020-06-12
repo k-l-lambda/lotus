@@ -25,6 +25,11 @@
 
 
 
+*	2020.6.12
+
+	+	playground.vue: inspect lily button added.
+
+
 *	2020.6.11
 
 	+	lilyDocument.ts: Chord.toJSON added.

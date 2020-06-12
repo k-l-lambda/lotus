@@ -49,6 +49,7 @@
 		<main>
 			<div class="source-container" :class="{loading: converting}">
 				<SourceEditor :source.sync="lilySource" :disabled="converting" />
+				<button class="inspect" @click="inspectLily">&#x1f4d5;</button>
 				<Loading v-show="converting" />
 			</div>
 			<div class="build-container" ref="buildContainer" :class="{
@@ -628,7 +629,7 @@
 					this.lilyDocument = new LilyDocument(this.lilyParser.parse(this.lilySource));
 
 					const titleExp = this.lilyDocument.globalAttributes({readonly: true}).title;
-					this.title = titleExp && titleExp.replace(/"/g, ""); // TODO: parse string expression in LilyDocument
+					this.title = typeof titleExp === "string" && titleExp.replace(/"/g, ""); // TODO: parse string expression in LilyDocument
 
 					//console.log("lily document", this.lilyDocument);
 					//console.log(this.lilyDocument.toString());
@@ -708,6 +709,12 @@
 				console.assert(this.matchedIds, "matchedIds is null.");
 
 				this.bakingImages = await SheetBaker.bakeRawSvgs(this.svgDocuments, this.matchedIds, this.$refs.canvas);
+			},
+
+
+			inspectLily () {
+				this.updateLilyDocument();
+				console.log(this.lilyDocument);
 			},
 		},
 
@@ -809,9 +816,30 @@
 				position: relative;
 			}
 
-			.source-container > *
+			.source-container
 			{
-				height: 100%;
+				& > div
+				{
+					height: 100%;
+				}
+
+				.inspect
+				{
+					position: absolute;
+					top: 0;
+					right: .4em;
+					background: transparent;
+					border: 0;
+					outline: 0;
+					cursor: pointer;
+					font-size: 200%;
+					opacity: .01;
+
+					&:hover
+					{
+						opacity: 1;
+					}
+				}
 			}
 
 			.build-container
