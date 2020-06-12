@@ -22,7 +22,7 @@ interface GrammarParser {
 };
 
 
-const copyMarkup = async (source: string, markup: string, lilyParser: GrammarParser) => {
+const markupLily = async (source: string, markup: string, lilyParser: GrammarParser) => {
 	const docMarkup = new LilyDocument(lilyParser.parse(markup));
 	const docSource = new LilyDocument(lilyParser.parse(source));
 
@@ -42,6 +42,8 @@ const copyMarkup = async (source: string, markup: string, lilyParser: GrammarPar
 
 	return docSource.toString();
 };
+// temporary alias
+const copyMarkup = markupLily;
 
 
 const xmlBufferToLy = async (xml: Buffer, options: LilyProcessOptions = {}): Promise<string> => {
@@ -115,6 +117,7 @@ const markScore = async (source: string, lilyParser: GrammarParser, {midi, logge
 
 
 export {
+	markupLily,
 	copyMarkup,
 	xmlBufferToLy,
 	markScore,

@@ -47,7 +47,7 @@ const main = async () => {
 			try {
 				const xml = fs.readFileSync(xmlPath);
 				const ly = await ScoreMaker.xmlBufferToLy(xml, xmlOptions);
-				const markupLy = markup ? await ScoreMaker.copyMarkup(ly, markup, lilyParser) : ly;
+				const markupLy = markup ? await ScoreMaker.markupLily(ly, markup, lilyParser) : ly;
 
 				if (!argv.noLyWrite && !argv.noWrite) {
 					asyncCall(fs.writeFile, lyPath, markupLy).then(() => console.log("wrote:", lyPath));
@@ -121,7 +121,7 @@ const main = async () => {
 				const logger = new LogRecorder({enabled: true});
 
 				const originalLy = fs.readFileSync(lyPath).toString();
-				const ly = markup ? await ScoreMaker.copyMarkup(originalLy, markup, lilyParser) : originalLy;
+				const ly = markup ? await ScoreMaker.markupLily(originalLy, markup, lilyParser) : originalLy;
 
 				let midi = null;
 				const midiPath = midiFiles.get(lyPath);
