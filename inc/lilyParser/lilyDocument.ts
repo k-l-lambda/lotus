@@ -780,12 +780,28 @@ export default class LilyDocument {
 	}
 
 
-	removeTrillSpans () {
-		const isTrillSpan = item => (item instanceof Command) && ["startTrillSpan", "stopTrillSpan"].includes(item.cmd);
+	removeMusicCommands (cmds: string | string[]) {
+		cmds = Array.isArray(cmds) ? cmds : [cmds];
+
+		const isToRemoved = item => (item instanceof Command) && cmds.includes(item.cmd);
 
 		this.root.forEachTerm(MusicBlock, block => {
-			//console.log("music block:", block);
-			block.body = block.body.filter(item => !isTrillSpan(item));
+			block.body = block.body.filter(item => !isToRemoved(item));
 		});
+	}
+
+
+	removeTrillSpans () {
+		this.removeMusicCommands(["startTrillSpan", "stopTrillSpan"]);
+	}
+
+
+	removeBreaks () {
+		this.removeMusicCommands("break");
+	}
+
+
+	removePageBreaks () {
+		this.removeMusicCommands("pageBreak");
 	}
 };

@@ -27,6 +27,8 @@
 
 *	2020.6.12
 
+	+	lilyDocument.ts: removeBreaks, removePageBreaks added.
+
 	+	playground.vue: inspect lily button added.
 
 
