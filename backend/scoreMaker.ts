@@ -55,8 +55,6 @@ const markupLily = (source: string, markup: string, lilyParser: GrammarParser): 
 
 	return docSource.toString();
 };
-// temporary alias
-const copyMarkup = markupLily;
 
 
 const xmlBufferToLy = async (xml: Buffer, options: LilyProcessOptions = {}): Promise<string> => {
@@ -127,10 +125,77 @@ const markScore = async (source: string, lilyParser: GrammarParser, {midi, logge
 };
 
 
+const markScoreParallelly = async (source: string, lilyParser: GrammarParser, {midi, logger}: {midi?: MIDI.MidiData, logger?: LogRecorder} = {}): Promise<ScoreJSON> => {
+	let midiNotation = midi && MusicNotation.Notation.parseMidi(midi);
+
+	const pages = [];
+
+	const lilyDocument = new LilyDocument(lilyParser.parse(source));
+	const attributes = lilyDocument.globalAttributes({readonly: true});
+
+	const engraving = await engraveSvg(source, {
+		onMidiRead: midi => midiNotation = midiNotation || MusicNotation.Notation.parseMidi(midi),
+		onSvgRead: svg => pages.push(staffSvg.parseSvgPage(svg, source, {DOMParser, logger, attributes})),
+	});
+
+	logger.append("lilypond.log", engraving.logs);
+
+	const doc = new staffSvg.SheetDocument({
+		pages: pages.map(page => page.structure),
+	});
+	const hashTable = pages.reduce((sum, page) => ({...sum, ...page.hashTable}), {});
+
+	//const {doc, hashTable} = staffSvg.createSheetDocumentFromSvgs(engraving.svgs, source, lilyDocument, {logger, DOMParser});
+
+	const sheetNotation = staffSvg.StaffNotation.parseNotationFromSheetDocument(doc, {logger});
+
+	const meta = {
+		title: unescapeStringExp(attributes.title),
+		composer: unescapeStringExp(attributes.composer),
+		pageSize: doc.pageSize,
+		pageCount: doc.pages.length,
+		staffSize: attributes.staffSize,
+	};
+
+	const matcher = await staffSvg.StaffNotation.matchNotations(midiNotation, sheetNotation);
+
+	if (logger) {
+		const cis = new Set(Array(matcher.criterion.notes.length).keys());
+		matcher.path.forEach(ci => cis.delete(ci));
+
+		const omitC = cis.size;
+		const omitS = matcher.path.filter(ci => ci < 0).length;
+
+		const coverage = ((matcher.criterion.notes.length - omitC) / matcher.criterion.notes.length)
+			* ((matcher.sample.notes.length - omitS) / matcher.sample.notes.length);
+
+		logger.append("markScore.match", {coverage, omitC, omitS, path: matcher.path});
+	}
+
+	const matchedIds: Set<string> = new Set();
+	midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));
+
+	doc.updateMatchedTokens(matchedIds);
+
+	const pitchContextGroup = staffSvg.StaffNotation.createPitchContextGroup(sheetNotation.pitchContexts, midiNotation);
+
+	const noteLinkings = midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
+
+	return {
+		meta,
+		doc,
+		midi,
+		hashTable,
+		noteLinkings,
+		pitchContextGroup,
+	};
+};
+
+
 
 export {
 	markupLily,
-	copyMarkup,
+	markScoreParallelly,
 	xmlBufferToLy,
 	markScore,
 };

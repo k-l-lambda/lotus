@@ -2,7 +2,6 @@
 
 import fs from "fs";
 import path from "path";
-//import glob from "glob";
 import child_process from "child-process-promise";
 import {DOMParser, XMLSerializer} from "xmldom";
 import {MIDI} from "@k-l-lambda/web-widgets";
@@ -175,11 +174,12 @@ const postProcessSvg = svg => {
 const FILE_BORN_OUPUT_PATTERN = /output\sto\s`(.+)'/;
 
 
-const engraveSvg = async (source: string, {onFileRead}: {onFileRead?: (type: string, content: string | MIDI.MidiData) => void} = {}) => {
+const engraveSvg = async (source: string, {onMidiRead, onSvgRead}: {
+	onMidiRead?: (content: MIDI.MidiData) => void
+	onSvgRead?: (content: string) => void
+} = {}) => {
 	const hash = genHashString();
 	const sourceFilename = `${env.TEMP_DIR}engrave-${hash}.ly`;
-	//const outputFilename = `./engrave-${hash}`;
-	//const midiFilename = `${env.TEMP_DIR}engrave-${hash}.${env.MIDI_FILE_EXTEND}`;
 
 	await asyncCall(fs.writeFile, sourceFilename, source);
 	//console.log("ly source written:", sourceFilename);
@@ -196,14 +196,14 @@ const engraveSvg = async (source: string, {onFileRead}: {onFileRead?: (type: str
 		const [__, ext] = filename.match(/\.(\w+)$/);
 
 		const filePath = path.resolve(env.TEMP_DIR, filename);
-		console.log("file output:", filePath, ext);
+		//console.log("file output:", filePath, ext);
 
 		switch (ext) {
 		case env.MIDI_FILE_EXTEND: {
 			const buffer = await asyncCall(fs.readFile, filePath);
 			midi = MIDI.parseMidiData(buffer);
 
-			onFileRead && onFileRead("MIDI", midi);
+			onMidiRead && onMidiRead(midi);
 		}
 
 			break;
@@ -212,7 +212,7 @@ const engraveSvg = async (source: string, {onFileRead}: {onFileRead?: (type: str
 			const svg = postProcessSvg(buffer.toString());
 			svgs.push(svg);
 
-			onFileRead && onFileRead("SVG", svg);
+			onSvgRead && onSvgRead(svg);
 		}
 
 			break;
@@ -241,24 +241,7 @@ const engraveSvg = async (source: string, {onFileRead}: {onFileRead?: (type: str
 
 	await Promise.all(loadProcs);
 
-	console.log("svgs:", svgs.length);
-
-	//const svgFiles: string[] = await asyncCall(glob, `${env.TEMP_DIR}engrave-${hash}*.svg`);
-	//svgFiles.sort((n1, n2) => nameNumber(n1) - nameNumber(n2));
-	//console.log("svgFiles:", svgFiles);
-
-	//const svgs = await Promise.all(svgFiles.map(filename => asyncCall(fs.readFile, filename)));
-
-	/*let midi = null;
-	try {
-		await asyncCall(fs.access, midiFilename, fs.constants.F_OK);
-
-		const buffer = await asyncCall(fs.readFile, midiFilename);
-		midi = MIDI.parseMidiData(buffer);
-	}
-	catch (err) {
-		console.log("[engraveSvg]	midi file reading failed:", midiFilename, err);
-	}*/
+	//console.log("svgs:", svgs.length);
 
 	return {
 		logs: result.stderr,

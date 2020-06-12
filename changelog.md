@@ -28,6 +28,8 @@
 
 *	2020.6.12
 
+	+	scoreMaker.ts: markScoreParallelly implemented.
+
 	+	lilyCommands.ts: report file read in progressing.
 
 	+	lilyDocument.ts: added term classes of MarkupCommand, LiteralString.
