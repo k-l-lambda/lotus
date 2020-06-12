@@ -1,7 +1,8 @@
 
 
 import fs from "fs";
-import glob from "glob";
+import path from "path";
+//import glob from "glob";
 import child_process from "child-process-promise";
 import {DOMParser, XMLSerializer} from "xmldom";
 import {MIDI} from "@k-l-lambda/web-widgets";
@@ -168,27 +169,87 @@ const postProcessSvg = svg => {
 };
 
 
-const nameNumber = name => Number(name.match(/-(\d+)\./)[1]);
+//const nameNumber = name => Number(name.match(/-(\d+)\./)[1]);
 
 
-const engraveSvg = async source => {
+const FILE_BORN_OUPUT_PATTERN = /output\sto\s`(.+)'/;
+
+
+const engraveSvg = async (source: string, {onFileRead}: {onFileRead?: (type: string, content: string | MIDI.MidiData) => void} = {}) => {
 	const hash = genHashString();
 	const sourceFilename = `${env.TEMP_DIR}engrave-${hash}.ly`;
 	//const outputFilename = `./engrave-${hash}`;
-	const midiFilename = `${env.TEMP_DIR}engrave-${hash}.${env.MIDI_FILE_EXTEND}`;
+	//const midiFilename = `${env.TEMP_DIR}engrave-${hash}.${env.MIDI_FILE_EXTEND}`;
 
 	await asyncCall(fs.writeFile, sourceFilename, source);
 	//console.log("ly source written:", sourceFilename);
 
-	const result = await child_process.exec(`cd ${env.TEMP_DIR} && ${env.LILYPOND_DIR}lilypond -dbackend=svg .${sourceFilename}`);
+	let midi = null;
+	const svgs = [];
 
-	const svgFiles: string[] = await asyncCall(glob, `${env.TEMP_DIR}engrave-${hash}*.svg`);
-	svgFiles.sort((n1, n2) => nameNumber(n1) - nameNumber(n2));
+	let lastReady = null;
+
+	const loadFile = async line => {
+		await new Promise(resolve => lastReady = resolve);
+
+		const [_, filename] = line.match(FILE_BORN_OUPUT_PATTERN);
+		const [__, ext] = filename.match(/\.(\w+)$/);
+
+		const filePath = path.resolve(env.TEMP_DIR, filename);
+		console.log("file output:", filePath, ext);
+
+		switch (ext) {
+		case env.MIDI_FILE_EXTEND: {
+			const buffer = await asyncCall(fs.readFile, filePath);
+			midi = MIDI.parseMidiData(buffer);
+
+			onFileRead && onFileRead("MIDI", midi);
+		}
+
+			break;
+		case "svg": {
+			const buffer = await asyncCall(fs.readFile, filePath);
+			const svg = postProcessSvg(buffer.toString());
+			svgs.push(svg);
+
+			onFileRead && onFileRead("SVG", svg);
+		}
+
+			break;
+		}
+	};
+
+	const loadProcs = [];
+
+	const checkFile = line => {
+		if (lastReady) {
+			lastReady();
+			lastReady = null;
+		}
+
+		if (FILE_BORN_OUPUT_PATTERN.test(line))
+			loadProcs.push(loadFile(line));
+	};
+
+	const proc = child_process.exec(`cd ${env.TEMP_DIR} && ${env.LILYPOND_DIR}lilypond -dbackend=svg .${sourceFilename}`);
+	proc.childProcess.stdout.on("data", checkFile);
+	proc.childProcess.stderr.on("data", checkFile);
+
+	const result = await proc;
+
+	lastReady && lastReady();
+
+	await Promise.all(loadProcs);
+
+	console.log("svgs:", svgs.length);
+
+	//const svgFiles: string[] = await asyncCall(glob, `${env.TEMP_DIR}engrave-${hash}*.svg`);
+	//svgFiles.sort((n1, n2) => nameNumber(n1) - nameNumber(n2));
 	//console.log("svgFiles:", svgFiles);
 
-	const svgs = await Promise.all(svgFiles.map(filename => asyncCall(fs.readFile, filename)));
+	//const svgs = await Promise.all(svgFiles.map(filename => asyncCall(fs.readFile, filename)));
 
-	let midi = null;
+	/*let midi = null;
 	try {
 		await asyncCall(fs.access, midiFilename, fs.constants.F_OK);
 
@@ -197,11 +258,11 @@ const engraveSvg = async source => {
 	}
 	catch (err) {
 		console.log("[engraveSvg]	midi file reading failed:", midiFilename, err);
-	}
+	}*/
 
 	return {
 		logs: result.stderr,
-		svgs: svgs.map(svg => postProcessSvg(svg.toString())),
+		svgs: svgs,
 		midi,
 	};
 };

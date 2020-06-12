@@ -1,5 +1,6 @@
 
 ## TODO
+	small notehead music font issue in baking mode
 	copyMarkup: post-process command list
 	LilyDocument:
 		remove empty track	(6.1 落叶.ly)
@@ -26,6 +27,8 @@
 
 
 *	2020.6.12
+
+	+	lilyCommands.ts: report file read in progressing.
 
 	+	lilyDocument.ts: added term classes of MarkupCommand, LiteralString.
 
