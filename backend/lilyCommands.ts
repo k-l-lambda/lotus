@@ -5,6 +5,8 @@ import path from "path";
 import child_process from "child-process-promise";
 import {DOMParser, XMLSerializer} from "xmldom";
 import {MIDI} from "@k-l-lambda/web-widgets";
+// eslint-disable-next-line
+import {Writable} from "stream";
 
 import asyncCall from "../inc/asyncCall";
 import {SingleLock} from "../inc/mutex";
@@ -253,7 +255,7 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: 
 };
 
 
-const engraveSvgWithStream = async (source: string, output: Stream) => {
+const engraveSvgWithStream = async (source: string, output: Writable) => {
 	const hash = genHashString();
 	const sourceFilename = `${env.TEMP_DIR}engrave-${hash}.ly`;
 
