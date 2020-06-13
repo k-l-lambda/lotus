@@ -8,6 +8,7 @@ import {MIDI} from "@k-l-lambda/web-widgets";
 import {xml2ly, engraveSvg} from "./lilyCommands";
 import {LilyDocument} from "../inc/lilyParser";
 import * as staffSvg from "../inc/staffSvg";
+import {SingleLock} from "../inc/mutex";
 // eslint-disable-next-line
 import LogRecorder from "../inc/logRecorder";
 // eslint-disable-next-line
@@ -159,15 +160,14 @@ const markScoreV2 = async (source: string, lilyParser: GrammarParser, {midi, log
 
 	const t0 = Date.now();
 
-	let setAttribute: (attributes: LilyDocumentAttributeReadOnly) => void;
-	const getAttribute: Promise<LilyDocumentAttributeReadOnly> = new Promise(resolve => setAttribute = resolve);
+	const attrGen = new SingleLock<LilyDocumentAttributeReadOnly>(true);
 
 	const engraving = await engraveSvg(source, {
 		// do some work during lilypond process running to save time
 		onProcStart: () => {
 			//console.log("tp.0:", Date.now() - t0);
 			const lilyDocument = new LilyDocument(lilyParser.parse(source));
-			setAttribute(lilyDocument.globalAttributes({readonly: true}));
+			attrGen.release(lilyDocument.globalAttributes({readonly: true}));
 			//console.log("tp.1:", Date.now() - t0);
 		},
 		onMidiRead: midi_ => {
@@ -180,7 +180,7 @@ const markScoreV2 = async (source: string, lilyParser: GrammarParser, {midi, log
 		},
 		onSvgRead: async svg => {
 			//console.log("ts.0:", Date.now() - t0);
-			const attributes = await getAttribute;
+			const attributes = await attrGen.wait();
 			const page = staffSvg.parseSvgPage(svg, source, {DOMParser, logger, attributes});
 			pages.push(page.structure);
 			Object.assign(hashTable, page.hashTable);
@@ -197,7 +197,7 @@ const markScoreV2 = async (source: string, lilyParser: GrammarParser, {midi, log
 
 	//console.log("t3:", Date.now() - t0);
 
-	const attributes = await getAttribute;
+	const attributes = await attrGen.wait();
 	const meta = {
 		title: unescapeStringExp(attributes.title),
 		composer: unescapeStringExp(attributes.composer),

@@ -28,6 +28,8 @@
 
 *	2020.6.13
 
+	+	scoreMaker.ts: refined makeScore by SingleLock.
+
 	+	inc/mutex.ts created.
 
 	+	lilyCommands.ts: engraveSvgWithStream added.

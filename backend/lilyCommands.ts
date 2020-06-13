@@ -190,10 +190,10 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: 
 	let midi = null;
 	const svgs = [];
 
-	let lastReady = null;
+	const fileReady = new SingleLock();
 
 	const loadFile = async line => {
-		await new Promise(resolve => lastReady = resolve);
+		await fileReady.lock();
 
 		const [_, filename] = line.match(FILE_BORN_OUPUT_PATTERN);
 		const [__, ext] = filename.match(/\.(\w+)$/);
@@ -225,10 +225,7 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: 
 	const loadProcs: Promise<void>[] = [];
 
 	const checkFile = line => {
-		if (lastReady) {
-			lastReady();
-			lastReady = null;
-		}
+		fileReady.release();
 
 		if (FILE_BORN_OUPUT_PATTERN.test(line))
 			loadProcs.push(loadFile(line));
@@ -242,7 +239,7 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: 
 
 	const result = await proc;
 
-	lastReady && lastReady();
+	fileReady.release();
 
 	await Promise.all(loadProcs);
 

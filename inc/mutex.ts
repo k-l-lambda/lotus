@@ -1,7 +1,13 @@
 
-class SingleLock {
-	promise?: Promise<any>;
-	resolve?: (result?: any) => void;
+class SingleLock<T = void> {
+	promise?: Promise<T>;
+	resolve?: (result?: T) => void;
+
+
+	constructor (locked: boolean = false) {
+		if (locked)
+			this.lock();
+	}
 
 
 	get locked () {
@@ -9,14 +15,16 @@ class SingleLock {
 	}
 
 
-	lock (): Promise<any> {
+	lock (): Promise<T> {
+		console.assert(!this.locked, "[SingleLock] duplicated locking, last locking has't been released yet.");
+
 		this.promise = new Promise(resolve => this.resolve = resolve);
 
 		return this.promise;
 	}
 
 
-	release (result?: any) {
+	release (result?: T) {
 		if (this.resolve) {
 			this.resolve(result);
 			this.resolve = null;
@@ -24,7 +32,7 @@ class SingleLock {
 	}
 
 
-	wait (): Promise<any> {
+	wait (): Promise<T> {
 		return this.promise;
 	}
 };
