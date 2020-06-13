@@ -69,8 +69,13 @@ const xmlBufferToLy = async (xml: Buffer, options: LilyProcessOptions = {}): Pro
 const unescapeStringExp = exp => exp && exp.toString();
 
 
-const markScore = async (source: string, lilyParser: GrammarParser, {midi, logger}: {midi?: MIDI.MidiData, logger?: LogRecorder} = {}): Promise<ScoreJSON> => {
+const markScoreV1 = async (source: string, lilyParser: GrammarParser, {midi, logger}: {midi?: MIDI.MidiData, logger?: LogRecorder} = {}): Promise<ScoreJSON> => {
+	const t0 = Date.now();
+
 	const engraving = await engraveSvg(source);
+
+	logger.append("scoreMaker.profile.engraving", {cost: Date.now() - t0});
+	logger.append("lilypond.log", engraving.logs);
 
 	const lilyDocument = new LilyDocument(lilyParser.parse(source));
 	const {doc, hashTable} = staffSvg.createSheetDocumentFromSvgs(engraving.svgs, source, lilyDocument, {logger, DOMParser});
@@ -90,7 +95,11 @@ const markScore = async (source: string, lilyParser: GrammarParser, {midi, logge
 	midi = midi || engraving.midi;
 	const midiNotation = MusicNotation.Notation.parseMidi(midi);
 
+	const t5 = Date.now();
+
 	const matcher = await staffSvg.StaffNotation.matchNotations(midiNotation, sheetNotation);
+
+	logger.append("scoreMaker.profile.matching", {cost: Date.now() - t5});
 
 	if (logger) {
 		const cis = new Set(Array(matcher.criterion.notes.length).keys());
@@ -114,6 +123,8 @@ const markScore = async (source: string, lilyParser: GrammarParser, {midi, logge
 
 	const noteLinkings = midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
 
+	logger.append("scoreMaker.profile.full", {cost: Date.now() - t0});
+
 	return {
 		meta,
 		doc,
@@ -125,30 +136,68 @@ const markScore = async (source: string, lilyParser: GrammarParser, {midi, logge
 };
 
 
-const markScoreParallelly = async (source: string, lilyParser: GrammarParser, {midi, logger}: {midi?: MIDI.MidiData, logger?: LogRecorder} = {}): Promise<ScoreJSON> => {
-	let midiNotation = midi && MusicNotation.Notation.parseMidi(midi);
+interface LilyDocumentAttributeReadOnly {
+	[key: string]: any;
+};
+
+
+interface IncompleteScoreJSON {
+	meta?: any,
+	doc?: any;
+	hashTable?: {[key: string]: any};
+	midi?: MIDI.MidiData;
+	noteLinkings?: any;
+	pitchContextGroup?: any;
+};
+
+
+const markScoreV2 = async (source: string, lilyParser: GrammarParser, {midi, logger}: {midi?: MIDI.MidiData, logger?: LogRecorder} = {}): Promise<ScoreJSON | IncompleteScoreJSON> => {
+	let midiNotation = null;
 
 	const pages = [];
+	const hashTable = {};
 
-	const lilyDocument = new LilyDocument(lilyParser.parse(source));
-	const attributes = lilyDocument.globalAttributes({readonly: true});
+	const t0 = Date.now();
+
+	let setAttribute: (attributes: LilyDocumentAttributeReadOnly) => void;
+	const getAttribute: Promise<LilyDocumentAttributeReadOnly> = new Promise(resolve => setAttribute = resolve);
 
 	const engraving = await engraveSvg(source, {
-		onMidiRead: midi => midiNotation = midiNotation || MusicNotation.Notation.parseMidi(midi),
-		onSvgRead: svg => pages.push(staffSvg.parseSvgPage(svg, source, {DOMParser, logger, attributes})),
+		// do some work during lilypond process running to save time
+		onProcStart: () => {
+			//console.log("tp.0:", Date.now() - t0);
+			const lilyDocument = new LilyDocument(lilyParser.parse(source));
+			setAttribute(lilyDocument.globalAttributes({readonly: true}));
+			//console.log("tp.1:", Date.now() - t0);
+		},
+		onMidiRead: midi_ => {
+			//console.log("tm.0:", Date.now() - t0);
+			if (!midi) {
+				midi = midi_;
+				midiNotation = midi && MusicNotation.Notation.parseMidi(midi);
+			}
+			//console.log("tm.1:", Date.now() - t0);
+		},
+		onSvgRead: async svg => {
+			//console.log("ts.0:", Date.now() - t0);
+			const attributes = await getAttribute;
+			const page = staffSvg.parseSvgPage(svg, source, {DOMParser, logger, attributes});
+			pages.push(page.structure);
+			Object.assign(hashTable, page.hashTable);
+			//console.log("ts.1:", Date.now() - t0);
+		},
 	});
 
+	//console.log("t2:", Date.now() - t0);
+
+	logger.append("scoreMaker.profile.engraving", {cost: Date.now() - t0});
 	logger.append("lilypond.log", engraving.logs);
 
-	const doc = new staffSvg.SheetDocument({
-		pages: pages.map(page => page.structure),
-	});
-	const hashTable = pages.reduce((sum, page) => ({...sum, ...page.hashTable}), {});
+	const doc = new staffSvg.SheetDocument({pages});
 
-	//const {doc, hashTable} = staffSvg.createSheetDocumentFromSvgs(engraving.svgs, source, lilyDocument, {logger, DOMParser});
+	//console.log("t3:", Date.now() - t0);
 
-	const sheetNotation = staffSvg.StaffNotation.parseNotationFromSheetDocument(doc, {logger});
-
+	const attributes = await getAttribute;
 	const meta = {
 		title: unescapeStringExp(attributes.title),
 		composer: unescapeStringExp(attributes.composer),
@@ -157,7 +206,27 @@ const markScoreParallelly = async (source: string, lilyParser: GrammarParser, {m
 		staffSize: attributes.staffSize,
 	};
 
+	if (!midiNotation) {
+		console.warn("Neither lilypond or external arguments did not offer MIDI data, score maker finish incompletely.");
+		return {
+			meta,
+			doc,
+			midi,
+			hashTable,
+		}; 
+	}
+
+	//console.log("t4:", Date.now() - t0);
+
+	const sheetNotation = staffSvg.StaffNotation.parseNotationFromSheetDocument(doc, {logger});
+
+	//console.log("t5:", Date.now() - t0);
+	const t5 = Date.now();
+
 	const matcher = await staffSvg.StaffNotation.matchNotations(midiNotation, sheetNotation);
+
+	//console.log("t6:", Date.now() - t0);
+	logger.append("scoreMaker.profile.matching", {cost: Date.now() - t5});
 
 	if (logger) {
 		const cis = new Set(Array(matcher.criterion.notes.length).keys());
@@ -172,14 +241,25 @@ const markScoreParallelly = async (source: string, lilyParser: GrammarParser, {m
 		logger.append("markScore.match", {coverage, omitC, omitS, path: matcher.path});
 	}
 
+	//console.log("t7:", Date.now() - t0);
+
 	const matchedIds: Set<string> = new Set();
 	midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));
 
+	//console.log("t8:", Date.now() - t0);
+
 	doc.updateMatchedTokens(matchedIds);
+
+	//console.log("t9:", Date.now() - t0);
 
 	const pitchContextGroup = staffSvg.StaffNotation.createPitchContextGroup(sheetNotation.pitchContexts, midiNotation);
 
+	//console.log("t10:", Date.now() - t0);
+
 	const noteLinkings = midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
+
+	//console.log("t11:", Date.now() - t0);
+	logger.append("scoreMaker.profile.full", {cost: Date.now() - t0});
 
 	return {
 		meta,
@@ -192,10 +272,14 @@ const markScoreParallelly = async (source: string, lilyParser: GrammarParser, {m
 };
 
 
+const markScore = markScoreV2;
+
+
 
 export {
 	markupLily,
-	markScoreParallelly,
 	xmlBufferToLy,
 	markScore,
+	markScoreV1,
+	markScoreV2,
 };

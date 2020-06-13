@@ -2,7 +2,7 @@
 import fs from "fs";
 
 import "../env.js";
-import {markScore, markScoreParallelly} from "../backend/scoreMaker";
+import {markScoreV1, markScore} from "../backend/scoreMaker";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import LogRecorder from "../inc/logRecorder";
 
@@ -18,6 +18,7 @@ const main = async (...args) => {
 	const result = await markScore(ly, lilyParser, {logger});
 	console.log("cost:", Date.now() - t0);
 	//console.log("result:", result, logger);
+	console.log("profiles:", logger.records.filter(r => /scoreMaker\.profile/.test(r.desc)));
 
 	const outputPath = args[1];
 	if (outputPath) {

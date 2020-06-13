@@ -174,9 +174,10 @@ const postProcessSvg = svg => {
 const FILE_BORN_OUPUT_PATTERN = /output\sto\s`(.+)'/;
 
 
-const engraveSvg = async (source: string, {onMidiRead, onSvgRead}: {
-	onMidiRead?: (content: MIDI.MidiData) => void
-	onSvgRead?: (content: string) => void
+const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: {
+	onProcStart?: () => void,
+	onMidiRead?: (content: MIDI.MidiData) => void,
+	onSvgRead?: (content: string) => void,
 } = {}) => {
 	const hash = genHashString();
 	const sourceFilename = `${env.TEMP_DIR}engrave-${hash}.ly`;
@@ -219,7 +220,7 @@ const engraveSvg = async (source: string, {onMidiRead, onSvgRead}: {
 		}
 	};
 
-	const loadProcs = [];
+	const loadProcs: Promise<void>[] = [];
 
 	const checkFile = line => {
 		if (lastReady) {
@@ -234,6 +235,8 @@ const engraveSvg = async (source: string, {onMidiRead, onSvgRead}: {
 	const proc = child_process.exec(`cd ${env.TEMP_DIR} && ${env.LILYPOND_DIR}lilypond -dbackend=svg .${sourceFilename}`);
 	proc.childProcess.stdout.on("data", checkFile);
 	proc.childProcess.stderr.on("data", checkFile);
+
+	onProcStart && onProcStart();
 
 	const result = await proc;
 

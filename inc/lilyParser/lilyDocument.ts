@@ -666,6 +666,22 @@ export const parseRaw = data => {
 };
 
 
+type AttributeValue = number | boolean | string | LilyTerm;
+
+interface AttributeValueHandle {
+	value: AttributeValue;
+};
+
+
+interface LilyDocumentAttribute {
+	[key: string]: AttributeValueHandle
+};
+
+interface LilyDocumentAttributeReadOnly {
+	[key: string]: AttributeValue
+};
+
+
 
 export default class LilyDocument {
 	root: Root;
@@ -683,7 +699,7 @@ export default class LilyDocument {
 	}
 
 
-	globalAttributes ({readonly = false} = {}) {
+	globalAttributes ({readonly = false} = {}): LilyDocumentAttribute | LilyDocumentAttributeReadOnly {
 		const globalStaffSize = this.root.getField("set-global-staff-size");
 		const header = this.root.getBlock("header");
 		let paper = this.root.getBlock("paper");

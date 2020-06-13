@@ -26,6 +26,11 @@
 
 
 
+*	2020.6.13
+
+	+	scoreMaker.ts: optimized markScoreV2.
+
+
 *	2020.6.12
 
 	+	scoreMaker.ts: markScoreParallelly implemented.
