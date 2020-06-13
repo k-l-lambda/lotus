@@ -28,6 +28,8 @@
 
 *	2020.6.13
 
+	+	lilyCommands.ts: engraveSvgWithStream added.
+
 	+	scoreMaker.ts: optimized markScoreV2.
 
 

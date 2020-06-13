@@ -171,6 +171,7 @@ const postProcessSvg = svg => {
 //const nameNumber = name => Number(name.match(/-(\d+)\./)[1]);
 
 
+// lilypond command line output file pattern
 const FILE_BORN_OUPUT_PATTERN = /output\sto\s`(.+)'/;
 
 
@@ -254,11 +255,68 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: 
 };
 
 
+const engraveSvgWithStream = async (source: string, output: Stream) => {
+	const hash = genHashString();
+	const sourceFilename = `${env.TEMP_DIR}engrave-${hash}.ly`;
+
+	await asyncCall(fs.writeFile, sourceFilename, source);
+
+	let lastReady: () => void = null;
+	let writing: Promise<void> = null;
+
+	const loadFile = async line => {
+		const [_, filename] = line.match(FILE_BORN_OUPUT_PATTERN);
+		const [__, ext] = filename.match(/\.(\w+)$/);
+
+		switch (ext) {
+		case "svg": {
+			await new Promise(resolve => lastReady = resolve);
+			if (writing)
+				await writing;
+	
+			let finishWriting;
+			writing = new Promise(resolve => finishWriting = resolve);
+
+			const filePath = path.resolve(env.TEMP_DIR, filename);
+			const fileStream = fs.createReadStream(filePath);
+			fileStream.pipe(output);
+
+			fileStream.on("close", () => output.write("\n\n"));
+
+			finishWriting();
+			writing = null;
+		}
+
+			break;
+		}
+	};
+
+	const checkFile = line => {
+		if (lastReady) {
+			lastReady();
+			lastReady = null;
+		}
+
+		if (FILE_BORN_OUPUT_PATTERN.test(line))
+			loadFile(line);
+	};
+
+	const proc = child_process.exec(`cd ${env.TEMP_DIR} && ${env.LILYPOND_DIR}lilypond -dbackend=svg .${sourceFilename}`);
+	proc.childProcess.stdout.on("data", checkFile);
+	proc.childProcess.stderr.on("data", checkFile);
+
+	proc.then(() => lastReady && lastReady());
+
+	return proc;
+};
+
+
 
 export {
 	xml2ly,
 	midi2ly,
 	engraveSvg,
+	engraveSvgWithStream,
 	setEnvironment,
 	LilyProcessOptions,
 };
