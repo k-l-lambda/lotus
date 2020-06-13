@@ -15,6 +15,8 @@ import LogRecorder from "../inc/logRecorder";
 import ScoreJSON from "../inc/scoreJSON";
 // eslint-disable-next-line
 import {LilyProcessOptions} from "./lilyCommands";
+// eslint-disable-next-line
+import {LilyDocumentAttribute, LilyDocumentAttributeReadOnly} from "../inc/lilyParser/lilyDocument";
 
 
 
@@ -28,15 +30,15 @@ const markupLily = (source: string, markup: string, lilyParser: GrammarParser): 
 	const docSource = new LilyDocument(lilyParser.parse(source));
 
 	// copy attributes
-	const attrS = docSource.globalAttributes();
-	const attrM = docMarkup.globalAttributes({readonly: true});
+	const attrS = docSource.globalAttributes() as LilyDocumentAttribute;
+	const attrM = docMarkup.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
 
 	[
 		"staffSize", "paperWidth", "paperHeight", "systemSpacing", "raggedLast",
 	].forEach(field => {
 		if (attrM[field] !== undefined) {
-			if (typeof attrS[field].value === "object" && attrS[field].value && attrS[field].value.set)
-				attrS[field].value.set(attrM[field]);
+			if (typeof attrS[field].value === "object" && attrS[field].value && (attrS[field].value as any).set)
+				(attrS[field].value as any).set(attrM[field]);
 			else
 				attrS[field].value = attrM[field];
 		}
@@ -137,11 +139,6 @@ const markScoreV1 = async (source: string, lilyParser: GrammarParser, {midi, log
 };
 
 
-interface LilyDocumentAttributeReadOnly {
-	[key: string]: any;
-};
-
-
 interface IncompleteScoreJSON {
 	meta?: any,
 	doc?: any;
@@ -167,7 +164,7 @@ const markScoreV2 = async (source: string, lilyParser: GrammarParser, {midi, log
 		onProcStart: () => {
 			//console.log("tp.0:", Date.now() - t0);
 			const lilyDocument = new LilyDocument(lilyParser.parse(source));
-			attrGen.release(lilyDocument.globalAttributes({readonly: true}));
+			attrGen.release(lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly);
 			//console.log("tp.1:", Date.now() - t0);
 		},
 		onMidiRead: midi_ => {

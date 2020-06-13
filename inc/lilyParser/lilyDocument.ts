@@ -673,11 +673,11 @@ interface AttributeValueHandle {
 };
 
 
-interface LilyDocumentAttribute {
+export interface LilyDocumentAttribute {
 	[key: string]: AttributeValueHandle
 };
 
-interface LilyDocumentAttributeReadOnly {
+export interface LilyDocumentAttributeReadOnly {
 	[key: string]: AttributeValue
 };
 
