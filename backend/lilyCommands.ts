@@ -277,7 +277,7 @@ const engraveSvgWithStream = async (source: string, output: Writable) => {
 
 			const filePath = path.resolve(env.TEMP_DIR, filename);
 			const fileStream = fs.createReadStream(filePath);
-			fileStream.pipe(output);
+			fileStream.pipe(output, {end: false});
 
 			fileStream.on("close", () => output.write("\n\n"));
 
