@@ -7,6 +7,7 @@ import {DOMParser, XMLSerializer} from "xmldom";
 import {MIDI} from "@k-l-lambda/web-widgets";
 
 import asyncCall from "../inc/asyncCall";
+import {SingleLock} from "../inc/mutex";
 
 
 
@@ -261,8 +262,8 @@ const engraveSvgWithStream = async (source: string, output: Stream) => {
 
 	await asyncCall(fs.writeFile, sourceFilename, source);
 
-	let lastReady: () => void = null;
-	let writing: Promise<void> = null;
+	const writing = new SingleLock();
+	const fileReady = new SingleLock();
 
 	const loadFile = async line => {
 		const [_, filename] = line.match(FILE_BORN_OUPUT_PATTERN);
@@ -270,12 +271,10 @@ const engraveSvgWithStream = async (source: string, output: Stream) => {
 
 		switch (ext) {
 		case "svg": {
-			await new Promise(resolve => lastReady = resolve);
-			if (writing)
-				await writing;
+			await fileReady.lock();
+			await writing.wait();
 	
-			let finishWriting;
-			writing = new Promise(resolve => finishWriting = resolve);
+			writing.lock();
 
 			const filePath = path.resolve(env.TEMP_DIR, filename);
 			const fileStream = fs.createReadStream(filePath);
@@ -283,8 +282,7 @@ const engraveSvgWithStream = async (source: string, output: Stream) => {
 
 			fileStream.on("close", () => output.write("\n\n"));
 
-			finishWriting();
-			writing = null;
+			writing.release();
 		}
 
 			break;
@@ -292,10 +290,7 @@ const engraveSvgWithStream = async (source: string, output: Stream) => {
 	};
 
 	const checkFile = line => {
-		if (lastReady) {
-			lastReady();
-			lastReady = null;
-		}
+		fileReady.release();
 
 		if (FILE_BORN_OUPUT_PATTERN.test(line))
 			loadFile(line);
@@ -305,7 +300,7 @@ const engraveSvgWithStream = async (source: string, output: Stream) => {
 	proc.childProcess.stdout.on("data", checkFile);
 	proc.childProcess.stderr.on("data", checkFile);
 
-	proc.then(() => lastReady && lastReady());
+	proc.then(() => fileReady.release());
 
 	return proc;
 };

@@ -28,6 +28,8 @@
 
 *	2020.6.13
 
+	+	inc/mutex.ts created.
+
 	+	lilyCommands.ts: engraveSvgWithStream added.
 
 	+	scoreMaker.ts: optimized markScoreV2.
