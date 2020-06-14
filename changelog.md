@@ -26,6 +26,11 @@
 
 
 
+*	2020.6.14
+
+	+	scoreBundle.ts: method of loadNotation added.
+
+
 *	2020.6.13
 
 	+	scoreMaker.ts: refined makeScore by SingleLock.

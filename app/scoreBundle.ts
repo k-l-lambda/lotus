@@ -19,7 +19,7 @@ export default class ScoreBundle {
 	bakingImages: string[];
 
 
-	constructor (source, {onStatus = ((..._) => _), jsonHandle = json => json} = {}) {
+	constructor (source, {loadNotation = true, onStatus = ((..._) => _), jsonHandle = json => json} = {}) {
 		const {PitchContext, PitchContextTable} = StaffNotation;
 
 		this.scoreJSON = jsonHandle(recoverJSON(source, {StaffToken, SheetDocument, PitchContext, PitchContextTable, DictArray}));
@@ -30,6 +30,12 @@ export default class ScoreBundle {
 
 		this.onStatus("json loaded");
 
+		if (loadNotation)
+			this.loadNotation();
+	}
+
+
+	loadNotation () {
 		if (this.scoreJSON.midi) {
 			const midiNotation = MusicNotation.Notation.parseMidi(this.scoreJSON.midi);
 
@@ -42,6 +48,8 @@ export default class ScoreBundle {
 			}
 
 			this.midiNotation = midiNotation;
+
+			this.onStatus("notation loaded");
 		}
 	}
 
@@ -50,6 +58,8 @@ export default class ScoreBundle {
 		console.assert(!!this.scoreJSON.doc, "sheetDocument is null.");
 		console.assert(!!this.scoreJSON.hashTable, "hashTable is null.");
 		console.assert(!!this.matchedIds, "matchedIds is null.");
+
+		this.onStatus("baking sheet");
 
 		return SheetBaker.bakeLiveSheetGen({
 			sheetDocument: this.scoreJSON.doc,
