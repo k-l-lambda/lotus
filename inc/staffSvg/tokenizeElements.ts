@@ -24,6 +24,8 @@ const normalizeElement = (elem, attributes) => {
 		data.identity.text = elem.text;
 		data.identity["font-size"] = elem["font-size"];
 		data.identity["font-weight"] = elem["font-weight"];
+		data.identity["font-style"] = elem["font-style"];
+		data.identity["text-anchor"] = elem["text-anchor"];
 
 		break;
 	case "line":
