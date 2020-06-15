@@ -34,7 +34,9 @@ const markupLily = (source: string, markup: string, lilyParser: GrammarParser): 
 	const attrM = docMarkup.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
 
 	[
-		"staffSize", "paperWidth", "paperHeight", "systemSpacing", "raggedLast",
+		"staffSize", "paperWidth", "paperHeight",
+		"topMargin", "bottomMargin", "leftMargin", "rightMargin",
+		"systemSpacing", "topMarkupSpacing", "raggedLast",
 	].forEach(field => {
 		if (attrM[field] !== undefined) {
 			if (typeof attrS[field].value === "object" && attrS[field].value && (attrS[field].value as any).set)

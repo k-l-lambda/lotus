@@ -2,7 +2,6 @@
 ## TODO
 	LilyDocument:
 		remove empty track	(6.1 落叶.ly)
-		standalone title: score.header.breakbefore = ##t
 	score menu page
 	parse tie token by lily document
 	measure notes in Notation
