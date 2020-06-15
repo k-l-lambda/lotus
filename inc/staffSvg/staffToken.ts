@@ -1,6 +1,8 @@
 
 import _ from "lodash";
 
+import {constants} from "./utils";
+
 
 
 export default class StaffToken {
@@ -193,5 +195,10 @@ export default class StaffToken {
 			return 2;
 		else if (this.is("CROSS"))
 			return 3;
+	}
+
+
+	get musicFontNoteOffset () {
+		return constants.MUSIC_FONT_NOTE_OFFSETS[this.noteType];
 	}
 };
