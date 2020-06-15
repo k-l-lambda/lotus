@@ -10,7 +10,7 @@ const NOTEHEAD_BASE_SCALE = 0.004;
 // 2nd degree chord note head intervals for WHOLE : HALF : SOLID : CROSS = 1.81 : 1.32 : 1.25 : ?
 const NOTE_TYPE_INTERVAL_FACTORS = [1.25 / 1.81, 1.25 / 1.32, 1, 1];
 
-const MUSIC_FONT_NOTE_OFFSETS = [0.05, 0.05, -0.02, 0.1];
+const MUSIC_FONT_NOTE_OFFSETS = [0.08, 0.05, -0.02, 0.3];
 
 const ALTER_WIDTHS = {
 	[-2]: 1.80,
