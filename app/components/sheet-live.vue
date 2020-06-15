@@ -9,6 +9,9 @@
 			:style="{['background-image']: backgroundImages && backgroundImages[i] && `url(${backgroundImages[i]})`}"
 		>
 			<g v-if="!bakingMode">
+				<g class="page-tokens">
+					<SheetToken v-for="(token, ii) of page.tokens" :key="ii" :token="token" />
+				</g>
 				<g class="row" v-for="(row, ii) of page.rows" :key="ii"
 					:transform="`translate(${row.x}, ${row.y})`"
 				>

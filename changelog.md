@@ -26,6 +26,8 @@
 
 *	2020.6.15
 
+	+	staffSvg: page level text tokens added.
+
 	+	staffSvg: added element property of font-weight.
 
 	+	staffSvg: music font note offsets added.

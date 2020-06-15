@@ -341,19 +341,7 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 };
 
 
-/*const parseTokenMeasure = (tokens, endX) => {
-	const notes = tokens.filter(token => token.is("NOTE"));
-
-	//const head = tokens.filter(token => token.x < notes[0].x - 3);
-	const noteRange = {begin: notes[0].x, end: endX};
-	const headX = notes[0].x - 3;
-
-	return {
-		tokens,
-		noteRange,
-		headX,
-	};
-};*/
+const isPageToken = token => token.is("TEXT") && !token.source;
 
 
 const organizeTokens = (tokens, ly: string, {logger, viewBox, width, height}: any = {}) => {
@@ -370,12 +358,15 @@ const organizeTokens = (tokens, ly: string, {logger, viewBox, width, height}: an
 	const meaningfulTokens = tokens.filter(token => !token.is("NULL"));
 	logger.append("organizeTokens.meaningfulTokens", meaningfulTokens);
 
-	const rowTokens = tokensRowsSplit(meaningfulTokens, logger);
+	const pageTokens = meaningfulTokens.filter(isPageToken);
+
+	const rowTokens = tokensRowsSplit(meaningfulTokens.filter(token => !isPageToken(token)), logger);
 	logger.append("organizeTokens.rowTokens", rowTokens);
 
 	const rows = rowTokens.map(tokens => parseTokenRow(tokens, logger));
 
 	return {
+		tokens: pageTokens,
 		rows,
 
 		viewBox,
