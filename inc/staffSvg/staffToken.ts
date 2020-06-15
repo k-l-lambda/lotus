@@ -4,15 +4,16 @@ import _ from "lodash";
 
 
 export default class StaffToken {
-	x: Number;
-	y: Number;
-	rx: Number;
-	ry: Number;
-	sw: Number;
-	symbol: String;
-	symbols = new Set();
-	hash: String;
-	href: String;
+	x: number;
+	y: number;
+	rx: number;
+	ry: number;
+	sw: number;
+	symbol: string;
+	symbols: Set<string> = new Set();
+	hash: string;
+	href: string;
+	scale?: number;
 	start?: object;
 	target?: object;
 	source?: string;
@@ -22,16 +23,15 @@ export default class StaffToken {
 	constructor (data) {
 		Object.assign(this, data);
 
-		if (this.symbol) 
+		if (this.symbol)
 			this.symbol.split(" ").forEach(symbol => this.symbols.add(symbol));
-		
 	}
 
 
 	toJSON () {
 		return {
 			__prototype: "StaffToken",
-			..._.pick(this, ["x", "y", "rx", "ry", "sw", "start", "target", "source", "tied", "symbol", "hash", "href"]),
+			..._.pick(this, ["x", "y", "rx", "ry", "sw", "start", "target", "source", "tied", "symbol", "hash", "href", "scale"]),
 		};
 	}
 

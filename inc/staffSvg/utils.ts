@@ -5,6 +5,8 @@ const STROKE_PRECISION = 0.01;
 
 const CLOSED_NOTEHEAD_INTERVAL_FIRST_DEG = 1.3052;
 
+const NOTEHEAD_BASE_SCALE = 0.004;
+
 // 2nd degree chord note head intervals for WHOLE : HALF : SOLID : CROSS = 1.81 : 1.32 : 1.25 : ?
 const NOTE_TYPE_INTERVAL_FACTORS = [1.25 / 1.81, 1.25 / 1.32, 1, 1];
 
@@ -37,6 +39,7 @@ export {
 	POS_PRECISION,
 	SIZE_PRECISION,
 	STROKE_PRECISION,
+	NOTEHEAD_BASE_SCALE,
 	constants,
 	roundNumber,
 	sizeToStrokeWidth1,

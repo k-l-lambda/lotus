@@ -1,6 +1,7 @@
 
 import sha1 from "sha1";
 
+import {NOTEHEAD_BASE_SCALE} from "./utils";
 import pathSymbols from "./path-symbols.json";
 
 
@@ -168,6 +169,10 @@ const postSymbolRules = [
 
 			//console.log("slur:", result);
 		}
+	}),
+
+	postSymbolProcess("NOTEHEAD", (elem, result) => {
+		result.scale = elem.identity.scale.x / NOTEHEAD_BASE_SCALE;
 	}),
 ];
 

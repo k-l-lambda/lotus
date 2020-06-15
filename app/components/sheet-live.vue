@@ -57,7 +57,7 @@
 					>
 						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
 							<g v-for="(token, i5) of measure.matchedTokens" :key="i5"
-								:transform="`translate(${token.x}, ${token.y})`"
+								:transform="`translate(${token.x}, ${token.y})` + (token.scale && token.scale !== 1 ? ` scale(${token.scale})` : '')"
 								class="token matched"
 							>
 								<text :data-href="token.href">{{token.fontChar}}</text>

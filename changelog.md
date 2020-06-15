@@ -1,6 +1,5 @@
 
 ## TODO
-	small notehead music font issue in baking mode
 	LilyDocument:
 		remove empty track	(6.1 落叶.ly)
 		standalone title: score.header.breakbefore = ##t
@@ -26,6 +25,8 @@
 
 
 *	2020.6.15
+
+	+	svgSymbols.ts: added scale property for notehead token.
 
 	+	svgSymbols.ts: refined symbol of LARGE_RECT.
 
