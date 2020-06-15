@@ -17,6 +17,11 @@ const compareLinks = (link1, link2) => {
 
 
 const tokensRowsSplit = (tokens, logger) => {
+	if (!tokens.length) {
+		logger.append("tokensRowsSplit.emptyTokens");
+		return [];
+	}
+
 	const pageHeight = Math.max(...tokens.map(token => token.y));
 	const pageTile = Array(Math.round(pageHeight)).fill(-1);
 
