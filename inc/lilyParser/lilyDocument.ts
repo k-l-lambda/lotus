@@ -642,6 +642,9 @@ export const parseRaw = data => {
 	if (!data)
 		return data;
 
+	if (data instanceof BaseTerm)
+		return data;
+
 	switch (typeof data) {
 	case "object":
 		if (Array.isArray(data))
@@ -846,5 +849,30 @@ export default class LilyDocument {
 
 	removePageBreaks () {
 		this.removeMusicCommands("pageBreak");
+	}
+
+
+	scoreBreakBefore (enabled = true) {
+		const score = this.root.getBlock("score");
+		if (score) {
+			let header = score.entries.find((entry: any) => entry.head === "\\header") as Block;
+			if (!header) {
+				header = new Block({head: "\\header", body: []});
+				score.body.push(header);
+			}
+
+			let breakbefore = header.getField("breakbefore");
+			if (breakbefore) 
+				breakbefore = breakbefore.value;
+			
+			else {
+				breakbefore = new Scheme({exp: true});
+				header.body.push(new Assignment({key: "breakbefore", value: breakbefore}));
+			}
+
+			breakbefore.exp = enabled;
+		}
+		else
+			console.warn("no score block");
 	}
 };

@@ -26,6 +26,8 @@
 
 *	2020.6.15
 
+	+	lilyDocument.ts: scoreBreakBefore added.
+
 	+	staffSvg: added element properties of font-style & text-anchor.
 
 	+	staffSvg: page level text tokens added.
