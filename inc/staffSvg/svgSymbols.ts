@@ -131,7 +131,7 @@ const symbolRules = [
 
 	conditionSymbol("LINE", elem => elem.identity.type === "line"),
 
-	conditionSymbol("NULL LARGE_RECT", elem => elem.identity.type === "rect" && (elem.identity.height > 1) && elem.identity.width >= 7 && elem.rx <= 0 && elem.ry <= 0),
+	conditionSymbol("NULL LARGE_RECT", elem => elem.identity.type === "rect" && (elem.identity.height > 1) && elem.identity.width >= 2 && elem.rx <= 0 && elem.ry <= 0),
 	conditionSymbol("NULL ENGRAVER_SIG", elem => elem.identity.type === "text" && /www\.lilypond\.org/.test(elem.identity.text)),
 ];
 

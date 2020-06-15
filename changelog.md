@@ -25,6 +25,11 @@
 
 
 
+*	2020.6.15
+
+	+	svgSymbols.ts: refined symbol of LARGE_RECT.
+
+
 *	2020.6.14
 
 	+	scoreBundle.ts: method of loadNotation added.
