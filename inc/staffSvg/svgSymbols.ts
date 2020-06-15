@@ -180,6 +180,10 @@ const postSymbolRules = [
 	postSymbolProcess("TEXT", (elem, result) => {
 		result.text = elem.identity.text;
 	}),
+
+	postSymbolProcess("NOTE_STEM", (elem, result) => {
+		result.height = elem.identity.height;
+	}),
 ];
 
 

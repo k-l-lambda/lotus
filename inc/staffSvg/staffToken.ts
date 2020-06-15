@@ -16,6 +16,8 @@ export default class StaffToken {
 	hash: string;
 	href: string;
 	scale?: number;
+	width?: number;
+	height?: number;
 	text?: string;
 	start?: object;
 	target?: object;
@@ -34,7 +36,7 @@ export default class StaffToken {
 	toJSON () {
 		return {
 			__prototype: "StaffToken",
-			..._.pick(this, ["x", "y", "rx", "ry", "sw", "start", "target", "source", "tied", "symbol", "hash", "href", "scale", "text"]),
+			..._.pick(this, ["x", "y", "rx", "ry", "sw", "start", "target", "source", "tied", "symbol", "hash", "href", "scale", "width", "height", "text"]),
 		};
 	}
 
