@@ -23,7 +23,7 @@
 					:points="sign.def.points"
 					:stroke-width="sign.def['stroke-width']"
 				/>
-				<text v-if="sign.def.type === 'text'" :font-size="sign.def['font-size']">
+				<text v-if="sign.def.type === 'text'" :font-size="sign.def['font-size']" :font-weight="sign.def['font-weight']">
 					<tspan>{{sign.def.text}}</tspan>
 				</text>
 			</g>

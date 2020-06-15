@@ -26,6 +26,8 @@
 
 *	2020.6.15
 
+	+	staffSvg: added element property of font-weight.
+
 	+	staffSvg: music font note offsets added.
 
 	+	svgSymbols.ts: added scale property for notehead token.

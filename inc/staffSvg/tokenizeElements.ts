@@ -23,6 +23,7 @@ const normalizeElement = (elem, attributes) => {
 		data.href = elem.href;
 		data.identity.text = elem.text;
 		data.identity["font-size"] = elem["font-size"];
+		data.identity["font-weight"] = elem["font-weight"];
 
 		break;
 	case "line":

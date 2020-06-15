@@ -2,7 +2,7 @@
 const preservedAttributes = {
 	...[
 		"viewBox", "transform", "x", "y", "width", "height", "ry", "d", "x1", "y1", "x2", "y2",
-		"stroke-width", "points", "stroke-dasharray", "font-size",
+		"stroke-width", "points", "stroke-dasharray", "font-size", "font-weight",
 	].reduce((dict, key) => ({...dict, [key]: key}), {}),
 	"xlink:href": "href",
 };
@@ -49,7 +49,7 @@ const domNodeToElement = node => {
 	}
 
 	[
-		"x", "y", "width", "height", "ry", "x1", "y1", "x2", "y2", "stroke-width", "font-size",
+		"x", "y", "width", "height", "ry", "x1", "y1", "x2", "y2", "stroke-width", "font-size", "font-weight",
 	].forEach(att => {
 		if (elem[att]) {
 			const n = Number(elem[att]);
