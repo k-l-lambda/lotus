@@ -639,10 +639,10 @@ const termDictionary = {
 
 
 export const parseRaw = data => {
-	if (!data)
+	if (data instanceof BaseTerm)
 		return data;
 
-	if (data instanceof BaseTerm)
+	if (!data)
 		return data;
 
 	switch (typeof data) {
@@ -800,6 +800,7 @@ export default class LilyDocument {
 			leftMargin: paperPropertyCommon("left-margin"),
 			rightMargin: paperPropertyCommon("right-margin"),
 			systemSpacing: paperPropertySchemeToken("system-system-spacing.basic-distance"),
+			topMarkupSpacing: paperPropertySchemeToken("top-markup-spacing.basic-distance"),
 			raggedLast: paperPropertySchemeToken("ragged-last"),
 		};
 
