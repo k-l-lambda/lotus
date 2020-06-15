@@ -2,8 +2,6 @@
 ## TODO
 	LilyDocument:
 		remove empty track	(6.1 落叶.ly)
-	score menu page
-	parse tie token by lily document
 	measure notes in Notation
 	parse measure ticks from ly
 	lilypond post processing
@@ -12,7 +10,6 @@
 	playground.sliceSource:
 		music duration parsing
 	staffSvg
-		global text in sheet document
 		clusterize notes by note stem
 		repeat measures
 		staves split confliction	(One Summer's Day)
