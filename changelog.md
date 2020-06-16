@@ -22,6 +22,8 @@
 
 *	2020.6.16
 
+	+	organizeTokens.ts: use stemY for staves splitting for notes.
+
 	+	staffSvg: deduce note logic X by note stem.
 
 

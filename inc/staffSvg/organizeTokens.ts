@@ -129,14 +129,6 @@ const parseChordsByStems = (tokens, logger) => {
 	const stems = tokens.filter(token => token.is("NOTE_STEM"));
 	const notes = tokens.filter(token => token.is("NOTEHEAD"));
 
-	/*const attached = stems.map(stem => {
-		const rightAttached = notes.filter(note => stem.stemAttached(note));
-		const leftAttached = notes.filter(note => stem.stemAttached({y: note.y, x: note.x + constants.NOTE_TYPE_WIDTHS[note.noteType]}));
-
-		return rightAttached.concat(leftAttached);
-	});
-
-	logger.append("stem.attached", attached);*/
 	stems.forEach(stem => {
 		const rightAttached = notes.filter(note => stem.stemAttached(note));
 		const leftAttached = notes.filter(note => stem.stemAttached({y: note.y, x: note.x + constants.NOTE_TYPE_WIDTHS[note.noteType]}));
@@ -158,8 +150,15 @@ const parseChordsByStems = (tokens, logger) => {
 
 		const x = up ? rightAttached[0].x : leftAttached[0].x;
 
-		rightAttached.forEach(note => note.stemX = x);
-		leftAttached.forEach(note => note.stemX = x);
+		const stemY = stem.y + stem.height / 2;
+
+		const assign = note => {
+			note.stemX = x;
+			note.stemY = stemY;
+		};
+
+		rightAttached.forEach(assign);
+		leftAttached.forEach(assign);
 	});
 };
 
@@ -244,7 +243,8 @@ const parseTokenRow = (tokens, logger) => {
 	//console.log("splitters:", splitters);
 	const appendToken = token => {
 		let index = 0;
-		while (token.ry + token.logicOffsetY > splitters[index])
+		const y = Number.isFinite(token.stemY) ? token.stemY : (token.ry + token.logicOffsetY);
+		while (y > splitters[index])
 			++index;
 
 		staffTokens[index] = staffTokens[index] || [];
