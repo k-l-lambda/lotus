@@ -119,7 +119,13 @@ const tokensRowsSplit = (tokens, logger) => {
 
 	return Array(rowBoundaries.length).fill(null)
 		.map((_, i) => tokens
-			.filter(token => token.y >= rowBoundaries[i] && (i >= rowBoundaries.length - 1 || token.y < rowBoundaries[i + 1]))
+			.filter(token => {
+				let y = token.y;
+				if (token.height > 0)
+					y += token.height;
+
+				return y >= rowBoundaries[i] && (i >= rowBoundaries.length - 1 || y < rowBoundaries[i + 1]);
+			})
 			.sort((t1, t2) => t1.logicX - t2.logicX),
 		);
 };
