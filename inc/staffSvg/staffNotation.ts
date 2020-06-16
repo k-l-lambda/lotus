@@ -75,7 +75,7 @@ class PitchContext {
 
 	toJSON () {
 		return {
-			__prototype: this.constructor.name,
+			__prototype: "PitchContext",
 			clef: this.clef,
 			keyAlters: new DictArray(this.keyAlters),
 			octaveShift: this.octaveShift,
@@ -195,7 +195,7 @@ class PitchContextTable {
 
 	toJSON () {
 		return {
-			__prototype: this.constructor.name,
+			__prototype: "PitchContextTable",
 			items: this.items.map(PitchContextTable.itemToJSON),
 		};
 	}
