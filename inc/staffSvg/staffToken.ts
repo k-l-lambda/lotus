@@ -213,7 +213,7 @@ export default class StaffToken {
 	}
 
 
-	stemAttached ({x, y}) {
+	stemAttached ({x, y, href}) {
 		if (!this.is("NOTE_STEM"))
 			return null;
 
@@ -221,15 +221,15 @@ export default class StaffToken {
 		if (Math.abs(x - cx) > 0.1)
 			return false;
 
-		const top = this.y - 0.3;
-		const bottom = this.y + this.height + 0.3;
+		const top = this.y - 0.2;
+		const bottom = this.y + this.height + 0.2;
 
 		const attached = y > top && y < bottom;
 
 		if (!attached) {
 			const distance = Math.abs(x - cx) + Math.min(Math.abs(y - top), Math.abs(y - bottom));
-			if (distance < 1)
-				console.warn("unattached nearby point:", x - cx, y - top, y - bottom);
+			if (distance < 0.6)
+				console.warn("unattached nearby point:", href, x - cx, y - top, y - bottom);
 		}
 
 		return attached;

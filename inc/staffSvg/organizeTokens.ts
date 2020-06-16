@@ -130,12 +130,22 @@ const parseChordsByStems = (tokens, logger) => {
 	const notes = tokens.filter(token => token.is("NOTEHEAD"));
 
 	stems.forEach(stem => {
-		const rightAttached = notes.filter(note => stem.stemAttached(note));
-		const leftAttached = notes.filter(note => stem.stemAttached({y: note.y, x: note.x + constants.NOTE_TYPE_WIDTHS[note.noteType]}));
+		const rightAttached = notes.filter(note => stem.stemAttached({
+			x: note.x,
+			y: note.y + constants.NOTE_TYPE_JOINT_Y[note.noteType],
+			href: note.href,
+		}));
+		const leftAttached = notes.filter(note => stem.stemAttached({
+			x: note.x + constants.NOTE_TYPE_WIDTHS[note.noteType],
+			y: note.y - constants.NOTE_TYPE_JOINT_Y[note.noteType],
+			href: note.href,
+		}));
 
 		if (rightAttached.length + leftAttached.length <= 0) {
 			logger.append("parseChordsByStems.baldStem:", stem);
 			console.warn("bald stem:", stem);
+
+			stem.addSymbol("BALD");
 
 			return;
 		}

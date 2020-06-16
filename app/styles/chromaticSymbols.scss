@@ -15,7 +15,7 @@
 
 	.measure-separator
 	{
-		fill: hotpink;
+		fill: brown;
 	}
 
 	.additional-line
@@ -31,6 +31,12 @@
 	.note-stem
 	{
 		fill: #66a;
+
+		&.bald
+		{
+			stroke: red;
+			stroke-width: 0.1px;
+		}
 	}
 
 	.notetail
