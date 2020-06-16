@@ -228,7 +228,7 @@ export default class StaffToken {
 
 		if (!attached) {
 			const distance = Math.abs(x - cx) + Math.min(Math.abs(y - top), Math.abs(y - bottom));
-			if (distance < 0.6)
+			if (distance < 0.18)
 				console.warn("unattached nearby point:", href, x - cx, y - top, y - bottom);
 		}
 
