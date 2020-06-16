@@ -512,7 +512,7 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 };
 
 
-const xClusterize = x => Math.tanh((x / 1.5) ** 12);
+const xClusterize = x => Math.tanh((x / 1.2) ** 12);
 
 
 // get time closed for notes in a chord
@@ -522,12 +522,8 @@ const clusterizeNotes = notes => {
 			note.deltaTime = 0;
 		else {
 			const delta = note.time - notes[i - 1].time;
-			const noteType = Math.min(note.type, notes[i - 1].type);
 
-			//if (note.track === notes[i - 1].track)
-			note.deltaTime = xClusterize(delta * constants.NOTE_TYPE_INTERVAL_FACTORS[noteType]);
-			//else
-			//	note.deltaTime = delta;
+			note.deltaTime = xClusterize(delta / constants.NOTE_TYPE_WIDTHS[note.type]);
 		}
 	});
 
