@@ -23,6 +23,7 @@ export default class StaffToken {
 	target?: object;
 	source?: string;
 	tied?: boolean;
+	stemX?: number;
 
 
 	constructor (data) {
@@ -36,7 +37,8 @@ export default class StaffToken {
 	toJSON () {
 		return {
 			__prototype: "StaffToken",
-			..._.pick(this, ["x", "y", "rx", "ry", "sw", "start", "target", "source", "tied", "symbol", "hash", "href", "scale", "width", "height", "text"]),
+			..._.pick(this, ["x", "y", "rx", "ry", "sw", "start", "target", "source", "tied",
+				"symbol", "hash", "href", "scale", "width", "height", "text", "stemX"]),
 		};
 	}
 
@@ -76,6 +78,11 @@ export default class StaffToken {
 		}
 
 		return new StaffToken(data);
+	}
+
+
+	get logicX () {
+		return Number.isFinite(this.stemX) ? this.stemX : this.x;
 	}
 
 
@@ -203,5 +210,28 @@ export default class StaffToken {
 
 	get musicFontNoteOffset () {
 		return constants.MUSIC_FONT_NOTE_OFFSETS[this.noteType];
+	}
+
+
+	stemAttached ({x, y}) {
+		if (!this.is("NOTE_STEM"))
+			return null;
+
+		const cx = this.x + this.width / 2;
+		if (Math.abs(x - cx) > 0.1)
+			return false;
+
+		const top = this.y - 0.3;
+		const bottom = this.y + this.height + 0.3;
+
+		const attached = y > top && y < bottom;
+
+		if (!attached) {
+			const distance = Math.abs(x - cx) + Math.min(Math.abs(y - top), Math.abs(y - bottom));
+			if (distance < 1)
+				console.warn("unattached nearby point:", x - cx, y - top, y - bottom);
+		}
+
+		return attached;
 	}
 };

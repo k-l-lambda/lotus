@@ -20,6 +20,11 @@
 
 
 
+*	2020.6.16
+
+	+	staffSvg: deduce note logic X by note stem.
+
+
 *	2020.6.15
 
 	+	lilyDocument.ts: scoreBreakBefore added.

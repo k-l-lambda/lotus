@@ -422,7 +422,7 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 			const contextIndex = context.snapshot();
 
 			const note = {
-				x: roundNumber(token.x, 1e-4) - measure.noteRange.begin,
+				x: roundNumber(token.logicX, 1e-4) - measure.noteRange.begin,
 				rx: token.rx - measure.noteRange.begin,
 				y: token.ry,
 				pitch: context.yToPitch(token.ry),
@@ -442,17 +442,11 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 
 	//console.log("notes:", notes);
 	notes.forEach(note => {
-		// TODO: refine notes' time in chord
+		// merge first degree side by side notes
 		if (xs[note.rx - 1.5] && xs[note.rx - 1.5].has(note.y))
 			note.x -= constants.CLOSED_NOTEHEAD_INTERVAL_FIRST_DEG;
 		else if (xs[note.rx - 1.25] && xs[note.rx - 1.25].has(note.y))
 			note.x -= constants.CLOSED_NOTEHEAD_INTERVAL_FIRST_DEG;
-		/*else if (xs[note.rx + 1.25] && xs[note.rx + 1.25].has(note.y - 0.5))
-			note.x += 1.25;
-		else if (xs[note.rx - 0.5])
-			note.x -= 0.5;
-		else if (xs[note.rx - 0.25])
-			note.x -= 0.25;*/
 
 		context.track.appendNote(note.x, {
 			pitch: note.pitch,

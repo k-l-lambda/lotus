@@ -120,8 +120,47 @@ const tokensRowsSplit = (tokens, logger) => {
 	return Array(rowBoundaries.length).fill(null)
 		.map((_, i) => tokens
 			.filter(token => token.y >= rowBoundaries[i] && (i >= rowBoundaries.length - 1 || token.y < rowBoundaries[i + 1]))
-			.sort((t1, t2) => t1.x - t2.x),
+			.sort((t1, t2) => t1.logicX - t2.logicX),
 		);
+};
+
+
+const parseChordsByStems = (tokens, logger) => {
+	const stems = tokens.filter(token => token.is("NOTE_STEM"));
+	const notes = tokens.filter(token => token.is("NOTEHEAD"));
+
+	/*const attached = stems.map(stem => {
+		const rightAttached = notes.filter(note => stem.stemAttached(note));
+		const leftAttached = notes.filter(note => stem.stemAttached({y: note.y, x: note.x + constants.NOTE_TYPE_WIDTHS[note.noteType]}));
+
+		return rightAttached.concat(leftAttached);
+	});
+
+	logger.append("stem.attached", attached);*/
+	stems.forEach(stem => {
+		const rightAttached = notes.filter(note => stem.stemAttached(note));
+		const leftAttached = notes.filter(note => stem.stemAttached({y: note.y, x: note.x + constants.NOTE_TYPE_WIDTHS[note.noteType]}));
+
+		if (rightAttached.length + leftAttached.length <= 0) {
+			logger.append("parseChordsByStems.baldStem:", stem);
+			console.warn("bald stem:", stem);
+
+			return;
+		}
+
+		const ys = [...rightAttached.map(n => n.y), ...leftAttached.map(n => n.y)];
+		const top = Math.abs(stem.y - Math.min(...ys));
+		const bottom = Math.abs(stem.y + stem.height - Math.max(...ys));
+
+		const up = top < bottom;
+		console.assert(up || leftAttached.length, "unexpected stem, downwards but no left-attached notes.");
+		console.assert(!up || rightAttached.length, "unexpected stem, upwards but no right-attached notes.");
+
+		const x = up ? rightAttached[0].x : leftAttached[0].x;
+
+		rightAttached.forEach(note => note.stemX = x);
+		leftAttached.forEach(note => note.stemX = x);
+	});
 };
 
 
@@ -214,6 +253,8 @@ const parseTokenRow = (tokens, logger) => {
 
 	const localTokens = tokens.map(token => token.translate({x: rowX, y: rowY}));
 
+	parseChordsByStems(localTokens, logger);
+
 	localTokens
 		.filter(token => !isRowToken(token))
 		.forEach(appendToken);
@@ -222,7 +263,7 @@ const parseTokenRow = (tokens, logger) => {
 	const notes = localTokens.filter(token => token.is("NOTE"));
 	const separatorXsRaw = Array.from(new Set(localTokens
 		.filter(token => token.is("MEASURE_SEPARATOR"))
-		.map(token => token.x))).sort((x1: number, x2: number) => x1 - x2);
+		.map(token => token.logicX))).sort((x1: number, x2: number) => x1 - x2);
 
 	const measureRanges = separatorXsRaw.map((x, i) => {
 		const left = i > 0 ? separatorXsRaw[i - 1] : -Infinity;
@@ -307,7 +348,7 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 			&& (token.x < range.noteRange.end || i === measureRanges.length - 1));
 
 		// shift fore headX by alters
-		const alters = tokens.filter(token => token.is("ALTER")).sort((a1, a2) => a2.x - a1.x);
+		const alters = tokens.filter(token => token.is("ALTER")).sort((a1, a2) => a2.logicX - a1.logicX);
 		logger.append("measure.alters", {alters, range});
 
 		let xbegin = range.noteRange.begin;
@@ -319,13 +360,6 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 			else
 				break;
 		}
-
-		// process tempo noteheads
-		const tempoNotes = tokens.filter(token => token.source && token.source.substr(0, 6) === "\\tempo" && token.is("NOTEHEAD"));
-		tempoNotes.forEach(note => {
-			note.removeSymbol("NOTEHEAD");
-			note.addSymbol("TEMPO_NOTEHEAD");
-		});
 
 		return {
 			tokens,
@@ -364,6 +398,13 @@ const organizeTokens = (tokens, ly: string, {logger, viewBox, width, height}: an
 	logger.append("organizeTokens.meaningfulTokens", meaningfulTokens);
 
 	const pageTokens = meaningfulTokens.filter(isPageToken);
+
+	// process tempo noteheads
+	const tempoNotes = meaningfulTokens.filter(token => token.source && token.source.substr(0, 6) === "\\tempo" && token.is("NOTEHEAD"));
+	tempoNotes.forEach(note => {
+		note.removeSymbol("NOTEHEAD");
+		note.addSymbol("TEMPO_NOTEHEAD");
+	});
 
 	const rowTokens = tokensRowsSplit(meaningfulTokens.filter(token => !isPageToken(token)), logger);
 	logger.append("organizeTokens.rowTokens", rowTokens);

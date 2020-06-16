@@ -182,6 +182,7 @@ const postSymbolRules = [
 	}),
 
 	postSymbolProcess("NOTE_STEM", (elem, result) => {
+		result.width = elem.identity.width;
 		result.height = elem.identity.height;
 	}),
 ];
