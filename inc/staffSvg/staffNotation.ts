@@ -522,8 +522,9 @@ const clusterizeNotes = notes => {
 			note.deltaTime = 0;
 		else {
 			const delta = note.time - notes[i - 1].time;
+			const noteType = Math.min(note.type, notes[i - 1].type);
 
-			note.deltaTime = xClusterize(delta / constants.NOTE_TYPE_WIDTHS[note.type]);
+			note.deltaTime = xClusterize(delta / constants.NOTE_TYPE_WIDTHS[noteType]);
 		}
 	});
 
