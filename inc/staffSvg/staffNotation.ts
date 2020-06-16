@@ -391,7 +391,8 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 	context.resetAlters();
 
 	const notes = [];
-	const xs = {};
+	//const xs = {};
+	const pitchNotes: {[key: number]: any[]} = {};
 
 	for (const token of measure.tokens) {
 		if (!token.symbols.size)
@@ -430,23 +431,38 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 				tied: token.tied,
 				contextIndex,
 				type: token.noteType,
+				stemUp: token.stemUp,
 			};
 			notes.push(note);
 
-			xs[note.rx] = xs[note.rx] || new Set();
-			xs[note.rx].add(token.ry);
+			//xs[note.rx] = xs[note.rx] || new Set();
+			//xs[note.rx].add(token.ry);
+
+			pitchNotes[note.pitch] = pitchNotes[note.pitch] || [];
+			pitchNotes[note.pitch].push(note);
 		}
 	}
+
+	// merge first degree side by side notes
+	Object.values(pitchNotes).forEach(notes => {
+		notes.length > 1 && console.log("notes:", notes);
+		for (let i = 1; i < notes.length; ++i) {
+			const note = notes[i];
+			const lastNote = notes[i - 1];
+			if (note.rx - lastNote.rx <= 1.5 && note.stemUp !== lastNote.stemUp)
+				note.tied = true;
+		}
+	});
 
 	const duration = context.beatsPerMeasure * TICKS_PER_BEAT;
 
 	//console.log("notes:", notes);
 	notes.forEach(note => {
-		// merge first degree side by side notes
+		/*// merge first degree side by side notes
 		if (xs[note.rx - 1.5] && xs[note.rx - 1.5].has(note.y))
 			note.x -= constants.CLOSED_NOTEHEAD_INTERVAL_FIRST_DEG;
 		else if (xs[note.rx - 1.25] && xs[note.rx - 1.25].has(note.y))
-			note.x -= constants.CLOSED_NOTEHEAD_INTERVAL_FIRST_DEG;
+			note.x -= constants.CLOSED_NOTEHEAD_INTERVAL_FIRST_DEG;*/
 
 		context.track.appendNote(note.x, {
 			pitch: note.pitch,

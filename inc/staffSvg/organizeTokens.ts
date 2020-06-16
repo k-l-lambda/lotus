@@ -153,7 +153,10 @@ const parseChordsByStems = (tokens, logger) => {
 
 		const x = up ? rightAttached[0].x : leftAttached[0].x;
 
-		const assign = note => note.stemX = x;
+		const assign = note => {
+			note.stemX = x;
+			note.stemUp = up;
+		};
 
 		rightAttached.forEach(assign);
 		leftAttached.forEach(assign);
