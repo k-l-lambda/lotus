@@ -21,6 +21,8 @@
 
 *	2020.6.16
 
+	+	organizeTokens.ts: added protection for staff without measure separators.
+
 	+	staffSvg: token staves splitting by additional indcies 2D map implemented.
 
 	+	organizeTokens.ts: fixed note stem row splitting.

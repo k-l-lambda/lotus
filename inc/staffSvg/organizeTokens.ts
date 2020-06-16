@@ -191,6 +191,14 @@ const parseTokenRow = (tokens, logger) => {
 	}, {});
 	logger.append("parseTokenRow.staffLines", Object.keys(staffLines));
 
+	// construct staff Y from staff lines when no separators
+	if (!separatorYs.size) {
+		const ys = Object.keys(staffLines).map(Number);
+		const topLineYs = ys.filter(y => staffLines[y + 3] && staffLines[y + 4]);
+
+		topLineYs.forEach(y => separatorYs.add(y));
+	}
+
 	const staffYs = Array.from(separatorYs)
 		.filter(y => staffLines[y] || staffLines[y + POS_PRECISION])
 		.map(y => staffLines[y] ? y : y + POS_PRECISION).map(y => y + 2)
@@ -304,6 +312,10 @@ const parseTokenRow = (tokens, logger) => {
 	const separatorXsRaw = Array.from(new Set(localTokens
 		.filter(token => token.is("MEASURE_SEPARATOR"))
 		.map(token => token.logicX))).sort((x1: number, x2: number) => x1 - x2);
+
+	// supplement for empty measure separator staff, maybe some lilypond bug if not at end.
+	if (!separatorXsRaw.length)
+		separatorXsRaw.push(localTokens[localTokens.length - 1].x + 1);
 
 	const measureRanges = separatorXsRaw.map((x, i) => {
 		const left = i > 0 ? separatorXsRaw[i - 1] : -Infinity;
