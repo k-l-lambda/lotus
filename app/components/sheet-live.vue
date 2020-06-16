@@ -41,6 +41,7 @@
 									matched: statusMap.has(token.href),
 									mismatched: token.is('NOTEHEAD') && !statusMap.has(token.href),
 									tied: token.tied,
+									attached: Number.isFinite(token.stemX),
 								}"
 								:showTitle="showMark"
 							/>
