@@ -60,7 +60,7 @@ const tokensRowsSplit = (tokens, logger) => {
 	logger.append("tokensRowsSplit.pageTile.0", [...pageTile]);
 
 	const addlineYs: number[] = Array.from(new Set(
-		tokens.filter(token => token.is("ADDITIONAL_LINE")).map(token => Math.round(token.y)),
+		tokens.filter(token => token.is("ADDITIONAL_LINE")).map(token => Math.round(token.y + token.height / 2)),
 	)).sort((y1: number, y2: number) => y1 - y2) as number[];
 	logger.append("tokensRowsSplit.addlineYs", addlineYs);
 
@@ -153,11 +153,11 @@ const parseChordsByStems = (tokens, logger) => {
 
 		const x = up ? rightAttached[0].x : leftAttached[0].x;
 
-		const stemY = stem.y + stem.height / 2;
+		//const stemY = up ? stem.y : stem.y + stem.height;
 
 		const assign = note => {
 			note.stemX = x;
-			note.stemY = stemY;
+			//note.stemY = stemY;
 		};
 
 		rightAttached.forEach(assign);
@@ -167,6 +167,8 @@ const parseChordsByStems = (tokens, logger) => {
 
 
 const isRowToken = token => token.is("STAVES_CONNECTION") || token.is("BRACE") || token.is("VERTICAL_LINE");
+
+const roundJoin = (x, y) => `${Math.round(x)},${Math.round(y)}`;
 
 
 const parseTokenRow = (tokens, logger) => {
@@ -200,7 +202,8 @@ const parseTokenRow = (tokens, logger) => {
 		.sort((y1, y2) => y1 - y2);
 	logger.append("parseTokenRow.staffYs", staffYs);
 
-	const additionalLinesYs = tokens.filter(token => token.is("ADDITIONAL_LINE")).reduce((ys, token) => {
+	const additionalLines = tokens.filter(token => token.is("ADDITIONAL_LINE")).sort((l1, l2) => l1.y - l2.y);
+	const additionalLinesYs = additionalLines.reduce((ys, token) => {
 		ys.add(token.ry);
 		return ys;
 	}, new Set());
@@ -242,13 +245,52 @@ const parseTokenRow = (tokens, logger) => {
 	}
 	splitters.push(Infinity);
 
+
+	// generate 2D staves index map
+	const indicesMap = {};
+	const markLineIndex = (line, index) => {
+		for (let x = Math.round(line.x); x < Math.round(line.x + line.width); ++x) {
+			indicesMap[roundJoin(x, line.y)] = index;
+			indicesMap[roundJoin(x, line.y + 1)] = index;
+			indicesMap[roundJoin(x, line.y - 1)] = index;
+		}
+	};
+	staffYs.forEach((sy, index) => additionalLines.filter(line => Math.abs(line.ry - sy) <= 3)
+		.forEach(line => (markLineIndex(line, index), line.resolved = true)));
+
+	const pendingLines = additionalLines.filter(line => !line.resolved);
+
+	// down pass
+	pendingLines.forEach(line => {
+		const base = indicesMap[roundJoin(line.x, line.y - 1)];
+		if (Number.isInteger(base))
+			markLineIndex(line, base);
+	});
+
+	// up pass
+	pendingLines.reverse().forEach(line => {
+		const base = indicesMap[roundJoin(line.x, line.y + 1)];
+		if (Number.isInteger(base))
+			markLineIndex(line, base);
+	});
+
+	//console.log("indicesMap:", indicesMap);
+
+
 	const staffTokens = [];
 	//console.log("splitters:", splitters);
 	const appendToken = token => {
 		let index = 0;
-		const y = Number.isFinite(token.stemY) ? token.stemY : (token.ry + token.logicOffsetY);
-		while (y > splitters[index])
-			++index;
+		const y = token.ry + token.logicOffsetY;
+		const indexInMap = indicesMap[roundJoin(token.x + rowX, y + rowY)];
+		if (Number.isInteger(indexInMap))
+			index = indexInMap;
+		else {
+			//if (token.is("NOTEHEAD"))
+			//	console.log("omit note:", token.href, roundJoin(token.x + rowX, y + rowY));
+			while (y > splitters[index])
+				++index;
+		}
 
 		staffTokens[index] = staffTokens[index] || [];
 		staffTokens[index].push(token);

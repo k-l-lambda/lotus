@@ -12,15 +12,16 @@
 	staffSvg
 		clusterize notes by note stem
 		repeat measures
-		staves split confliction	(One Summer's Day)
-		chord notes interval multi-voices interference	(One Summer's Day)
-		octave & alter token order issue
+		tied note parsing issue	(One Summer's Day)
+		octave & alter token order issue	(One Summer's Day)
 	source editor
-		cursor position
+		cursor position column
 
 
 
 *	2020.6.16
+
+	+	staffSvg: token staves splitting by additional indcies 2D map implemented.
 
 	+	organizeTokens.ts: fixed note stem row splitting.
 

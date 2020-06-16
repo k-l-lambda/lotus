@@ -1,7 +1,7 @@
 
 import sha1 from "sha1";
 
-import {NOTEHEAD_BASE_SCALE} from "./utils";
+import {NOTEHEAD_BASE_SCALE, POS_PRECISION, roundNumber} from "./utils";
 import pathSymbols from "./path-symbols.json";
 
 
@@ -184,6 +184,15 @@ const postSymbolRules = [
 	postSymbolProcess("NOTE_STEM", (elem, result) => {
 		result.width = elem.identity.width;
 		result.height = elem.identity.height;
+	}),
+
+	postSymbolProcess("ADDITIONAL_LINE", (elem, result) => {
+		result.width = elem.identity.width;
+		result.height = elem.identity.height;
+
+		// correct ry by stroke width
+		const cy = (elem.y + elem.identity.height / 2);
+		result.ry = roundNumber(cy, POS_PRECISION);
 	}),
 ];
 
