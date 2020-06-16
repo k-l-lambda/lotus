@@ -1,5 +1,5 @@
 
-import {POS_PRECISION, constants, constants} from "./utils";
+import {POS_PRECISION, constants} from "./utils";
 
 
 
@@ -153,12 +153,7 @@ const parseChordsByStems = (tokens, logger) => {
 
 		const x = up ? rightAttached[0].x : leftAttached[0].x;
 
-		//const stemY = up ? stem.y : stem.y + stem.height;
-
-		const assign = note => {
-			note.stemX = x;
-			//note.stemY = stemY;
-		};
+		const assign = note => note.stemX = x;
 
 		rightAttached.forEach(assign);
 		leftAttached.forEach(assign);
@@ -226,14 +221,14 @@ const parseTokenRow = (tokens, logger) => {
 	const splitters = [];
 	for (let i = 0; i < staffYs.length - 1; ++i) {
 		let up = staffYs[i] + 2;
-		if (!additionalLinesYs.has(up + 1))
-			up -= 0.25;
+		//if (!additionalLinesYs.has(up + 1))
+		//	up -= 0.25;
 		while (additionalLinesYs.has(up + 1))
 			++up;
 
 		let down = staffYs[i + 1] - 2;
-		if (!additionalLinesYs.has(down - 1))
-			down -= 0.25;
+		//if (!additionalLinesYs.has(down - 1))
+		//	down -= 0.25;
 		while (additionalLinesYs.has(down - 1))
 			--down;
 
@@ -274,7 +269,7 @@ const parseTokenRow = (tokens, logger) => {
 			markLineIndex(line, base);
 	});
 
-	//console.log("indicesMap:", indicesMap);
+	logger.append("parseTokenRow.indicesMap", indicesMap);
 
 
 	const staffTokens = [];
