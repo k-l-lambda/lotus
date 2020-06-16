@@ -1,19 +1,6 @@
 
-import {POS_PRECISION, constants} from "./utils";
+import {POS_PRECISION, constants, constants} from "./utils";
 
-
-
-/*const parseLink = link => {
-	const [_, line, c1, c2] = link.match(/(\d+):(\d+):(\d+)/);
-	return [line, c1, c2].map(Number);
-};
-
-const compareLinks = (link1, link2) => {
-	const n1 = parseLink(link1);
-	const n2 = parseLink(link2);
-
-	return n1[0] === n2[0] ? (n1[1] * 1e4 + n1[2] - n2[1] * 1e4 - n2[2]) : n1[0] - n2[0];
-};*/
 
 
 const tokensRowsSplit = (tokens, logger) => {
@@ -338,7 +325,7 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 
 		const nearest = notes.reduce((best, note) => {
 			if (!note.tied) {
-				const dx = note.x - position.x;
+				const dx = note.x + constants.NOTE_TYPE_WIDTHS[note.noteType] * 0.5 - position.x;
 				if (dx > -1) {
 					const dy = (note.y - position.y) * 2;
 					const distance = Math.sqrt(dx * dx + dy * dy);
