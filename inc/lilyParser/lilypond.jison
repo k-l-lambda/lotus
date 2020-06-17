@@ -583,52 +583,7 @@ markup_word
 		{$$ = $1;}
 	| SYMBOL
 		{$$ = $1;}
-	// extra formla
-	| CHORD_MODIFIER_WORD
-		{$$ = $1;}
-	// extra formla
-	| "."
-		{$$ = $1;}
-	// extra formla
-	| "-"
-		{$$ = $1;}
-	// extra formla
-	| "_"
-		{$$ = $1;}
-	// extra formla
-	| HYPHEN
-		{$$ = $1;}
-	// extra formla
-	| "="
-		{$$ = $1;}
-	// extra formla
-	| "'"
-		{$$ = $1;}
-	// extra formla
-	| ","
-		{$$ = $1;}
-	// extra formla
-	| ":"
-		{$$ = $1;}
-	// extra formla
-	| "/"
-		{$$ = $1;}
-	// extra formla
-	| "("
-		{$$ = $1;}
-	// extra formla
-	| ")"
-		{$$ = $1;}
 	| unsigned_number
-		{$$ = $1;}
-	// extra formla
-	| REAL
-		{$$ = $1;}
-	// extra formla
-	| UNKNOWN_CHAR
-		{$$ = $1;}
-	// extra formla
-	| PITCH
 		{$$ = $1;}
 	// extra formla
 	| zero_command
@@ -640,12 +595,50 @@ markup_word
 	// extra formla
 	| music_property_def
 		{$$ = $1;}
-	// extra formla
-	| PLACEHOLDER_PITCH
-		{$$ = $1;}
 	| context_change
 		{$$ = $1;}
 	| pitch_mode_music
+		{$$ = $1;}
+	// extra formla
+	| PITCH
+		{$$ = $1;}
+	// extra formla
+	| REAL
+		{$$ = $1;}
+	//| PLACEHOLDER_PITCH
+	//	{$$ = $1;}
+	// extra formla
+	| general_text
+		{$$ = $1;}
+	;
+
+// extra syntax
+general_text
+	: CHORD_MODIFIER_WORD
+		{$$ = $1;}
+	| "."
+		{$$ = $1;}
+	| "-"
+		{$$ = $1;}
+	| "_"
+		{$$ = $1;}
+	| HYPHEN
+		{$$ = $1;}
+	| "="
+		{$$ = $1;}
+	| "'"
+		{$$ = $1;}
+	| ","
+		{$$ = $1;}
+	| ":"
+		{$$ = $1;}
+	| "/"
+		{$$ = $1;}
+	| "("
+		{$$ = $1;}
+	| ")"
+		{$$ = $1;}
+	| UNKNOWN_CHAR
 		{$$ = $1;}
 	;
 
@@ -1119,6 +1112,9 @@ lyric_element
 	| literal_string
 		{$$ = $1;}
 	//| LYRIC_ELEMENT
+	// extra formula
+	| general_text
+		{$$ = $1;}
 	;
 
 pitch_as_music
