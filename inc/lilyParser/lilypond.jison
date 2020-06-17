@@ -201,6 +201,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\tuplet"					return 'CMD_TUPLET';
 "\\skip"					return 'CMD_SKIP';
 "\\skip"(?=\d)				return 'CMD_SKIP';
+"\\parenthesize"			return 'CMD_PARENTHESIZE';
 
 // markup commands
 "\\version"					return 'CMD_VERSION';
@@ -1400,6 +1401,8 @@ unitary_cmd
 		{$$ = $1;}
 	| CMD_SKIP
 		{$$ = $1;}
+	| CMD_PARENTHESIZE
+		{$$ = $1;}
 	;
 
 // extra syntax
@@ -1597,8 +1600,17 @@ chord_body_element
 		//{$$ = chord([$1], null, {exclamations: $2, questions: $3, post_events: $4});}
 		{$$ = $1 + $2 + $3 + $4;}
 	//| DRUM_PITCH post_events %prec ':' 
-	//| music_function_chord_body
+	| music_function_chord_body
+		{$$ = $1;}
 	//| post_event
+	;
+
+music_function_chord_body
+	//: music_function_call
+	//| MUSIC_IDENTIFIER
+	//| embedded_scm
+	: music_identifier
+		{$$ = $1;}
 	;
 
 pitch_or_tonic_pitch
@@ -1619,6 +1631,7 @@ pitch
 	: PITCH quotes
 		{$$ = $1 + $2;}
 	//| steno_pitch
+	// extra formula
 	| PLACEHOLDER_PITCH
 		{$$ = $1;}
 	;
