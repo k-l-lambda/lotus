@@ -159,7 +159,7 @@ const preprocessXml = (xml, {
 			}
 
 			if (escapedWordsDoubleQuotation) {
-				if (node.tagName === "words" || node.tagName === "credit-words") {
+				if (["words", "credit-words", "text"].includes(node.tagName)) {
 					if (node.textContent && /"/.test(node.textContent))
 						node.textContent = node.textContent.replace(/"/g, "'");
 				}
