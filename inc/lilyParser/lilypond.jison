@@ -241,6 +241,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 m(?=[\W\d])					return 'CHORD_MODIFIER_WORD';
 [a][u][g](?=[\W\d])			return 'CHORD_MODIFIER_WORD';
 [d][i][m](?=[\W\d])			return 'CHORD_MODIFIER_WORD';
+[s][u][s](?=[\W\d])			return 'CHORD_MODIFIER_WORD';
 
 {SYMBOL}					return 'SYMBOL';
 
