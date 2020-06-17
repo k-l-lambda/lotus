@@ -19,6 +19,11 @@
 
 
 
+*	2020.6.17
+
+	+	lilyCommands.ts: preprocessXml option of removeNullDynamics added.
+
+
 *	2020.6.16
 
 	+	organizeTokens.ts: added protection for staff without measure separators.

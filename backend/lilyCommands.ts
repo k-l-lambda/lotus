@@ -42,6 +42,7 @@ interface LilyProcessOptions {
 	// xml
 	removeMeasureImplicit?: boolean;
 	replaceEncoding?: boolean;
+	removeNullDynamics?: boolean;
 
 	// lilypond
 	pointClick?: boolean;
@@ -67,8 +68,9 @@ const traverse = (node, handle) => {
 const preprocessXml = (xml, {
 	removeMeasureImplicit = true,
 	replaceEncoding = true,
+	removeNullDynamics = true,
 } = {}): string => {
-	if (!removeMeasureImplicit && !replaceEncoding)
+	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics)
 		return xml;
 
 	const dom = new DOMParser().parseFromString(xml, "text/xml");
@@ -79,10 +81,21 @@ const preprocessXml = (xml, {
 			headNode.data = headNode.data.replace(/UTF-16/, "UTF-8");
 	}
 
-	if (removeMeasureImplicit) {
+	const needTraverse = removeMeasureImplicit || removeNullDynamics;
+	if (needTraverse) {
 		traverse(dom, node => {
-			if (node.tagName === "measure")
-				node.removeAttribute("implicit");
+			if (removeMeasureImplicit) {
+				if (node.tagName === "measure")
+					node.removeAttribute("implicit");
+			}
+
+			if (removeNullDynamics) {
+				if (node.tagName === "other-dynamics") {
+					const content = node.textContent;
+					if (!/\w/.test(content))
+						node.parentNode.removeChild(node);
+				}
+			}
 		});
 	}
 
