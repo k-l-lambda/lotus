@@ -237,14 +237,10 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 //{INT}						return 'INT';
 
 // CHORD_MODIFIER
-"maj7"						return 'CHORD_MODIFIER';
-"maj"						return 'CHORD_MODIFIER';
-"aug"						return 'CHORD_MODIFIER';
-"dim7"						return 'CHORD_MODIFIER';
-"dim"						return 'CHORD_MODIFIER';
-[m][7](?=[\W])				return 'CHORD_MODIFIER';
-[m][5](?=[\W])				return 'CHORD_MODIFIER';
-m(?=[\W])					return 'CHORD_MODIFIER';
+[m][a][j](?=[\W\d])			return 'CHORD_MODIFIER_WORD';
+m(?=[\W\d])					return 'CHORD_MODIFIER_WORD';
+[a][u][g](?=[\W\d])			return 'CHORD_MODIFIER_WORD';
+[d][i][m](?=[\W\d])			return 'CHORD_MODIFIER_WORD';
 
 {SYMBOL}					return 'SYMBOL';
 
@@ -587,7 +583,7 @@ markup_word
 	| SYMBOL
 		{$$ = $1;}
 	// extra formla
-	| CHORD_MODIFIER
+	| CHORD_MODIFIER_WORD
 		{$$ = $1;}
 	// extra formla
 	| "."
@@ -1452,13 +1448,13 @@ chord_item
 		{$$ = $1;}
 	;
 
-/*// m, m7, dim, dim7, aug, maj, maj7
+// m, m7, dim, dim7, aug, maj, maj7
 CHORD_MODIFIER
-	: SYMBOL
+	: CHORD_MODIFIER_WORD
 		{$$ = $1;}
-	| SYMBOL UNSIGNED
-		{$$ = $1 + $2;}
-	;*/
+	//| CHORD_MODIFIER_WORD UNSIGNED
+	//	{$$ = $1 + $2;}
+	;
 
 step_numbers
 	: step_number
