@@ -981,6 +981,7 @@ chordmode_braced_music_list
 		{$$ = musicBlock($2);}
 	;
 
+// extra syntax
 chordmode_music_list
 	: %empty
 		{$$ = [];}
@@ -988,11 +989,24 @@ chordmode_music_list
 		{$$ = $1.concat([$2]);}
 	;
 
+// extra syntax
 chordmode_music
 	: new_chord post_events
 		{$$ = briefChord($1, {post_events: $2});}
 	| music_assign
 		{$$ = $1;}
+	| chordmode_repeated_music
+		{$$ = $1;}
+	| chordmode_braced_music_list
+		{$$ = $1;}
+	;
+
+// extra syntax
+chordmode_repeated_music
+	: REPEAT simple_string unsigned_number chordmode_braced_music_list
+		{$$ = command($1, $2, $3, $4);}
+	| REPEAT simple_string unsigned_number chordmode_braced_music_list ALTERNATIVE chordmode_braced_music_list
+		{$$ = command($1, $2, $3, $4, command($5, $6));}
 	;
 
 mode_changing_head_with_context
