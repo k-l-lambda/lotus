@@ -45,6 +45,7 @@ interface LilyProcessOptions {
 	replaceEncoding?: boolean;
 	removeNullDynamics?: boolean;
 	fixHeadMarkup?: boolean;
+	fixCreditWords?: boolean;
 
 	// lilypond
 	pointClick?: boolean;
@@ -92,12 +93,6 @@ const moveWordDirection = measure => {
 					measure.appendChild(word);
 			});
 
-			/*if (words.length) {
-				console.log("words:", words, measure.toString());
-
-				debugger;
-			}*/
-
 			return;
 		}
 	}
@@ -109,8 +104,9 @@ const preprocessXml = (xml, {
 	replaceEncoding = true,
 	removeNullDynamics = true,
 	fixHeadMarkup = true,
+	fixCreditWords = true,
 } = {}): string => {
-	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup)
+	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup && !fixCreditWords)
 		return xml;
 
 	const dom = new DOMParser().parseFromString(xml, "text/xml");
@@ -121,7 +117,7 @@ const preprocessXml = (xml, {
 			headNode.data = headNode.data.replace(/UTF-16/, "UTF-8");
 	}
 
-	const needTraverse = removeMeasureImplicit || removeNullDynamics || fixHeadMarkup;
+	const needTraverse = removeMeasureImplicit || removeNullDynamics || fixHeadMarkup || fixCreditWords;
 	if (needTraverse) {
 		domUtils.traverse(dom, node => {
 			if (removeMeasureImplicit) {
@@ -142,6 +138,11 @@ const preprocessXml = (xml, {
 					//console.log("measure:", node);
 					moveWordDirection(node);
 				}
+			}
+
+			if (fixCreditWords) {
+				if (node.tagName === "credit-words")
+					node.textContent = node.textContent.replace(/^\\+/, "").replace(/\\+$/, "");
 			}
 		});
 	}
