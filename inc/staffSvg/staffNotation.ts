@@ -445,7 +445,7 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 
 	// merge first degree side by side notes
 	Object.values(pitchNotes).forEach(notes => {
-		notes.length > 1 && console.log("notes:", notes);
+		//notes.length > 1 && console.log("notes:", notes);
 		for (let i = 1; i < notes.length; ++i) {
 			const note = notes[i];
 			const lastNote = notes[i - 1];
