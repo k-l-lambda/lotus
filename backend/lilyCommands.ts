@@ -46,6 +46,8 @@ interface LilyProcessOptions {
 	removeNullDynamics?: boolean;
 	fixHeadMarkup?: boolean;
 	fixCreditWords?: boolean;
+	roundTempo?: boolean;
+	escapedWordsDoubleQuotation?: boolean;
 
 	// lilypond
 	pointClick?: boolean;
@@ -106,8 +108,9 @@ const preprocessXml = (xml, {
 	fixHeadMarkup = true,
 	fixCreditWords = true,
 	roundTempo = true,
+	escapedWordsDoubleQuotation = true,
 } = {}): string => {
-	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup && !fixCreditWords && !roundTempo)
+	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup && !fixCreditWords && !roundTempo && !escapedWordsDoubleQuotation)
 		return xml;
 
 	const dom = new DOMParser().parseFromString(xml, "text/xml");
@@ -118,7 +121,8 @@ const preprocessXml = (xml, {
 			headNode.data = headNode.data.replace(/UTF-16/, "UTF-8");
 	}
 
-	const needTraverse = removeMeasureImplicit || removeNullDynamics || fixHeadMarkup || fixCreditWords || roundTempo;
+	const needTraverse = removeMeasureImplicit || removeNullDynamics || fixHeadMarkup || fixCreditWords || roundTempo
+		|| escapedWordsDoubleQuotation;
 	if (needTraverse) {
 		domUtils.traverse(dom, node => {
 			if (removeMeasureImplicit) {
@@ -151,6 +155,13 @@ const preprocessXml = (xml, {
 					const tempo = Number(node.getAttribute("tempo"));
 					if (Number.isFinite(tempo) && Math.floor(tempo) !== tempo)
 						node.setAttribute("tempo", Math.round(tempo).toFixed(0));
+				}
+			}
+
+			if (escapedWordsDoubleQuotation) {
+				if (node.tagName === "words") {
+					if (node.textContent && /"/.test(node.textContent))
+						node.textContent = node.textContent.replace(/"/g, "'");
 				}
 			}
 		});
