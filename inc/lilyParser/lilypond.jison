@@ -72,8 +72,8 @@ SHORTHAND			(.|\\.)
 UNSIGNED			{N}+
 E_UNSIGNED			\\{N}+
 FRACTION			{N}+\/{N}+
-INT					[-]?{UNSIGNED}
-REAL				({INT}\.{N}*)|([-]?\.{N}+)
+//INT					[-]?{UNSIGNED}
+//REAL				({INT}\.{N}*)|([-]?\.{N}+)
 STRICTREAL			{UNSIGNED}\.{UNSIGNED}
 WHITE				[ \n\t\f\r]
 HORIZONTALWHITE		[ \t]
@@ -95,8 +95,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 
 // workaround non-word-boundary parsing for POST_UNSIGNED
 //\s{FRACTION}				yytext = yytext.replace(/^\s+/, ""); return 'FRACTION';
-\s{REAL}					yytext = yytext.replace(/^\s+/, ""); return 'REAL';
-(?:#){REAL}					return 'REAL';
+//\s{REAL}					yytext = yytext.replace(/^\s+/, ""); return 'REAL';
+//(?:#){REAL}					return 'REAL';
 //\s{UNSIGNED}				yytext = yytext.replace(/^\s+/, ""); return 'UNSIGNED';
 
 \s+							{}	// spaces
@@ -727,6 +727,23 @@ INT
 		{$$ = -Number($2);}
 	;
 
+// extra syntax
+positive_real
+	: UNSIGNED "." UNSIGNED
+		{$$ = Number($1 + $2 + $3);}
+	| UNSIGNED "."
+		{$$ = Number($1 + $2);}
+	| "." UNSIGNED
+		{$$ = Number($1 + $2);}
+	;
+
+REAL
+	: positive_real
+		{$$ = $1;}
+	| "-" positive_real
+		{$$ = -$1;}
+	;
+
 // equivalent for NUMBER_IDENTIFIER in lilypond's parser.yy
 number_identifier
 	: REAL number_unit
@@ -1224,9 +1241,8 @@ duration
 steno_duration
 	: unsigned_number dots
 		{$$ = $1 + $2;}
-	| REAL dots
-		{$$ = $1 + $2;}
 	//| DURATION_IDENTIFIER dots
+	//	{$$ = $1 + $2;}
 	;
 
 dots
