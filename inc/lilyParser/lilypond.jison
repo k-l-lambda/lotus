@@ -606,8 +606,6 @@ markup_word
 	// extra formla
 	| REAL
 		{$$ = $1;}
-	//| PLACEHOLDER_PITCH
-	//	{$$ = $1;}
 	// extra formla
 	| general_text
 		{$$ = $1;}
@@ -642,6 +640,8 @@ general_text
 	| "*"
 		{$$ = $1;}
 	| UNKNOWN_CHAR
+		{$$ = $1;}
+	| PLACEHOLDER_PITCH
 		{$$ = $1;}
 	;
 
