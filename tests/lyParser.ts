@@ -73,6 +73,8 @@ const sourceList = argv.original.length > 2 ? argv.original.slice(2) : [
 	"test-5.ly",
 	"nocturne_in_b-flat_minor.ly",
 	"There will never be another you.ly",
+	"Annabelle.ly",
+	"Fantaisie-impromptu.ly",
 ].map(filename => path.resolve("./tests/ly", filename));
 
 main(sourceList);
