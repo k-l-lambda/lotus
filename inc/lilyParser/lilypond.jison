@@ -85,7 +85,7 @@ HYPHEN				\-\-
 BOM_UTF8			\357\273\277
 
 PHONET				[abcdefgrR]
-PITCH				{PHONET}(([i][s])*|([e][s])*|[s]*|[f]*)(?=[\W\d_])
+PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 PLACEHOLDER_PITCH	[s](?=[\W\d])
 //DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
 
