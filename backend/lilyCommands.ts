@@ -105,8 +105,9 @@ const preprocessXml = (xml, {
 	removeNullDynamics = true,
 	fixHeadMarkup = true,
 	fixCreditWords = true,
+	roundTempo = true,
 } = {}): string => {
-	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup && !fixCreditWords)
+	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup && !fixCreditWords && !roundTempo)
 		return xml;
 
 	const dom = new DOMParser().parseFromString(xml, "text/xml");
@@ -117,7 +118,7 @@ const preprocessXml = (xml, {
 			headNode.data = headNode.data.replace(/UTF-16/, "UTF-8");
 	}
 
-	const needTraverse = removeMeasureImplicit || removeNullDynamics || fixHeadMarkup || fixCreditWords;
+	const needTraverse = removeMeasureImplicit || removeNullDynamics || fixHeadMarkup || fixCreditWords || roundTempo;
 	if (needTraverse) {
 		domUtils.traverse(dom, node => {
 			if (removeMeasureImplicit) {
@@ -143,6 +144,14 @@ const preprocessXml = (xml, {
 			if (fixCreditWords) {
 				if (node.tagName === "credit-words")
 					node.textContent = node.textContent.replace(/^\\+/, "").replace(/\\+$/, "");
+			}
+
+			if (roundTempo) {
+				if (node.tagName === "sound") {
+					const tempo = Number(node.getAttribute("tempo"));
+					if (Number.isFinite(tempo) && Math.floor(tempo) !== tempo)
+						node.setAttribute("tempo", Math.round(tempo).toFixed(0));
+				}
 			}
 		});
 	}

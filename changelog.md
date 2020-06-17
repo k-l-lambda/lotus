@@ -21,6 +21,8 @@
 
 *	2020.6.17
 
+	+	lilyCommands.ts: preprocessXml option of roundTempo added.
+
 	+	lilyCommands.ts: preprocessXml option of fixCreditWords added.
 
 	+	lilyCommands.ts: preprocessXml option of fixHeadMarkup added.
