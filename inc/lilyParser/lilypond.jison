@@ -613,6 +613,12 @@ markup_word
 	// extra formla
 	| "/"
 		{$$ = $1;}
+	// extra formla
+	| "("
+		{$$ = $1;}
+	// extra formla
+	| ")"
+		{$$ = $1;}
 	| unsigned_number
 		{$$ = $1;}
 	// extra formla
