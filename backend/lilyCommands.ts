@@ -10,6 +10,7 @@ import {Writable} from "stream";
 
 import asyncCall from "../inc/asyncCall";
 import {SingleLock} from "../inc/mutex";
+import * as domUtils from "./domUtils";
 
 
 
@@ -43,6 +44,7 @@ interface LilyProcessOptions {
 	removeMeasureImplicit?: boolean;
 	replaceEncoding?: boolean;
 	removeNullDynamics?: boolean;
+	fixHeadMarkup?: boolean;
 
 	// lilypond
 	pointClick?: boolean;
@@ -55,12 +57,49 @@ interface LilyProcessOptions {
 };
 
 
-const traverse = (node, handle) => {
-	handle(node);
+const isWordDirection = direction => {
+	const directionTypes = domUtils.childrenWithTag(direction, "direction-type");
 
-	if (node.childNodes) {
-		for (let i = 0; i < node.childNodes.length; ++i)
-			traverse(node.childNodes[i], handle);
+	for (const dt of directionTypes) {
+		if (domUtils.childrenWithTag(dt, "words").length > 0)
+			return true;
+	}
+
+	return false;
+};
+
+
+const moveWordDirection = measure => {
+	//console.log("measure:", measure);
+	const words = [];
+
+	for (let i = 0; i < measure.childNodes.length; ++i) {
+		const child = measure.childNodes[i];
+		switch (child.tagName) {
+		case "direction":
+			if (isWordDirection(child)) {
+				words.push(child);
+				measure.removeChild(child);
+			}
+
+			break;
+		case "note":
+			const next = measure.childNodes[i + 1];
+			words.forEach(word => {
+				if (next)
+					measure.insertBefore(word, next);
+				else
+					measure.appendChild(word);
+			});
+
+			/*if (words.length) {
+				console.log("words:", words, measure.toString());
+
+				debugger;
+			}*/
+
+			return;
+		}
 	}
 };
 
@@ -69,8 +108,9 @@ const preprocessXml = (xml, {
 	removeMeasureImplicit = true,
 	replaceEncoding = true,
 	removeNullDynamics = true,
+	fixHeadMarkup = true,
 } = {}): string => {
-	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics)
+	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup)
 		return xml;
 
 	const dom = new DOMParser().parseFromString(xml, "text/xml");
@@ -81,9 +121,9 @@ const preprocessXml = (xml, {
 			headNode.data = headNode.data.replace(/UTF-16/, "UTF-8");
 	}
 
-	const needTraverse = removeMeasureImplicit || removeNullDynamics;
+	const needTraverse = removeMeasureImplicit || removeNullDynamics || fixHeadMarkup;
 	if (needTraverse) {
-		traverse(dom, node => {
+		domUtils.traverse(dom, node => {
 			if (removeMeasureImplicit) {
 				if (node.tagName === "measure")
 					node.removeAttribute("implicit");
@@ -94,6 +134,13 @@ const preprocessXml = (xml, {
 					const content = node.textContent;
 					if (!/\w/.test(content))
 						node.parentNode.removeChild(node);
+				}
+			}
+
+			if (fixHeadMarkup) {
+				if (node.tagName === "measure") {
+					//console.log("measure:", node);
+					moveWordDirection(node);
 				}
 			}
 		});
