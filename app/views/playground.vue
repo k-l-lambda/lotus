@@ -366,7 +366,8 @@
 
 						this.updateLilyDocument();
 
-						this.engrave();
+						if (this.lilySource)
+							this.engrave();
 
 						break;
 					case "audio/midi":
