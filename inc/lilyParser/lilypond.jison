@@ -1158,6 +1158,9 @@ revert_arg
 	//: revert_arg_backup BACKUP symbol_list_arg
 	: revert_arg_backup
 		{$$ = $1;}
+	// extra formla
+	| revert_arg_backup symbol_list_arg
+		{$$ = $1 + " " + $2;}
 	;
 
 revert_arg_backup
@@ -1177,8 +1180,17 @@ revert_arg_part
 
 symbol_list_arg
 	: SYMBOL_LIST
+		{$$ = $1;}
 	| SYMBOL_LIST '.' symbol_list_rev
+		{$$ = $1.toString() + $2 + $3.toString();}
 	| SYMBOL_LIST ',' symbol_list_rev
+		{$$ = $1.toString() + $2 + $3.toString();}
+	;
+
+// extra syntax
+SYMBOL_LIST
+	: symbol_list_part
+		{$$ = $1;}
 	;
 
 simple_revert_context
