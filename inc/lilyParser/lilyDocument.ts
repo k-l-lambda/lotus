@@ -159,7 +159,13 @@ class LiteralString extends BaseTerm {
 
 
 	toString () {
-		return eval(this.exp);
+		try {
+			return eval(this.exp);
+		}
+		catch (err) {
+			console.warn("invalid lilypond string exp:", this.exp);
+			return this.exp;
+		}
 	}
 };
 
