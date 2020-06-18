@@ -40,6 +40,7 @@ const main = async () => {
 
 			if (argv.skipExist) {
 				if (fs.existsSync(lyPath)) {
+					lilyFiles.add(lyPath);
 					++counting.skip;
 					continue;
 				}
