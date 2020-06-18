@@ -203,6 +203,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\skip"(?=\d)				return 'CMD_SKIP';
 "\\parenthesize"			return 'CMD_PARENTHESIZE';
 
+"\\breve"					return 'CMD_BREVE';
+
 // markup commands
 "\\version"					return 'CMD_VERSION';
 "\\column"					return 'CMD_COLUMN';
@@ -1271,8 +1273,13 @@ duration
 steno_duration
 	: unsigned_number dots
 		{$$ = $1 + $2;}
-	//| DURATION_IDENTIFIER dots
-	//	{$$ = $1 + $2;}
+	| DURATION_IDENTIFIER dots
+		{$$ = $1 + $2;}
+	;
+
+DURATION_IDENTIFIER
+	: CMD_BREVE
+		{$$ = $1;}
 	;
 
 dots
