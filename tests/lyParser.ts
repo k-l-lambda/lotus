@@ -78,6 +78,7 @@ const sourceList = argv.original.length > 2 ? argv.original.slice(2) : [
 	"property_operation-revert.ly",
 	"ruguodeshi.ly",
 	"taohuashengkai.ly",
+	"tongxi.ly",
 ].map(filename => path.resolve("./tests/ly", filename));
 
 main(sourceList);
