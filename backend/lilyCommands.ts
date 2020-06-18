@@ -48,6 +48,7 @@ interface LilyProcessOptions {
 	fixCreditWords?: boolean;
 	roundTempo?: boolean;
 	escapedWordsDoubleQuotation?: boolean;
+	removeTrivialRests?: boolean;
 
 	// lilypond
 	pointClick?: boolean;
@@ -109,8 +110,10 @@ const preprocessXml = (xml, {
 	fixCreditWords = true,
 	roundTempo = true,
 	escapedWordsDoubleQuotation = true,
+	removeTrivialRests = true,
 } = {}): string => {
-	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup && !fixCreditWords && !roundTempo && !escapedWordsDoubleQuotation)
+	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup && !fixCreditWords && !roundTempo
+		&& !escapedWordsDoubleQuotation && !removeTrivialRests)
 		return xml;
 
 	const dom = new DOMParser().parseFromString(xml, "text/xml");
@@ -162,6 +165,17 @@ const preprocessXml = (xml, {
 				if (["words", "credit-words", "text"].includes(node.tagName)) {
 					if (node.textContent && /"/.test(node.textContent))
 						node.textContent = node.textContent.replace(/"/g, "'");
+				}
+			}
+
+			if (removeTrivialRests) {
+				if (node.tagName === "note") {
+					if (domUtils.childrenWithTag(node, "rest").length && !domUtils.childrenWithTag(node, "type").length) {
+						const duration: any = domUtils.childrenWithTag(node, "duration")[0];
+						console.log("duration of rest without type:", duration && duration.textContent);
+
+						node.parentNode.removeChild(node);
+					}
 				}
 			}
 		});

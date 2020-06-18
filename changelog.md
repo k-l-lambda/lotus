@@ -19,6 +19,11 @@
 
 
 
+*	2020.6.18
+
+	+	lilyCommands.ts: preprocessXml option of removeTrivialRests added.
+
+
 *	2020.6.17
 
 	+	lilyCommands.ts: preprocessXml option of escapedWordsDoubleQuotation added.
