@@ -17,14 +17,14 @@ import * as domUtils from "./domUtils";
 let env = process.env;
 const setEnvironment = e => {
 	env = e;
-	initialize();
+	emptyCache();
 };
 
 
 const genHashString = (len = 8) => Buffer.from(Math.random().toString()).toString("base64").substr(3, 3 + len);
 
 
-const initialize = async () => {
+const emptyCache = async () => {
 	// empty temporary directory
 	try {
 		if (env.TEMP_DIR) {
@@ -36,7 +36,7 @@ const initialize = async () => {
 	}
 };
 
-initialize();
+emptyCache();
 
 
 interface LilyProcessOptions {
@@ -424,5 +424,6 @@ export {
 	engraveSvg,
 	engraveSvgWithStream,
 	setEnvironment,
+	emptyCache,
 	LilyProcessOptions,
 };

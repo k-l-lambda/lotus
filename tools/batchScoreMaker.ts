@@ -7,6 +7,7 @@ import "../env.js";
 import * as ScoreMaker from "../backend/scoreMaker";
 import walkDir from "../backend/walkDir";
 import loadLilyParser from "../backend/loadLilyParserNode";
+import {emptyCache} from "../backend/lilyCommands";
 import asyncCall from "../inc/asyncCall";
 import LogRecorder from "../inc/logRecorder";
 
@@ -67,6 +68,10 @@ const main = async () => {
 					await new Promise(resolve => process.stdin.once("data", data => resolve(data)));
 				}
 			}
+
+			// flush cache directory every 100 files
+			if ((counting.success + counting.failure) % 100 === 0)
+				emptyCache();
 		}
 
 		console.log("XML to ly finished, success:", counting.success, "failure:", counting.failure, "skip:", counting.skip);
@@ -173,6 +178,10 @@ const main = async () => {
 			}
 
 			console.log("Making progress:", ++index, "/", lilyFiles.size);
+
+			// flush cache directory every 100 files
+			if ((counting.success + counting.failure) % 100 === 0)
+				emptyCache();
 		}
 
 		console.log("Score making finished, perfect:", counting.perfect, ", success:", counting.success, "failure:", counting.failure);
