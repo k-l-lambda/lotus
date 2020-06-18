@@ -181,6 +181,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 // binary commands
 "\\relative"				return 'CMD_RELATIVE';
 "\\absolute"				return 'CMD_ABSOLUTE';
+"\\tweak"					return 'CMD_TWEAK';
 
 // unitary commands
 "\\clef"					return 'CMD_CLEF';
@@ -1330,6 +1331,8 @@ music_identifier
 		{$$ = command($1, $2);}
 	//| binary_cmd value value
 	//	{$$ = command($1, [$2, $3]);}
+	| CMD_TWEAK property_path value
+		{$$ = command($1, [$2, $3]);}
 	| pitch_mode_music
 		{$$ = $1;}
 	| "("
