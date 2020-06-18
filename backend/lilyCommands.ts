@@ -45,7 +45,7 @@ interface LilyProcessOptions {
 	replaceEncoding?: boolean;
 	removeNullDynamics?: boolean;
 	fixHeadMarkup?: boolean;
-	fixCreditWords?: boolean;
+	fixBackSlashes?: boolean;
 	roundTempo?: boolean;
 	escapedWordsDoubleQuotation?: boolean;
 	removeTrivialRests?: boolean;
@@ -107,12 +107,12 @@ const preprocessXml = (xml, {
 	replaceEncoding = true,
 	removeNullDynamics = true,
 	fixHeadMarkup = true,
-	fixCreditWords = true,
+	fixBackSlashes = true,
 	roundTempo = true,
 	escapedWordsDoubleQuotation = true,
 	removeTrivialRests = true,
 } = {}): string => {
-	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup && !fixCreditWords && !roundTempo
+	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup && !fixBackSlashes && !roundTempo
 		&& !escapedWordsDoubleQuotation && !removeTrivialRests)
 		return xml;
 
@@ -124,8 +124,8 @@ const preprocessXml = (xml, {
 			headNode.data = headNode.data.replace(/UTF-16/, "UTF-8");
 	}
 
-	const needTraverse = removeMeasureImplicit || removeNullDynamics || fixHeadMarkup || fixCreditWords || roundTempo
-		|| escapedWordsDoubleQuotation;
+	const needTraverse = removeMeasureImplicit || removeNullDynamics || fixHeadMarkup || fixBackSlashes || roundTempo
+		|| escapedWordsDoubleQuotation || removeTrivialRests;
 	if (needTraverse) {
 		domUtils.traverse(dom, node => {
 			if (removeMeasureImplicit) {
@@ -148,9 +148,11 @@ const preprocessXml = (xml, {
 				}
 			}
 
-			if (fixCreditWords) {
-				if (node.tagName === "credit-words")
-					node.textContent = node.textContent.replace(/^\\+/, "").replace(/\\+$/, "");
+			if (fixBackSlashes) {
+				if (["words", "credit-words", "text"].includes(node.tagName)) {
+					if (/^\\+/.test(node.textContent) || /\\+$/.test(node.textContent))
+						node.textContent = node.textContent.replace(/^\\+/, "").replace(/\\+$/, "");
+				}
 			}
 
 			if (roundTempo) {
