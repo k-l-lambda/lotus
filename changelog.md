@@ -21,6 +21,8 @@
 
 *	2020.6.18
 
+	+	lilyParser: fixed serilization for music identifier.
+
 	+	lilyCommands.ts: preprocessXml option of removeBadMetronome added.
 
 	+	lilyCommands.ts: preprocessXml option of fixBackSlashes added.

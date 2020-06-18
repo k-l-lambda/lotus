@@ -1332,7 +1332,7 @@ music_identifier
 	//| binary_cmd value value
 	//	{$$ = command($1, [$2, $3]);}
 	| CMD_TWEAK property_path value
-		{$$ = command($1, [$2, $3]);}
+		{$$ = command($1, $2, $3);}
 	| pitch_mode_music
 		{$$ = $1;}
 	| "("

@@ -455,7 +455,7 @@ class Chord extends BaseTerm {
 
 	serialize () {
 		const pitches = (this.single && !this.options.withAngle) ? this.pitches : [
-			"<", "\b", ...this.pitches, "\b", ">",
+			"<", "\b", ...cc(this.pitches.map(BaseTerm.optionalSerialize)), "\b", ">",
 		];
 
 		const {exclamations, questions, rest, post_events} = this.options;
