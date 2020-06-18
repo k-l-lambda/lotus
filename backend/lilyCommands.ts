@@ -174,9 +174,11 @@ const preprocessXml = (xml, {
 				if (node.tagName === "note") {
 					if (domUtils.childrenWithTag(node, "rest").length && !domUtils.childrenWithTag(node, "type").length) {
 						const duration: any = domUtils.childrenWithTag(node, "duration")[0];
-						console.log("duration of rest without type:", duration && duration.textContent);
-
-						node.parentNode.removeChild(node);
+						const durationNumber = Number(duration ? duration.textContent : NaN);
+						if (durationNumber % 4 !== 0) {
+							console.log("invalid rest duration without type:", durationNumber);
+							node.parentNode.removeChild(node);
+						}
 					}
 				}
 			}
