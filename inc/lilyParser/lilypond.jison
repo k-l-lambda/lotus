@@ -610,6 +610,9 @@ markup_word
 	| REAL
 		{$$ = $1;}
 	// extra formla
+	| INT
+		{$$ = $1;}
+	// extra formla
 	| general_text
 		{$$ = $1;}
 	;
