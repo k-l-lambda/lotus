@@ -49,6 +49,7 @@ interface LilyProcessOptions {
 	roundTempo?: boolean;
 	escapedWordsDoubleQuotation?: boolean;
 	removeTrivialRests?: boolean;
+	removeBadMetronome?: boolean;
 
 	// lilypond
 	pointClick?: boolean;
@@ -111,9 +112,10 @@ const preprocessXml = (xml, {
 	roundTempo = true,
 	escapedWordsDoubleQuotation = true,
 	removeTrivialRests = true,
+	removeBadMetronome = true,
 } = {}): string => {
 	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup && !fixBackSlashes && !roundTempo
-		&& !escapedWordsDoubleQuotation && !removeTrivialRests)
+		&& !escapedWordsDoubleQuotation && !removeTrivialRests && !removeBadMetronome)
 		return xml;
 
 	const dom = new DOMParser().parseFromString(xml, "text/xml");
@@ -125,7 +127,7 @@ const preprocessXml = (xml, {
 	}
 
 	const needTraverse = removeMeasureImplicit || removeNullDynamics || fixHeadMarkup || fixBackSlashes || roundTempo
-		|| escapedWordsDoubleQuotation || removeTrivialRests;
+		|| escapedWordsDoubleQuotation || removeTrivialRests || removeBadMetronome;
 	if (needTraverse) {
 		domUtils.traverse(dom, node => {
 			if (removeMeasureImplicit) {
@@ -150,8 +152,10 @@ const preprocessXml = (xml, {
 
 			if (fixBackSlashes) {
 				if (["words", "credit-words", "text"].includes(node.tagName)) {
-					if (/^\\+/.test(node.textContent) || /\\+$/.test(node.textContent))
+					if (/^\\+/.test(node.textContent) || /\\+$/.test(node.textContent)) {
+						console.warn("replaced invalid text:", node.textContent);
 						node.textContent = node.textContent.replace(/^\\+/, "").replace(/\\+$/, "");
+					}
 				}
 			}
 
@@ -179,6 +183,15 @@ const preprocessXml = (xml, {
 							console.log("invalid rest duration without type:", durationNumber);
 							node.parentNode.removeChild(node);
 						}
+					}
+				}
+			}
+
+			if (removeBadMetronome) {
+				if (node.tagName === "metronome") {
+					if (!domUtils.childrenWithTag(node, "per-minute").length) {
+						console.warn("metronome without 'per-minute' removed:", node.toString());
+						node.parentNode.removeChild(node);
 					}
 				}
 			}
