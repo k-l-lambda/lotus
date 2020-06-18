@@ -179,7 +179,7 @@ const preprocessXml = (xml, {
 					if (domUtils.childrenWithTag(node, "rest").length && !domUtils.childrenWithTag(node, "type").length) {
 						const duration: any = domUtils.childrenWithTag(node, "duration")[0];
 						const durationNumber = Number(duration ? duration.textContent : NaN);
-						if (durationNumber % 4 !== 0) {
+						if (durationNumber % 12 !== 0) {
 							console.log("invalid rest duration without type:", durationNumber);
 							node.parentNode.removeChild(node);
 						}
