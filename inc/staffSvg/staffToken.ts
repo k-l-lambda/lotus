@@ -181,6 +181,16 @@ export default class StaffToken {
 	}
 
 
+	get sourceProgress (): number {
+		if (!this.sourcePosition)
+			return 0;
+
+		const {line, start} = this.sourcePosition;
+
+		return Number(line) + Number(start) * 1e-4;
+	}
+
+
 	get fontChar () {
 		if (this.is("NOTEHEAD")) {
 			if (this.is("WHOLE"))

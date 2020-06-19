@@ -21,6 +21,8 @@
 
 *	2020.6.19
 
+	+	organizeTokens.ts: refined tied note parsing by source position.
+
 	+	organizeTokens.ts: refined parseChordsByStems to avoid tempo note stem bald checking failure.
 
 
