@@ -19,6 +19,11 @@
 
 
 
+*	2020.6.19
+
+	+	organizeTokens.ts: refined parseChordsByStems to avoid tempo note stem bald checking failure.
+
+
 *	2020.6.18
 
 	+	lilyParser: fixed serilization for music identifier.

@@ -120,7 +120,7 @@ const tokensRowsSplit = (tokens, logger) => {
 
 const parseChordsByStems = (tokens, logger) => {
 	const stems = tokens.filter(token => token.is("NOTE_STEM"));
-	const notes = tokens.filter(token => token.is("NOTEHEAD"));
+	const notes = tokens.filter(token => token.is("NOTEHEAD") || token.is("TEMPO_NOTEHEAD"));
 
 	stems.forEach(stem => {
 		const rightAttached = notes.filter(note => stem.stemAttached({
