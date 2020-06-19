@@ -28,11 +28,15 @@ const emptyCache = async () => {
 	// empty temporary directory
 	try {
 		if (env.TEMP_DIR) {
-			await child_process.exec(`rm ${env.TEMP_DIR}*`);
+			if (process.platform === "win32")
+				await child_process.exec(`del /q "${env.TEMP_DIR}*"`);
+			else
+				await child_process.exec(`rm "${env.TEMP_DIR}*"`);
 			console.log("Temporary directory clear.");
 		}
 	}
 	catch (_) {
+		//console.log("emptyCache error:", err);
 	}
 };
 
