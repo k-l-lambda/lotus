@@ -383,7 +383,7 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 					if (dx > -1) {
 						const dy = (note.y - position.y) * 2;
 						const tipDistance = Math.sqrt(dx * dx + dy * dy);
-						if (tipDistance < 8) {
+						if (tipDistance < 8 && dy < 2) {
 							//logger.append("nearNote", {tipDistance, tie: tie.sourceProgress, note: note.sourceProgress});
 							return {distance, note};
 						}
