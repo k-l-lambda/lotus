@@ -21,6 +21,8 @@
 
 *	2020.6.19
 
+	+	batchScoreMaker.ts: fixed skipExist option for score making.
+
 	+	organizeTokens.ts: fixed measure headX shifting by alters.
 
 	+	organizeTokens.ts: refined tied note parsing by source position.

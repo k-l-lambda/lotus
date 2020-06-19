@@ -117,7 +117,7 @@ const main = async () => {
 			const scorePath = lyPath.replace(/\.\w+$/, ".score.json");
 
 			if (argv.skipExist) {
-				if (fs.existsSync(lyPath)) {
+				if (fs.existsSync(scorePath)) {
 					++counting.skip;
 					continue;
 				}
@@ -185,7 +185,7 @@ const main = async () => {
 				emptyCache();
 		}
 
-		console.log("Score making finished, perfect:", counting.perfect, ", success:", counting.success, "failure:", counting.failure);
+		console.log("Score making finished, perfect:", counting.perfect, ", success:", counting.success, "failure:", counting.failure, "skip:", counting.skip);
 
 		issues.sort((i1, i2) => i1.coverage - i2.coverage);
 		console.log("issues:", issues);
