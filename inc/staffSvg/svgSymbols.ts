@@ -70,6 +70,10 @@ const symbolRules = [
 		"M163 31l125 101c2 2 5 3 8 3s6 -1 8 -3l18 -14c3 -2 4 -6 4 -10s-1 -8 -4 -10l-121 -98l121 -98c3 -2 4 -6 4 -10s-1 -8 -4 -10l-18 -14c-2 -2 -5 -3 -8 -3s-6 1 -8 3l-125 101l-125 -101c-2 -2 -5 -3 -8 -3s-6 1 -8 3l-17 14c-3 2 -5 6 -5 10s2 8 5 10l120 98l-120 98		c-3 2 -5 6 -5 10s2 8 5 10l17 14c2 2 5 3 8 3s6 -1 8 -3z",
 	].map(simplifyPath)),
 
+	pathFramesSymbol("NOTE REST", [
+		"M510 -22h-645c-12 0 -21 10 -21 22s9 22 21 22h135v126c0 4 4 8 8 8h359c4 0 8 -4 8 -8v-126h135c12 0 21 -10 21 -22s-9 -22 -21 -22z",
+	].map(simplifyPath)),
+
 	conditionSymbol("MEASURE_SEPARATOR", elem => elem.identity.type === "rect"
 		&& elem.sw === 0.19 && (elem.identity.rh === 4.05 || elem.identity.rh === 4)),
 	conditionSymbol("MEASURE_SEPARATOR BOLD", elem => elem.identity.type === "rect"
