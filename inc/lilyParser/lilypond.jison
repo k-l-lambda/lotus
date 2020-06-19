@@ -1174,7 +1174,7 @@ revert_arg
 		{$$ = $1;}
 	// extra formla
 	| revert_arg_backup symbol_list_arg
-		{$$ = $1 + " " + $2;}
+		{$$ = [$1, $2];}
 	;
 
 revert_arg_backup
