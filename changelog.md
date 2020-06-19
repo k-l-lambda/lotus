@@ -1,5 +1,6 @@
 
 ## TODO
+	staffNotation.ts: clusterize factor issue
 	LilyDocument:
 		remove empty track	(6.1 落叶.ly)
 	measure notes in Notation
