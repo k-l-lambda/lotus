@@ -11,7 +11,7 @@ const traverse = (node, handle) => {
 
 const childrenWithTag = (node: any, tagName: string) => {
 	const children = Array.from(node.childNodes);
-	return children.filter(node => node.tagName === tagName);
+	return children.filter((node: any) => node.tagName === tagName);
 };
 
 
