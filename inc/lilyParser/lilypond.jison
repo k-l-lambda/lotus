@@ -203,6 +203,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\skip"					return 'CMD_SKIP';
 "\\skip"(?=\d)				return 'CMD_SKIP';
 "\\parenthesize"			return 'CMD_PARENTHESIZE';
+"\\unfoldRepeats"			return 'CMD_UNFOLDREPEATS';
 
 "\\breve"					return 'CMD_BREVE';
 
@@ -1419,6 +1420,8 @@ unitary_cmd
 	| CMD_SKIP
 		{$$ = $1;}
 	| CMD_PARENTHESIZE
+		{$$ = $1;}
+	| CMD_UNFOLDREPEATS
 		{$$ = $1;}
 	;
 
