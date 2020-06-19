@@ -648,6 +648,10 @@ general_text
 		{$$ = $1;}
 	| "~"
 		{$$ = $1;}
+	| "!"
+		{$$ = $1;}
+	| "?"
+		{$$ = $1;}
 	| UNKNOWN_CHAR
 		{$$ = $1;}
 	| PLACEHOLDER_PITCH
