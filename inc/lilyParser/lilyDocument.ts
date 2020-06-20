@@ -948,4 +948,28 @@ export default class LilyDocument {
 
 		return count;
 	}
+
+
+	containsRepeat (): boolean {
+		const termContainsRepeat = (term: BaseTerm): boolean => {
+			if (!term.entries)
+				return false;
+
+			const subTerms = term.entries.filter(term => term instanceof BaseTerm);
+
+			for (const term of subTerms) {
+				if ((term as Command).cmd === "repeat")
+					return true;
+			}
+
+			for (const term of subTerms) {
+				if (termContainsRepeat(term))
+					return true;
+			}
+
+			return false;
+		};
+
+		return termContainsRepeat(this.root);
+	}
 };
