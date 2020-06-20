@@ -10,13 +10,17 @@
 	playground.sliceSource:
 		music duration parsing
 	staffSvg
-		clusterize notes by note stem
 		repeat measures
 		tied note parsing issue	(One Summer's Day)
 		octave & alter token order issue	(One Summer's Day)
 	source editor
 		cursor position column
 
+
+
+*	2020.6.20
+
+	+	scoreMaker.ts: makeSheetNotation added.
 
 
 *	2020.6.19
