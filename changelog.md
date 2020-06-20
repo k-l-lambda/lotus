@@ -20,6 +20,8 @@
 
 *	2020.6.20
 
+	+	lilyDocument.ts: unfoldRepeats added.
+
 	+	scoreMaker.ts: makeSheetNotation added.
 
 
