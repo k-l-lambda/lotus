@@ -154,11 +154,14 @@ interface IncompleteScoreJSON {
 interface SheetNotationResult extends IncompleteScoreJSON {
 	midiNotation: MusicNotation.NotationData;
 	sheetNotation: staffSvg.StaffNotation.SheetNotation;
+	lilyDocument: LilyDocument;
 };
 
 
-const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {withNotation = false, logger}: {withNotation?: boolean, logger?: LogRecorder} = {}): Promise<SheetNotationResult> => {
+const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {withNotation = true, logger}: {withNotation?: boolean, logger?: LogRecorder} = {}): Promise<SheetNotationResult> => {
+	let midi = null;
 	let midiNotation = null;
+	let lilyDocument = null;
 
 	const pages = [];
 	const hashTable = {};
@@ -171,12 +174,13 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 		// do some work during lilypond process running to save time
 		onProcStart: () => {
 			//console.log("tp.0:", Date.now() - t0);
-			const lilyDocument = new LilyDocument(lilyParser.parse(source));
+			lilyDocument = new LilyDocument(lilyParser.parse(source));
 			attrGen.release(lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly);
 			//console.log("tp.1:", Date.now() - t0);
 		},
-		onMidiRead: withNotation && (midi => {
+		onMidiRead: withNotation && (midi_ => {
 			//console.log("tm.0:", Date.now() - t0);
+			midi = midi_;
 			midiNotation = midi && MusicNotation.Notation.parseMidi(midi);
 			//console.log("tm.1:", Date.now() - t0);
 		}),
@@ -207,11 +211,13 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 	const sheetNotation = staffSvg.StaffNotation.parseNotationFromSheetDocument(doc, {logger});
 
 	return {
+		midi,
 		midiNotation,
 		sheetNotation,
 		meta,
 		doc,
 		hashTable,
+		lilyDocument,
 	};
 };
 
@@ -219,17 +225,33 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 const makeScoreV2 = async (source: string, lilyParser: GrammarParser, {midi, logger, unfoldRepeats = false}: {midi?: MIDI.MidiData, logger?: LogRecorder, unfoldRepeats?: boolean} = {}): Promise<ScoreJSON | IncompleteScoreJSON> => {
 	const t0 = Date.now();
 
-	const {midiNotation, sheetNotation, meta, doc, hashTable} = await makeSheetNotation(source, lilyParser, {logger, withNotation: true});
+	const foldData = await makeSheetNotation(source, lilyParser, {logger});
+	const {meta, doc, hashTable, lilyDocument} = foldData;
 
-	if (!midiNotation) {
+	if (!foldData.midiNotation && !midi) {
 		console.warn("Neither lilypond or external arguments did not offer MIDI data, score maker finish incompletely.");
 		return {
 			meta,
 			doc,
 			midi,
 			hashTable,
-		}; 
+		};
 	}
+
+	let midiNotation = foldData.midiNotation;
+	let sheetNotation = foldData.sheetNotation;
+
+	// TODO: lilypond document modification changes href, try a '%' placeholder version source
+	if (unfoldRepeats && lilyDocument.containsRepeat()) {
+		lilyDocument.unfoldRepeats();
+		const unfoldSource = lilyDocument.toString();
+		const unfoldData = await makeSheetNotation(unfoldSource, lilyParser, {logger});
+
+		midi = midi || unfoldData.midi;
+		midiNotation = unfoldData.midiNotation;
+		sheetNotation = unfoldData.sheetNotation;
+	}
+	midi = midi || foldData.midi;
 
 	const t5 = Date.now();
 

@@ -15,7 +15,7 @@ const main = async (...args) => {
 
 	const ly = fs.readFileSync(args[0]).toString();
 	const t0 = Date.now();
-	const result = await makeScore(ly, lilyParser, {logger});
+	const result = await makeScore(ly, lilyParser, {logger, unfoldRepeats: true});
 	console.log("cost:", Date.now() - t0);
 	//console.log("result:", result, logger);
 	console.log("profiles:", logger.records.filter(r => /scoreMaker\.profile/.test(r.desc)));
