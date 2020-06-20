@@ -224,7 +224,7 @@
 					height: 100,
 				},
 				dragHover: null,
-				lilySource: null,
+				lilySource: "",
 				converting: false,
 				engraving: false,
 				svgDocuments: null,
@@ -347,6 +347,7 @@
 				if (file) {
 					switch (file.type) {
 					case "text/x-lilypond":
+					case "text/lilypond-source":
 						this.lilySource = await file.readAs("Text");
 						//console.log("content:", content);
 
@@ -772,7 +773,7 @@
 			outline: 4px #4f4 dashed;
 		}
 
-		&[data-hover-type="text/x-lilypond"]
+		&[data-hover-type="text/x-lilypond"], &[data-hover-type="text/lilypond-source"]
 		{
 			background-color: #cfc;
 		}
