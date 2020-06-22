@@ -16,8 +16,10 @@ import LogRecorder from "../inc/logRecorder";
 const main = async () => {
 	//console.log("argv:", argv);
 
+	const t0 = Date.now();
+
 	const log = fs.createWriteStream("batchScoreMaker.log");
-	log.write(`[${new Date()}]	start.\n`);
+	log.write(`[${new Date(t0)}]	start.\n`);
 
 	const lilyParser = await loadLilyParser();
 
@@ -36,6 +38,8 @@ const main = async () => {
 		const xmlOptions = {};
 
 		const xmlFiles = walkDir(argv.inputXmlDir, /\.xml$/, {recursive: true});
+		log.write(`${xmlFiles.length} XML files.\n`);
+
 		for (const xmlPath of xmlFiles) {
 			//console.log("xmlPath:", xmlPath);
 			const lyPath = xmlPath.replace(/\.\w+$/, ".ly");
@@ -100,6 +104,8 @@ const main = async () => {
 		}
 	}
 
+	const t1 = Date.now();
+
 	if (argv.inputLyDir || argv.bundleScore) {
 		const counting = {
 			success: 0,
@@ -113,6 +119,8 @@ const main = async () => {
 		let index = 0;
 
 		const markup = argv.markup ? fs.readFileSync(argv.markup).toString() : null;
+
+		log.write(`${lilyFiles.size} lilypond files.\n`);
 
 		for (const lyPath of lilyFiles) {
 			//console.log("lyPath:", lyPath);
@@ -193,13 +201,27 @@ const main = async () => {
 		issues.sort((i1, i2) => i1.coverage - i2.coverage);
 		console.log("issues:", issues);
 
-		log.write("issues:\n");
-		log.write(issues.map(issue => JSON.stringify(issue)).join("\n"));
-		log.write("\n");
+		if (issues.length) {
+			log.write("Issues:\n");
+			log.write(issues.map(issue => JSON.stringify(issue)).join("\n"));
+			log.write("\n");
+		}
+		else
+			log.write("No issues.\n");
 	}
 
-	console.log("batchScoreMaker done.");
-	log.write(`[${new Date()}]	done.\n`);
+	const tx = Date.now();
+	const costTotal = ((tx - t0) * 1e-3).toFixed();
+	const costAverage = lilyFiles.size && ((tx - t1) / lilyFiles.size);
+
+	console.log(`batchScoreMaker done, ${costTotal}s cost.`);
+	log.write(`[${new Date(tx)}]	done.\n`);
+	log.write(`${costTotal}s cost.\n`);
+
+	if (costAverage) {
+		console.log(`${(costAverage * 1e-3).toFixed(1)}s per file.\n`);
+		log.write(`${(costAverage * 1e-3).toFixed(1)}s per file.\n`);
+	}
 };
 
 
