@@ -191,6 +191,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 [\\][t][i][m][e][s]			return 'CMD_TIMES';
 "\\stemUp"					return 'CMD_STEMUP';
 "\\stemDown"				return 'CMD_STEMDOWN';
+"\\stemNeutral"				return 'CMD_STEMNEUTRAL';
 "\\bar"						return 'CMD_BAR';
 "\\omit"					return 'CMD_OMIT';
 "\\ottava"					return 'CMD_OTTAVA';
@@ -204,6 +205,11 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\skip"(?=\d)				return 'CMD_SKIP';
 "\\parenthesize"			return 'CMD_PARENTHESIZE';
 "\\unfoldRepeats"			return 'CMD_UNFOLDREPEATS';
+"\\grace"					return 'CMD_GRACE';
+"\\acciaccatura"			return 'CMD_ACCIACCATURA';
+"\\appoggiatura"			return 'CMD_APPOGGIATURA';
+"\\slashedGrace"			return 'CMD_SLASHEDGRACE';
+"\\afterGrace"				return 'CMD_AFTERGRACE';
 
 "\\breve"					return 'CMD_BREVE';
 
@@ -1367,6 +1373,8 @@ zero_command
 		{$$ = command($1);}
 	| CMD_STEMDOWN
 		{$$ = command($1);}
+	| CMD_STEMNEUTRAL
+		{$$ = command($1);}
 	;
 
 expressive_mark
@@ -1403,6 +1411,8 @@ unitary_cmd
 		{$$ = $1;}
 	| CMD_STEMDOWN
 		{$$ = $1;}
+	| CMD_STEMNEUTRAL
+		{$$ = $1;}
 	| CMD_BAR
 		{$$ = $1;}
 	| CMD_OMIT
@@ -1426,6 +1436,16 @@ unitary_cmd
 	| CMD_PARENTHESIZE
 		{$$ = $1;}
 	| CMD_UNFOLDREPEATS
+		{$$ = $1;}
+	| CMD_GRACE
+		{$$ = $1;}
+	| CMD_ACCIACCATURA
+		{$$ = $1;}
+	| CMD_APPOGGIATURA
+		{$$ = $1;}
+	| CMD_SLASHEDGRACE
+		{$$ = $1;}
+	| CMD_AFTERGRACE
 		{$$ = $1;}
 	;
 
