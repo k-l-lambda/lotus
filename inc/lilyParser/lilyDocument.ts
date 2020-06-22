@@ -632,14 +632,14 @@ class Markup extends BaseTerm {
 
 
 class Lyric extends BaseTerm {
-	content: string;
+	content: string | LiteralString;
 	duration?: string;
 	post_events?: any[];
 
 
 	serialize () {
 		return [
-			this.content,
+			...BaseTerm.optionalSerialize(this.content),
 			...BaseTerm.optionalSerialize(this.duration),
 			...cc((this.post_events || []).map(BaseTerm.optionalSerialize)),
 		];
