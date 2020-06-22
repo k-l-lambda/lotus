@@ -1009,8 +1009,10 @@ export default class LilyDocument {
 
 			let offset = 0;
 			groups.forEach(group => {
+				const startIndex = group.start + offset;
 				const mainBody = new MusicBlock({proto: "MusicBlock", body: []});
-				for (let i = group.start + offset; i < group.start + offset + group.count; ++ i) {
+
+				for (let i = startIndex; i < startIndex + group.count; ++ i) {
 					const music = block.body[i].args[0];
 					if (music instanceof MusicBlock)
 						mainBody.body.push(...music.body);
@@ -1018,8 +1020,8 @@ export default class LilyDocument {
 						mainBody.body.push(music);
 				}
 
-				block.body[group.start].args[0] = mainBody;
-				block.body.splice(group.start + 1, group.count - 1);
+				block.body[startIndex].args[0] = mainBody;
+				block.body.splice(startIndex + 1, group.count - 1);
 
 				offset -= group.count - 1;
 			});
