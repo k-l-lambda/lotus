@@ -1037,4 +1037,18 @@ export default class LilyDocument {
 			}
 		});
 	}
+
+
+	fixInvalidBriefChords () {
+		this.root.forEachTerm(BriefChord, chord => {
+			const items = chord.body.items;
+			if (items) {
+				// merge multiple ^ items
+				while (items.filter(item => item === "^").length > 1) {
+					const index = items.lastIndexOf("^");
+					items.splice(index, 1, ".");
+				}
+			}
+		});
+	}
 };
