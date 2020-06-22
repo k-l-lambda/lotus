@@ -182,10 +182,10 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\relative"				return 'CMD_RELATIVE';
 "\\absolute"				return 'CMD_ABSOLUTE';
 "\\tweak"					return 'CMD_TWEAK';
+"\\key"						return 'CMD_KEY';
 
 // unitary commands
 "\\clef"					return 'CMD_CLEF';
-"\\key"						return 'CMD_KEY';
 "\\time"					return 'CMD_TIME';
 //"\\times"					return 'CMD_TIMES';
 [\\][t][i][m][e][s]			return 'CMD_TIMES';
@@ -1346,6 +1346,8 @@ music_identifier
 	//| binary_cmd value value
 	//	{$$ = command($1, [$2, $3]);}
 	| CMD_TWEAK property_path value
+		{$$ = command($1, $2, $3);}
+	| CMD_KEY PITCH COMMAND
 		{$$ = command($1, $2, $3);}
 	| pitch_mode_music
 		{$$ = $1;}
