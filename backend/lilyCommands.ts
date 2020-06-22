@@ -332,6 +332,9 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: 
 
 		switch (ext) {
 		case env.MIDI_FILE_EXTEND: {
+			while (/continuing|error/.test(newLine))
+				newLine = await fileReady.lock();
+
 			const buffer = await asyncCall(fs.readFile, filePath);
 			if (!buffer.length)
 				console.warn("empty MIDI buffer, command message:", newLine);
