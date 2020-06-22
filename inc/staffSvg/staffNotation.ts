@@ -2,6 +2,8 @@
 import _ from "lodash";
 import sha1 from "sha1";
 import {Matcher} from "@k-l-lambda/web-widgets";
+// eslint-disable-next-line
+import {MusicNotation} from "@k-l-lambda/web-widgets";
 
 import LogRecorder from "../logRecorder";
 import DictArray from "../DictArray";
@@ -488,7 +490,12 @@ const parseNotationInStaff = (context : StaffContext, staff) => {
 };
 
 
-const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} = {}) => {
+interface SheetNotation extends MusicNotation.NotationData {
+	pitchContexts: PitchContext[][];
+};
+
+
+const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} = {}): SheetNotation => {
 	if (!document.trackCount)
 		return null;
 
@@ -694,4 +701,5 @@ export {
 	PitchContext,
 	PitchContextTable,
 	createPitchContextGroup,
+	SheetNotation,
 };

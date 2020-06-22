@@ -349,7 +349,7 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: 
 			loadProcs.push(loadFile(line));
 	};
 
-	const proc = child_process.exec(`cd ${env.TEMP_DIR} && ${env.LILYPOND_DIR}lilypond -dbackend=svg .${sourceFilename}`);
+	const proc = child_process.exec(`cd ${env.TEMP_DIR} && "${env.LILYPOND_DIR}lilypond" -dbackend=svg .${sourceFilename}`);
 	proc.childProcess.stdout.on("data", checkFile);
 	proc.childProcess.stderr.on("data", checkFile);
 

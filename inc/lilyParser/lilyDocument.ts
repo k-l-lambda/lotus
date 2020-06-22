@@ -1,5 +1,7 @@
 
 interface LilyTerm {
+	isMusic?: boolean;
+
 	serialize () : string[];
 	join () : string;
 
@@ -12,6 +14,8 @@ const cc = arrays => [].concat(...arrays);
 
 
 class BaseTerm implements LilyTerm {
+	isMusic?: boolean;
+
 	constructor (data: object) {
 		//Object.assign(this, data);
 		for (const key in data) 
@@ -186,6 +190,16 @@ class Command extends BaseTerm {
 	get entries () {
 		return this.args.filter(arg => arg instanceof BaseTerm);
 	}
+
+
+	get isMusic () {
+		for (const arg of this.args) {
+			if (arg.isMusic)
+				return true;
+		}
+
+		return false;
+	}
 };
 
 
@@ -250,6 +264,11 @@ class MusicBlock extends BaseTerm {
 	get entries () {
 		return this.body;
 	}
+
+
+	get isMusic () {
+		return true;
+	}
 };
 
 
@@ -278,6 +297,11 @@ class SimultaneousList extends BaseTerm {
 				item.removeStaffGroup();
 		});
 	}
+
+
+	get isMusic () {
+		return true;
+	}
 };
 
 
@@ -293,6 +317,11 @@ class ContextedMusic extends BaseTerm {
 			...BaseTerm.optionalSerialize(this.body),
 			...BaseTerm.optionalSerialize(this.lyrics),
 		];
+	}
+
+
+	get isMusic () {
+		return true;
 	}
 };
 
@@ -486,6 +515,11 @@ class Chord extends BaseTerm {
 			options,
 		};
 	}
+
+
+	get isMusic () {
+		return true;
+	}
 };
 
 
@@ -509,6 +543,11 @@ class BriefChord extends BaseTerm {
 			[pitch, duration, separator, ...(items || [])].join(""),
 			...cc((this.post_events || []).map(BaseTerm.optionalSerialize)),
 		];
+	}
+
+
+	get isMusic () {
+		return true;
 	}
 };
 
@@ -604,6 +643,11 @@ class Lyric extends BaseTerm {
 			...BaseTerm.optionalSerialize(this.duration),
 			...cc((this.post_events || []).map(BaseTerm.optionalSerialize)),
 		];
+	}
+
+
+	get isMusic () {
+		return true;
 	}
 }
 
@@ -881,5 +925,51 @@ export default class LilyDocument {
 		}
 		else
 			console.warn("no score block");
+	}
+
+
+	unfoldRepeats () {
+		const score = this.root.getBlock("score");
+		const musicList = score ? score.body : this.root.sections;
+
+		let count = 0;
+
+		musicList.forEach((term, i) => {
+			if (term.isMusic && (term as Command).cmd !== "unfoldRepeats") {
+				const unfold = new Command({cmd: "unfoldRepeats", args: [term]});
+				musicList.splice(i, 1, unfold);
+
+				++count;
+			}
+		});
+
+		if (!count)
+			console.warn("no music term to unfold");
+
+		return count;
+	}
+
+
+	containsRepeat (): boolean {
+		const termContainsRepeat = (term: BaseTerm): boolean => {
+			if (!term.entries)
+				return false;
+
+			const subTerms = term.entries.filter(term => term instanceof BaseTerm);
+
+			for (const term of subTerms) {
+				if ((term as Command).cmd === "repeat")
+					return true;
+			}
+
+			for (const term of subTerms) {
+				if (termContainsRepeat(term))
+					return true;
+			}
+
+			return false;
+		};
+
+		return termContainsRepeat(this.root);
 	}
 };

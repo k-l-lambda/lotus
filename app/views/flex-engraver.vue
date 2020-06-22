@@ -213,6 +213,7 @@
 				if (file) {
 					switch (file.type) {
 					case "text/x-lilypond":
+					case "text/lilypond-source":
 						const content = await file.readAs("Text");
 						//console.log("content:", file, content);
 						const name = file.name.replace(/\.ly$/, "");

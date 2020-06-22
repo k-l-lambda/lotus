@@ -25,7 +25,7 @@ interface ScoreMeta {
 
 
 interface ScoreJSON {
-	meta: ScoreMeta,
+	meta: ScoreMeta;
 	doc: SheetDocument;
 	hashTable: {[key: string]: any};
 	midi: MIDI.MidiData;

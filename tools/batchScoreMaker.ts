@@ -138,9 +138,9 @@ const main = async () => {
 					console.log("midi loaded:", midiPath);
 				}
 
-				const score = await ScoreMaker.markScore(ly, lilyParser, {midi, logger});
+				const score = await ScoreMaker.makeScore(ly, lilyParser, {midi, logger});
 
-				const matchStat = logger.records.reverse().find(record => record.desc === "markScore.match");
+				const matchStat = logger.records.reverse().find(record => record.desc === "makeScore.match");
 				console.assert(matchStat, "No matchStat in logger.");
 
 				if (matchStat.data.coverage < 1) {

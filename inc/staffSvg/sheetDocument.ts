@@ -119,7 +119,7 @@ class SheetDocument {
 
 
 	get trackCount () {
-		return Math.max(...this.rows.map(row => row.staves.length));
+		return Math.max(...this.rows.map(row => row.staves.length), 0);
 	}
 
 
