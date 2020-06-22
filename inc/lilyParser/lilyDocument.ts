@@ -735,6 +735,9 @@ export interface LilyDocumentAttributeReadOnly {
 };
 
 
+const GRACE_COMMANDS = ["grace", "acciaccatura", "appoggiatura", "slashedGrace"];
+
+
 
 export default class LilyDocument {
 	root: Root;
@@ -971,5 +974,55 @@ export default class LilyDocument {
 		};
 
 		return termContainsRepeat(this.root);
+	}
+
+
+	removeEmptySubMusicBlocks () {
+		this.root.forEachTerm(MusicBlock, block => {
+			block.body = block.body.filter(term => !(term instanceof MusicBlock && term.body.length === 0));
+		});
+	}
+
+
+	mergeContinuousGraces () {
+		this.removeEmptySubMusicBlocks();
+
+		const isGraceCommand = term => term instanceof Command && GRACE_COMMANDS.includes(term.cmd);
+
+		this.root.forEachTerm(MusicBlock, block => {
+			const groups = [];
+			let currentGroup = null;
+
+			block.body.forEach((term, i) => {
+				if (!isGraceCommand(term))
+					currentGroup = null;
+				else {
+					if (!currentGroup)
+						currentGroup = {start: i, count: 1};
+					else
+						currentGroup.count++;
+
+					if (currentGroup.count === 2)
+						groups.push(currentGroup);
+				}
+			});
+
+			let offset = 0;
+			groups.forEach(group => {
+				const mainBody = new MusicBlock({proto: "MusicBlock", body: []});
+				for (let i = group.start + offset; i < group.start + offset + group.count; ++ i) {
+					const music = block.body[i].args[0];
+					if (music instanceof MusicBlock)
+						mainBody.body.push(...music.body);
+					else
+						mainBody.body.push(music);
+				}
+
+				block.body[group.start].args[0] = mainBody;
+				block.body.splice(group.start + 1, group.count - 1);
+
+				offset -= group.count - 1;
+			});
+		});
 	}
 };
