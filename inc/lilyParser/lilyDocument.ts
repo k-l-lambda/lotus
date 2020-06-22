@@ -157,6 +157,11 @@ class LiteralString extends BaseTerm {
 	exp: string
 
 
+	static fromString (content: string): LiteralString {
+		return new LiteralString({exp: JSON.stringify(content)});
+	}
+
+
 	serialize () {
 		return [this.exp];
 	}
@@ -466,7 +471,14 @@ class Assignment extends BaseTerm {
 class Chord extends BaseTerm {
 	pitches: string[];
 	duration: string;
-	options: any;
+	options: {
+		exclamations?: string[],
+		questions?: string[],
+		post_events?: PostEvent[],
+		rest?: string,
+		withAngle?: boolean,
+		location?: string,
+	};
 
 
 	constructor (data: object) {
@@ -479,6 +491,14 @@ class Chord extends BaseTerm {
 
 	get single () {
 		return this.pitches.length === 1;
+	}
+
+
+	get entries () {
+		if (this.options && this.options.post_events)
+			return this.options.post_events;
+
+		return null;
 	}
 
 
@@ -603,6 +623,14 @@ class PostEvent extends BaseTerm {
 
 	serialize () {
 		return [DIRECTION_CHAR[this.direction], "\b", ...BaseTerm.optionalSerialize(this.arg)];
+	}
+
+
+	get entries () {
+		if (this.arg instanceof BaseTerm)
+			return [this.arg];
+
+		return null;
 	}
 };
 
@@ -1049,6 +1077,22 @@ export default class LilyDocument {
 					items.splice(index, 1, ".");
 				}
 			}
+		});
+	}
+
+
+	fixInvalidMarkupWords () {
+		this.root.forEachTerm(MarkupCommand, cmd => {
+			//console.log("markup:", cmd);
+			cmd.forEachTerm(InlineBlock, block => {
+				// replace scheme expression by literal string
+				block.body = block.body.map(term => {
+					if (term instanceof Scheme)
+						return LiteralString.fromString(term.join().replace(/\s+$/, ""));
+
+					return term;
+				});
+			});
 		});
 	}
 };

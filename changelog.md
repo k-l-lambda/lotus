@@ -21,6 +21,8 @@
 
 *	2020.6.22
 
+	+	lilyDocument.ts: fixInvalidMarkupWords added.
+
 	+	lilyDocument.ts: fixInvalidBriefChords added.
 
 	+	lilyDocument.ts: fixInvalidKeys added.
