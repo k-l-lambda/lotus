@@ -21,6 +21,8 @@
 
 *	2020.6.22
 
+	+	lilyDocument.ts: fixInvalidKeys added.
+
 	+	lilyDocument.ts: mergeContinuousGraces added.
 
 	+	lilyCommands.ts: skip error messages in command line when checking files.

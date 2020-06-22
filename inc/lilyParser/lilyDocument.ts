@@ -1027,4 +1027,14 @@ export default class LilyDocument {
 			});
 		});
 	}
+
+
+	fixInvalidKeys (mode = "major") {
+		this.root.forEachTerm(Command, cmd => {
+			if (cmd.cmd === "key") {
+				if (cmd.args[1] === "\\none")
+					cmd.args[1] = "\\" + mode;
+			}
+		});
+	}
 };
