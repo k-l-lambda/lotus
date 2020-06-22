@@ -20,6 +20,11 @@
 
 
 
+*	2020.6.22
+
+	+	batchScoreMaker.ts: log file added.
+
+
 *	2020.6.21
 
 	+	lilyDocument.ts: makeScoreV3 implemented.

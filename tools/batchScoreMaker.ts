@@ -16,6 +16,9 @@ import LogRecorder from "../inc/logRecorder";
 const main = async () => {
 	//console.log("argv:", argv);
 
+	const log = fs.createWriteStream("batchScoreMaker.log");
+	log.write(`[${new Date()}]	start.\n`);
+
 	const lilyParser = await loadLilyParser();
 
 	const lilyFiles: Set<string> = new Set();
@@ -189,9 +192,14 @@ const main = async () => {
 
 		issues.sort((i1, i2) => i1.coverage - i2.coverage);
 		console.log("issues:", issues);
+
+		log.write("issues:\n");
+		log.write(issues.map(issue => JSON.stringify(issue)).join("\n"));
+		log.write("\n");
 	}
 
 	console.log("batchScoreMaker done.");
+	log.write(`[${new Date()}]	done.\n`);
 };
 
 
