@@ -21,6 +21,9 @@ const setEnvironment = e => {
 };
 
 
+const _WINDOWS = process.platform === "win32";
+
+
 const genHashString = (len = 8) => Buffer.from(Math.random().toString()).toString("base64").substr(3, 3 + len);
 
 
@@ -28,7 +31,7 @@ const emptyCache = async () => {
 	// empty temporary directory
 	try {
 		if (env.TEMP_DIR) {
-			if (process.platform === "win32")
+			if (_WINDOWS)
 				await child_process.exec(`del /q "${env.TEMP_DIR}*"`);
 			else
 				await child_process.exec(`rm "${env.TEMP_DIR}*"`);
@@ -294,6 +297,11 @@ const postProcessSvg = svg => {
 const FILE_BORN_OUPUT_PATTERN = /output\sto\s`(.+)'/;
 
 
+let LILYPOND_PATH = path.join(env.LILYPOND_DIR, "lilypond");
+if (_WINDOWS)
+	LILYPOND_PATH = `"${LILYPOND_PATH}"`;
+
+
 const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: {
 	onProcStart?: () => void,
 	onMidiRead?: (content: MIDI.MidiData) => void,
@@ -349,7 +357,7 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: 
 			loadProcs.push(loadFile(line));
 	};
 
-	const proc = child_process.exec(`cd ${env.TEMP_DIR} && "${env.LILYPOND_DIR}lilypond" -dbackend=svg .${sourceFilename}`);
+	const proc = child_process.exec(`cd ${env.TEMP_DIR} && ${LILYPOND_PATH} -dbackend=svg .${sourceFilename}`);
 	proc.childProcess.stdout.on("data", checkFile);
 	proc.childProcess.stderr.on("data", checkFile);
 
@@ -411,7 +419,7 @@ const engraveSvgWithStream = async (source: string, output: Writable) => {
 			loadFile(line);
 	};
 
-	const proc = child_process.exec(`cd ${env.TEMP_DIR} && ${env.LILYPOND_DIR}lilypond -dbackend=svg .${sourceFilename}`);
+	const proc = child_process.exec(`cd ${env.TEMP_DIR} && ${LILYPOND_PATH} -dbackend=svg .${sourceFilename}`);
 	proc.childProcess.stdout.on("data", checkFile);
 	proc.childProcess.stderr.on("data", checkFile);
 
