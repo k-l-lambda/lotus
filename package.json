@@ -52,6 +52,7 @@
     "vue-resize-directive": "^1.2.0",
     "vue-template-compiler": "^2.6.11",
     "xmldom": "^0.3.0",
+    "yaml": "^1.10.0",
     "yargs": "^15.3.1"
   }
 }

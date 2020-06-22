@@ -1,6 +1,7 @@
 
 import fs from "fs";
 import {argv} from "yargs";
+import YAML from "yaml";
 import {MIDI} from "@k-l-lambda/web-widgets";
 
 import "../env.js";
@@ -18,8 +19,13 @@ const main = async () => {
 
 	const t0 = Date.now();
 
-	const log = fs.createWriteStream("batchScoreMaker.log");
-	log.write(`[${new Date(t0)}]	start.\n`);
+	const logStream = fs.createWriteStream("batchScoreMaker.log");
+	const log = (...messages) => {
+		console.log(...messages);
+		logStream.write(messages.join(" ") + "\n", "utf-8");
+	};
+
+	log(`[${new Date(t0)}]	start.`);
 
 	const lilyParser = await loadLilyParser();
 
@@ -38,7 +44,7 @@ const main = async () => {
 		const xmlOptions = {};
 
 		const xmlFiles = walkDir(argv.inputXmlDir, /\.xml$/, {recursive: true});
-		log.write(`${xmlFiles.length} XML files.\n`);
+		log(`${xmlFiles.length} XML files.`);
 
 		for (const xmlPath of xmlFiles) {
 			//console.log("xmlPath:", xmlPath);
@@ -82,7 +88,7 @@ const main = async () => {
 				emptyCache();
 		}
 
-		console.log("XML to ly finished, success:", counting.success, "failure:", counting.failure, "skip:", counting.skip);
+		log("XML to ly finished, success:", counting.success, "failure:", counting.failure, "skip:", counting.skip);
 	}
 
 	if (argv.inputLyDir) {
@@ -120,7 +126,7 @@ const main = async () => {
 
 		const markup = argv.markup ? fs.readFileSync(argv.markup).toString() : null;
 
-		log.write(`${lilyFiles.size} lilypond files.\n`);
+		log(`${lilyFiles.size} lilypond files.`);
 
 		for (const lyPath of lilyFiles) {
 			//console.log("lyPath:", lyPath);
@@ -196,32 +202,28 @@ const main = async () => {
 				emptyCache();
 		}
 
-		console.log("Score making finished, perfect:", counting.perfect, ", success:", counting.success, "failure:", counting.failure, "skip:", counting.skip);
+		log("Score making finished, perfect:", counting.perfect, ", success:", counting.success, "failure:", counting.failure, "skip:", counting.skip);
 
 		issues.sort((i1, i2) => i1.coverage - i2.coverage);
-		console.log("issues:", issues);
+		//console.log("issues:", issues);
 
 		if (issues.length) {
-			log.write("Issues:\n");
-			log.write(issues.map(issue => JSON.stringify(issue)).join("\n"));
-			log.write("\n");
+			log("Issues:");
+			log(YAML.stringify(issues), "utf-8");
 		}
 		else
-			log.write("No issues.\n");
+			log("No issues.");
 	}
 
 	const tx = Date.now();
 	const costTotal = ((tx - t0) * 1e-3).toFixed();
 	const costAverage = lilyFiles.size && ((tx - t1) / lilyFiles.size);
 
-	console.log(`batchScoreMaker done, ${costTotal}s cost.`);
-	log.write(`[${new Date(tx)}]	done.\n`);
-	log.write(`${costTotal}s cost.\n`);
+	log(`[${new Date(tx)}]	done.`);
+	log(`${costTotal}s cost.`);
 
-	if (costAverage) {
-		console.log(`${(costAverage * 1e-3).toFixed(1)}s per file.\n`);
-		log.write(`${(costAverage * 1e-3).toFixed(1)}s per file.\n`);
-	}
+	if (costAverage)
+		log(`${(costAverage * 1e-3).toFixed(1)}s per file.`);
 };
 
 
