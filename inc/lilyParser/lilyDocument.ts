@@ -1090,6 +1090,9 @@ export default class LilyDocument {
 					if (term instanceof Scheme)
 						return LiteralString.fromString(term.join().replace(/\s+$/, ""));
 
+					if (typeof term === "string" && term.includes("$"))
+						return LiteralString.fromString(term);
+
 					return term;
 				});
 			});
