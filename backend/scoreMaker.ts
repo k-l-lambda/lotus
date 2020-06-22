@@ -378,8 +378,13 @@ const makeScoreV3 = async (source: string, lilyParser: GrammarParser, {midi, log
 	}
 
 	midi = midi || foldData.midi;
-	if (!midi) {
-		console.warn("Neither lilypond or external arguments did not offer MIDI data, score maker finish incompletely.");
+	if (!midi || !sheetNotation) {
+		if (!midi)
+			console.warn("Neither lilypond or external arguments did not offer MIDI data, score maker finished incompletely.");
+
+		if (!sheetNotation)
+			console.warn("sheetNotation parsing failed, score maker finished incompletely.");
+
 		return {
 			meta,
 			doc,

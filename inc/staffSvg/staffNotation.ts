@@ -595,6 +595,9 @@ const assignNotationEventsIds = midiNotation => {
 
 
 const matchNotations = async (midiNotation, svgNotation) => {
+	console.assert(midiNotation, "midiNotation is null.");
+	console.assert(svgNotation, "svgNotation is null.");
+
 	// map svgNotation without duplicated ones
 	const noteMap = {};
 	const notePMap = {};
