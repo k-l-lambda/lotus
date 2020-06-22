@@ -112,6 +112,8 @@ const main = async () => {
 
 	const t1 = Date.now();
 
+	let processedCount = 0;
+
 	if (argv.inputLyDir || argv.bundleScore) {
 		const counting = {
 			success: 0,
@@ -213,11 +215,13 @@ const main = async () => {
 		}
 		else
 			log("No issues.");
+
+		processedCount = lilyFiles.size - counting.skip;
 	}
 
 	const tx = Date.now();
 	const costTotal = ((tx - t0) * 1e-3).toFixed();
-	const costAverage = lilyFiles.size && ((tx - t1) / lilyFiles.size);
+	const costAverage = processedCount && ((tx - t1) / processedCount);
 
 	log(`[${new Date(tx)}]	done.`);
 	log(`${costTotal}s cost.`);
