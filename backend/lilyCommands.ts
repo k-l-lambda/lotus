@@ -34,7 +34,7 @@ const emptyCache = async () => {
 			if (_WINDOWS)
 				await child_process.exec(`del /q "${env.TEMP_DIR}*"`);
 			else
-				await child_process.exec(`rm "${env.TEMP_DIR}*"`);
+				await child_process.exec(`rm ${env.TEMP_DIR}*`);
 			console.log("Temporary directory clear.");
 		}
 	}
@@ -316,10 +316,13 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: 
 	let midi = null;
 	const svgs = [];
 
-	const fileReady = new SingleLock();
+	const fileReady = new SingleLock<string>();
 
 	const loadFile = async line => {
-		await fileReady.lock();
+		// skip error messages in command line output
+		let newLine = await fileReady.lock();
+		while (/error/.test(newLine))
+			newLine = await fileReady.lock();
 
 		const [_, filename] = line.match(FILE_BORN_OUPUT_PATTERN);
 		const [__, ext] = filename.match(/\.(\w+)$/);
@@ -330,6 +333,9 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: 
 		switch (ext) {
 		case env.MIDI_FILE_EXTEND: {
 			const buffer = await asyncCall(fs.readFile, filePath);
+			if (!buffer.length)
+				console.warn("empty MIDI buffer, command message:", newLine);
+
 			midi = MIDI.parseMidiData(buffer);
 
 			onMidiRead && onMidiRead(midi);
@@ -338,6 +344,9 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: 
 			break;
 		case "svg": {
 			const buffer = await asyncCall(fs.readFile, filePath);
+			if (!buffer.length)
+				console.warn("empty SVG buffer, command message:", newLine);
+
 			const svg = postProcessSvg(buffer.toString());
 			svgs.push(svg);
 
@@ -351,7 +360,7 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: 
 	const loadProcs: Promise<void>[] = [];
 
 	const checkFile = line => {
-		fileReady.release();
+		fileReady.release(line);
 
 		if (FILE_BORN_OUPUT_PATTERN.test(line))
 			loadProcs.push(loadFile(line));

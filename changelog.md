@@ -22,6 +22,8 @@
 
 *	2020.6.22
 
+	+	lilyCommands.ts: skip error messages in command line when checking files.
+
 	+	batchScoreMaker.ts: log file added.
 
 
