@@ -1016,32 +1016,26 @@ export default class LilyDocument {
 		this.removeEmptySubMusicBlocks();
 
 		const isGraceCommand = term => term instanceof Command && GRACE_COMMANDS.includes(term.cmd);
+		const isGraceInnerTerm = term => isGraceCommand(term) || term instanceof Divide || term instanceof PostEvent;
 
 		this.root.forEachTerm(MusicBlock, block => {
-			// remove divides which split graces
-			block.body
-				.map((term, index) => ({term, index}))
-				.filter(({term}) => term instanceof Divide)
-				.sort((t1, t2) => t2.index - t1.index)
-				.forEach(({index}) => {
-					if (index > 0 && isGraceCommand(block.body[index - 1]))
-						block.body.splice(index, 1);
-				});
-
 			const groups = [];
 			let currentGroup = null;
 
 			block.body.forEach((term, i) => {
-				if (!isGraceCommand(term))
-					currentGroup = null;
-				else {
-					if (!currentGroup)
-						currentGroup = {start: i, count: 1};
-					else
+				if (currentGroup) {
+					if (isGraceInnerTerm(term)) {
 						currentGroup.count++;
 
-					if (currentGroup.count === 2)
-						groups.push(currentGroup);
+						if (currentGroup.count === 2)
+							groups.push(currentGroup);
+					}
+					else
+						currentGroup = null;
+				}
+				else {
+					if (isGraceCommand(term))
+						currentGroup = {start: i, count: 1};
 				}
 			});
 
@@ -1051,7 +1045,8 @@ export default class LilyDocument {
 				const mainBody = new MusicBlock({proto: "MusicBlock", body: []});
 
 				for (let i = startIndex; i < startIndex + group.count; ++ i) {
-					const music = block.body[i].args[0];
+					const term = block.body[i];
+					const music = isGraceCommand(term) ? term.args[0] : term;
 					if (music instanceof MusicBlock)
 						mainBody.body.push(...music.body);
 					else
