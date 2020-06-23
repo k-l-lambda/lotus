@@ -169,7 +169,8 @@ const main = async () => {
 				const score = await ScoreMaker.makeScore(ly, lilyParser, {midi, logger});
 
 				const matchStat = logger.records.reverse().find(record => record.desc === "makeScore.match");
-				console.assert(matchStat, "No matchStat in logger.");
+				if (!matchStat)
+					throw new Error("No matchStat in logger");
 
 				if (matchStat.data.coverage < 1) {
 					console.log("imperfect matching:", lyPath, matchStat.data);
