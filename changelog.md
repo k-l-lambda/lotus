@@ -19,6 +19,11 @@
 
 
 
+*	2020.6.23
+
+	+	staffNotation.ts: ignored invalid alters.
+
+
 *	2020.6.22
 
 	+	lilyDocument.ts: fixInvalidMarkupWords added.

@@ -350,6 +350,8 @@ class StaffContext {
 
 	yToNote (y) {
 		console.assert(Number.isInteger(y * 2), "invalid y:", y);
+		//if (!Number.isInteger(y * 2))
+		//	debugger;
 
 		return (-y - this.octaveShift * 3.5 - this.clef) * 2;
 	}
@@ -401,11 +403,14 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 			continue;
 
 		if (token.is("ALTER")) {
-			//if (token.source && token.source.substr(0, 4) === "\\key")
-			if (token.x < measure.headX)
-				context.setKeyAlter(token.ry, token.alterValue);
-			else
-				context.setAlter(token.ry, token.alterValue);
+			// ignore invalid alters
+			if (Number.isInteger(token.ry * 2)) {
+				//if (token.source && token.source.substr(0, 4) === "\\key")
+				if (token.x < measure.headX)
+					context.setKeyAlter(token.ry, token.alterValue);
+				else
+					context.setAlter(token.ry, token.alterValue);
+			}
 		}
 		else if (token.is("CLEF")) 
 			context.setClef(token.ry, token.clefValue);
