@@ -511,7 +511,7 @@
 				const link = document.createElement("a");
 				link.href = URL.createObjectURL(sourceFile);
 
-				const filename = prompt("Input your file name:", "lotus-editor.ly");
+				const filename = prompt("Input your file name:", `${this.title || "lotus-editor"}.ly`);
 				if (filename) {
 					link.download = /\.\w+/.test(filename) ? filename : filename + ".ly";
 					link.click();
