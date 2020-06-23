@@ -718,6 +718,20 @@
 				this.updateLilyDocument();
 				console.log(this.lilyDocument);
 			},
+
+
+			executeMarkup (func) {
+				this.updateLilyDocument();
+				if (!this.lilyDocument)
+					console.log("lilyDocument parsing failed.");
+
+				if (!this.lilyDocument[func])
+					console.warn("Markup function not found:", func, this.lilyDocument);
+
+				this.lilyDocument[func]();
+
+				this.lilySource = this.lilyDocument.toString();
+			},
 		},
 
 
