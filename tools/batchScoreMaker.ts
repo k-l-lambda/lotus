@@ -38,6 +38,8 @@ const main = async () => {
 			skip: 0,
 		};
 
+		const issues = [];
+
 		const markup = argv.xmlMarkup ? fs.readFileSync(argv.xmlMarkup).toString() : null;
 
 		// TODO: set xml options according to argv
@@ -75,6 +77,8 @@ const main = async () => {
 				console.error(err);
 				console.warn("Error when converting xml:", xmlPath);
 
+				issues.push(xmlPath);
+
 				++counting.failure;
 
 				if (argv.pauseOnError) {
@@ -86,6 +90,11 @@ const main = async () => {
 			// flush cache directory every 100 files
 			if ((counting.success + counting.failure) % 100 === 0)
 				emptyCache();
+		}
+
+		if (issues.length) {
+			log("Issues:");
+			log(YAML.stringify(issues), "utf-8");
 		}
 
 		log("XML to ly finished, success:", counting.success, "failure:", counting.failure, "skip:", counting.skip);
@@ -204,8 +213,6 @@ const main = async () => {
 				emptyCache();
 		}
 
-		log("Score making finished, perfect:", counting.perfect, ", success:", counting.success, "failure:", counting.failure, "skip:", counting.skip);
-
 		issues.sort((i1, i2) => i1.coverage - i2.coverage);
 		//console.log("issues:", issues);
 
@@ -215,6 +222,8 @@ const main = async () => {
 		}
 		else
 			log("No issues.");
+
+		log("Score making finished, perfect:", counting.perfect, ", success:", counting.success, "failure:", counting.failure, "skip:", counting.skip);
 
 		processedCount = lilyFiles.size - counting.skip;
 	}
