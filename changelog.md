@@ -21,6 +21,8 @@
 
 *	2020.6.23
 
+	+	lilyDocument.ts: markup method of fixNestedRepeat added.
+
 	+	staffNotation.ts: ignored invalid alters.
 
 

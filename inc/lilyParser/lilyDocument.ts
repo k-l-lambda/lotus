@@ -205,6 +205,14 @@ class Command extends BaseTerm {
 
 		return false;
 	}
+
+
+	get isRepeatWithAlternative () {
+		return this.cmd === "repeat"
+			&& this.args[2] instanceof MusicBlock
+			&& this.args[3]
+			&& this.args[3].cmd === "alternative";
+	}
 };
 
 
@@ -1101,6 +1109,21 @@ export default class LilyDocument {
 					return term;
 				});
 			});
+		});
+	}
+
+
+	fixNestedRepeat () {
+		this.root.forEachTerm(Command, cmd => {
+			if (cmd.isRepeatWithAlternative) {
+				const block = cmd.args[2];
+				const alternative = cmd.args[3].args[0];
+				const lastMusic = block.body[block.body.length - 1];
+				if (lastMusic && lastMusic.isRepeatWithAlternative) {
+					block.body.splice(block.body.length - 1, 1, ...lastMusic.args[2].body);
+					alternative.body = [...lastMusic.args[3].args[0].body, ...alternative.body];
+				}
+			}
 		});
 	}
 };
