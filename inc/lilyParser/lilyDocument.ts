@@ -1018,6 +1018,16 @@ export default class LilyDocument {
 		const isGraceCommand = term => term instanceof Command && GRACE_COMMANDS.includes(term.cmd);
 
 		this.root.forEachTerm(MusicBlock, block => {
+			// remove divides which split graces
+			block.body
+				.map((term, index) => ({term, index}))
+				.filter(({term}) => term instanceof Divide)
+				.sort((t1, t2) => t2.index - t1.index)
+				.forEach(({index}) => {
+					if (index > 0 && isGraceCommand(block.body[index - 1]))
+						block.body.splice(index, 1);
+				});
+
 			const groups = [];
 			let currentGroup = null;
 
