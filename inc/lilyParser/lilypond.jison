@@ -183,12 +183,12 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\absolute"				return 'CMD_ABSOLUTE';
 "\\tweak"					return 'CMD_TWEAK';
 "\\key"						return 'CMD_KEY';
+//"\\times"					return 'CMD_TIMES';
+[\\][t][i][m][e][s]			return 'CMD_TIMES';
 
 // unitary commands
 "\\clef"					return 'CMD_CLEF';
 "\\time"					return 'CMD_TIME';
-//"\\times"					return 'CMD_TIMES';
-[\\][t][i][m][e][s]			return 'CMD_TIMES';
 "\\stemUp"					return 'CMD_STEMUP';
 "\\stemDown"				return 'CMD_STEMDOWN';
 "\\stemNeutral"				return 'CMD_STEMNEUTRAL';
@@ -1349,6 +1349,8 @@ music_identifier
 		{$$ = command($1, $2, $3);}
 	| CMD_KEY PITCH COMMAND
 		{$$ = command($1, $2, $3);}
+	| CMD_TIMES FRACTION music
+		{$$ = command($1, $2, $3);}
 	| pitch_mode_music
 		{$$ = $1;}
 	| "("
@@ -1406,8 +1408,6 @@ unitary_cmd
 	| CMD_KEY
 		{$$ = $1;}
 	| CMD_TIME
-		{$$ = $1;}
-	| CMD_TIMES
 		{$$ = $1;}
 	| CMD_STEMUP
 		{$$ = $1;}
