@@ -94,7 +94,7 @@ const main = async () => {
 
 		if (issues.length) {
 			log("Issues:");
-			log(YAML.stringify(issues), "utf-8");
+			log(YAML.stringify(issues));
 		}
 
 		log("XML to ly finished, success:", counting.success, "failure:", counting.failure, "skip:", counting.skip);
@@ -219,7 +219,7 @@ const main = async () => {
 
 		if (issues.length) {
 			log("Issues:");
-			log(YAML.stringify(issues), "utf-8");
+			log(YAML.stringify(issues));
 		}
 		else
 			log("No issues.");
