@@ -286,7 +286,7 @@ class MusicBlock extends BaseTerm {
 
 
 class SimultaneousList extends BaseTerm {
-	list: LilyTerm[];
+	list: BaseTerm[];
 
 
 	serialize () {
@@ -315,13 +315,18 @@ class SimultaneousList extends BaseTerm {
 	get isMusic () {
 		return true;
 	}
+
+
+	get entries () {
+		return this.list;
+	}
 };
 
 
 class ContextedMusic extends BaseTerm {
-	head: LilyTerm;
-	body: LilyTerm;
-	lyrics?: LilyTerm;
+	head: BaseTerm;
+	body: BaseTerm;
+	lyrics?: BaseTerm;
 
 
 	serialize () {
@@ -335,6 +340,11 @@ class ContextedMusic extends BaseTerm {
 
 	get isMusic () {
 		return true;
+	}
+
+
+	get entries () {
+		return [this.head, this.body];
 	}
 };
 
@@ -1114,6 +1124,9 @@ export default class LilyDocument {
 
 
 	fixNestedRepeat () {
+		// \repeat { \repeat { P1 } \alternative { {P2} } } \alternative { {P3} }
+		// ->
+		// \repeat { P1 } \alternative { {P2} {P3} }
 		this.root.forEachTerm(Command, cmd => {
 			if (cmd.isRepeatWithAlternative) {
 				const block = cmd.args[2];
@@ -1122,6 +1135,29 @@ export default class LilyDocument {
 				if (lastMusic && lastMusic.isRepeatWithAlternative) {
 					block.body.splice(block.body.length - 1, 1, ...lastMusic.args[2].body);
 					alternative.body = [...lastMusic.args[3].args[0].body, ...alternative.body];
+				}
+			}
+		});
+	}
+
+
+	fixEmptyContextedStaff () {
+		// staff.1 << >>				staff.2 << voice.1 {} voice.2 {} >>
+		// ->
+		// staff.1 << voice.1 {} >>		staff.2 << voice.2 {} >>
+		const subMusics = (simul: SimultaneousList) => simul.list.filter(term => term instanceof ContextedMusic);
+
+		const score = this.root.getBlock("score");
+		score.forEachTerm(SimultaneousList, simul => {
+			const staves = simul.list.filter(term => term instanceof ContextedMusic && term.body instanceof SimultaneousList);
+			if (staves.length > 1) {
+				const staff1 = staves[0].body;
+				const staff2 = staves[1].body;
+
+				if (subMusics(staff1).length === 0 && subMusics(staff2).length > 1) {
+					const index = staff2.list.findIndex(term => term instanceof ContextedMusic);
+					const [music] = staff2.list.splice(index, 1);
+					staff1.list.push(music);
 				}
 			}
 		});

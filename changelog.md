@@ -2,12 +2,12 @@
 ## TODO
 	staffNotation.ts: clusterize factor issue
 	LilyDocument:
+		fix staff reference position (12.预备练习.ly)
 		remove empty track	(6.1 落叶.ly)
+		fix partial measures
 	measure notes in Notation
 	parse measure ticks from ly
 	lilypond post processing
-		fix partial measures
-		fix repeat \alternative measures
 	playground.sliceSource:
 		music duration parsing
 	staffSvg
@@ -17,6 +17,11 @@
 	source editor
 		cursor position column
 
+
+
+*	2020.6.24
+
+	+	lilyDocument.ts: markup method of fixEmptyContextedStaff added.
 
 
 *	2020.6.23
