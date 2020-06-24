@@ -12,6 +12,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "build:lib": "vue-cli-service build --target lib --dest lib.browser index.browser.ts && tsc --build ./tsconfig.node.json && ts-node-dev --project ./tsconfig.node.json ./tools/buildLilyParser.ts",
+    "ts-run": "ts-node --project ./tsconfig.node.json",
     "ts-dev": "ts-node-dev --project ./tsconfig.node.json",
     "ts-dev:inspect": "ts-node-dev --project ./tsconfig.node.json --inspect --"
   },

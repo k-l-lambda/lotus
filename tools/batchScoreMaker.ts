@@ -173,7 +173,7 @@ const main = async () => {
 					throw new Error("No matchStat in logger");
 
 				if (matchStat.data.coverage < 1) {
-					console.log("imperfect matching:", lyPath, matchStat.data);
+					console.log("imperfect matching:", lyPath, matchStat.data.coverage);
 
 					issues.push({
 						lyPath,
@@ -210,7 +210,7 @@ const main = async () => {
 			console.log("Making progress:", ++index, "/", lilyFiles.size);
 
 			// flush cache directory every 100 files
-			if ((counting.success + counting.failure) % 100 === 0)
+			if ((counting.success + counting.failure) % 60 === 0)
 				emptyCache();
 		}
 
