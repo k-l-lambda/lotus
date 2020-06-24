@@ -115,6 +115,11 @@ const svgToElements = (svgText, {logger = null, DOMParser = null} = {}) => {
 
 	const root = domNodeToElement(svg);
 
+	if (!root.children) {
+		console.log("invalid svg:", root, svgText);
+		return null;
+	}
+
 	// remove proxy tags of a & g
 	while (true) {
 		const index = root.children.findIndex(c => c.type === "a" && c.children);

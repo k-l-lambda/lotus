@@ -13,6 +13,9 @@ const parseSvgPage = (dom, ly, {logger = new LogRecorder(), attributes, ...optio
 	const elem = svgToElements(dom, {logger, ...options});
 	logger.append("parseSvgPage.elem", elem);
 
+	if (!elem)
+		return {structure: null, hashTable: {}};
+
 	const {tokens, hashTable} = tokenizeElements(elem.children, attributes, logger);
 
 	const [x, y, width, height] = elem.viewBox.match(/[\d-.]+/g).map(Number);
