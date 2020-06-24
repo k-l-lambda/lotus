@@ -136,6 +136,9 @@ class SheetDocument {
 
 
 	updateTokenIndex () {
+		// remove null pages for broken document
+		this.pages = this.pages.filter(page => page);
+
 		this.pages.forEach((page, index) => page.rows.forEach(row => row.pageIndex = index));
 
 		this.rows.forEach((row, index) => {
