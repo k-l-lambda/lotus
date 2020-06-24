@@ -321,7 +321,7 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: 
 	const loadFile = async line => {
 		// skip error messages in command line output
 		let newLine = await fileReady.lock();
-		while (/error/.test(newLine))
+		while (/error|warning/.test(newLine))
 			newLine = await fileReady.lock();
 
 		const [_, filename] = line.match(FILE_BORN_OUPUT_PATTERN);

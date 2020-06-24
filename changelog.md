@@ -21,6 +21,8 @@
 
 *	2020.6.24
 
+	+	lilyCommands.ts: enhanced file ready lock for 'warning' child process output.
+
 	+	staffSvg: added symbols of 15ma & 15mb.
 
 	+	lilyDocument.ts: markup method of fixEmptyContextedStaff added.
