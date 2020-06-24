@@ -140,10 +140,10 @@ export default class StaffToken {
 
 	get octaveShiftValue () {
 		if (this.is("A"))
-			return -1;
+			return this.is("_15") ? -2 : -1;
 
 		if (this.is("B"))
-			return 1;
+			return this.is("_15") ? 2 : 1;
 
 		if (this.is("CLOSE"))
 			return 0;

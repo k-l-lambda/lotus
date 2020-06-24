@@ -21,6 +21,8 @@
 
 *	2020.6.24
 
+	+	staffSvg: added symbols of 15ma & 15mb.
+
 	+	lilyDocument.ts: markup method of fixEmptyContextedStaff added.
 
 

@@ -124,8 +124,10 @@ const symbolRules = [
 
 	conditionSymbol("ADDITIONAL_LINE", elem => elem.identity.type === "rect" && elem.sw2 === 0.2 && elem.identity.rw >= 1.25 && elem.identity.rw < 5),
 
-	conditionSymbol("OCTAVE A", elem => elem.identity.type === "text" && /8va/.test(elem.identity.text)),
-	conditionSymbol("OCTAVE B", elem => elem.identity.type === "text" && /8vb/.test(elem.identity.text)),
+	conditionSymbol("OCTAVE A _8", elem => elem.identity.type === "text" && /8va/.test(elem.identity.text)),
+	conditionSymbol("OCTAVE B _8", elem => elem.identity.type === "text" && /8vb/.test(elem.identity.text)),
+	conditionSymbol("OCTAVE A _15", elem => elem.identity.type === "text" && /15ma/.test(elem.identity.text)),
+	conditionSymbol("OCTAVE B _15", elem => elem.identity.type === "text" && /15mb/.test(elem.identity.text)),
 	identitySymbol("OCTAVE CLOSE LINE", {
 		type: "line",
 		width: 0,
