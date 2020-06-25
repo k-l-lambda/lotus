@@ -1496,7 +1496,7 @@ value
 pitch_or_music
 	//: pitch exclamations questions octave_check maybe_notemode_duration erroneous_quotes optional_rest post_events
 	: pitch exclamations questions optional_notemode_duration optional_rest post_events
-		{$$ = chord([$1], $4, {exclamations: $2, questions: $3, rest: $5, post_events: $6});}
+		{$$ = chord([$1], $4, {exclamations: $2, questions: $3, rest: $5, post_events: $6, location: @1});}
 	//| new_chord post_events
 	//	{$$ = briefChord($1, {post_events: $2});}
 	;
