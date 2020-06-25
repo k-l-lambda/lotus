@@ -19,6 +19,11 @@
 
 
 
+*	2020.6.25
+
+	+	playground.vue: markup function UI added.
+
+
 *	2020.6.24
 
 	+	lilyCommands.ts: enhanced file ready lock for 'warning' child process output.

@@ -86,6 +86,9 @@
 			</div>
 		</main>
 		<Dialog :visible.sync="settingPanelVisible">
+			<datalist id="lily-markups">
+				<option v-for="(method, i) of lilyMarkupMethods" :key="i" :value="method" />
+			</datalist>
 			<table class="settings">
 				<tbody>
 					<tr>
@@ -143,6 +146,15 @@
 					<tr>
 						<td>Export a Markup File</td>
 						<td><button @click="exportMarkupLily">export .ly</button></td>
+					</tr>
+					<tr>
+						<td>Execute Function</td>
+						<td>
+							<input type="text" list="lily-markups" v-model="chosenLilyMarkupMethod" />
+							<button @click="executeMarkup(chosenLilyMarkupMethod); chosenLilyMarkupMethod = null" :disabled="!chosenLilyMarkupMethod">
+								{{chosenLilyMarkupMethod ? "Call" : "Done"}}
+							</button>
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -265,6 +277,8 @@
 				bakingSheet: false,
 				bakingImages: null,
 				hideBakingImages: false,
+				lilyMarkupMethods: Object.getOwnPropertyNames(LilyDocument.prototype),
+				chosenLilyMarkupMethod: null,
 			};
 		},
 
@@ -955,6 +969,7 @@
 			{
 				text-align: left;
 				padding: .2em 1em;
+				white-space: nowrap;
 
 				&:first-child
 				{
