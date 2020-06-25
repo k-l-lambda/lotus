@@ -6,7 +6,7 @@
 		@dragleave="dragHover = null"
 		@drop.prevent="onDropFile"
 	>
-		<header class="controls">
+		<header class="controls" :class="{buzy: operating}">
 			<StoreInput v-show="false" v-model="lilySource" sessionKey="lotus-lilySource" />
 			<fieldset>
 				<span v-if="title" class="title">{{title}}</span>
@@ -180,7 +180,7 @@
 	import LogRecorder from "../../inc/logRecorder.ts";
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import loadLilyParser from "../loadLilyParser.js";
-	import {LilyDocument} from "../../inc/lilyParser";
+	import {LilyDocument, replaceSourceToken} from "../../inc/lilyParser";
 	import {CM_TO_PX} from "../../inc/constants.ts";
 	import * as SheetBaker from "../sheetBaker.ts";
 
@@ -275,7 +275,6 @@
 					systemSpacing: -1,
 					topMarkupSpacing: -1,
 					raggedLast: true,
-					standaloneTitle: false, // TODO: not implemented
 				},
 				lilyParser: null,
 				lilyDocumentDirty: false,
@@ -284,6 +283,7 @@
 				hideBakingImages: false,
 				lilyMarkupMethods: Object.getOwnPropertyNames(LilyDocument.prototype),
 				chosenLilyMarkupMethod: null,
+				operating: false,
 			};
 		},
 
@@ -770,6 +770,57 @@
 
 				this.lilySource = this.lilyDocument.toString();
 			},
+
+
+			async unfoldRepeats () {
+				this.operating = true;
+
+				try {
+					this.updateLilyDocument();
+
+					if (!this.lilyDocument)
+						throw new Error("lilyDocument is null.");
+
+					this.lilyDocument.unfoldRepeats();
+					this.lilySource = this.lilyDocument.toString();
+
+					await this.engrave();
+
+					this.lilySource = replaceSourceToken(this.lilySource, "\\unfoldRepeats");
+
+					const body = new FormData();
+					body.append("source", this.lilySource);
+					if (this.engraveWithLogs)
+						body.append("log", this.engraveWithLogs);
+					body.append("tokenize", true);
+
+					const response = await fetch("/engrave", {
+						method: "POST",
+						body,
+					});
+					if (!response.ok) {
+						const reason = await response.text();
+						throw new Error(reason);
+					}
+					else {
+						const result = await response.json();
+
+						this.engraverLogs = result.logs;
+						this.svgDocuments = result.svgs;
+
+						this.sheetDocument = recoverJSON(result.doc, {StaffToken, SheetDocument});
+						this.svgHashTable = result.hashTable;
+
+						this.sheetDocument.updateMatchedTokens(this.matchedIds);
+						this.$refs.sheet.preparePlayer();
+					}
+				}
+				catch (err) {
+					console.warn("unfoldRepeats failed:", err);
+				}
+
+				this.operating = false;
+			},
 		},
 
 
@@ -852,6 +903,11 @@
 			.title
 			{
 				font-weight: bold;
+			}
+
+			&.buzy
+			{
+				background-color: #ffc;
 			}
 		}
 
