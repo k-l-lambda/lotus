@@ -21,6 +21,8 @@
 
 *	2020.6.25
 
+	+	playground.vue: added markup field of topMarkupSpacing.
+
 	+	playground.vue: markup function UI added.
 
 

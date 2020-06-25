@@ -140,6 +140,10 @@
 						<td><StoreInput type="number" v-model.number="lilyMarkups.systemSpacing" localKey="lotus-lilyMarkups.systemSpacing" /></td>
 					</tr>
 					<tr>
+						<td>Top Markup Spacing</td>
+						<td><StoreInput type="number" v-model.number="lilyMarkups.topMarkupSpacing" localKey="lotus-lilyMarkups.topMarkupSpacing" /></td>
+					</tr>
+					<tr>
 						<td>Ragged Last</td>
 						<td><BoolStoreInput v-model="lilyMarkups.raggedLast" localKey="lotus-lilyMarkups.raggedLast" /></td>
 					</tr>
@@ -269,6 +273,7 @@
 					autoPaperSize: true,
 					pageCount: 2,
 					systemSpacing: -1,
+					topMarkupSpacing: -1,
 					raggedLast: true,
 					standaloneTitle: false, // TODO: not implemented
 				},
@@ -684,6 +689,9 @@
 
 				if (this.lilyMarkups.systemSpacing >= 0)
 					globalAttributes.systemSpacing.value = this.lilyMarkups.systemSpacing;
+
+				if (this.lilyMarkups.topMarkupSpacing >= 0)
+					globalAttributes.topMarkupSpacing.value = this.lilyMarkups.topMarkupSpacing;
 
 				if (typeof this.lilyMarkups.raggedLast === "boolean")
 					globalAttributes.raggedLast.value = this.lilyMarkups.raggedLast;
