@@ -341,7 +341,7 @@
 
 			async onDropFile (event) {
 				this.dragHover = null;
-				//console.log("onDropFile:", event.dataTransfer.files[0]);
+				//console.log("onDropFile:", event.dataTransfer.items[0]);
 
 				const file = event.dataTransfer.files[0];
 				if (file) {
@@ -381,6 +381,22 @@
 						console.warn("unsupported file type:", file.type);
 					}
 				}
+				/*else {
+					const item = event.dataTransfer.items[0];
+					if (item) {
+						switch (item.type) {
+						case "text/plain":
+							this.lilySource = await new Promise(resolve => item.getAsString(resolve));
+
+							this.clearSheet();
+
+							this.updateLilyDocument();
+							this.engrave();
+
+							break;
+						}
+					}
+				}*/
 			},
 
 
