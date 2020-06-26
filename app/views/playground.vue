@@ -378,9 +378,14 @@
 
 						break;
 					case "text/xml":
-						const xml = await file.readAs("Text");
-						//console.log("xml:", xml);
-						this.lilySource = await this.musicxml2ly(xml);
+						try {
+							const xml = await file.readAs("Text");
+							//console.log("xml:", xml);
+							this.lilySource = await this.musicxml2ly(xml);
+						}
+						catch (_) {
+							return;
+						}
 
 						this.clearSheet();
 
@@ -469,11 +474,16 @@
 					method: "POST",
 					body,
 				});
-				if (!response.ok)
-					console.warn("musicxml2ly failed:", await response.text());
+				if (!response.ok) {
+					const reason = await response.text();
+					console.warn("musicxml2ly failed:", reason);
+					this.converting = false;
+
+					throw new Error(reason);
+				}
 				else  {
 					const result = await response.text();
-					console.log("musicxml2ly accomplished.");
+					console.debug("musicxml2ly accomplished.");
 
 					this.converting = false;
 
