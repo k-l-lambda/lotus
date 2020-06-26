@@ -761,7 +761,7 @@ REAL
 	: positive_real
 		{$$ = $1;}
 	| "-" positive_real
-		{$$ = -$1;}
+		{$$ = -$2;}
 	;
 
 // equivalent for NUMBER_IDENTIFIER in lilypond's parser.yy
