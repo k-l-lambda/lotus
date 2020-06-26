@@ -33,7 +33,7 @@
 						</g>
 						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
 							<g class="mark" v-if="showMark">
-								<text :x="measure.headX">'{{i4}}</text>
+								<text :x="measure.headX">'{{measure.index}}</text>
 							</g>
 							<SheetToken v-for="(token, i5) of measure.tokens" :key="i5"
 								:token="token"
