@@ -1,17 +1,13 @@
 
 ## TODO
-	staffNotation.ts: clusterize factor issue
-	LilyDocument:
-		fix staff reference position (12.预备练习.ly)
+	measures clipping, playground.sliceSource
+	measure notes in Notation parsing
+	music duration parsing
+		parse measure ticks from ly
+	staffSvg
+		staffNotation.ts: clusterize factor issue
 		remove empty track	(6.1 落叶.ly)
 		fix partial measures
-	measure notes in Notation
-	parse measure ticks from ly
-	lilypond post processing
-	playground.sliceSource:
-		music duration parsing
-	staffSvg
-		repeat measures
 		tied note parsing issue	(One Summer's Day)
 		octave & alter token order issue	(One Summer's Day)
 	source editor
@@ -20,6 +16,8 @@
 
 
 *	2020.6.26
+
+	+	scheduler.ts: refined endX for measure leap.
 
 	+	lilyCommands.ts: fixed xml2ly command line for Windows.
 

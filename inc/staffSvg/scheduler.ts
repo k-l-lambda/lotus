@@ -2,6 +2,7 @@
 // eslint-disable-next-line
 declare class StaffToken {
 	row: number;
+	measure: number;
 	x: number;
 	endX: number;
 };
@@ -11,6 +12,7 @@ interface TickItem {
 	tick: number;
 	endTick?: number;
 	row: number;
+	measure: number;
 	x: number;
 	endX: number;
 };
@@ -49,6 +51,7 @@ export default class Scheduler {
 			return {
 				tick: Number(tick),
 				row: token.row,
+				measure: token.measure,
 				x: token.x,
 				endX: token.endX,
 			};
@@ -60,7 +63,7 @@ export default class Scheduler {
 
 			item.endTick = nextItem ? nextItem.tick : midiNotation.endTick;
 
-			if (nextItem && item.row === nextItem.row)
+			if (nextItem && item.row === nextItem.row && [0, 1].includes(nextItem.measure - item.measure))
 				item.endX = nextItem.x;
 		});
 
