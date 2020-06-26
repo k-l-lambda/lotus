@@ -260,7 +260,13 @@ const xml2ly = async (xml: string | Buffer, options: LilyProcessOptions): Promis
 
 	const lyFileName = `${env.TEMP_DIR}xml2ly-${hash}.ly`;
 
-	await child_process.exec(`${env.LILYPOND_DIR}musicxml2ly ${xmlFileName} -o ${lyFileName}`, {maxBuffer: 0x80000});
+	if (_WINDOWS) {
+		await child_process.spawn(path.resolve(env.LILYPOND_DIR, "python"),
+			[path.resolve(env.LILYPOND_DIR, "musicxml2ly.py"), xmlFileName, "-o", lyFileName],
+			{maxBuffer: 0x80000});
+	}
+	else
+		await child_process.exec(`${env.LILYPOND_DIR}musicxml2ly ${xmlFileName} -o ${lyFileName}`, {maxBuffer: 0x80000});
 	//console.log("musicxml2ly:", result.stdout, result.stderr);
 
 	const ly = await asyncCall(fs.readFile, lyFileName);

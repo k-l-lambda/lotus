@@ -21,6 +21,8 @@
 
 *	2020.6.26
 
+	+	lilyCommands.ts: fixed xml2ly command line for Windows.
+
 	+	sheetDocument.ts: saved measure index in sheet document.
 
 
