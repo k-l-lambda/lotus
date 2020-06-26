@@ -2,6 +2,8 @@
 %{
 	const preferNumber = x => Number.isFinite(Number(x)) ? Number(x) : x;
 
+	const location = (begin, end) => ({proto: "_PLAIN", lines: [begin.first_line, end.last_line], columns: [begin.first_column, end.last_column]});
+
 
 	const root = (sections = []) => ({proto: "Root", sections});
 
@@ -17,7 +19,7 @@
 
 	const markupCommand = (cmd, ...args) => ({proto: "MarkupCommand", cmd: cmd.substr(1), args});
 
-	const chord = (pitches, duration, options = {}) => ({proto: "Chord", pitches, duration, options: {...options, proto: "_PLAIN"}});
+	const chord = (pitches, duration, {locations, ...options} = {}) => ({proto: "Chord", pitches, duration, location: location(...locations), options: {...options, proto: "_PLAIN"}});
 
 	const briefChord = (body, {post_events = null} = {}) => ({proto: "BriefChord", body: {...body, proto: "_PLAIN"}, post_events});
 
@@ -1496,7 +1498,7 @@ value
 pitch_or_music
 	//: pitch exclamations questions octave_check maybe_notemode_duration erroneous_quotes optional_rest post_events
 	: pitch exclamations questions optional_notemode_duration optional_rest post_events
-		{$$ = chord([$1], $4, {exclamations: $2, questions: $3, rest: $5, post_events: $6, location: @1});}
+		{$$ = chord([$1], $4, {exclamations: $2, questions: $3, rest: $5, post_events: $6, locations: [@1, @6]});}
 	//| new_chord post_events
 	//	{$$ = briefChord($1, {post_events: $2});}
 	;
@@ -1624,7 +1626,7 @@ post_events
 note_chord_element
 	//: chord_body optional_notemode_duration post_events
 	: chord_body optional_notemode_duration
-		{$$ = chord($1, $2, {withAngle: true, location: @1});}
+		{$$ = chord($1, $2, {withAngle: true, locations: [@1, @2]});}
 	;
 
 chord_body

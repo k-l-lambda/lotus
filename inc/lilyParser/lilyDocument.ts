@@ -9,12 +9,19 @@ interface LilyTerm {
 };
 
 
+interface Location {
+	lines: [number, number];
+	columns: [number, number];
+};
+
+
 // concat array of array
 const cc = arrays => [].concat(...arrays);
 
 
 class BaseTerm implements LilyTerm {
-	isMusic?: boolean;
+	location?: Location;
+
 
 	constructor (data: object) {
 		//Object.assign(this, data);
@@ -75,6 +82,11 @@ class BaseTerm implements LilyTerm {
 	}
 
 
+	get isMusic () {
+		return false;
+	}
+
+
 	getField (key) {
 		console.assert(!!this.entries, "[BaseTerm.getField] term's entries is null:", this);
 
@@ -119,6 +131,15 @@ class BaseTerm implements LilyTerm {
 			if (entry instanceof BaseTerm)
 				entry.forEachTerm(termClass, handle);
 		}
+	}
+
+
+	toJSON () {
+		// exlude meta fields in JSON
+		const {location, ...data} = this;
+		void location;
+
+		return data;
 	}
 
 
@@ -495,7 +516,6 @@ class Chord extends BaseTerm {
 		post_events?: PostEvent[],
 		rest?: string,
 		withAngle?: boolean,
-		location?: string,
 	};
 
 
@@ -535,23 +555,6 @@ class Chord extends BaseTerm {
 			...pitches,
 			...postfix,
 		];
-	}
-
-
-	toJSON () {
-		// exclude options.location
-		let options = this.options;
-		if (options && options.location) {
-			const {location, ...rest} = options;
-			void location;
-			options = rest;
-		}
-
-		return {
-			pitches: this.pitches,
-			duration: this.duration,
-			options,
-		};
 	}
 
 

@@ -17,6 +17,8 @@
 
 *	2020.6.26
 
+	+	lilyDocument.ts: refined location data in terms.
+
 	+	scheduler.ts: refined endX for measure leap.
 
 	+	lilyCommands.ts: fixed xml2ly command line for Windows.
