@@ -788,6 +788,8 @@
 
 					this.lilySource = replaceSourceToken(this.lilySource, "\\unfoldRepeats");
 
+					this.engraving = true;
+
 					const body = new FormData();
 					body.append("source", this.lilySource);
 					if (this.engraveWithLogs)
@@ -819,6 +821,9 @@
 					console.warn("unfoldRepeats failed:", err);
 				}
 
+
+				this.engraverDirty = false;
+				this.engraving = false;
 				this.operating = false;
 			},
 		},
