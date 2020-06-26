@@ -6,6 +6,7 @@ import {CM_TO_PX} from "../constants";
 // eslint-disable-next-line
 declare class StaffToken {
 	row?: number;
+	measure?: number;
 	endX?: number;
 };
 
@@ -20,6 +21,7 @@ interface StaffMarking {
 
 
 interface SheetMeasures {
+	index: number;
 	tokens: StaffToken[];
 };
 
@@ -58,6 +60,8 @@ interface SheetPage {
 	[1]: "\u266F",
 	[2]: "\uD834\uDD2A",
 };*/
+
+// char codes defined in music font
 const ALTER_PREFIXES = {
 	[-2]: "\u0125",
 	[-1]: "\u0122",
@@ -141,6 +145,8 @@ class SheetDocument {
 
 		this.pages.forEach((page, index) => page.rows.forEach(row => row.pageIndex = index));
 
+		let rowMeasureIndex = 1;
+
 		this.rows.forEach((row, index) => {
 			row.index = index;
 			row.width = row.tokens.concat(...row.staves.map(staff => staff.tokens))
@@ -148,15 +154,21 @@ class SheetDocument {
 
 			row.staves = row.staves.filter(s => s);
 			row.staves.forEach(staff => {
-				staff.measures.forEach(measure =>
+				staff.measures.forEach((measure, i) => {
+					measure.index = rowMeasureIndex + i;
+
 					measure.tokens.forEach(token => {
 						token.row = index;
+						token.measure = measure.index;
 						token.endX = measure.noteRange.end;
-					}));
+					});
+				});
 
 				staff.markings = [];
 				staff.yRoundOffset = 0;
 			});
+
+			rowMeasureIndex += Math.max(...row.staves.map(staff => staff.measures.length));
 		});
 	}
 

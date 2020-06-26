@@ -19,6 +19,11 @@
 
 
 
+*	2020.6.26
+
+	+	sheetDocument.ts: saved measure index in sheet document.
+
+
 *	2020.6.25
 
 	+	playground.vue: unfoldRepeats implemented.
