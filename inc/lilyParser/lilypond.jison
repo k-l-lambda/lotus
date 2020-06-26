@@ -264,6 +264,9 @@ m(?=[\W\d])					return 'CHORD_MODIFIER_WORD';
 "\\("						return yytext;
 "\\)"						return yytext;
 
+\.(?=\d)					return 'DOT_NUMBER_R';
+//(?<=\d)\.					return 'DOT_NUMBER_L';
+
 {SPECIAL}					return yytext;
 \|							return 'DIVIDE';
 
@@ -740,6 +743,14 @@ bare_number_common
 		{$$ = $1;}
 	;
 
+// extra syntax
+dot
+	: "."
+		{$$ = $1;}
+	| DOT_NUMBER_R
+		{$$ = $1;}
+	;
+
 INT
 	: UNSIGNED
 		{$$ = Number($1);}
@@ -749,11 +760,11 @@ INT
 
 // extra syntax
 positive_real
-	: UNSIGNED "." UNSIGNED
+	: UNSIGNED DOT_NUMBER_R UNSIGNED
 		{$$ = Number($1 + $2 + $3);}
-	| UNSIGNED "."
-		{$$ = Number($1 + $2);}
-	| "." UNSIGNED
+	//| UNSIGNED DOT_NUMBER_L
+	//	{$$ = Number($1 + $2);}
+	| DOT_NUMBER_R UNSIGNED
 		{$$ = Number($1 + $2);}
 	;
 
@@ -1302,7 +1313,7 @@ DURATION_IDENTIFIER
 dots
 	: %empty
 		{$$ = "";}
-	| dots "."
+	| dots dot
 		{$$ = $1 + $2;}
 	;
 
@@ -1539,7 +1550,7 @@ CHORD_MODIFIER
 step_numbers
 	: step_number
 		{$$ = $1;}
-	| step_numbers '.' step_number
+	| step_numbers dot step_number
 		{$$ = $1 + $2 + $3;}
 	;
 
@@ -1774,7 +1785,7 @@ script_abbreviation
 		{$$ = $1;}
 	| '>'
 		{$$ = $1;}
-	| '.' 
+	| dot
 		{$$ = $1;}
 	| '_'
 		{$$ = $1;}
