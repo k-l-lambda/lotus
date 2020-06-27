@@ -17,6 +17,8 @@
 
 *	2020.6.26
 
+	+	sheetDocument.ts: getLocationTable added.
+
 	+	lilyDocument.ts: refined location data in terms.
 
 	+	scheduler.ts: refined endX for measure leap.

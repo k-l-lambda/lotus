@@ -106,6 +106,9 @@ const parseUnitExp = exp => {
 };
 
 
+type MeasureLocationTable = {[key: number]: {[key: number]: number}};
+
+
 class SheetDocument {
 	pages: SheetPage[];
 
@@ -225,6 +228,28 @@ class SheetDocument {
 			__prototype: "SheetDocument",
 			pages: this.pages,
 		};
+	}
+
+
+	getLocationTable (): MeasureLocationTable {
+		const table = {};
+
+		this.rows.forEach(row => row.staves.forEach(staff => staff.measures.forEach(measure => {
+			measure.tokens.forEach(token => {
+				if (token.href) {
+					const location = token.href.match(/\d+/g);
+					if (location) {
+						const [line, column] = location.map(Number);
+						table[line] = table[line] || {};
+						table[line][column] = measure.index;
+					}
+					else
+						console.warn("invalid href:", token.href);
+				}
+			});
+		})));
+
+		return table;
 	}
 };
 

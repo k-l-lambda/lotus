@@ -19,8 +19,9 @@ interface Location {
 const cc = arrays => [].concat(...arrays);
 
 
-class BaseTerm implements LilyTerm {
+export class BaseTerm implements LilyTerm {
 	location?: Location;
+	measure?: number;
 
 
 	constructor (data: object) {
@@ -136,8 +137,9 @@ class BaseTerm implements LilyTerm {
 
 	toJSON () {
 		// exlude meta fields in JSON
-		const {location, ...data} = this;
+		const {location, measure, ...data} = this;
 		void location;
+		void measure;
 
 		return data;
 	}

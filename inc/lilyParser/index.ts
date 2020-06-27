@@ -3,6 +3,8 @@ import jison from "jison";
 
 import LilyDocument from "./lilyDocument";
 
+import * as measures from "./measures";
+
 
 
 const createParser = grammar => jison.Parser(grammar);
@@ -33,4 +35,5 @@ export {
 	hookJisonPrint,
 	replaceSourceToken,
 	LilyDocument,
+	measures,
 };

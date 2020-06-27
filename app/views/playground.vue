@@ -180,7 +180,7 @@
 	import LogRecorder from "../../inc/logRecorder.ts";
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import loadLilyParser from "../loadLilyParser.js";
-	import {LilyDocument, replaceSourceToken} from "../../inc/lilyParser";
+	import {LilyDocument, replaceSourceToken, measures} from "../../inc/lilyParser";
 	import {CM_TO_PX} from "../../inc/constants.ts";
 	import * as SheetBaker from "../sheetBaker.ts";
 
@@ -835,6 +835,17 @@
 				this.engraverDirty = false;
 				this.engraving = false;
 				this.operating = false;
+			},
+
+
+			redivideLilyDocument () {
+				const locations = this.sheetDocument.getLocationTable();
+
+				this.updateLilyDocument();
+				measures.assignMeasures(this.lilyDocument, locations);
+				console.log("lilyDocument:", this.lilyDocument);
+
+				// TODO:
 			},
 		},
 
