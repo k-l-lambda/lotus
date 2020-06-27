@@ -843,9 +843,9 @@
 
 				this.updateLilyDocument();
 				measures.assignMeasures(this.lilyDocument, locations);
-				console.log("lilyDocument:", this.lilyDocument);
+				//console.log("lilyDocument:", this.lilyDocument);
 
-				// TODO:
+				this.executeMarkup("redivide");
 			},
 		},
 

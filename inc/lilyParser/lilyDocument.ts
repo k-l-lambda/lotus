@@ -88,6 +88,13 @@ export class BaseTerm implements LilyTerm {
 	}
 
 
+	get measures (): number[] {
+		const indices = [this.measure].concat(...(this.entries || []).map(entry => entry.measures)).filter(index => Number.isInteger(index));
+
+		return Array.from(new Set(indices));
+	}
+
+
 	getField (key) {
 		console.assert(!!this.entries, "[BaseTerm.getField] term's entries is null:", this);
 
@@ -176,6 +183,16 @@ class Root extends BaseTerm {
 };
 
 
+class Primitive extends BaseTerm {
+	exp: string | number;
+
+
+	serialize () {
+		return [this.exp];
+	}
+};
+
+
 class LiteralString extends BaseTerm {
 	exp: string
 
@@ -254,6 +271,13 @@ class Block extends BaseTerm {
 	body: BaseTerm[];
 
 
+	constructor (data) {
+		super(data);
+
+		this.body = this.body.map(parseRawEnforce);
+	}
+
+
 	serialize () {
 		const heads = Array.isArray(this.head) ? this.head : (this.head ? [this.head] : []);
 
@@ -285,6 +309,13 @@ class InlineBlock extends Block {
 
 class MusicBlock extends BaseTerm {
 	body: BaseTerm[];
+
+
+	constructor (data) {
+		super(data);
+
+		this.body = this.body.map(parseRawEnforce);
+	}
 
 
 	serialize () {
@@ -543,8 +574,9 @@ class Chord extends BaseTerm {
 
 
 	serialize () {
-		const pitches = (this.single && !this.options.withAngle) ? this.pitches : [
-			"<", "\b", ...cc(this.pitches.map(BaseTerm.optionalSerialize)), "\b", ">",
+		const innerPitches = this.pitches.map(BaseTerm.optionalSerialize);
+		const pitches = (this.single && !this.options.withAngle) ? innerPitches : [
+			"<", "\b", ...cc(innerPitches), "\b", ">",
 		];
 
 		const {exclamations, questions, rest, post_events} = this.options;
@@ -739,7 +771,19 @@ const termDictionary = {
 };
 
 
-export const parseRaw = data => {
+const parseRawEnforce = data => {
+	switch (typeof data) {
+	case "string":
+	case "number":
+		return new Primitive({exp: data});
+
+	default:
+		return parseRaw(data);
+	}
+};
+
+
+const parseRaw = data => {
 	if (data instanceof BaseTerm)
 		return data;
 
@@ -1165,6 +1209,37 @@ export default class LilyDocument {
 					staff1.list.push(music);
 				}
 			}
+		});
+	}
+
+
+	redivide () {
+		this.root.forEachTerm(MusicBlock, (block: MusicBlock) => {
+			const body: BaseTerm[] = [];
+			const measures = new Set();
+
+			const list = block.body.filter(term => !(term instanceof Divide));
+			let measure = null;
+			for (const term of list) {
+				if (Number.isInteger(measure) && ((term as Primitive).exp === "]" || term instanceof PostEvent))
+					term.measure = measure;
+				else
+					measure = term.measure;
+			}
+
+			list.reverse().forEach(term => {
+				if (term instanceof BaseTerm) {
+					const newMeasures = term.measures.filter(m => !measures.has(m));
+					if (newMeasures.length) {
+						body.push(new Divide({}));
+						newMeasures.forEach(m => measures.add(m));
+					}
+				}
+
+				body.push(term);
+			});
+
+			block.body = body.reverse();
 		});
 	}
 };

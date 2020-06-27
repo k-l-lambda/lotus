@@ -15,9 +15,14 @@
 
 
 
-*	2020.6.26
+*	2020.6.27
+
+	+	lilyDocument.ts: redivide added.
 
 	+	sheetDocument.ts: getLocationTable added.
+
+
+*	2020.6.26
 
 	+	lilyDocument.ts: refined location data in terms.
 
