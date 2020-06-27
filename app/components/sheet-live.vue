@@ -408,6 +408,11 @@
 		.mark
 		{
 			visibility: hidden;
+
+			text
+			{
+				text-anchor: start;
+			}
 		}
 
 		.bake
