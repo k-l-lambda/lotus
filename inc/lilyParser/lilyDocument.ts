@@ -1124,7 +1124,7 @@ export default class LilyDocument {
 			let offset = 0;
 			groups.forEach(group => {
 				const startIndex = group.start + offset;
-				const mainBody = new MusicBlock({proto: "MusicBlock", body: []});
+				const mainBody = new MusicBlock({body: []});
 
 				for (let i = startIndex; i < startIndex + group.count; ++ i) {
 					const term = block.body[i];
