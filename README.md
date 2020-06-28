@@ -14,3 +14,4 @@ PORT					| *8080*
 LILYPOND_DIR			| *(empty)*
 TEMP_DIR				| `./temp/`
 MIDI_FILE_EXTEND		| `midi`
+MUSICXML2LY_BY_PYTHON	| *false*

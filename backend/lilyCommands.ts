@@ -260,7 +260,7 @@ const xml2ly = async (xml: string | Buffer, options: LilyProcessOptions): Promis
 
 	const lyFileName = `${env.TEMP_DIR}xml2ly-${hash}.ly`;
 
-	if (_WINDOWS) {
+	if (env.MUSICXML2LY_BY_PYTHON) {
 		await child_process.spawn(path.resolve(env.LILYPOND_DIR, "python"),
 			[path.resolve(env.LILYPOND_DIR, "musicxml2ly.py"), xmlFileName, "-o", lyFileName],
 			{maxBuffer: 0x80000});
