@@ -1236,7 +1236,8 @@ export default class LilyDocument {
 			const list = block.body.filter(term => !(term instanceof Divide));
 			let measure = null;
 			for (const term of list) {
-				if (Number.isInteger(measure) && ((term as Primitive).exp === "]" || term instanceof PostEvent))
+				if (Number.isInteger(measure) &&
+					((term as Primitive).exp === "]" || term instanceof PostEvent || (term as Command).cmd === "bar"))
 					term.measure = measure;
 				else
 					measure = term.measure;

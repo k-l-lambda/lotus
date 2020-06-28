@@ -5,6 +5,7 @@
 	music duration parsing
 		parse measure ticks from ly
 	staffSvg
+		system splitting, chord mode symbol affiliation
 		staffNotation.ts: clusterize factor issue
 		remove empty track	(6.1 落叶.ly)
 		fix partial measures
