@@ -28,6 +28,7 @@
 \layout {
 	\context {
 		\Score 
+		skipBars = ##t 
 		autoBeaming = ##f 
 	}
 	
@@ -35,7 +36,10 @@
 
 
 PartPOneVoiceOne = \relative des' {
-	\clef "treble_8" \key ges \major \numericTimeSignature \time 4/4 s1*4 s1*4 \tempo 4 = 106 s1 |
+	\clef "treble_8" \key ges \major \numericTimeSignature \time 4/4 \tempo 4 = 106 r4 s2. |
+	R1*3 |
+	R1*4 |
+	R1 |
 	\stemDown des4 \stemDown des8 ( [ \stemDown bes8 ) ] \stemDown ges'4 ( \stemDown f8 [ \stemDown es8 ) ] |
 	\barNumberCheck #10 \stemDown des8 ( [ \stemDown bes8 ] \stemDown des2 \stemDown bes4 ) |
 	\stemDown es4 \stemDown es8 [ \stemDown des8 ] \stemDown ges4 ( \stemUp bes,8 [ \stemUp as8 ) ] |
@@ -62,7 +66,9 @@ PartPOneVoiceOne = \relative des' {
 	\stemUp des2. \stemUp es4 ) |
 	\stemUp ges8 ( [ \stemUp es8 \stemUp des'8 \stemUp bes8 ) ] \stemUp as4. \stemDown bes8 |
 	\stemUp as4 ( \stemUp es8 [ \stemUp ges8 ] \stemUp f8 [ \stemUp as8 ] \stemUp es4 ) |
-	des1 s1 s1*2 |
+	des1 |
+	R1 |
+	R1*2 |
 	r2 \stemDown es'8 ( [ \stemDown f8 ] \stemDown des4 ) |
 	\barNumberCheck #40 es1 |
 	\stemDown des8 [ \stemDown bes8 \stemDown ges'8 \stemDown f8 ] \stemDown es8 ( [ \stemDown des8 \stemDown des8 \stemDown bes8 ) ] |
@@ -74,12 +80,16 @@ PartPOneVoiceOne = \relative des' {
 	\stemUp ges8 ( [ \stemUp es8 \stemUp des'8 \stemUp bes8 ) ] \stemUp as4. \stemDown bes8 |
 	as'1 ( |
 	\stemDown es4. \stemDown ges8 \stemDown f8 [ \stemDown es8 \stemDown des8 \stemDown es8 ) ] |
-	\barNumberCheck #50 des1 s1*4 \bar "|." 
+	\barNumberCheck #50 des1 |
+	r1. |
+	r1. |
+	r1. |
+	R1*2 \bar "|." 
 }
 
 
 PartPOneVoiceOneLyricsOne = \lyricmode {
-	\set ignoreMelismata = ##t 在 那 \skip 1 桃 \skip 1 \skip 1 花 \skip 1 \skip 1 \skip 1 盛 开 的 地 \skip 1 \skip 1 方 \skip 1 \skip 1 有 \skip 1 我 \skip 1 可 \skip 1 爱 的 故 \skip 1 \skip 1 \skip 1 \skip 1 \skip 1 乡, 桃 树 \skip 1 倒 \skip 1 \skip 1 \skip 1 映 在 明 \skip 1 净 的 水 \skip 1 \skip 1 面, 桃 \skip 1 \skip 1 林 \skip 1 环 \skip 1 \skip 1 \skip 1 抱 着 秀 丽 的 村 \skip 1 \skip 1 庄. 啊 \skip 1 \skip 1 \skip 1 故 \skip 1 \skip 1 乡, 生 我 养 我的 地 \skip 1 \skip 1 \skip 1 方, 无 论 我 在 哪 里 放 哨 站 \skip 1 岗, 总 是 把 你 \skip 1 \skip 1 深 \skip 1 \skip 1 \skip 1 情 地 向 \skip 1 \skip 1 \skip 1 \skip 1 \skip 1 往. 故 \skip 1 \skip 1 乡, 生 我 养 我的 地 \skip 1 \skip 1 \skip 1 方, 无 论 我 在 哪 里 放 哨 站 \skip 1 岗, 总 是 把 你 \skip 1 \skip 1 深 \skip 1 \skip 1 \skip 1 情 地 向 \skip 1 \skip 1 \skip 1 \skip 1 \skip 1 \skip 1 往. 
+	\set ignoreMelismata = ##t "在" "那" \skip 1 "桃" \skip 1 \skip 1 "花" \skip 1 \skip 1 \skip 1 "盛" "开" "的" "地" \skip 1 \skip 1 "方" \skip 1 \skip 1 "有" \skip 1 "我" \skip 1 "可" \skip 1 "爱" "的" "故" \skip 1 \skip 1 \skip 1 \skip 1 \skip 1 "乡," "桃" "树" \skip 1 "倒" \skip 1 \skip 1 \skip 1 "映" "在" "明" \skip 1 "净" "的" "水" \skip 1 \skip 1 "面," "桃" \skip 1 \skip 1 "林" \skip 1 "环" \skip 1 \skip 1 \skip 1 "抱" "着" "秀" "丽" "的" "村" \skip 1 \skip 1 "庄." "啊" \skip 1 \skip 1 \skip 1 "故" \skip 1 \skip 1 "乡," "生" "我" "养" "我的" "地" \skip 1 \skip 1 \skip 1 "方," "无" "论" "我" "在" "哪" "里" "放" "哨" "站" \skip 1 "岗," "总" "是" "把" "你" \skip 1 \skip 1 "深" \skip 1 \skip 1 \skip 1 "情" "地" "向" \skip 1 \skip 1 \skip 1 \skip 1 \skip 1 "往." "故" \skip 1 \skip 1 "乡," "生" "我" "养" "我的" "地" \skip 1 \skip 1 \skip 1 "方," "无" "论" "我" "在" "哪" "里" "放" "哨" "站" \skip 1 "岗," "总" "是" "把" "你" \skip 1 \skip 1 "深" \skip 1 \skip 1 \skip 1 "情" "地" "向" \skip 1 \skip 1 \skip 1 \skip 1 \skip 1 \skip 1 "往." 
 }
 
 
@@ -180,7 +190,7 @@ PartPTwoVoiceFive = \relative ges, {
 	\times 1/4 {
 		des,\breve :256 des'\breve :256 
 	}
-	\bar "|." 
+	R1 \bar "|." 
 }
 
 
@@ -236,4 +246,5 @@ PartPTwoVoiceFive = \relative ges, {
 	}
 	
 }
+
 

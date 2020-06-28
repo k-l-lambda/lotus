@@ -1394,6 +1394,7 @@ zero_command
 		{$$ = command($1);}
 	;
 
+// extra syntax
 expressive_mark
 	: CMD_CRESCENDO_BEGIN
 		{$$ = $1;}
@@ -1751,6 +1752,7 @@ post_event_nofinger
 	| script_dir zero_command
 		//{$$ = {direction: $1, cmd: $2};}
 		{$$ = postEvent($1, $2);}
+	// extra formula
 	| script_dir expressive_mark
 		//{$$ = {direction: $1, expressive: $2};}
 		{$$ = postEvent($1, $2);}
