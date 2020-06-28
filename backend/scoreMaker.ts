@@ -51,8 +51,8 @@ const markupLily = (source: string, markup: string, lilyParser: GrammarParser): 
 	const cmdList = commands && commands.value && commands.value.args && commands.value.args[0].body;
 	if (cmdList && Array.isArray(cmdList)) {
 		for (const command of cmdList) {
-			if (docSource[command])
-				docSource[command]();
+			if (command.exp && docSource[command.exp])
+				docSource[command.exp]();
 			else
 				console.warn("unexpected markup command:", command);
 		}
