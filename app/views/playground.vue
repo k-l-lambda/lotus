@@ -779,6 +779,8 @@
 				this.lilyDocument[func]();
 
 				this.lilySource = this.lilyDocument.toString();
+
+				this.$nextTick(() => this.lilyDocumentDirty = false);
 			},
 
 

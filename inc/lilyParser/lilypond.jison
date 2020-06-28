@@ -21,7 +21,7 @@
 
 	const chord = (pitches, duration, {locations, ...options} = {}) => ({proto: "Chord", pitches, duration, location: location(...locations), options: {...options, proto: "_PLAIN"}});
 
-	const briefChord = (body, {post_events = null} = {}) => ({proto: "BriefChord", body: {...body, proto: "_PLAIN"}, post_events});
+	const briefChord = (body, {locations, post_events = null} = {}) => ({proto: "BriefChord", body: {...body, proto: "_PLAIN"}, post_events, location: location(...locations)});
 
 	const block = (block, head, body = []) => ({proto: "Block", block, head, body});
 
@@ -1026,7 +1026,7 @@ chordmode_music_list
 // extra syntax
 chordmode_music
 	: new_chord post_events
-		{$$ = briefChord($1, {post_events: $2});}
+		{$$ = briefChord($1, {post_events: $2, locations: [@1, @2]});}
 	| music_assign
 		{$$ = $1;}
 	| chordmode_repeated_music
