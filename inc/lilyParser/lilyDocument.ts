@@ -1233,11 +1233,15 @@ export default class LilyDocument {
 			const body: BaseTerm[] = [];
 			const measures = new Set();
 
+			const isPostTerm = term => term instanceof PostEvent
+				|| (term as Primitive).exp === "]"
+				|| (term as Primitive).exp === "~"
+				|| (term as Command).cmd === "bar";
+
 			const list = block.body.filter(term => !(term instanceof Divide));
 			let measure = null;
 			for (const term of list) {
-				if (Number.isInteger(measure) &&
-					((term as Primitive).exp === "]" || term instanceof PostEvent || (term as Command).cmd === "bar"))
+				if (Number.isInteger(measure) && isPostTerm(term))
 					term.measure = measure;
 				else
 					measure = term.measure;
