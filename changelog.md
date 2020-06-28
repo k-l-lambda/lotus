@@ -18,6 +18,8 @@
 
 *	2020.6.28
 
+	+	batchScoreMaker.ts: argument of qualityThreshold added.
+
 	+	staffToken.ts: refined logicOffsetY for OCTAVE tokens.
 
 	+	lilyDocument.ts: markup method of excludeChordTracksFromMIDI implemented.

@@ -137,6 +137,8 @@ const main = async () => {
 
 		const markup = argv.markup ? fs.readFileSync(argv.markup).toString() : null;
 
+		const qualityThreshold = argv.qualityThreshold ? Number(argv.qualityThreshold) : 0;
+
 		log(`${lilyFiles.size} lilypond files.`);
 
 		for (const lyPath of lilyFiles) {
@@ -185,7 +187,7 @@ const main = async () => {
 				else
 					++counting.perfect;
 
-				if (!argv.noWrite)
+				if (!argv.noWrite && matchStat.data.coverage >= qualityThreshold)
 					asyncCall(fs.writeFile, scorePath, JSON.stringify(score)).then(() => console.log("wrote:", scorePath));
 
 				++counting.success;
