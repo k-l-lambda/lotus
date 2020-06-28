@@ -1148,8 +1148,8 @@ lyric_element
 		{$$ = $1;}
 	//| LYRIC_ELEMENT
 	// extra formula
-	| general_text
-		{$$ = $1;}
+	//| general_text
+	//	{$$ = $1;}
 	;
 
 pitch_as_music
@@ -1356,6 +1356,8 @@ music_identifier
 		{$$ = $1;}
 	| unitary_cmd value
 		{$$ = command($1, $2);}
+	| CMD_PARTIAL duration
+		{$$ = command($1, $2);}
 	//| binary_cmd value value
 	//	{$$ = command($1, [$2, $3]);}
 	| CMD_TWEAK property_path value
@@ -1437,8 +1439,8 @@ unitary_cmd
 		{$$ = $1;}
 	| CMD_BARNUMBERCHECK
 		{$$ = $1;}
-	| CMD_PARTIAL
-		{$$ = $1;}
+	//| CMD_PARTIAL
+	//	{$$ = $1;}
 	| CMD_MARK
 		{$$ = $1;}
 	| CMD_INCLUDE
