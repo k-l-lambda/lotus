@@ -95,6 +95,11 @@ export class BaseTerm implements LilyTerm {
 	}
 
 
+	get proto () {
+		return termProtoMap.get(Object.getPrototypeOf(this));
+	}
+
+
 	getField (key) {
 		console.assert(!!this.entries, "[BaseTerm.getField] term's entries is null:", this);
 
@@ -148,7 +153,10 @@ export class BaseTerm implements LilyTerm {
 		void location;
 		void measure;
 
-		return data;
+		return {
+			__proto: this.proto,
+			...data,
+		};
 	}
 
 
@@ -769,6 +777,10 @@ const termDictionary = {
 	Markup,
 	Lyric,
 };
+
+
+const termProtoMap: Map<object, string> = Object.entries(termDictionary)
+	.reduce((map, [name, cls]: [string, {prototype: object}]) => (map.set(cls.prototype, name), map), new Map());
 
 
 const parseRawEnforce = data => {

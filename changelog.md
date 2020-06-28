@@ -15,6 +15,11 @@
 
 
 
+*	2020.6.28
+
+	+	lilyDocument.ts: added proto field in term's JSON object.
+
+
 *	2020.6.27
 
 	+	lilyDocument.ts: redivide added.
