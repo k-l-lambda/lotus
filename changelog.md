@@ -17,6 +17,8 @@
 
 *	2020.6.28
 
+	+	lilyDocument.ts: markup method of excludeChordTracksFromMIDI implemented.
+
 	+	lilyDocument.ts: added proto field in term's JSON object.
 
 

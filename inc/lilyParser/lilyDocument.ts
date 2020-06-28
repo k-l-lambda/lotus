@@ -154,7 +154,7 @@ export class BaseTerm implements LilyTerm {
 		void measure;
 
 		return {
-			__proto: this.proto,
+			proto: this.proto,
 			...data,
 		};
 	}
@@ -826,6 +826,9 @@ const parseRaw = data => {
 };
 
 
+const deepCopyTerm = (term: BaseTerm) => parseRaw(JSON.parse(JSON.stringify(term)));
+
+
 type AttributeValue = number | boolean | string | LilyTerm;
 
 interface AttributeValueHandle {
@@ -1253,5 +1256,36 @@ export default class LilyDocument {
 
 			block.body = body.reverse();
 		});
+	}
+
+
+	excludeChordTracksFromMIDI () {
+		// if there is chord mode music in score, duplicate score block as a dedicated MIDI score which excludes chord mode music.
+		let contains = false;
+
+		const isChordMusic = term => term instanceof ContextedMusic
+			&& term.head instanceof Command && term.head.args[0] === "ChordNames";
+
+		const isBlock = (head, term) => term instanceof Block && term.head === head;
+
+		const score = this.root.getBlock("score");
+		const newScore = deepCopyTerm(score);
+		newScore.forEachTerm(SimultaneousList, simul => {
+			const trimmedList = simul.list.filter(term => !isChordMusic(term));
+			if (trimmedList.length < simul.list.length) {
+				simul.list = trimmedList;
+				contains = true;
+			}
+		});
+
+		if (contains) {
+			const trimmedBody = score.body.filter(term => !isBlock("\\midi", term));
+			if (trimmedBody.length < score.body.length) {
+				score.body = trimmedBody;
+
+				newScore.body = newScore.body.filter(term => !isBlock("\\layout", term));
+				this.root.sections.push(newScore);
+			}
+		}
 	}
 };
