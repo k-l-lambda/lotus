@@ -18,6 +18,8 @@
 
 *	2020.6.28
 
+	+	staffToken.ts: refined logicOffsetY for OCTAVE tokens.
+
 	+	lilyDocument.ts: markup method of excludeChordTracksFromMIDI implemented.
 
 	+	lilyDocument.ts: added proto field in term's JSON object.

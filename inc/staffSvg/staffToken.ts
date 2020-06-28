@@ -89,6 +89,12 @@ export default class StaffToken {
 
 	// to assist staves splitting
 	get logicOffsetY () {
+		if (this.is("OCTAVE A"))
+			return 2;
+
+		if (this.is("OCTAVE B"))
+			return -2;
+
 		if (this.is("OCTAVE CLOSE UP"))
 			return 2;
 
@@ -96,6 +102,11 @@ export default class StaffToken {
 			return -2;
 
 		return 0;
+	}
+
+
+	get logicY () {
+		return this.y + this.logicOffsetY;
 	}
 
 

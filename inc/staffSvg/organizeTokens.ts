@@ -287,7 +287,7 @@ const parseTokenRow = (tokens, logger) => {
 	//console.log("splitters:", splitters);
 	const appendToken = token => {
 		let index = 0;
-		const y = token.ry + token.logicOffsetY;
+		const y = token.logicY;
 		const indexInMap = indicesMap[roundJoin(token.x + rowX, y + rowY)];
 		if (Number.isInteger(indexInMap))
 			index = indexInMap;

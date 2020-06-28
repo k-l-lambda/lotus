@@ -375,6 +375,7 @@ class StaffContext {
 
 		const pitch = MIDDLE_C + group * 12 + GROUP_N_TO_PITCH[gn] + this.alterOnNote(note);
 		if (!Number.isFinite(pitch)) {
+			this.logger.append("noteToPitch.invalidPitch", {pitch, note, group, gn});
 			console.warn("invalid pitch value:", pitch, note, group, gn);
 			return -1;
 		}
