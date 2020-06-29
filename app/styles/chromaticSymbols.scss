@@ -61,12 +61,12 @@
 
 	.attached .notehead
 	{
-		fill: springgreen;
+		fill: steelblue;
 	}
 
 	.rest
 	{
-		fill: steelblue;
+		fill: lightblue;
 	}
 
 	.number
@@ -110,7 +110,7 @@
 		stroke: pink;
 	}
 
-	.expressive, .arpeggio, .tr, .tr-wave, .attached
+	.expressive, .arpeggio, .tr, .tr-wave, .attached, .sustain
 	{
 		fill: wheat;
 	}
