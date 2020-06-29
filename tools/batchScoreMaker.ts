@@ -89,7 +89,7 @@ const main = async () => {
 
 			// flush cache directory every 100 files
 			if ((counting.success + counting.failure) % 100 === 0)
-				emptyCache();
+				await emptyCache();
 		}
 
 		if (issues.length) {
@@ -213,7 +213,7 @@ const main = async () => {
 
 			// flush cache directory every 100 files
 			if ((counting.success + counting.failure) % 60 === 0)
-				emptyCache();
+				await emptyCache();
 		}
 
 		issues.sort((i1, i2) => i1.coverage - i2.coverage);
