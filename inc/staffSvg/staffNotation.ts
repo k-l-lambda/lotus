@@ -406,8 +406,7 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 		if (token.is("ALTER")) {
 			// ignore invalid alters
 			if (Number.isInteger(token.ry * 2)) {
-				//if (token.source && token.source.substr(0, 4) === "\\key")
-				if (token.x < measure.headX)
+				if (token.x < measure.headX || (token.source && token.source.substr(0, 4) === "\\key"))
 					context.setKeyAlter(token.ry, token.alterValue);
 				else
 					context.setAlter(token.ry, token.alterValue);
