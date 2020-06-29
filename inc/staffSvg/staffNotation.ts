@@ -512,7 +512,9 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 		for (const row of page.rows) {
 			logger.append("parseRow", page.rows.indexOf(row));
 
-			console.assert(row.staves.length === contexts.length, "staves size mismatched:", contexts.length, row.staves.length, row);
+			console.assert(row.staves.length === contexts.length, "staves size mismatched:", contexts.length, row.staves.length);
+			if (row.staves.length !== contexts.length)
+				logger.append("mismatchedStaves", {contextLen: contexts.length, stavesLen: row.staves.length, row});
 
 			row.staves.forEach((staff, i) => {
 				logger.append("parseStaff", i);

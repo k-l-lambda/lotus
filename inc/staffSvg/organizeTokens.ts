@@ -162,8 +162,10 @@ const parseChordsByStems = (tokens, logger) => {
 		rightAttached.forEach(assign);
 		leftAttached.forEach(assign);
 
-		if (!anchorNote)
+		if (!anchorNote) {
+			stem.addSymbol("NOTICE");
 			logger.append("parseChordsByStems.unexpectedStem", {stem, ys, rightAttached, leftAttached});
+		}
 	});
 };
 
