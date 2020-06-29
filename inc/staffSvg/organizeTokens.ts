@@ -377,13 +377,13 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 
 		const nearest = notes.reduce((best, note) => {
 			if (!note.tied) {
-				const distance = note.sourceProgress - tie.sourceProgress;
-				if (distance > 0 && distance < best.distance) {
+				//const distance = note.sourceProgress - tie.sourceProgress;
+				if (note.sourceProgress > tie.sourceProgress) {
 					const dx = note.x + constants.NOTE_TYPE_WIDTHS[note.noteType] * 0.5 - position.x;
 					if (dx > -1) {
 						const dy = (note.y - position.y) * 2;
-						const tipDistance = Math.sqrt(dx * dx + dy * dy);
-						if (tipDistance < 8 && dy < 4) {
+						const distance = Math.sqrt(dx * dx + dy * dy) + (note.sourcePosition.line - tie.sourcePosition.line) * 0.2;
+						if (dy < 4 && distance < best.distance) {
 							//logger.append("nearNote", {tipDistance, tie: tie.sourceProgress, note: note.sourceProgress});
 							return {distance, note};
 						}
