@@ -182,11 +182,11 @@ export default class StaffToken {
 	}
 
 
-	get sourcePosition () {
+	get sourcePosition (): {line: number, start: number, end: number} {
 		if (!this.href)
 			return null;
 
-		const [_, line, start, end] = this.href.match(/(\d+):(\d+):(\d+)/);
+		const [line, start, end] = this.href.match(/\d+/g).map(Number);
 
 		return {line, start, end};
 	}
@@ -198,7 +198,7 @@ export default class StaffToken {
 
 		const {line, start} = this.sourcePosition;
 
-		return Number(line) + Number(start) * 1e-4;
+		return line + start * 1e-4;
 	}
 
 
