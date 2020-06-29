@@ -151,15 +151,19 @@ const parseChordsByStems = (tokens, logger) => {
 		console.assert(up || leftAttached.length, "unexpected stem, downwards but no left-attached notes.");
 		console.assert(!up || rightAttached.length, "unexpected stem, upwards but no right-attached notes.");
 
-		const x = up ? rightAttached[0].x : leftAttached[0].x;
+		const anchorNote = up ? rightAttached[0] : leftAttached[0];
+		const anchorToken = anchorNote || stem;
 
 		const assign = note => {
-			note.stemX = x;
+			note.stemX = anchorToken.x;
 			note.stemUp = up;
 		};
 
 		rightAttached.forEach(assign);
 		leftAttached.forEach(assign);
+
+		if (!anchorNote)
+			logger.append("parseChordsByStems.unexpectedStem", {stem, ys, rightAttached, leftAttached});
 	});
 };
 
