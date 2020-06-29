@@ -543,7 +543,7 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 
 const xClusterize = x => Math.tanh((x / 1.2) ** 12);
 
-const CLUSTERIZE_WIDTH_FACTORS = [1, 1, 1, .5];
+const CLUSTERIZE_WIDTH_FACTORS = [1, 1, .5, .5];
 
 
 // get time closed for notes in a chord
