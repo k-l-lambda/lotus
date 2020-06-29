@@ -136,7 +136,7 @@ const parseChordsByStems = (tokens, logger) => {
 
 		if (rightAttached.length + leftAttached.length <= 0) {
 			logger.append("parseChordsByStems.baldStem:", stem);
-			console.warn("bald stem:", stem);
+			//console.warn("bald stem:", stem);
 
 			stem.addSymbol("BALD");
 
@@ -415,7 +415,7 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 
 		// shift fore headX by alters
 		const alters = tokens.filter(token => token.is("ALTER")).sort((a1, a2) => a2.x - a1.x);
-		logger.append("measure.alters", {alters, range});
+		//logger.append("measure.alters", {alters, range});
 
 		let xbegin = range.noteRange.begin;
 		for (const alter of alters) {
@@ -426,7 +426,7 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 			else
 				break;
 		}
-		logger.append("measure.xbegin", {xbegin, headX: range.headX});
+		//logger.append("measure.xbegin", {xbegin, headX: range.headX});
 
 		return {
 			tokens,
