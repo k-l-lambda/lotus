@@ -47,6 +47,8 @@
 	.staves-connection
 	{
 		fill: dodgerblue;
+		stroke: dodgerblue;
+		stroke-width: .6px;
 	}
 
 	.clef
@@ -138,9 +140,9 @@
 
 	.row > rect.mark
 	{
-		fill: #ffff0004;
+		fill: #ffff0008;
 		stroke: #ff0a;
-		stroke-width: 0.6;
+		stroke-width: 0.3;
 	}
 
 	.staff
