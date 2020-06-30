@@ -16,6 +16,11 @@
 
 
 
+*	2020.6.30
+
+	+	organizeTokens.ts: LineStack added.
+
+
 *	2020.6.28
 
 	+	batchScoreMaker.ts: argument of qualityThreshold added.

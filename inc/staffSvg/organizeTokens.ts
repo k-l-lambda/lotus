@@ -1,6 +1,102 @@
 
 import {POS_PRECISION, constants} from "./utils";
 
+// eslint-disable-next-line
+import StaffToken from "./staffToken";
+
+
+
+class LineStack {
+	lines: StaffToken[];
+
+	systemIndex?: number;
+	staffIndex?: number;
+
+
+	constructor (root) {
+		this.lines = [root];
+	}
+
+
+	// the bottom line
+	get tip (): StaffToken {
+		return this.lines[this.lines.length - 1];
+	}
+
+
+	get rect (): {left: number, right: number, top: number, bottom: number} {
+		const ys = this.lines.map(token => token.y + token.height / 2);
+
+		return {
+			left: Math.min(...this.lines.map(token => token.x)),
+			right: Math.max(...this.lines.map(token => token.x + token.width)) - 1,
+			top: ys[0],
+			bottom: ys[ys.length - 1],
+		};
+	}
+
+
+	tryAppend (line: StaffToken): boolean {
+		if (line.ry - this.tip.ry === 1 && Math.abs(line.x - this.tip.x) < 2) {
+			this.lines.push(line);
+
+			return true;
+		}
+
+		return false;
+	}
+
+
+	tryAttachConnection (connection: {y: number, height: number}, index: number): boolean {
+		const {top, bottom} = this.rect;
+
+		//console.log("connection:", connection.y + connection.height, top - 1.2);
+
+		if (bottom + 1.2 > connection.y && top - 1.2 < connection.y + connection.height) {
+			this.systemIndex = index;
+			return true;
+		}
+
+		return false;
+	}
+
+
+	tryAttachStaff (y: number, index: number): boolean {
+		const {top, bottom} = this.rect;
+
+		if (bottom + 3.2 > y || top - 3.2 < y) {
+			this.staffIndex = index;
+			return true;
+		}
+
+		return false;
+	}
+
+
+	contains (token: StaffToken) {
+		const {left, right, top, bottom} = this.rect;
+
+		return token.x > left && token.x < right && token.y > top - 0.6 && token.y < bottom + 0.6;
+	}
+};
+
+
+const parseAdditionalLineStacks = (tokens: StaffToken[]): LineStack[] => {
+	const lines = tokens.filter(token => token.is("ADDITIONAL_LINE")).sort((t1, t2) => t1.y - t2.y);
+
+	const stacks: LineStack[] = [];
+
+	lines.forEach(line => {
+		for (const stack of stacks) {
+			if (stack.tryAppend(line))
+				return;
+		}
+
+		stacks.push(new LineStack(line));
+	});
+
+	return stacks;
+};
 
 
 const tokensRowsSplit = (tokens, logger) => {
@@ -28,8 +124,12 @@ const tokensRowsSplit = (tokens, logger) => {
 		let outStaff = true;
 		for (let y = 0; y < pageTile.length; ++y) {
 			const out = pageTile[y] < 0;
-			if (outStaff && !out)
+			if (outStaff && !out) {
 				++index;
+
+				// append connection placeholder
+				connections.push({y, height: 4});
+			}
 
 			if (!out)
 				pageTile[y] = index;
@@ -58,6 +158,17 @@ const tokensRowsSplit = (tokens, logger) => {
 	}
 
 	logger.append("tokensRowsSplit.pageTile.0", [...pageTile]);
+
+	const lineStacks = parseAdditionalLineStacks(tokens);
+	lineStacks.forEach(stack => {
+		for (let i = 0; i < connections.length; ++i) {
+			if (stack.tryAttachConnection(connections[i], i))
+				break;
+		}
+	});
+	logger.append("tokensRowsSplit.lineStacks", lineStacks);
+
+	// TODO: replace row range expanding by line stacks
 
 	const addlineYs: number[] = Array.from(new Set(
 		tokens.filter(token => token.is("ADDITIONAL_LINE")).map(token => Math.round(token.y + token.height / 2)),
@@ -107,6 +218,11 @@ const tokensRowsSplit = (tokens, logger) => {
 	return Array(rowBoundaries.length).fill(null)
 		.map((_, i) => tokens
 			.filter(token => {
+				for (const stack of lineStacks) {
+					if (stack.contains(token))
+						return stack.systemIndex === i;
+				}
+
 				let y = token.y;
 				if (token.height > 0)
 					y += token.height;
@@ -238,14 +354,10 @@ const parseTokenRow = (tokens, logger) => {
 	const splitters = [];
 	for (let i = 0; i < staffYs.length - 1; ++i) {
 		let up = staffYs[i] + 2;
-		//if (!additionalLinesYs.has(up + 1))
-		//	up -= 0.25;
 		while (additionalLinesYs.has(up + 1))
 			++up;
 
 		let down = staffYs[i + 1] - 2;
-		//if (!additionalLinesYs.has(down - 1))
-		//	down -= 0.25;
 		while (additionalLinesYs.has(down - 1))
 			--down;
 
