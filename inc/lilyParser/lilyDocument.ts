@@ -1228,6 +1228,17 @@ export default class LilyDocument {
 	}
 
 
+	removeEmptyContextedStaff () {
+		const subMusics = (simul: SimultaneousList) => simul.list.filter(term => term instanceof ContextedMusic);
+
+		const score = this.root.getBlock("score");
+		score.forEachTerm(SimultaneousList, simul => {
+			simul.list = simul.list.filter(term => !(term instanceof ContextedMusic) || !(term.body instanceof SimultaneousList)
+				|| subMusics(term.body).length > 0);
+		});
+	}
+
+
 	redivide () {
 		this.root.forEachTerm(MusicBlock, (block: MusicBlock) => {
 			const body: BaseTerm[] = [];

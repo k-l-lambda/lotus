@@ -18,6 +18,8 @@
 
 *	2020.6.30
 
+	+	lilyDocument.ts: markup method of removeEmptyContextedStaff added.
+
 	+	organizeTokens.ts: affiliate alters to notes.
 
 	+	organizeTokens.ts: refined staves splitting by line stacks.
