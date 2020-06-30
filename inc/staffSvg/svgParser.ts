@@ -108,7 +108,7 @@ const svgToElements = (svgText, {logger = null, DOMParser = null} = {}) => {
 	//console.log("dom:", dom);
 
 	if (logger)
-		logger.append("svgToElements.");
+		logger.append("svgToElements");
 
 	const svg : any = dom.childNodes[0];
 	console.assert(svg && svg.tagName === "svg");

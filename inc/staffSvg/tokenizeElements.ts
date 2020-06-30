@@ -111,7 +111,7 @@ const normalizeElement = (elem, attributes) => {
 const tokenizeElements = (elements, attributes, logger) => {
 	const es = elements.map(e => normalizeElement(e, attributes)).filter(e => e);
 
-	logger.append("tokenizeElements", {elementCount: es.length});
+	//logger.append("tokenizeElements", {elementCount: es.length});
 
 	const hashTable = {};
 	for (const elem of es) 
@@ -125,12 +125,14 @@ const tokenizeElements = (elements, attributes, logger) => {
 		});
 	});
 
-	logger.append("tokenizeElements.nonsymbolTokens", tokens
+	const nonsymbolTokens = tokens
 		.filter(token => !token.symbol)
 		.map(token => ({
 			..._.pick(token, ["x", "y", "rx", "ry", "sw", "href"]),
 			identity: hashTable[token.hash],
-		})));
+		}));
+	if (nonsymbolTokens.length)
+		logger.append("tokenizeElements.nonsymbolTokens", nonsymbolTokens);
 
 	return {tokens, hashTable};
 };
