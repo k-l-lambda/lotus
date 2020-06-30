@@ -28,7 +28,7 @@ class LineStack {
 		const ys = this.lines.map(token => token.y + token.height / 2);
 
 		return {
-			left: Math.min(...this.lines.map(token => token.x)),
+			left: Math.min(...this.lines.map(token => token.x)) - 1.2,
 			right: Math.max(...this.lines.map(token => token.x + token.width)) - 1,
 			top: ys[0],
 			bottom: ys[ys.length - 1],
@@ -168,9 +168,7 @@ const tokensRowsSplit = (tokens, logger) => {
 	});
 	logger.append("tokensRowsSplit.lineStacks", lineStacks);
 
-	// TODO: replace row range expanding by line stacks
-
-	const addlineYs: number[] = Array.from(new Set(
+	/*const addlineYs: number[] = Array.from(new Set(
 		tokens.filter(token => token.is("ADDITIONAL_LINE")).map(token => Math.round(token.y + token.height / 2)),
 	)).sort((y1: number, y2: number) => y1 - y2) as number[];
 	logger.append("tokensRowsSplit.addlineYs", addlineYs);
@@ -188,7 +186,7 @@ const tokensRowsSplit = (tokens, logger) => {
 			pageTile[y - 1] = pageTile[y + 1];
 		}
 	});
-	logger.append("tokensRowsSplit.pageTile.1", [...pageTile]);
+	logger.append("tokensRowsSplit.pageTile.1", [...pageTile]);*/
 
 	// fill interval between 8va and row top
 	const octaveAs = tokens.filter(token => token.is("OCTAVE A"));
