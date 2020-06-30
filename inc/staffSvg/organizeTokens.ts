@@ -16,6 +16,7 @@ interface Rect {
 
 class LineStack {
 	lines: StaffToken[];
+	translation = {x: 0, y: 0};
 
 	systemIndex?: number;
 	staffIndex?: number;
@@ -68,7 +69,9 @@ class LineStack {
 
 		//console.log("connection:", connection.y + connection.height, top - 1.2);
 
-		if (bottom + 1.2 > connection.y && top - 1.2 < connection.y + connection.height) {
+		const y = connection.y + this.translation.y;
+
+		if (bottom + 1.2 > y && top - 1.2 < y + connection.height) {
 			this.systemIndex = index;
 			return true;
 		}
@@ -80,7 +83,9 @@ class LineStack {
 	tryAttachStaff (y: number, index: number): boolean {
 		const {top, bottom} = this.rect;
 
-		if (bottom + 3.2 > y || top - 3.2 < y) {
+		y += this.translation.y;
+
+		if (bottom + 3.2 > y && top - 3.2 < y) {
 			this.staffIndex = index;
 			return true;
 		}
@@ -92,7 +97,16 @@ class LineStack {
 	contains (token: StaffToken) {
 		const {left, right, top, bottom} = this.rect;
 
-		return token.x > left - 1.2 && token.x < right - 1 && token.y > top - 0.6 && token.y < bottom + 0.6;
+		const x = token.x + this.translation.x;
+		const y = token.y + this.translation.y;
+
+		return x > left - 1.2 && x < right - 1 && y > top - 0.6 && y < bottom + 0.6;
+	}
+
+
+	translate ({x = 0, y = 0} = {}) {
+		this.translation.x += x;
+		this.translation.y += y;
 	}
 };
 
@@ -293,7 +307,7 @@ const parseChordsByStems = (tokens, logger) => {
 
 const isRowToken = token => token.is("STAVES_CONNECTION") || token.is("BRACE") || token.is("VERTICAL_LINE");
 
-const roundJoin = (x, y) => `${Math.round(x)},${Math.round(y)}`;
+//const roundJoin = (x, y) => `${Math.round(x)},${Math.round(y)}`;
 
 
 const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
@@ -376,7 +390,7 @@ const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 	splitters.push(Infinity);
 
 
-	// generate 2D staves index map
+	/*// generate 2D staves index map
 	const indicesMap = {};
 	const markLineIndex = (line, index) => {
 		for (let x = Math.round(line.x); x < Math.round(line.x + line.width); ++x) {
@@ -404,17 +418,31 @@ const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 			markLineIndex(line, base);
 	});
 
-	//logger.append("parseTokenRow.indicesMap", indicesMap);
+	//logger.append("parseTokenRow.indicesMap", indicesMap);*/
 
+	stacks.forEach(stack => {
+		for (let i = 0; i < staffYs.length; ++i) {
+			if (stack.tryAttachStaff(staffYs[i], i))
+				return;
+		}
+	});
+
+	const findStaffByStacks = token => {
+		for (const stack of stacks) {
+			if (stack.contains(token))
+				return stack.staffIndex;
+		}
+	};
 
 	const staffTokens = [];
 	//console.log("splitters:", splitters);
 	const appendToken = token => {
 		let index = 0;
 		const y = token.logicY;
-		const indexInMap = indicesMap[roundJoin(token.x + rowX, y + rowY)];
-		if (Number.isInteger(indexInMap))
-			index = indexInMap;
+		//const indexInMap = indicesMap[roundJoin(token.x + rowX, y + rowY)];
+		const indexByStacks = findStaffByStacks(token);
+		if (Number.isInteger(indexByStacks))
+			index = indexByStacks;
 		else {
 			//if (token.is("NOTEHEAD"))
 			//	console.log("omit note:", token.href, roundJoin(token.x + rowX, y + rowY));
@@ -427,6 +455,8 @@ const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 	};
 
 	const localTokens = tokens.map(token => token.translate({x: rowX, y: rowY}));
+	stacks.forEach(stack => stack.translate({x: rowX, y: rowY}));
+	//logger.append("parseTokenRow.stacks", stacks);
 
 	parseChordsByStems(localTokens, logger);
 
@@ -458,7 +488,6 @@ const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 	//logger.append("parseTokenRow.measureRanges", measureRanges);
 
 	return {
-		//staffYs,
 		x: rowX,
 		y: rowY,
 		top,
