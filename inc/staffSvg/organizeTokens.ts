@@ -71,7 +71,7 @@ class LineStack {
 
 		const y = connection.y + this.translation.y;
 
-		if (bottom + 1.2 > y && top - 1.2 < y + connection.height) {
+		if (bottom + 1.6 > y && top - 1.6 < y + connection.height) {
 			this.systemIndex = index;
 			return true;
 		}
@@ -188,6 +188,7 @@ const tokensRowsSplit = (tokens, logger) => {
 	}
 
 	//logger.append("tokensRowsSplit.pageTile.0", [...pageTile]);
+	//logger.append("tokensRowsSplit.connections", connections);
 
 	const lineStacks = parseAdditionalLineStacks(tokens);
 	lineStacks.forEach(stack => {
