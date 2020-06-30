@@ -513,6 +513,19 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 	const notes = localTokens.filter(token => token.is("NOTE"));
 	//logger.append("parseTokenStaff.localTokens", localTokens);
 
+	// affiliate alters to notes
+	const alters = localTokens.filter(token => token.is("ALTER") && !token.href);
+	alters.forEach(alter => {
+		const notehead = notes.find(note => note.ry === alter.ry && note.x > alter.x && note.x - alter.x < 5);
+		if (notehead)
+			alter.stemX = notehead.x;
+		else {
+			alter.addSymbol("NOTICE");
+			logger.append("orphanAlter", alter);
+		}
+	});
+	//logger.append("measureRanges:", {measureRanges, alters});
+
 	// mark tied notes
 	const ties = localTokens.filter(token => token.is("SLUR") && token.source && (token.source[0] === "~" || token.source[1] === "~"));
 	//logger.append("parseTokenStaff.ties", ties);
@@ -557,11 +570,12 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 	const measures = measureRanges.map((range, i) => {
 		const left = i > 0 ? measureRanges[i - 1].noteRange.end : -Infinity;
 
-		const tokens = localTokens.filter(token => !isStaffToken(token) && token.x > left
-			&& (token.x < range.noteRange.end || i === measureRanges.length - 1));
+		const tokens = localTokens
+			.filter(token => !isStaffToken(token) && token.logicX > left && (token.logicX < range.noteRange.end || i === measureRanges.length - 1))
+			.sort((t1, t2) => t1.logicX - t2.logicX);
 
-		// shift fore headX by alters
-		const alters = tokens.filter(token => token.is("ALTER")).sort((a1, a2) => a2.x - a1.x);
+		/*// shift fore headX by alters
+		const alters = tokens.filter(token => alters.includes(token)).sort((a1, a2) => a2.x - a1.x);
 		//logger.append("measure.alters", {alters, range});
 
 		let xbegin = range.noteRange.begin;
@@ -572,7 +586,7 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 			}
 			else
 				break;
-		}
+		}*/
 		//logger.append("measure.xbegin", {xbegin, headX: range.headX});
 
 		return {

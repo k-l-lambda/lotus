@@ -18,6 +18,8 @@
 
 *	2020.6.30
 
+	+	organizeTokens.ts: affiliate alters to notes.
+
 	+	organizeTokens.ts: refined staves splitting by line stacks.
 
 	+	organizeTokens.ts: LineStack added.
