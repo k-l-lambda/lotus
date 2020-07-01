@@ -1150,6 +1150,8 @@ lyric_element
 	// extra formula
 	//| general_text
 	//	{$$ = $1;}
+	| UNKNOWN_CHAR
+		{$$ = $1;}
 	;
 
 pitch_as_music
