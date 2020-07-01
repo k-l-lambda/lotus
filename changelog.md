@@ -19,6 +19,8 @@
 
 *	2020.7.1
 
+	+	lilyDocument.ts: refined redivide to remove divide at tail.
+
 	+	batchScoreMaker.ts: added argv of flushCacheInterval.
 
 

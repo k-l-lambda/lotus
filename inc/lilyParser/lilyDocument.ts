@@ -1241,9 +1241,6 @@ export default class LilyDocument {
 
 	redivide () {
 		this.root.forEachTerm(MusicBlock, (block: MusicBlock) => {
-			const body: BaseTerm[] = [];
-			const measures = new Set();
-
 			const isPostTerm = term => term instanceof PostEvent
 				|| (term as Primitive).exp === "]"
 				|| (term as Primitive).exp === "~"
@@ -1258,11 +1255,16 @@ export default class LilyDocument {
 					measure = term.measure;
 			}
 
+			const body: BaseTerm[] = [];
+			const measures = new Set();
+
 			list.reverse().forEach(term => {
 				if (term instanceof BaseTerm) {
 					const newMeasures = term.measures.filter(m => !measures.has(m));
 					if (newMeasures.length) {
-						body.push(new Divide({}));
+						if (body.length)
+							body.push(new Divide({}));
+
 						newMeasures.forEach(m => measures.add(m));
 					}
 				}
