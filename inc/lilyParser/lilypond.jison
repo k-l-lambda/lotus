@@ -53,7 +53,7 @@
 
 	const markup = (head, body) => ({proto: "Markup", head, body});
 
-	const lyric = (content, options) => ({proto: "Lyric", content, ...options});
+	const lyric = (content, {locations, ...options}) => ({proto: "Lyric", content, location: location(...locations), ...options});
 %}
 
 
@@ -1136,7 +1136,7 @@ music
 
 lyric_element_music
 	: lyric_element optional_notemode_duration post_events
-		{$$ = lyric($1, {duration: $2, post_events: $3});}
+		{$$ = lyric($1, {duration: $2, post_events: $3, locations: [@1, @3]});}
 	;
 
 lyric_element
