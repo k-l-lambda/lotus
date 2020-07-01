@@ -229,7 +229,7 @@ const tokensRowsSplit = (tokens, logger) => {
 
 	const rows = Array(rowBoundaries.length).fill(null).map(() => ({tokens: [], stacks: []}));
 
-	validLineStacks.forEach(stack => rows[stack.systemIndex].stacks.push(stack));
+	validLineStacks.forEach(stack => rows[stack.systemIndex] && rows[stack.systemIndex].stacks.push(stack));
 
 	tokens.forEach(token => {
 		for (const stack of validLineStacks) {
