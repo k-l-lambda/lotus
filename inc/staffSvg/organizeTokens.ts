@@ -100,7 +100,7 @@ class LineStack {
 		const x = token.x + this.translation.x;
 		const y = token.y + this.translation.y;
 
-		return x > left - 1.2 && x < right - 1 && y > top - 0.6 && y < bottom + 0.6;
+		return x > left - 1.6 && x < right - 1 && y > top - 0.6 && y < bottom + 0.6;
 	}
 
 
