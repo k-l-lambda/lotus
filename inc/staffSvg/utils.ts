@@ -27,6 +27,7 @@ const constants = {
 	NOTE_TYPE_JOINT_Y,
 	ALTER_WIDTHS,
 	MUSIC_FONT_NOTE_OFFSETS,
+	EPSILON: 1e-9,
 };
 
 
