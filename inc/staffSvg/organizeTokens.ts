@@ -243,7 +243,7 @@ const tokensRowsSplit = (tokens, logger) => {
 			}
 		}
 
-		const y = Math.max(token.y, token.y + (token.height || 0) * 0.8);
+		const y = Math.max(token.logicY, token.logicY + (token.height || 0) * 0.8);
 		for (let i = 0; i < rowBoundaries.length; ++i) {
 			if (y >= rowBoundaries[i] && (i >= rowBoundaries.length - 1 || y < rowBoundaries[i + 1])) {
 				rows[i].tokens.push(token);
