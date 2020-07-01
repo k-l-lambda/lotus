@@ -31,6 +31,8 @@ const main = async () => {
 
 	const lilyFiles: Set<string> = new Set();
 
+	const flushCacheInterval = argv.flushCacheInterval ? Number(argv.flushCacheInterval) : 60;
+
 	if (argv.inputXmlDir) {
 		const counting = {
 			success: 0,
@@ -88,7 +90,7 @@ const main = async () => {
 			}
 
 			// flush cache directory every 100 files
-			if ((counting.success + counting.failure) % 100 === 0)
+			if ((counting.success + counting.failure) % flushCacheInterval === 0)
 				await emptyCache();
 		}
 
@@ -212,7 +214,7 @@ const main = async () => {
 			console.log("Making progress:", ++index, "/", lilyFiles.size);
 
 			// flush cache directory every 100 files
-			if ((counting.success + counting.failure) % 60 === 0)
+			if ((counting.success + counting.failure) % flushCacheInterval === 0)
 				await emptyCache();
 		}
 

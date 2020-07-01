@@ -1,5 +1,6 @@
 
 ## TODO
+	parse tied notes by LilyDocument
 	measures clipping, playground.sliceSource
 	measure notes in Notation parsing
 	music duration parsing
@@ -14,6 +15,11 @@
 	source editor
 		cursor position column
 
+
+
+*	2020.7.1
+
+	+	batchScoreMaker.ts: added argv of flushCacheInterval.
 
 
 *	2020.6.30
