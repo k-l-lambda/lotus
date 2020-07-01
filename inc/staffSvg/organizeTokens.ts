@@ -513,8 +513,10 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 	const notes = localTokens.filter(token => token.is("NOTE"));
 	//logger.append("parseTokenStaff.localTokens", localTokens);
 
+	const headX = measureRanges[0] ? measureRanges[0].headX : 0;
+
 	// affiliate alters to notes
-	const alters = localTokens.filter(token => token.is("ALTER") && !token.href);
+	const alters = localTokens.filter(token => token.is("ALTER") && !token.href && token.x >= headX);
 	alters.forEach(alter => {
 		const notehead = notes.find(note => note.ry === alter.ry && note.x > alter.x && note.x - alter.x < 5);
 		if (notehead)
@@ -570,16 +572,15 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 	const measures = measureRanges.map((range, i) => {
 		const left = i > 0 ? measureRanges[i - 1].noteRange.end : -Infinity;
 
-		const tokens = localTokens
-			.filter(token => !isStaffToken(token) && token.logicX > left && (token.logicX < range.noteRange.end || i === measureRanges.length - 1))
-			.sort((t1, t2) => t1.logicX - t2.logicX);
+		const tokens = localTokens.filter(token => !isStaffToken(token) && token.logicX > left
+			&& (token.logicX < range.noteRange.end || i === measureRanges.length - 1));
 
 		/*// shift fore headX by alters
-		const alters = tokens.filter(token => alters.includes(token)).sort((a1, a2) => a2.x - a1.x);
-		//logger.append("measure.alters", {alters, range});
+		const measureAlters = alters.filter(alter => !alter.is("NOTICE") && tokens.includes(alter));
+		//logger.append("measure.alters", {measureAlters, range});
 
 		let xbegin = range.noteRange.begin;
-		for (const alter of alters) {
+		for (const alter of measureAlters) {
 			if (alter.x + constants.ALTER_WIDTHS[alter.alterValue] >= xbegin) {
 				range.headX = Math.min(range.headX, alter.x);
 				xbegin = Math.min(range.noteRange.begin, alter.x);
