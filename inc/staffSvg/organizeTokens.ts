@@ -234,8 +234,12 @@ const tokensRowsSplit = (tokens, logger) => {
 	tokens.forEach(token => {
 		for (const stack of validLineStacks) {
 			if (stack.contains(token)) {
-				rows[stack.systemIndex].tokens.push(token);
-				return;
+				if (rows[stack.systemIndex]) {
+					rows[stack.systemIndex].tokens.push(token);
+					return;
+				}
+				else
+					logger.append("tokensRowsSplit.invalidStackSystemIndex", {stack, rows});
 			}
 		}
 
