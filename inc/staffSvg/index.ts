@@ -6,32 +6,45 @@ import LogRecorder from "../logRecorder";
 import StaffToken from "./staffToken";
 import SheetDocument from "./sheetDocument";
 import * as StaffNotation from "./staffNotation";
+import TextSource from "../textSource";
+// eslint-disable-next-line
+import LilyDocument from "../lilyParser/lilyDocument";
 
 
 
-const parseSvgPage = (dom, ly, {logger = new LogRecorder(), attributes, ...options}) => {
+const parseSvgPage = (dom, source: string | TextSource, lilyDocument: LilyDocument, {logger = new LogRecorder(), attributes, ...options}) => {
+	if (!(source instanceof TextSource))
+		source = new TextSource(source);
+
 	const elem = svgToElements(dom, {logger, ...options});
 	logger.append("parseSvgPage.elem", elem);
 
 	if (!elem)
 		return {structure: null, hashTable: {}};
 
+	if (!attributes && lilyDocument)
+		attributes = lilyDocument.globalAttributes({readonly: true});
+
 	const {tokens, hashTable} = tokenizeElements(elem.children, attributes, logger);
 
 	const [x, y, width, height] = elem.viewBox.match(/[\d-.]+/g).map(Number);
 	const viewBox = {x, y, width, height};
 
+	// mark tie symbol on tokens
+	const tieLocations = lilyDocument.getTiedNoteLocations(source).reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
+	tokens.forEach(token => {
+		if (token.sourcePosition) {
+			const {line, start} = token.sourcePosition;
+			if (tieLocations[`${line}:${start}`])
+				token.addSymbol("TIE");
+		}
+	});
+
 	return {
-		structure: organizeTokens(tokens, ly, {logger, viewBox, width: elem.width, height: elem.height}),
+		structure: organizeTokens(tokens, source, {logger, viewBox, width: elem.width, height: elem.height}),
 		hashTable,
 	};
 };
-
-
-// eslint-disable-next-line
-declare class LilyDocument {
-	globalAttributes(options: {readonly?: boolean});
-}
 
 
 const createSheetDocumentFromSvgs = (svgs: string[], ly: string, lilyDocument: LilyDocument, {logger, DOMParser}: {logger?: LogRecorder, DOMParser?: any} = {}): {
@@ -40,7 +53,9 @@ const createSheetDocumentFromSvgs = (svgs: string[], ly: string, lilyDocument: L
 } => {
 	const attributes = lilyDocument.globalAttributes({readonly: true});
 
-	const pages = svgs.map(svg => parseSvgPage(svg, ly, {DOMParser, logger, attributes}));
+	const source = new TextSource(ly);
+
+	const pages = svgs.map(svg => parseSvgPage(svg, source, lilyDocument, {DOMParser, logger, attributes}));
 	const doc = new SheetDocument({
 		pages: pages.map(page => page.structure),
 	});

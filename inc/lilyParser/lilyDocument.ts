@@ -1318,7 +1318,7 @@ export default class LilyDocument {
 
 
 	// generate tied notehead location candidates
-	getTiedNoteLocations (source: string): [number, number][] {
+	getTiedNoteLocations (source: TextSource): [number, number][] {
 		const chordPairs: [Chord, Chord][] = [];
 
 		this.root.forEachTerm(MusicBlock, (block: MusicBlock) => {
@@ -1342,15 +1342,12 @@ export default class LilyDocument {
 
 		//console.log("chordPairs:", chordPairs);
 
-		const text = new TextSource(source);
-		//console.log("chordPairs:", text, chordPairs.map(pair => text.slice(pair[1].location.lines, pair[1].location.columns)));
-
 		const locations = [];
 
 		chordPairs.forEach(pair => {
 			const forePitches = new Set(pair[0].pitchNames);
 
-			const chordSource = text.slice(pair[1].location.lines, pair[1].location.columns);
+			const chordSource = source.slice(pair[1].location.lines, pair[1].location.columns);
 			const pitchColumns = TextSource.matchPositions(/\w+/g, chordSource);
 
 			pair[1].pitchNames

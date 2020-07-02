@@ -187,7 +187,7 @@ const makeScoreV2 = async (source: string, lilyParser: GrammarParser, {midi, log
 		onSvgRead: async svg => {
 			//console.log("ts.0:", Date.now() - t0);
 			const attributes = await attrGen.wait();
-			const page = staffSvg.parseSvgPage(svg, source, {DOMParser, logger, attributes});
+			const page = staffSvg.parseSvgPage(svg, source, null, {DOMParser, logger, attributes});
 			pages.push(page.structure);
 			Object.assign(hashTable, page.hashTable);
 			//console.log("ts.1:", Date.now() - t0);
@@ -307,7 +307,7 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 		onSvgRead: async svg => {
 			//console.log("ts.0:", Date.now() - t0);
 			const attributes = await attrGen.wait();
-			const page = staffSvg.parseSvgPage(svg, source, {DOMParser, logger, attributes});
+			const page = staffSvg.parseSvgPage(svg, source, lilyDocument, {DOMParser, logger, attributes});
 			pages.push(page.structure);
 			Object.assign(hashTable, page.hashTable);
 			//console.log("ts.1:", Date.now() - t0);

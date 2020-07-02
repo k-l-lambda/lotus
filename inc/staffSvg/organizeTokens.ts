@@ -3,6 +3,8 @@ import {POS_PRECISION, constants} from "./utils";
 
 // eslint-disable-next-line
 import StaffToken from "./staffToken";
+// eslint-disable-next-line
+import TextSource from "../textSource";
 
 
 
@@ -536,6 +538,8 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 	const ties = localTokens.filter(token => token.is("SLUR") && token.source && (token.source[0] === "~" || token.source[1] === "~"));
 	//logger.append("parseTokenStaff.ties", ties);
 
+	const tieCondidateNotes = notes.filter(note => note.is("TIE"));
+
 	ties.forEach(tie => {
 		let offsetY = 0;
 		if (tie.is("UP"))
@@ -548,18 +552,17 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 			y: tie.y + tie.target.y + offsetY,
 		};
 
-		const nearest = notes.reduce((best, note) => {
+		const nearest = tieCondidateNotes.reduce((best, note) => {
 			if (!note.tied) {
 				//const distance = note.sourceProgress - tie.sourceProgress;
 				if (note.sourceProgress > tie.sourceProgress) {
 					const dx = note.x + constants.NOTE_TYPE_WIDTHS[note.noteType] * 0.5 - position.x;
-					if (dx > -1) {
-						const dy = (note.y - position.y) * 2;
-						const distance = Math.sqrt(dx * dx + dy * dy) + (note.sourcePosition.line - tie.sourcePosition.line) * 0.2;
-						if (dy < 4 && distance < best.distance) {
-							//logger.append("nearNote", {tipDistance, tie: tie.sourceProgress, note: note.sourceProgress});
-							return {distance, note};
-						}
+					const dy = (note.y - position.y) * 2;
+					//const distance = Math.sqrt(dx * dx + dy * dy) + (note.sourcePosition.line - tie.sourcePosition.line) * 0.2;
+					const distance = Math.sqrt(dx * dx + dy * dy);
+					if (distance < best.distance) {
+						//logger.append("nearNote", {tipDistance, tie: tie.sourceProgress, note: note.sourceProgress});
+						return {distance, note};
 					}
 				}
 			}
@@ -617,15 +620,15 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 const isPageToken = token => token.is("TEXT") && !token.source;
 
 
-const organizeTokens = (tokens, ly: string, {logger, viewBox, width, height}: any = {}) => {
+const organizeTokens = (tokens, source: TextSource, {logger, viewBox, width, height}: any = {}) => {
 	//logger.append("organizeTokens", tokens);
 
 	// added source on tokens
-	const lyLines = ly.split("\n");
 	tokens.forEach(token => {
 		const pos = token.sourcePosition;
 		if (pos)
-			token.source = lyLines[pos.line - 1].substr(pos.start, Math.max(pos.end - pos.start, 8));
+			//token.source = lyLines[pos.line - 1].substr(pos.start, Math.max(pos.end - pos.start, 8));
+			token.source = source.slice(pos.line, [pos.start, Math.max(pos.end, pos.start + 8)]);
 	});
 
 	const meaningfulTokens = tokens.filter(token => !token.is("NULL"));
