@@ -521,9 +521,24 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 
 	const headX = measureRanges[0] ? measureRanges[0].headX : 0;
 
-	// affiliate alters to notes
-	const alters = localTokens.filter(token => token.is("ALTER") && !token.href && token.x >= headX);
-	alters.forEach(alter => {
+	const alters = localTokens.filter(token => token.is("ALTER"));
+	let lastAlter = null;
+
+	// mark key alters
+	for (const alter of alters) {
+		if ((alter.source && alter.source.substr(0, 4) === "\\key") || alter.x < headX)
+			lastAlter = alter;
+		else if (lastAlter && alter.x - lastAlter.x < 1.2)
+			lastAlter = alter;
+		else
+			break;
+
+		alter.addSymbol("KEY");
+	}
+
+	// affiliate accidental alters to notes
+	const accs = alters.filter(alter => !alter.is("KEY") && !alter.href);
+	accs.forEach(alter => {
 		const notehead = notes.find(note => note.ry === alter.ry && note.x > alter.x && note.x - alter.x < 5);
 		if (notehead)
 			alter.stemX = notehead.logicX - constants.EPSILON;
@@ -532,7 +547,7 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 			logger.append("orphanAlter", alter);
 		}
 	});
-	//logger.append("measureRanges:", {measureRanges, alters});
+	//logger.append("measureRanges:", {measureRanges, accs});
 
 	// mark tied notes
 	const ties = localTokens.filter(token => token.is("SLUR") && token.source && (token.source[0] === "~" || token.source[1] === "~"));
