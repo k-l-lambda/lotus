@@ -1321,18 +1321,38 @@ export default class LilyDocument {
 	getTiedNoteLocations (source: TextSource): [number, number][] {
 		const chordPairs: [Chord, Chord][] = [];
 
+		const hasMusicBlock = term => {
+			if (term instanceof MusicBlock)
+				return true;
+
+			if (term instanceof Command)
+				return term.args.filter(arg => arg instanceof MusicBlock).length > 0;
+
+			return false;
+		};
+
 		this.root.forEachTerm(MusicBlock, (block: MusicBlock) => {
 			let lastChord = null;
 			let tieing = false;
+			let afterBlock = false;
 
 			for (const term of block.body) {
-				if (term instanceof Primitive && term.exp === "~")
+				if (term instanceof Primitive && term.exp === "~") {
 					tieing = true;
+					afterBlock = false;
+				}
+				else if (hasMusicBlock(term))
+					afterBlock = true;
 				else if (term instanceof Chord) {
 					if (tieing && lastChord) {
 						chordPairs.push([lastChord, term as Chord]);
 						tieing = false;
 					}
+					// maybe there is a tie at tail of the last block
+					else if (afterBlock)
+						chordPairs.push([null, term as Chord]);
+
+					afterBlock = false;
 				}
 
 				if (term instanceof Chord)
@@ -1345,14 +1365,14 @@ export default class LilyDocument {
 		const locations = [];
 
 		chordPairs.forEach(pair => {
-			const forePitches = new Set(pair[0].pitchNames);
+			const forePitches = pair[0] && new Set(pair[0].pitchNames);
 
 			const chordSource = source.slice(pair[1].location.lines, pair[1].location.columns);
 			const pitchColumns = TextSource.matchPositions(/\w+/g, chordSource);
 
 			pair[1].pitchNames
 				.map((pitch, index) => ({pitch, index}))
-				.filter(({pitch}) => forePitches.has(pitch))
+				.filter(({pitch}) => !forePitches || forePitches.has(pitch))
 				.forEach(({index}) => locations.push([
 					pair[1].location.lines[0],	// line
 					pair[1].location.columns[0] + pitchColumns[index],	// column
