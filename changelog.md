@@ -17,6 +17,11 @@
 
 
 
+*	2020.7.2
+
+	+	lilyDocument.ts: getTiedNoteLocations added.
+
+
 *	2020.7.1
 
 	+	lilyDocument.ts: refined redivide to remove divide at tail.

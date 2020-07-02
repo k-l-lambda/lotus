@@ -1,4 +1,8 @@
 
+import TextSource from "../textSource";
+
+
+
 interface LilyTerm {
 	isMusic?: boolean;
 
@@ -602,6 +606,11 @@ class Chord extends BaseTerm {
 
 	get isMusic () {
 		return true;
+	}
+
+
+	get pitchNames () {
+		return this.pitches.map(pitch => pitch.replace(/'|,/g, ""));
 	}
 };
 
@@ -1305,5 +1314,54 @@ export default class LilyDocument {
 				this.root.sections.push(newScore);
 			}
 		}
+	}
+
+
+	// generate tied notehead location candidates
+	getTiedNoteLocations (source: string): [number, number][] {
+		const chordPairs: [Chord, Chord][] = [];
+
+		this.root.forEachTerm(MusicBlock, (block: MusicBlock) => {
+			let lastChord = null;
+			let tieing = false;
+
+			for (const term of block.body) {
+				if (term instanceof Primitive && term.exp === "~")
+					tieing = true;
+				else if (term instanceof Chord) {
+					if (tieing && lastChord) {
+						chordPairs.push([lastChord, term as Chord]);
+						tieing = false;
+					}
+				}
+
+				if (term instanceof Chord)
+					lastChord = term;
+			}
+		});
+
+		//console.log("chordPairs:", chordPairs);
+
+		const text = new TextSource(source);
+		//console.log("chordPairs:", text, chordPairs.map(pair => text.slice(pair[1].location.lines, pair[1].location.columns)));
+
+		const locations = [];
+
+		chordPairs.forEach(pair => {
+			const forePitches = new Set(pair[0].pitchNames);
+
+			const chordSource = text.slice(pair[1].location.lines, pair[1].location.columns);
+			const pitchColumns = TextSource.matchPositions(/\w+/g, chordSource);
+
+			pair[1].pitchNames
+				.map((pitch, index) => ({pitch, index}))
+				.filter(({pitch}) => forePitches.has(pitch))
+				.forEach(({index}) => locations.push([
+					pair[1].location.lines[0],	// line
+					pair[1].location.columns[0] + pitchColumns[index],	// column
+				]));
+		});
+
+		return locations;
 	}
 };
