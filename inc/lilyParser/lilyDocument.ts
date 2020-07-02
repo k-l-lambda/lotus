@@ -502,8 +502,10 @@ class SchemePointer extends BaseTerm {
 
 
 	serialize () {
+		const content = this.value === null ? ["()"] : BaseTerm.optionalSerialize(this.value);
+
 		return [
-			"'", "\b", ...BaseTerm.optionalSerialize(this.value),
+			"'", "\b", ...content,
 		];
 	}
 };

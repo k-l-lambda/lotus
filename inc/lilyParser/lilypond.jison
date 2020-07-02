@@ -2066,6 +2066,8 @@ scheme_expression
 		{$$ = $1;}
 	| INT
 		{$$ = $1;}
+	| "(" ")"
+		{$$ = null;}
 	| "(" scheme_expression "." scheme_expression ")"
 		{$$ = schemePair($2, $4);}
 	| "(" scheme_expression scheme_args ")"
