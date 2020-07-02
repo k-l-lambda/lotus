@@ -9,6 +9,7 @@ import {xml2ly, engraveSvg} from "./lilyCommands";
 import {LilyDocument, replaceSourceToken} from "../inc/lilyParser";
 import * as staffSvg from "../inc/staffSvg";
 import {SingleLock} from "../inc/mutex";
+import TextSource from "../inc/textSource";
 // eslint-disable-next-line
 import LogRecorder from "../inc/logRecorder";
 // eslint-disable-next-line
@@ -187,7 +188,7 @@ const makeScoreV2 = async (source: string, lilyParser: GrammarParser, {midi, log
 		onSvgRead: async svg => {
 			//console.log("ts.0:", Date.now() - t0);
 			const attributes = await attrGen.wait();
-			const page = staffSvg.parseSvgPage(svg, source, null, {DOMParser, logger, attributes});
+			const page = staffSvg.parseSvgPage(svg, source, {DOMParser, logger, attributes});
 			pages.push(page.structure);
 			Object.assign(hashTable, page.hashTable);
 			//console.log("ts.1:", Date.now() - t0);
@@ -287,7 +288,9 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 
 	const t0 = Date.now();
 
-	const attrGen = new SingleLock<LilyDocumentAttributeReadOnly>(true);
+	type ParserArguments = {attributes: LilyDocumentAttributeReadOnly, tieLocations: {[key: string]: boolean}};
+
+	const argsGen = new SingleLock<ParserArguments>(true);
 
 	const engraving = await engraveSvg(source, {
 		// do some work during lilypond process running to save time
@@ -295,7 +298,14 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 			//console.log("tp.0:", Date.now() - t0);
 			if (!lilyDocument)
 				lilyDocument = new LilyDocument(lilyParser.parse(source));
-			attrGen.release(lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly);
+
+			const attributes = lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
+
+			const text = new TextSource(source);
+			const tieLocations = lilyDocument.getTiedNoteLocations(text)
+				.reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
+
+			argsGen.release({attributes, tieLocations});
 			//console.log("tp.1:", Date.now() - t0);
 		},
 		onMidiRead: withNotation && (midi_ => {
@@ -306,8 +316,8 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 		}),
 		onSvgRead: async svg => {
 			//console.log("ts.0:", Date.now() - t0);
-			const attributes = await attrGen.wait();
-			const page = staffSvg.parseSvgPage(svg, source, lilyDocument, {DOMParser, logger, attributes});
+			const args = await argsGen.wait();
+			const page = staffSvg.parseSvgPage(svg, source, {DOMParser, logger, ...args});
 			pages.push(page.structure);
 			Object.assign(hashTable, page.hashTable);
 			//console.log("ts.1:", Date.now() - t0);
@@ -319,7 +329,7 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 
 	const doc = new staffSvg.SheetDocument({pages});
 
-	const attributes = await attrGen.wait();
+	const {attributes} = await argsGen.wait();
 	const meta = {
 		title: unescapeStringExp(attributes.title),
 		composer: unescapeStringExp(attributes.composer),

@@ -19,6 +19,8 @@
 
 *	2020.7.2
 
+	+	staffSvg: refined function of parseSvgPage.
+
 	+	organizeTokens.ts: refined tied notes marking by tied locations parsing.
 
 	+	lilyDocument.ts: getTiedNoteLocations added.

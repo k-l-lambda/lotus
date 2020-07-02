@@ -57,17 +57,18 @@ const service = {
 
 				const lilyParser = await loadLilyParser();
 				const lilyDocument = new LilyDocument(lilyParser.parse(source));
-				const attributes = lilyDocument.globalAttributes({readonly: true});
+				//const attributes = lilyDocument.globalAttributes({readonly: true});
 				//console.log("attributes:", attributes);
 
 				const logger = new LogRecorder({enabled: log});
 
-				const pages = result.svgs.map(svg => staffSvg.parseSvgPage(svg, source, lilyDocument, {DOMParser, logger, attributes}));
+				/*const pages = result.svgs.map(svg => staffSvg.parseSvgPage(svg, source, {lilyDocument, DOMParser, logger, attributes}));
 				const doc = {
 					__prototype: "SheetDocument",
 					pages: pages.map(page => page.structure),
 				};
-				const hashTable = pages.reduce((sum, page) => ({...sum, ...page.hashTable}), {});
+				const hashTable = pages.reduce((sum, page) => ({...sum, ...page.hashTable}), {});*/
+				const {doc, hashTable} = staffSvg.createSheetDocumentFromSvgs(result.svgs, source, lilyDocument, {logger, DOMParser});
 
 				return JSON.stringify({
 					...result,
