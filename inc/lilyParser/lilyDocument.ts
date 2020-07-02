@@ -1253,7 +1253,10 @@ export default class LilyDocument {
 			const isPostTerm = term => term instanceof PostEvent
 				|| (term as Primitive).exp === "]"
 				|| (term as Primitive).exp === "~"
-				|| (term as Command).cmd === "bar";
+				|| (term as Command).cmd === "bar"
+				|| (term as Command).cmd === "arpeggio"
+				|| (term as Command).cmd === "glissando"
+				;
 
 			const list = block.body.filter(term => !(term instanceof Divide));
 			let measure = null;
