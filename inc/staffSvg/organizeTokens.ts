@@ -526,8 +526,14 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 
 	// mark key alters
 	for (const alter of alters) {
-		if ((alter.source && alter.source.substr(0, 4) === "\\key") || alter.x < headX)
+		if ((alter.source && alter.source.substr(0, 4) === "\\key"))
 			lastAlter = alter;
+		// break key chain at large gap
+		else if (lastAlter && alter.x - lastAlter.x > 2)
+			break;
+		else if (alter.x < headX)
+			lastAlter = alter;
+		// continue key chain
 		else if (lastAlter && alter.x - lastAlter.x < 1.2)
 			lastAlter = alter;
 		else

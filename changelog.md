@@ -1,6 +1,5 @@
 
 ## TODO
-	parse tied notes by LilyDocument
 	measures clipping, playground.sliceSource
 	measure notes in Notation parsing
 	music duration parsing
@@ -10,8 +9,6 @@
 		staffNotation.ts: clusterize factor issue
 		remove empty track	(6.1 落叶.ly)
 		fix partial measures
-		tied note parsing issue	(One Summer's Day)
-		octave & alter token order issue	(One Summer's Day)
 	source editor
 		cursor position column
 
