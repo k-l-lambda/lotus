@@ -442,8 +442,8 @@ identifier_init_nonumber
 		{$$ = $1;}
 	| music_assign
 		{$$ = $1;}
-	| full_markup_list
-		{$$ = $1;}
+	//| full_markup_list
+	//	{$$ = $1;}
 	| string
 		{$$ = $1;}
 	| pitch_or_music
@@ -1360,6 +1360,10 @@ music_identifier
 		{$$ = command($1, $2);}
 	| CMD_PARTIAL duration
 		{$$ = command($1, $2);}
+	| CMD_TUPLETSPAN duration
+		{$$ = command($1, $2);}
+	| CMD_TUPLETSPAN DEFAULT
+		{$$ = command($1, $2);}
 	//| binary_cmd value value
 	//	{$$ = command($1, [$2, $3]);}
 	| CMD_TWEAK property_path value
@@ -1447,8 +1451,8 @@ unitary_cmd
 		{$$ = $1;}
 	| CMD_INCLUDE
 		{$$ = $1;}
-	| CMD_TUPLETSPAN
-		{$$ = $1;}
+	//| CMD_TUPLETSPAN
+	//	{$$ = $1;}
 	| CMD_TUPLET
 		{$$ = $1;}
 	| CMD_SKIP
