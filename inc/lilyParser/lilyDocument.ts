@@ -35,7 +35,7 @@ export class BaseTerm implements LilyTerm {
 	}
 
 
-	serialize () {
+	serialize (): any[] {
 		console.warn("unimplemented serilization:", this);
 		return [];
 	}
@@ -169,7 +169,7 @@ export class BaseTerm implements LilyTerm {
 	}
 
 
-	static optionalSerialize (item : any) {
+	static optionalSerialize (item: any): any[] {
 		return BaseTerm.isTerm(item) ? (item as LilyTerm).serialize() : (item === undefined ? [] : [item]);
 	}
 }
@@ -555,7 +555,7 @@ class Assignment extends BaseTerm {
 
 
 class Chord extends BaseTerm {
-	pitches: string[];
+	pitches: ChordElement[];
 	duration: string;
 	options: {
 		exclamations?: string[],
@@ -612,7 +612,42 @@ class Chord extends BaseTerm {
 
 
 	get pitchNames () {
-		return this.pitches.map(pitch => pitch.replace(/'|,/g, ""));
+		return this.pitches.map(elem => elem.pitch.replace(/'|,/g, ""));
+	}
+};
+
+
+class ChordElement extends BaseTerm {
+	pitch: string;
+	options: {
+		exclamations?: string[],
+		questions?: string[],
+		post_events?: PostEvent[],
+	};
+
+
+	constructor (data: object) {
+		super(data);
+
+		if (this.options.post_events)
+			this.options.post_events = this.options.post_events.map(parseRaw);
+
+		if (!this.pitch)
+			console.log("null pitch:", this);
+	}
+
+
+	serialize () {
+		const {exclamations, questions, post_events} = this.options;
+		const postfix = [].concat(...[...(exclamations || []), ...(questions || [])]
+			.filter(item => item)
+			.map(item => ["\b", item]),
+		).concat(...(post_events || []).map(item => ["\b", ...BaseTerm.optionalSerialize(item)]));
+
+		return [
+			this.pitch,
+			...postfix,
+		];
 	}
 };
 
@@ -776,6 +811,7 @@ const termDictionary = {
 	SchemePointer,
 	Assignment,
 	Chord,
+	ChordElement,
 	BriefChord,
 	NumberUnit,
 	MusicBlock,
@@ -1253,9 +1289,9 @@ export default class LilyDocument {
 	redivide () {
 		this.root.forEachTerm(MusicBlock, (block: MusicBlock) => {
 			const isPostTerm = term => term instanceof PostEvent
-				|| (term as Primitive).exp === "]"
+				//|| (term as Primitive).exp === "]"
 				|| (term as Primitive).exp === "~"
-				|| (term as Primitive).exp === ")"
+				//|| (term as Primitive).exp === ")"
 				|| (term as Command).cmd === "bar"
 				|| (term as Command).cmd === "arpeggio"
 				|| (term as Command).cmd === "glissando"

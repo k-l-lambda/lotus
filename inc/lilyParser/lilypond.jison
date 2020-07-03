@@ -21,6 +21,8 @@
 
 	const chord = (pitches, duration, {locations, ...options} = {}) => ({proto: "Chord", pitches, duration, location: location(...locations), options: {...options, proto: "_PLAIN"}});
 
+	const chordElem = (pitch, {locations, ...options}) => ({proto: "ChordElement", pitch, location: location(...locations), options: {...options, proto: "_PLAIN"}});
+
 	const briefChord = (body, {locations, post_events = null} = {}) => ({proto: "BriefChord", body: {...body, proto: "_PLAIN"}, post_events, location: location(...locations)});
 
 	const block = (block, head, body = []) => ({proto: "Block", block, head, body});
@@ -1522,7 +1524,7 @@ value
 pitch_or_music
 	//: pitch exclamations questions octave_check maybe_notemode_duration erroneous_quotes optional_rest post_events
 	: pitch exclamations questions optional_notemode_duration optional_rest post_events
-		{$$ = chord([$1], $4, {exclamations: $2, questions: $3, rest: $5, post_events: $6, locations: [@1, @6]});}
+		{$$ = chord([chordElem($1, {locations: [@1, @1]})], $4, {exclamations: $2, questions: $3, rest: $5, post_events: $6, locations: [@1, @6]});}
 	//| new_chord post_events
 	//	{$$ = briefChord($1, {post_events: $2});}
 	;
@@ -1669,8 +1671,8 @@ chord_body_elements
 chord_body_element
 	//: pitch_or_tonic_pitch exclamations questions octave_check post_events %prec ':'
 	: pitch_or_tonic_pitch exclamations questions post_events
-		//{$$ = chord([$1], null, {exclamations: $2, questions: $3, post_events: $4});}
-		{$$ = $1 + $2 + $3 + $4;}
+		//{$$ = $1 + $2 + $3 + $4;}
+		{$$ = chordElem($1, {locations: [@1, @4], exclamations: $2, questions: $3, post_events: $4});}
 	//| DRUM_PITCH post_events %prec ':' 
 	| music_function_chord_body
 		{$$ = $1;}

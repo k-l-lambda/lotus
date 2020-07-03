@@ -16,6 +16,11 @@
 
 
 
+*	2020.7.3
+
+	+	lilyDocument.ts: term class of ChordElement added.
+
+
 *	2020.7.2
 
 	+	organizeTokens.ts: mark key alters in parseTokenStaff.
