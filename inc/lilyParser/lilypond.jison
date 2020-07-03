@@ -2030,7 +2030,10 @@ scalar
 	| symbol_list_part_bare '.' property_path
 		{$$ = $1 + "." + $3;}
 	| symbol_list_part_bare ',' property_path
-		{$$ = $1 + "." + $3;}
+		{$$ = $1 + "," + $3;}
+	// extra formula
+	| UNSIGNED ',' property_path
+		{$$ = $1 + "," + $3;}
 	;
 
 bare_number
