@@ -1364,6 +1364,10 @@ music_identifier
 		{$$ = command($1, $2);}
 	| CMD_TUPLETSPAN DEFAULT
 		{$$ = command($1, $2);}
+	| CMD_TUPLET FRACTION
+		{$$ = command($1, $2);}
+	| CMD_TUPLET FRACTION duration
+		{$$ = command($1, $2, $3);}
 	//| binary_cmd value value
 	//	{$$ = command($1, [$2, $3]);}
 	| CMD_TWEAK property_path value
@@ -1453,8 +1457,8 @@ unitary_cmd
 		{$$ = $1;}
 	//| CMD_TUPLETSPAN
 	//	{$$ = $1;}
-	| CMD_TUPLET
-		{$$ = $1;}
+	//| CMD_TUPLET
+	//	{$$ = $1;}
 	| CMD_SKIP
 		{$$ = $1;}
 	| CMD_PARENTHESIZE
