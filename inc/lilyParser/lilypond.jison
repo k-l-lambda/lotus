@@ -2082,6 +2082,7 @@ embedded_scheme_expression
 		{$$ = scheme($2);}
 	;*/
 
+// extra syntax
 scheme_expression
 	: SCM_TRUE
 		{$$ = true;}
@@ -2115,6 +2116,8 @@ scheme_token
 		{$$ = $1;}
 	| symbol
 		{$$ = $1;}
+	| symbol ":" symbol
+		{$$ = $1 + $2 + $3;}
 	;
 
 optional_rest
