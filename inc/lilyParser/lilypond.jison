@@ -1751,19 +1751,33 @@ post_event_nofinger
 	| EXTENDER
 		{$$ = $1;}
 	| script_dir direction_reqd_event
-		//{$$ = {direction: $1, event: $2};}
 		{$$ = postEvent($1, $2);}
 	| script_dir direction_less_event
-		//{$$ = {direction: $1, event: $2};}
 		{$$ = postEvent($1, $2);}
 	// extra formula
 	| script_dir zero_command
-		//{$$ = {direction: $1, cmd: $2};}
 		{$$ = postEvent($1, $2);}
 	// extra formula
 	| script_dir expressive_mark
-		//{$$ = {direction: $1, expressive: $2};}
 		{$$ = postEvent($1, $2);}
+	// extra formula
+	| "["
+		{$$ = $1;}
+	// extra formula
+	| "]"
+		{$$ = $1;}
+	// extra formula
+	| script_dir "["
+		{$$ = postEvent($1, $2);}
+	// extra formula
+	| script_dir "]"
+		{$$ = postEvent($1, $2);}
+	// extra formula
+	| "("
+		{$$ = $1;}
+	// extra formula
+	| ")"
+		{$$ = $1;}
 	;
 
 direction_reqd_event
