@@ -244,7 +244,7 @@
 				converting: false,
 				engraving: false,
 				svgDocuments: null,
-				engraverLogs: null,
+				//engraverLogs: null,
 				engraverDirty: false,
 				autoEngrave: true,
 				tokenizeStaff: true,
@@ -524,6 +524,7 @@
 					console.log("Engraving accomplished.");
 
 					this.engraverLogs = result.logs;
+					this.engraverLogger = result.logger;
 					this.svgDocuments = result.svgs;
 
 					if (this.tokenizeStaff) {
