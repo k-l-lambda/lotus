@@ -182,6 +182,7 @@
 	import loadLilyParser from "../loadLilyParser.js";
 	import {LilyDocument, replaceSourceToken, measures} from "../../inc/lilyParser";
 	import {CM_TO_PX} from "../../inc/constants.ts";
+	import TextSource from "../../inc/textSource.ts";
 	import * as SheetBaker from "../sheetBaker.ts";
 
 	import {MidiRoll} from "@k-l-lambda/web-widgets";
@@ -765,6 +766,7 @@
 
 			inspectLily () {
 				this.updateLilyDocument();
+				this.lilyTextSource = new TextSource(this.lilySource);
 				console.log(this.lilyDocument);
 			},
 
