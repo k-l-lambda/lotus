@@ -1377,6 +1377,7 @@ export default class LilyDocument {
 			let lastChord = null;
 			let tieing = false;
 			let afterBlock = false;
+			let atHead = true;
 
 			for (const term of block.body) {
 				if (term instanceof Primitive && term.exp === "~") {
@@ -1393,7 +1394,13 @@ export default class LilyDocument {
 					// maybe there is a tie at tail of the last block
 					else if (afterBlock)
 						chordPairs.push([null, term as Chord]);
+					// maybe there is a tie before the current block
+					else if (atHead)
+						chordPairs.push([null, term as Chord]);
 
+					// unresolved: maybe some user-defined command block contains tie at tail.
+
+					atHead = false;
 					afterBlock = false;
 				}
 
@@ -1414,7 +1421,7 @@ export default class LilyDocument {
 
 			pair[1].pitchNames
 				.map((pitch, index) => ({pitch, index}))
-				.filter(({pitch}) => !forePitches || forePitches.has(pitch))
+				.filter(({pitch}) => !forePitches || forePitches.has(pitch) || pitch === "q")
 				.forEach(({index}) => locations.push([
 					pair[1].location.lines[0],	// line
 					pair[1].location.columns[0] + pitchColumns[index],	// column
