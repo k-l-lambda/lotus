@@ -2,6 +2,7 @@
 import jison from "jison";
 
 import LilyDocument from "./lilyDocument";
+import {termDictionary} from "./lilyDocument";
 
 import * as measures from "./measures";
 
@@ -29,11 +30,15 @@ const replaceSourceToken = (source: string, token: string): string => {
 };
 
 
+const LilyTerms = termDictionary;
+
+
 
 export {
 	createParser,
 	hookJisonPrint,
 	replaceSourceToken,
 	LilyDocument,
+	LilyTerms,
 	measures,
 };

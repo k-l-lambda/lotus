@@ -798,7 +798,7 @@ class Unexpect extends BaseTerm {
 };
 
 
-const termDictionary = {
+export const termDictionary = {
 	Root,
 	LiteralString,
 	Command,

@@ -16,6 +16,11 @@
 
 
 
+*	2020.7.5
+
+	+	lilyParser: exported LilyTerms.
+
+
 *	2020.7.3
 
 	+	lilyDocument.ts: term class of ChordElement added.
