@@ -6,7 +6,7 @@ import {MusicNotation} from "@k-l-lambda/web-widgets";
 import {MIDI} from "@k-l-lambda/web-widgets";
 
 import {xml2ly, engraveSvg} from "./lilyCommands";
-import {LilyDocument, replaceSourceToken} from "../inc/lilyParser";
+import {LilyDocument, replaceSourceToken, LilyTerms} from "../inc/lilyParser";
 import * as staffSvg from "../inc/staffSvg";
 import {SingleLock} from "../inc/mutex";
 import TextSource from "../inc/textSource";
@@ -449,9 +449,30 @@ void makeScoreV2;
 const makeScore = makeScoreV3;
 
 
+const makeMIDI = async (source: string, lilyParser: GrammarParser, {unfoldRepeats = true} = {}): Promise<MIDI.MidiData> => {
+	const lilyDocument = new LilyDocument(lilyParser.parse(source));
+
+	if (unfoldRepeats)
+		lilyDocument.unfoldRepeats();
+
+	// remove layout block to save time
+	const score = lilyDocument.root.getBlock("score");
+	if (score)
+		score.body = score.body.filter(term => !(term instanceof LilyTerms.Block && term.head === "\\layout"));
+
+	const markupSource = lilyDocument.toString();
+	console.log("markupSource:", markupSource);
+
+	return new Promise(resolve => engraveSvg(markupSource, {
+		onMidiRead: resolve,
+	}));
+};
+
+
 
 export {
 	markupLily,
 	xmlBufferToLy,
 	makeScore,
+	makeMIDI,
 };
