@@ -18,6 +18,8 @@
 
 *	2020.7.5
 
+	+	midiChecker.ts: matchMIDI implemented.
+
 	+	scoreMaker.ts: makeMIDI added.
 
 	+	lilyParser: exported LilyTerms.
