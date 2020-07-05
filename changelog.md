@@ -18,6 +18,8 @@
 
 *	2020.7.5
 
+	+	midiChecker.ts: dump issues in log file.
+
 	+	midiChecker.ts: matchMIDI implemented.
 
 	+	scoreMaker.ts: makeMIDI added.
