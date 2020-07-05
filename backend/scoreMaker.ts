@@ -455,10 +455,16 @@ const makeMIDI = async (source: string, lilyParser: GrammarParser, {unfoldRepeat
 	if (unfoldRepeats)
 		lilyDocument.unfoldRepeats();
 
-	// remove layout block to save time
 	const score = lilyDocument.root.getBlock("score");
-	if (score)
+	if (score) {
+		// remove layout block to save time
 		score.body = score.body.filter(term => !(term instanceof LilyTerms.Block && term.head === "\\layout"));
+
+		// remove invalid tempo
+		const midi: any = score.body.find(term => term instanceof LilyTerms.Block && term.head === "\\midi");
+		if (midi)
+			midi.body = midi.body.filter(term => !(term instanceof LilyTerms.Tempo && term.beatsPerMinute > 200));
+	}
 
 	const markupSource = lilyDocument.toString();
 	//console.log("markupSource:", markupSource);
