@@ -50,8 +50,8 @@ const compact = items => cc(items.map((item, index) => isNullItem(item) ? [] : [
 
 
 export class BaseTerm implements LilyTerm {
-	location?: Location;
-	measure?: number;
+	_location?: Location;
+	_measure?: number;
 
 
 	constructor (data: object) {
@@ -127,7 +127,7 @@ export class BaseTerm implements LilyTerm {
 
 
 	get measures (): number[] {
-		const indices = [this.measure].concat(...(this.entries || []).map(entry => entry.measures)).filter(index => Number.isInteger(index));
+		const indices = [this._measure].concat(...(this.entries || []).map(entry => entry.measures)).filter(index => Number.isInteger(index));
 
 		return Array.from(new Set(indices));
 	}
@@ -200,9 +200,9 @@ export class BaseTerm implements LilyTerm {
 
 	toJSON () {
 		// exlude meta fields in JSON
-		const {location, measure, ...data} = this;
-		void location;
-		void measure;
+		const {_location, _measure, ...data} = this;
+		void _location;
+		void _measure;
 
 		return {
 			proto: this.proto,
@@ -1415,9 +1415,9 @@ export default class LilyDocument {
 			let measure = null;
 			for (const term of list) {
 				if (Number.isInteger(measure) && isPostTerm(term))
-					term.measure = measure;
+					term._measure = measure;
 				else
-					measure = term.measure;
+					measure = term._measure;
 			}
 
 			const body: BaseTerm[] = [];
@@ -1530,15 +1530,15 @@ export default class LilyDocument {
 		chordPairs.forEach(pair => {
 			const forePitches = pair[0] && new Set(pair[0].pitchNames);
 
-			const chordSource = source.slice(pair[1].location.lines, pair[1].location.columns);
+			const chordSource = source.slice(pair[1]._location.lines, pair[1]._location.columns);
 			const pitchColumns = TextSource.matchPositions(/\w+/g, chordSource);
 
 			pair[1].pitchNames
 				.map((pitch, index) => ({pitch, index}))
 				.filter(({pitch}) => !forePitches || forePitches.has(pitch) || pitch === "q")
 				.forEach(({index}) => locations.push([
-					pair[1].location.lines[0],	// line
-					pair[1].location.columns[0] + pitchColumns[index],	// column
+					pair[1]._location.lines[0],	// line
+					pair[1]._location.columns[0] + pitchColumns[index],	// column
 				]));
 		});
 
@@ -1549,7 +1549,7 @@ export default class LilyDocument {
 	removeAloneSpacer () {
 		this.root.forEachTopTerm(MusicBlock, block => {
 			const aloneSpacers = cc(block.musicChunks.filter(chunk => chunk.size === 1 && chunk.terms[0].isSpacer).map(chunk => chunk.terms));
-			//console.log("aloneSpacers:", aloneSpacers.map(s => s.location));
+			//console.log("aloneSpacers:", aloneSpacers.map(s => s._location));
 
 			if (aloneSpacers.length) {
 				const removeInBlock = block => block.body = block.body.filter(term => !aloneSpacers.includes(term));

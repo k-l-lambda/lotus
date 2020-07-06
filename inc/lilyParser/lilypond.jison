@@ -19,11 +19,11 @@
 
 	const markupCommand = (cmd, ...args) => ({proto: "MarkupCommand", cmd: cmd.substr(1), args});
 
-	const chord = (pitches, duration, {locations, ...options} = {}) => ({proto: "Chord", pitches, duration, location: location(...locations), options: {...options, proto: "_PLAIN"}});
+	const chord = (pitches, duration, {locations, ...options} = {}) => ({proto: "Chord", pitches, duration, _location: location(...locations), options: {...options, proto: "_PLAIN"}});
 
-	const chordElem = (pitch, {locations, ...options}) => ({proto: "ChordElement", pitch, location: location(...locations), options: {...options, proto: "_PLAIN"}});
+	const chordElem = (pitch, {locations, ...options}) => ({proto: "ChordElement", pitch, _location: location(...locations), options: {...options, proto: "_PLAIN"}});
 
-	const briefChord = (body, {locations, post_events = null} = {}) => ({proto: "BriefChord", body: {...body, proto: "_PLAIN"}, post_events, location: location(...locations)});
+	const briefChord = (body, {locations, post_events = null} = {}) => ({proto: "BriefChord", body: {...body, proto: "_PLAIN"}, post_events, _location: location(...locations)});
 
 	const block = (block, head, body = []) => ({proto: "Block", block, head, body});
 
@@ -55,7 +55,7 @@
 
 	const markup = (head, body) => ({proto: "Markup", head, body});
 
-	const lyric = (content, {locations, ...options}) => ({proto: "Lyric", content, location: location(...locations), ...options});
+	const lyric = (content, {locations, ...options}) => ({proto: "Lyric", content, _location: location(...locations), ...options});
 
 	const duration = ({number, dots, multipliers}) => ({proto: "Duration", number, dots, multipliers});
 %}
