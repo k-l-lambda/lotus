@@ -162,6 +162,19 @@ export class BaseTerm implements LilyTerm {
 	}
 
 
+	forEachTopTerm (termClass, handle) {
+		if (!this.entries)
+			return;
+
+		for (const entry of this.entries) {
+			if (entry instanceof termClass)
+				handle(entry);
+			else if (entry instanceof BaseTerm)
+				entry.forEachTopTerm(termClass, handle);
+		}
+	}
+
+
 	toJSON () {
 		// exlude meta fields in JSON
 		const {location, measure, ...data} = this;
@@ -655,6 +668,11 @@ class Chord extends BaseTerm {
 
 	get isMusic () {
 		return true;
+	}
+
+
+	get isSpacer () {
+		return this.pitches.length === 1 && this.pitches[0].pitch === "s";
 	}
 
 
@@ -1476,5 +1494,20 @@ export default class LilyDocument {
 		});
 
 		return locations;
+	}
+
+
+	removeAloneSpacer () {
+		this.root.forEachTopTerm(MusicBlock, block => {
+			const aloneSpacers = cc(block.musicChunks.filter(chunk => chunk.length === 1 && chunk[0].isSpacer));
+			//console.log("aloneSpacers:", aloneSpacers.map(s => s.location));
+
+			if (aloneSpacers.length) {
+				const removeInBlock = block => block.body = block.body.filter(term => !aloneSpacers.includes(term));
+
+				removeInBlock(block);
+				block.forEachTerm(MusicBlock, removeInBlock);
+			}
+		});
 	}
 };
