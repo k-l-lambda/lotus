@@ -8,6 +8,7 @@ import "../env.js";
 import * as ScoreMaker from "../backend/scoreMaker";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import walkDir from "../backend/walkDir";
+import {emptyCache} from "../backend/lilyCommands";
 
 
 
@@ -70,6 +71,8 @@ const main = async () => {
 		}
 	}
 
+	const flushCacheInterval = argv.flushCacheInterval ? Number(argv.flushCacheInterval) : 100;
+
 	const inputDir = argv._ && argv._[0];
 	if (inputDir) {
 		const lyFiles = walkDir(inputDir, /\.ly$/, {recursive: true});
@@ -122,6 +125,10 @@ const main = async () => {
 				}
 
 				++counting.count;
+
+				// flush cache directory every 100 files
+				if (counting.count % flushCacheInterval === 0)
+					await emptyCache();
 			}
 		}
 
