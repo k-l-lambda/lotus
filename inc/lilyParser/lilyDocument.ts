@@ -44,7 +44,7 @@ export class BaseTerm implements LilyTerm {
 	}
 
 
-	join () {
+	join (): string {
 		let words = this.serialize().filter(word => word !== null);
 		words = words.filter((word, i) => !(i && words[i - 1] === "\n" && word === "\n"));
 
@@ -90,7 +90,7 @@ export class BaseTerm implements LilyTerm {
 	}
 
 
-	get isMusic () {
+	get isMusic (): boolean {
 		return false;
 	}
 
@@ -188,7 +188,7 @@ export class BaseTerm implements LilyTerm {
 	}
 
 
-	static isTerm (x) {
+	static isTerm (x): boolean {
 		return typeof x === "object" && x instanceof BaseTerm;
 	}
 
@@ -283,7 +283,7 @@ class Command extends BaseTerm {
 	}
 
 
-	get musicChunks (): MusicChunk[]{
+	get musicChunks (): MusicChunk[] {
 		if (this.cmd === "alternative")
 			return [].concat(...this.args[0].body.map(term => term.musicChunks));
 
@@ -400,7 +400,7 @@ class MusicBlock extends BaseTerm {
 			}
 			else if (term instanceof Divide)
 				dumpChunk();
-			else if (term.isMusic)
+			else
 				currentChunk.push(term);
 		}
 
