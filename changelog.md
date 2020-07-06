@@ -1,6 +1,5 @@
 
 ## TODO
-	batch MIDI match checking
 	measures clipping, playground.sliceSource
 	measure notes in Notation parsing
 	music duration parsing
@@ -14,6 +13,11 @@
 	source editor
 		cursor position column
 
+
+
+*	2020.7.6
+
+	+	midiChecker.ts: added argv option of fixNestedRepeat.
 
 
 *	2020.7.5

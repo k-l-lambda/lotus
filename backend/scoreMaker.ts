@@ -449,8 +449,11 @@ void makeScoreV2;
 const makeScore = makeScoreV3;
 
 
-const makeMIDI = async (source: string, lilyParser: GrammarParser, {unfoldRepeats = true} = {}): Promise<MIDI.MidiData> => {
+const makeMIDI = async (source: string, lilyParser: GrammarParser, {unfoldRepeats = true, fixNestedRepeat = false} = {}): Promise<MIDI.MidiData> => {
 	const lilyDocument = new LilyDocument(lilyParser.parse(source));
+
+	if (fixNestedRepeat)
+		lilyDocument.fixNestedRepeat();
 
 	if (unfoldRepeats)
 		lilyDocument.unfoldRepeats();

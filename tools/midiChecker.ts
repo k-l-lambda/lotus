@@ -61,7 +61,7 @@ const main = async () => {
 
 	if (argv.inputLy) {
 		const source = fs.readFileSync(argv.inputLy).toString();
-		const midi = await ScoreMaker.makeMIDI(source, lilyParser);
+		const midi = await ScoreMaker.makeMIDI(source, lilyParser, {fixNestedRepeat: argv.fixNestedRepeat});
 		//console.log("midi:", midi);
 
 		if (argv.outputMIDI) {
@@ -94,7 +94,7 @@ const main = async () => {
 					const midiBuffer = fs.readFileSync(midiFile);
 	
 					const criterion = MIDI.parseMidiData(midiBuffer);
-					const sample = await ScoreMaker.makeMIDI(ly, lilyParser);
+					const sample = await ScoreMaker.makeMIDI(ly, lilyParser, {fixNestedRepeat: argv.fixNestedRepeat});
 	
 					const result = await matchMIDI(criterion, sample);
 	
