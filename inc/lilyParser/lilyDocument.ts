@@ -38,6 +38,14 @@ class MusicChunk {
 	get size () {
 		return this.terms.length;
 	}
+
+
+	get durationMagnitude () {
+		// TODO: consider tuplets
+		return this.terms
+			.filter(term => term instanceof Chord)
+			.reduce((magnitude, chord: Chord) => magnitude + chord.durationValue.magnitude, 0);
+	}
 };
 
 
@@ -49,9 +57,13 @@ const isNullItem = item => item === "" || item === undefined || item === null ||
 const compact = items => cc(items.map((item, index) => isNullItem(item) ? [] : [index > 0 ? "\b" : null, item]));
 
 
+const WHOLE_DURATION_MAGNITUDE = 128 * 3 * 5;
+
+
 export class BaseTerm implements LilyTerm {
 	_location?: Location;
 	_measure?: number;
+	_previous?: BaseTerm;
 
 
 	constructor (data: object) {
@@ -200,9 +212,10 @@ export class BaseTerm implements LilyTerm {
 
 	toJSON () {
 		// exlude meta fields in JSON
-		const {_location, _measure, ...data} = this;
+		const {_location, _measure, _previous, ...data} = this;
 		void _location;
 		void _measure;
+		void _previous;
 
 		return {
 			proto: this.proto,
@@ -648,6 +661,8 @@ class Chord extends BaseTerm {
 		withAngle?: boolean,
 	};
 
+	_previous?: Chord;
+
 
 	constructor (data: object) {
 		super(data);
@@ -702,6 +717,11 @@ class Chord extends BaseTerm {
 	get pitchNames () {
 		return this.pitches.map(elem => elem.pitch.replace(/'|,/g, ""));
 	}
+
+
+	get durationValue (): Duration {
+		return this.duration || (this._previous ? this._previous.durationValue : Duration.default);
+	}
 };
 
 
@@ -746,6 +766,15 @@ class Duration extends BaseTerm {
 	multipliers?: string[];
 
 
+	static _default: Duration;
+	static get default (): Duration {
+		if (!Duration._default)
+			Duration._default = new Duration({number: 4, dots: 0});
+
+		return Duration._default;
+	}
+
+
 	serialize () {
 		const dots = Array(this.dots).fill(".").join("");
 		const multipliers = this.multipliers && this.multipliers.map(multiplier => `*${multiplier}`).join("");
@@ -753,6 +782,32 @@ class Duration extends BaseTerm {
 		return compact([
 			this.number, dots, multipliers,
 		]);
+	}
+
+
+	get denominator (): number {
+		switch (this.number) {
+		case "\\breve":
+			return 0.5;
+
+		case "\\longa":
+			return 0.25;
+		}
+
+		return Number(this.number);
+	}
+
+
+	get magnitude (): number {
+		let value = WHOLE_DURATION_MAGNITUDE / this.denominator;
+
+		if (this.dots)
+			value *= 2 - 0.5 ** this.dots;
+
+		if (this.multipliers)
+			this.multipliers.forEach(multiplier => value *= eval(multiplier));
+
+		return value;
 	}
 };
 
@@ -1557,6 +1612,18 @@ export default class LilyDocument {
 				removeInBlock(block);
 				block.forEachTerm(MusicBlock, removeInBlock);
 			}
+		});
+	}
+
+
+	updateChordChains () {
+		this.root.forEachTopTerm(MusicBlock, block => {
+			let previous: Chord = null;
+
+			block.forEachTerm(Chord, chord => {
+				chord._previous = previous;
+				previous = chord;
+			});
 		});
 	}
 };

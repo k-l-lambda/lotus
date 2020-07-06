@@ -19,6 +19,8 @@
 
 *	2020.7.6
 
+	+	lilyDocument.ts: duration magnitude property added.
+
 	+	lilyParser: term of duration added.
 
 	+	lilyDocument.ts: class of MusicChunk added.
