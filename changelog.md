@@ -19,6 +19,8 @@
 
 *	2020.7.6
 
+	+	lilyParser: term of duration added.
+
 	+	lilyDocument.ts: class of MusicChunk added.
 
 	+	lilyDocument.ts: markup method of removeAloneSpacer added.

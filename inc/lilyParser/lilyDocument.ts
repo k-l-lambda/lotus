@@ -45,6 +45,10 @@ class MusicChunk {
 const cc = arrays => [].concat(...arrays);
 
 
+const isNullItem = item => item === "" || item === undefined || item === null || (Array.isArray(item) && !item.length);
+const compact = items => cc(items.map((item, index) => isNullItem(item) ? [] : [index > 0 ? "\b" : null, item]));
+
+
 export class BaseTerm implements LilyTerm {
 	location?: Location;
 	measure?: number;
@@ -635,7 +639,7 @@ class Assignment extends BaseTerm {
 
 class Chord extends BaseTerm {
 	pitches: ChordElement[];
-	duration: string;
+	duration?: Duration;
 	options: {
 		exclamations?: string[],
 		questions?: string[],
@@ -673,10 +677,10 @@ class Chord extends BaseTerm {
 		];
 
 		const {exclamations, questions, rest, post_events} = this.options;
-		const postfix = [].concat(...[...(exclamations || []), ...(questions || []), this.duration, rest]
+		const postfix = cc([...(exclamations || []), ...(questions || []), ...BaseTerm.optionalSerialize(this.duration), rest]
 			.filter(item => item)
-			.map(item => ["\b", item]))
-			.concat(...(post_events || []).map(BaseTerm.optionalSerialize));
+			.map(item => ["\b", item]),
+		).concat(...(post_events || []).map(BaseTerm.optionalSerialize));
 
 		return [
 			...pitches,
@@ -736,9 +740,26 @@ class ChordElement extends BaseTerm {
 };
 
 
+class Duration extends BaseTerm {
+	number: string;
+	dots: number;
+	multipliers?: string[];
+
+
+	serialize () {
+		const dots = Array(this.dots).fill(".").join("");
+		const multipliers = this.multipliers && this.multipliers.map(multiplier => `*${multiplier}`).join("");
+
+		return compact([
+			this.number, dots, multipliers,
+		]);
+	}
+};
+
+
 interface BriefChordBody {
 	pitch: string;
-	duration: string;
+	duration: Duration;
 	separator: string;
 	items: string[];
 };
@@ -749,11 +770,19 @@ class BriefChord extends BaseTerm {
 	post_events: any[];
 
 
+	constructor (data: object) {
+		super(data);
+
+		if (this.body)
+			this.body.duration = parseRaw(this.body.duration);
+	}
+
+
 	serialize () {
 		const {pitch, duration, separator, items} = this.body;
 
 		return [
-			[pitch, duration, separator, ...(items || [])].join(""),
+			...compact(cc([pitch, duration, separator, ...(items || [])].map(BaseTerm.optionalSerialize))),
 			...cc((this.post_events || []).map(BaseTerm.optionalSerialize)),
 		];
 	}
@@ -786,12 +815,12 @@ class NumberUnit extends BaseTerm {
 
 class Tempo extends BaseTerm {
 	beatsPerMinute?: number;
-	unit?: number;
+	unit?: Duration;
 	text?: string;
 
 
 	serialize () {
-		const assignment = Number.isFinite(this.beatsPerMinute) ? [this.unit, "=", this.beatsPerMinute] : [];
+		const assignment = Number.isFinite(this.beatsPerMinute) ? [...BaseTerm.optionalSerialize(this.unit), "=", this.beatsPerMinute] : [];
 
 		return [
 			"\\tempo",
@@ -854,7 +883,7 @@ class Markup extends BaseTerm {
 
 class Lyric extends BaseTerm {
 	content: string | LiteralString;
-	duration?: string;
+	duration?: Duration;
 	post_events?: any[];
 
 
@@ -894,8 +923,9 @@ export const termDictionary = {
 	SchemePair,
 	SchemePointer,
 	Assignment,
-	Chord,
+	Duration,
 	ChordElement,
+	Chord,
 	BriefChord,
 	NumberUnit,
 	MusicBlock,

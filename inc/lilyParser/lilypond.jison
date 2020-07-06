@@ -56,6 +56,8 @@
 	const markup = (head, body) => ({proto: "Markup", head, body});
 
 	const lyric = (content, {locations, ...options}) => ({proto: "Lyric", content, location: location(...locations), ...options});
+
+	const duration = ({number, dots, multipliers}) => ({proto: "Duration", number, dots, multipliers});
 %}
 
 
@@ -1300,14 +1302,16 @@ optional_notemode_duration
 
 duration
 	: steno_duration multipliers
-		{$$ = $1 + $2;}
+		//{$$ = $1 + $2;}
+		{$$ = duration({...$1, multipliers: $2});}
 	;
 
 steno_duration
 	: unsigned_number dots
-		{$$ = $1 + $2;}
+		//{$$ = $1 + $2;}
+		{$$ = duration({number: $1, dots: $2.length});}
 	| DURATION_IDENTIFIER dots
-		{$$ = $1 + $2;}
+		{$$ = duration({number: $1, dots: $2.length});}
 	;
 
 DURATION_IDENTIFIER
@@ -1326,11 +1330,11 @@ dots
 
 multipliers
 	: %empty
-		{$$ = "";}
+		{$$ = [];}
 	| multipliers '*' unsigned_number
-		{$$ = $1 + "*" + $3;}
+		{$$ = [...$1, $3];}
 	| multipliers '*' FRACTION
-		{$$ = $1 + "*" + $3;}
+		{$$ = [...$1, $3];}
 	//| multipliers '*' multiplier_scm
 	;
 
