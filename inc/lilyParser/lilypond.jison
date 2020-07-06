@@ -216,6 +216,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\afterGrace"				return 'CMD_AFTERGRACE';
 
 "\\breve"					return 'CMD_BREVE';
+"\\longa"					return 'CMD_LONGA';
 
 // markup commands
 "\\version"					return 'CMD_VERSION';
@@ -1311,6 +1312,8 @@ steno_duration
 
 DURATION_IDENTIFIER
 	: CMD_BREVE
+		{$$ = $1;}
+	| CMD_LONGA
 		{$$ = $1;}
 	;
 
