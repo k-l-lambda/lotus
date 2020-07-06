@@ -17,6 +17,8 @@
 
 *	2020.7.6
 
+	+	staffToken.ts: added logicOffsetY for directional post event token.
+
 	+	midiChecker.ts: added argv option of fixNestedRepeat.
 
 
