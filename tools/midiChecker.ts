@@ -115,13 +115,13 @@ const main = async () => {
 	
 					console.log("match:", result.coverage.toFixed(3), [result.omitC, result.omitS], filename);
 				}
-				catch (error) {
+				catch (err) {
 					++counting.failure;
 
 					issues.push({
 						path: lyFile,
 						coverage: -1,
-						error,
+						error: err.toString(),
 					});
 				}
 
