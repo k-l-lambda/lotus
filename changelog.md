@@ -19,6 +19,8 @@
 
 *	2020.7.6
 
+	+	lilyDocument.ts: class of MusicChunk added.
+
 	+	lilyDocument.ts: markup method of removeAloneSpacer added.
 
 	+	lilyDocument.ts: term method of musicChunks added.

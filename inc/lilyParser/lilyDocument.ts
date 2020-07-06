@@ -19,7 +19,26 @@ interface Location {
 };
 
 
-type MusicChunk = BaseTerm[];
+class MusicChunk {
+	parent: MusicBlock;
+	terms: BaseTerm[];
+
+
+	constructor (parent: MusicBlock) {
+		this.parent = parent;
+		this.terms = [];
+	}
+
+
+	push (term: BaseTerm) {
+		this.terms.push(term);
+	}
+
+
+	get size () {
+		return this.terms.length;
+	}
+};
 
 
 // concat array of array
@@ -384,13 +403,13 @@ class MusicBlock extends BaseTerm {
 
 	get musicChunks (): MusicChunk[] {
 		const chunks = [];
-		let currentChunk = [];
+		let currentChunk = new MusicChunk(this);
 
 		const dumpChunk = () => {
-			if (currentChunk.length)
+			if (currentChunk.size)
 				chunks.push(currentChunk);
 
-			currentChunk = [];
+			currentChunk = new MusicChunk(this);
 		};
 
 		for (const term of this.entries) {
@@ -1499,7 +1518,7 @@ export default class LilyDocument {
 
 	removeAloneSpacer () {
 		this.root.forEachTopTerm(MusicBlock, block => {
-			const aloneSpacers = cc(block.musicChunks.filter(chunk => chunk.length === 1 && chunk[0].isSpacer));
+			const aloneSpacers = cc(block.musicChunks.filter(chunk => chunk.size === 1 && chunk.terms[0].isSpacer).map(chunk => chunk.terms));
 			//console.log("aloneSpacers:", aloneSpacers.map(s => s.location));
 
 			if (aloneSpacers.length) {
