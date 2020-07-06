@@ -19,6 +19,9 @@ interface Location {
 };
 
 
+type MusicChunk = BaseTerm[];
+
+
 // concat array of array
 const cc = arrays => [].concat(...arrays);
 
@@ -89,6 +92,14 @@ export class BaseTerm implements LilyTerm {
 
 	get isMusic () {
 		return false;
+	}
+
+
+	get musicChunks (): MusicChunk[] {
+		if (!this.isMusic || !this.entries)
+			return [];
+
+		return [].concat(...this.entries.map(entry => entry.musicChunks));
 	}
 
 
@@ -259,6 +270,14 @@ class Command extends BaseTerm {
 	}
 
 
+	get musicChunks (): MusicChunk[]{
+		if (this.cmd === "alternative")
+			return [].concat(...this.args[0].body.map(term => term.musicChunks));
+
+		return [].concat(...this.entries.map(entry => entry.musicChunks));
+	}
+
+
 	get isRepeatWithAlternative () {
 		return this.cmd === "repeat"
 			&& this.args[2] instanceof MusicBlock
@@ -347,6 +366,34 @@ class MusicBlock extends BaseTerm {
 
 	get isMusic () {
 		return true;
+	}
+
+
+	get musicChunks (): MusicChunk[] {
+		const chunks = [];
+		let currentChunk = [];
+
+		const dumpChunk = () => {
+			if (currentChunk.length)
+				chunks.push(currentChunk);
+
+			currentChunk = [];
+		};
+
+		for (const term of this.entries) {
+			if (term instanceof Command && term.cmd === "repeat") {
+				dumpChunk();
+				chunks.push(...term.musicChunks);
+			}
+			else if (term instanceof Divide)
+				dumpChunk();
+			else if (term.isMusic)
+				currentChunk.push(term);
+		}
+
+		dumpChunk();
+
+		return chunks;
 	}
 };
 

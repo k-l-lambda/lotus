@@ -6,6 +6,8 @@
 		parse measure ticks from ly
 	staffSvg
 		fix partial measures
+			add partial on standalone block
+			remove standalone space measure
 		treble_8
 		system splitting, chord mode symbol affiliation
 		staffNotation.ts: clusterize factor issue
@@ -16,6 +18,8 @@
 
 
 *	2020.7.6
+
+	+	lilyDocument.ts: term method of musicChunks added.
 
 	+	midiChecker.ts: cache flush added.
 
