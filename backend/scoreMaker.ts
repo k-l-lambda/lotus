@@ -472,9 +472,9 @@ const makeMIDI = async (source: string, lilyParser: GrammarParser, {unfoldRepeat
 	const markupSource = lilyDocument.toString();
 	//console.log("markupSource:", markupSource);
 
-	return new Promise(resolve => engraveSvg(markupSource, {
+	return new Promise((resolve, reject) => engraveSvg(markupSource, {
 		onMidiRead: resolve,
-	}));
+	}).catch(reject));
 };
 
 
