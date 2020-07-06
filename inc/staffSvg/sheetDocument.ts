@@ -241,7 +241,7 @@ class SheetDocument {
 					if (location) {
 						const [line, column] = location.map(Number);
 						table[line] = table[line] || {};
-						table[line][column] = measure.index;
+						table[line][column] = Number.isFinite(table[line][column]) ? Math.min(table[line][column], measure.index) : measure.index;
 					}
 					else
 						console.warn("invalid href:", token.href);

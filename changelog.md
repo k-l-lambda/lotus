@@ -5,11 +5,11 @@
 	music duration parsing
 		parse measure ticks from ly
 	staffSvg
+		fix partial measures
 		treble_8
 		system splitting, chord mode symbol affiliation
 		staffNotation.ts: clusterize factor issue
 		remove empty track	(6.1 落叶.ly)
-		fix partial measures
 	source editor
 		cursor position column
 
