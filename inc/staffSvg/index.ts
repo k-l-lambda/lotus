@@ -50,13 +50,14 @@ const parseSvgPage = (dom, source: string | TextSource, {
 
 	// mark tie symbol on tokens
 	if (tieLocations) {
-		tokens.forEach(token => {
+		const tieTokens = tokens.filter(token => {
 			if (token.sourcePosition) {
 				const {line, start} = token.sourcePosition;
-				if (tieLocations[`${line}:${start}`])
-					token.addSymbol("TIE");
+				return tieLocations[`${line}:${start}`];
 			}
 		});
+		tieTokens.forEach(token => token.addSymbol("TIE"));
+		//logger.append("tieTokens:", tieTokens.map(token => token.href));
 	}
 
 	return {

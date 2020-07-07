@@ -1694,13 +1694,14 @@ export default class LilyDocument {
 							tieing = true;
 							afterBlock = false;
 						}
-						else if (hasMusicBlock(term))
+						else if (hasMusicBlock(term)) {
 							afterBlock = true;
+							tieing = false;
+							//console.log("afterBlock:", term);
+						}
 						else if (term instanceof Chord) {
-							if (tieing && lastChord) {
+							if (tieing && lastChord) 
 								chordPairs.push([lastChord, term]);
-								tieing = false;
-							}
 							// maybe there is a tie at tail of the last block
 							else if (afterBlock)
 								chordPairs.push([null, term]);
@@ -1712,6 +1713,7 @@ export default class LilyDocument {
 
 							atHead = false;
 							afterBlock = false;
+							tieing = false;
 							lastChord = term;
 
 							if (term.options.post_events) {
