@@ -1005,7 +1005,7 @@ const DIRECTION_CHAR = {
 
 class PostEvent extends BaseTerm {
 	direction: string;
-	arg: LilyTerm;
+	arg: string | LilyTerm;
 
 
 	serialize () {
@@ -1682,38 +1682,47 @@ export default class LilyDocument {
 		};
 
 		this.root.forEachTerm(MusicBlock, (block: MusicBlock) => {
-			let lastChord = null;
-			let tieing = false;
-			let afterBlock = false;
-			let atHead = true;
+			for (const voice of block.voices) {
+				let lastChord: Chord = null;
+				let tieing = false;
+				let afterBlock = false;
+				let atHead = true;
 
-			for (const term of block.body) {
-				if (term instanceof Primitive && term.exp === "~") {
-					tieing = true;
-					afterBlock = false;
-				}
-				else if (hasMusicBlock(term))
-					afterBlock = true;
-				else if (term instanceof Chord) {
-					if (tieing && lastChord) {
-						chordPairs.push([lastChord, term as Chord]);
-						tieing = false;
+				for (const chunk of voice.body) {
+					for (const term of chunk.terms) {
+						if (term instanceof Primitive && term.exp === "~") {
+							tieing = true;
+							afterBlock = false;
+						}
+						else if (hasMusicBlock(term))
+							afterBlock = true;
+						else if (term instanceof Chord) {
+							if (tieing && lastChord) {
+								chordPairs.push([lastChord, term]);
+								tieing = false;
+							}
+							// maybe there is a tie at tail of the last block
+							else if (afterBlock)
+								chordPairs.push([null, term]);
+							// maybe there is a tie before the current block
+							else if (atHead)
+								chordPairs.push([null, term]);
+
+							// PENDING: maybe some user-defined command block contains tie at tail.
+
+							atHead = false;
+							afterBlock = false;
+							lastChord = term;
+
+							if (term.options.post_events) {
+								for (const event of term.options.post_events) {
+									if (event.arg === "~")
+										tieing = true;
+								}
+							}
+						}
 					}
-					// maybe there is a tie at tail of the last block
-					else if (afterBlock)
-						chordPairs.push([null, term as Chord]);
-					// maybe there is a tie before the current block
-					else if (atHead)
-						chordPairs.push([null, term as Chord]);
-
-					// unresolved: maybe some user-defined command block contains tie at tail.
-
-					atHead = false;
-					afterBlock = false;
 				}
-
-				if (term instanceof Chord)
-					lastChord = term;
 			}
 		});
 

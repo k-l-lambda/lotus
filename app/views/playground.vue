@@ -21,7 +21,7 @@
 					<BoolStoreInput v-model="autoEngrave" sessionKey="lotus-autoEngrave" />auto
 				</span>
 				<span class="dirty-badge" :class="{dirty: engraverDirty}"></span>
-				<button @click="engrave" :class="{working: engraving}" style="zoom: 160%" title="engrave">&#x1f3bc;</button>
+				<button @click="engrave" :class="{working: engraving}" style="zoom: 160%" title="engrave (F8)">&#x1f3bc;</button>
 				<button :disabled="!sheetDocument" @click="exportScore">json</button>
 			</fieldset>
 			<fieldset>
