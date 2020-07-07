@@ -11,6 +11,7 @@ import loadLilyParser from "../backend/loadLilyParserNode";
 import {emptyCache} from "../backend/lilyCommands";
 import asyncCall from "../inc/asyncCall";
 import LogRecorder from "../inc/logRecorder";
+import * as statStorage from "../tools/statStorage";
 
 
 
@@ -176,6 +177,8 @@ const main = async () => {
 				if (!matchStat)
 					throw new Error("No matchStat in logger");
 
+				statStorage.appendData(lyPath, {scoreMaker: matchStat.data.coverage});
+
 				if (matchStat.data.coverage < 1) {
 					console.log("imperfect matching:", lyPath, matchStat.data.coverage);
 
@@ -197,6 +200,8 @@ const main = async () => {
 			catch (err) {
 				console.error(err);
 				console.warn("Error when making score", scorePath);
+
+				statStorage.appendData(lyPath, {scoreMaker: 0});
 
 				issues.push({
 					lyPath,
