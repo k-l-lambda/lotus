@@ -192,6 +192,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 //"\\times"					return 'CMD_TIMES';
 [\\][t][i][m][e][s]			return 'CMD_TIMES';
 "\\afterGrace"				return 'CMD_AFTERGRACE';
+"\\parallelMusic"			return 'CMD_PARALLELMUSIC';
 
 // unitary commands
 "\\clef"					return 'CMD_CLEF';
@@ -1386,6 +1387,8 @@ music_identifier
 	| CMD_TIMES FRACTION music
 		{$$ = command($1, $2, $3);}
 	| CMD_AFTERGRACE music music
+		{$$ = command($1, $2, $3);}
+	| CMD_PARALLELMUSIC scm_identifier composite_music
 		{$$ = command($1, $2, $3);}
 	| pitch_mode_music
 		{$$ = $1;}
