@@ -321,6 +321,11 @@ class Command extends BaseTerm {
 	}
 
 
+	get isGrace () {
+		return GRACE_COMMANDS.includes(this.cmd);
+	}
+
+
 	get musicChunks (): MusicChunk[] {
 		if (this.cmd === "alternative")
 			return [].concat(...this.args[0].body.map(term => term.musicChunks));
@@ -350,6 +355,9 @@ class Command extends BaseTerm {
 		}
 
 		default:
+			if (this.isGrace)
+				return 0;
+
 			return this.args.filter(arg => arg instanceof BaseTerm).reduce((magnitude, term) => magnitude + term.durationMagnitude, 0);
 		}
 	}
@@ -1390,7 +1398,7 @@ export default class LilyDocument {
 	mergeContinuousGraces () {
 		this.removeEmptySubMusicBlocks();
 
-		const isGraceCommand = term => term instanceof Command && GRACE_COMMANDS.includes(term.cmd);
+		const isGraceCommand = term => term instanceof Command && term.isGrace;
 		const isGraceInnerTerm = term => isGraceCommand(term) || term instanceof Divide || term instanceof PostEvent;
 
 		this.root.forEachTerm(MusicBlock, block => {
