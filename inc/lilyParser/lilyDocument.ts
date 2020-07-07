@@ -46,6 +46,12 @@ class MusicChunk {
 };
 
 
+interface MusicVoice {
+	name?: string;
+	body: MusicChunk[];
+};
+
+
 // concat array of array
 const cc = arrays => [].concat(...arrays);
 
@@ -61,6 +67,7 @@ export class BaseTerm implements LilyTerm {
 	_location?: Location;
 	_measure?: number;
 	_previous?: BaseTerm;
+	_parent?: BaseTerm;
 
 
 	constructor (data: object) {
@@ -214,10 +221,11 @@ export class BaseTerm implements LilyTerm {
 
 	toJSON () {
 		// exlude meta fields in JSON
-		const {_location, _measure, _previous, ...data} = this;
+		const {_location, _measure, _previous, _parent, ...data} = this;
 		void _location;
 		void _measure;
 		void _previous;
+		void _parent;
 
 		return {
 			proto: this.proto,
@@ -296,6 +304,16 @@ class LiteralString extends BaseTerm {
 class Command extends BaseTerm {
 	cmd: string;
 	args: any[];
+
+
+	constructor (data) {
+		super(data);
+
+		this.args.forEach(term => {
+			if (term instanceof MusicBlock || term instanceof Block)
+				term._parent = this;
+		});
+	}
 
 
 	serialize () {
@@ -477,6 +495,34 @@ class MusicBlock extends BaseTerm {
 	}
 
 
+	get voiceNames () {
+		const header = this._parent as Command;
+		if (header && header.cmd === "parallelMusic") {
+			if (header.args[0] instanceof Scheme && header.args[0].exp instanceof SchemePointer && header.args[0].exp.value instanceof SchemeFunction) {
+				const voices = header.args[0].exp.value.asList;
+				return voices;
+			}
+		}
+
+		return null;
+	}
+
+
+	get voices (): MusicVoice[] {
+		const voiceNames = this.voiceNames;
+		if (!voiceNames)
+			return [{body: this.musicChunks}];
+
+		const chunks = this.musicChunks;
+		const measureCount = Math.ceil(chunks.length / voiceNames.length);
+
+		return voiceNames.map((name, index) => ({
+			name: name.toString(),
+			body: Array(measureCount).fill(null).map((_, m) => chunks[m * voiceNames.length + index]).filter(chunk => chunk),
+		}));
+	}
+
+
 	get durationMagnitude (): number {
 		return this.body.reduce((magnitude, term) => magnitude + term.durationMagnitude, 0);
 	}
@@ -620,6 +666,11 @@ class SchemeFunction extends BaseTerm {
 				},
 			};
 		}
+	}
+
+
+	get asList (): (string | BaseTerm)[] {
+		return [this.func, ...this.args];
 	}
 };
 

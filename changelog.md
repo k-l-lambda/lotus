@@ -19,6 +19,8 @@
 
 *	2020.7.7
 
+	+	lilyDocument.ts: MusicBlock.voices added.
+
 	+	lilyCommands.ts: refined xml preprocess of removeTrivialRests.
 
 	+	tests/tracksDurationChecker.ts created.
