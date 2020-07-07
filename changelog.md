@@ -19,6 +19,8 @@
 
 *	2020.7.7
 
+	+	lilyCommands.ts: refined xml preprocess of removeTrivialRests.
+
 	+	tests/tracksDurationChecker.ts created.
 
 	+	lilyDocument.ts: added property of durationMagnitude on term classes.

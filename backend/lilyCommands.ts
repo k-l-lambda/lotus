@@ -184,12 +184,15 @@ const preprocessXml = (xml, {
 			if (removeTrivialRests) {
 				if (node.tagName === "note") {
 					if (domUtils.childrenWithTag(node, "rest").length && !domUtils.childrenWithTag(node, "type").length) {
-						const duration: any = domUtils.childrenWithTag(node, "duration")[0];
+						/*const duration: any = domUtils.childrenWithTag(node, "duration")[0];
 						const durationNumber = Number(duration ? duration.textContent : NaN);
-						if (durationNumber % 12 !== 0) {
+						if (durationNumber % 6 !== 0) {
 							console.log("invalid rest duration without type:", durationNumber);
 							node.parentNode.removeChild(node);
-						}
+						}*/
+						// append an empty tag: <type></type>
+						const type = dom.createElement("type");
+						node.appendChild(type);
 					}
 				}
 			}
