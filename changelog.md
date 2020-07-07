@@ -19,6 +19,8 @@
 
 *	2020.7.7
 
+	+	tracksDurationChecker.ts: stat store added.
+
 	+	lilyDocument.ts: enhanced getTiedNoteLocations by MusicBlock.voices.
 
 	+	lilyDocument.ts: MusicBlock.voices added.

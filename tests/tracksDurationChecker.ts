@@ -6,6 +6,7 @@ import "../env.js";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import walkDir from "../backend/walkDir";
 import {LilyDocument} from "../inc/lilyParser";
+import * as statStorage from "../tools/statStorage";
 
 
 
@@ -25,13 +26,24 @@ const main = async () => {
 			const durations = doc.musicTracks.map(track => track.durationMagnitude);
 			const dset = new Set(durations);
 
+			let statValue = null;
+
 			//console.log("durations:", durations, lyFile);
-			if (!durations.length)
+			if (!durations.length) {
+				statValue = 0;
 				console.warn("empty tracks!");
-			else if (dset.size > 1)
+			}
+			else if (dset.size > 1) {
+				statValue = 0;
 				console.warn("inconsistent durations:", durations);
-			else
+			}
+			else {
+				statValue = 1;
 				console.log(durations[0], "*", durations.length);
+			}
+
+			if (Number.isFinite(statValue))
+				statStorage.appendData(lyFile, {durationChecker: statValue});
 		}
 	}
 
