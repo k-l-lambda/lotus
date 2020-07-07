@@ -1255,6 +1255,18 @@ export default class LilyDocument {
 	}
 
 
+	get musicTracks (): MusicBlock[] {
+		const tracks = [];
+
+		this.root.forEachTopTerm(MusicBlock, block => {
+			if (block.durationMagnitude > 0)
+				tracks.push(block);
+		});
+
+		return tracks;
+	}
+
+
 	removeStaffGroup () {
 		const score = this.root.getBlock("score");
 		if (score) {
