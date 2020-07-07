@@ -354,6 +354,9 @@ class Command extends BaseTerm {
 			return this.args[this.args.length - 1].durationMagnitude * factor;
 		}
 
+		case "afterGrace":
+			return this.args[0].durationMagnitude;
+
 		default:
 			if (this.isGrace)
 				return 0;
@@ -1686,7 +1689,7 @@ export default class LilyDocument {
 	}
 
 
-	removeAloneSpacer () {
+	/*removeAloneSpacer () {
 		this.root.forEachTopTerm(MusicBlock, block => {
 			const aloneSpacers = cc(block.musicChunks.filter(chunk => chunk.size === 1 && chunk.terms[0].isSpacer).map(chunk => chunk.terms));
 			//console.log("aloneSpacers:", aloneSpacers.map(s => s._location));
@@ -1698,5 +1701,5 @@ export default class LilyDocument {
 				block.forEachTerm(MusicBlock, removeInBlock);
 			}
 		});
-	}
+	}*/
 };
