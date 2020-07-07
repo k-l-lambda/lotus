@@ -507,6 +507,11 @@ class SimultaneousList extends BaseTerm {
 	get entries () {
 		return this.list;
 	}
+
+
+	get durationMagnitude (): number {
+		return Math.max(...this.list.filter(term => term instanceof BaseTerm).map(term => term.durationMagnitude));
+	}
 };
 
 
@@ -532,6 +537,11 @@ class ContextedMusic extends BaseTerm {
 
 	get entries () {
 		return [this.head, this.body];
+	}
+
+
+	get durationMagnitude (): number {
+		return this.body.durationMagnitude;
 	}
 };
 
@@ -876,6 +886,14 @@ class BriefChord extends BaseTerm {
 	get isMusic () {
 		return true;
 	}
+
+
+	get durationMagnitude (): number {
+		if (this.body.duration)
+			return this.body.duration.magnitude;
+
+		return 0;
+	}
 };
 
 
@@ -983,6 +1001,11 @@ class Lyric extends BaseTerm {
 
 	get isMusic () {
 		return true;
+	}
+
+
+	get durationMagnitude (): number {
+		return this.duration ? this.duration.magnitude : 0;
 	}
 }
 
