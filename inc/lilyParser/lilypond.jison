@@ -1660,9 +1660,8 @@ post_events
 	;
 
 note_chord_element
-	//: chord_body optional_notemode_duration post_events
-	: chord_body optional_notemode_duration
-		{$$ = chord($1, $2, {withAngle: true, locations: [@1, @2]});}
+	: chord_body optional_notemode_duration post_events
+		{$$ = chord($1, $2, {withAngle: true, post_events: $3, locations: [@1, @2]});}
 	;
 
 chord_body
