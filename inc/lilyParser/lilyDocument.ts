@@ -41,10 +41,7 @@ class MusicChunk {
 
 
 	get durationMagnitude () {
-		// TODO: consider tuplets
-		return this.terms
-			.filter(term => term instanceof Chord)
-			.reduce((magnitude, chord: Chord) => magnitude + chord.durationValue.magnitude, 0);
+		return this.terms.reduce((magnitude, term) => magnitude + term.durationMagnitude, 0);
 	}
 };
 
@@ -142,6 +139,11 @@ export class BaseTerm implements LilyTerm {
 		const indices = [this._measure].concat(...(this.entries || []).map(entry => entry.measures)).filter(index => Number.isInteger(index));
 
 		return Array.from(new Set(indices));
+	}
+
+
+	get durationMagnitude (): number {
+		return 0;
 	}
 
 
@@ -333,6 +335,19 @@ class Command extends BaseTerm {
 			&& this.args[3]
 			&& this.args[3].cmd === "alternative";
 	}
+
+
+	get durationMagnitude (): number {
+		switch (this.cmd) {
+		case "times": {
+			const factor = eval(this.args[0]);
+			return this.args[1].durationMagnitude * factor;
+		}
+
+		default:
+			return this.args.filter(arg => arg instanceof BaseTerm).reduce((magnitude, term) => magnitude + term.durationMagnitude, 0);
+		}
+	}
 };
 
 
@@ -443,6 +458,11 @@ class MusicBlock extends BaseTerm {
 		dumpChunk();
 
 		return chunks;
+	}
+
+
+	get durationMagnitude (): number {
+		return this.body.reduce((magnitude, term) => magnitude + term.durationMagnitude, 0);
 	}
 };
 
@@ -721,6 +741,11 @@ class Chord extends BaseTerm {
 
 	get durationValue (): Duration {
 		return this.duration || (this._previous ? this._previous.durationValue : Duration.default);
+	}
+
+
+	get durationMagnitude (): number {
+		return this.durationValue.magnitude;
 	}
 };
 
@@ -1190,6 +1215,18 @@ export default class LilyDocument {
 	}
 
 
+	updateChordChains () {
+		this.root.forEachTopTerm(MusicBlock, block => {
+			let previous: Chord = null;
+
+			block.forEachTerm(Chord, chord => {
+				chord._previous = previous;
+				previous = chord;
+			});
+		});
+	}
+
+
 	removeStaffGroup () {
 		const score = this.root.getBlock("score");
 		if (score) {
@@ -1612,18 +1649,6 @@ export default class LilyDocument {
 				removeInBlock(block);
 				block.forEachTerm(MusicBlock, removeInBlock);
 			}
-		});
-	}
-
-
-	updateChordChains () {
-		this.root.forEachTopTerm(MusicBlock, block => {
-			let previous: Chord = null;
-
-			block.forEachTerm(Chord, chord => {
-				chord._previous = previous;
-				previous = chord;
-			});
 		});
 	}
 };

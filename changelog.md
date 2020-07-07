@@ -7,7 +7,7 @@
 	staffSvg
 		fix partial measures
 			add partial on standalone block
-			remove standalone space measure
+				parse duration in \times
 		treble_8
 		system splitting, chord mode symbol affiliation
 		staffNotation.ts: clusterize factor issue
@@ -15,6 +15,11 @@
 	source editor
 		cursor position column
 
+
+
+*	2020.7.7
+
+	+	lilyDocument.ts: added property of durationMagnitude on term classes.
 
 
 *	2020.7.6
