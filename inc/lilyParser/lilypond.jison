@@ -217,6 +217,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\acciaccatura"			return 'CMD_ACCIACCATURA';
 "\\appoggiatura"			return 'CMD_APPOGGIATURA';
 "\\slashedGrace"			return 'CMD_SLASHEDGRACE';
+"\\language"				return 'CMD_LANGUAGE';
 
 "\\breve"					return 'CMD_BREVE';
 "\\longa"					return 'CMD_LONGA';
@@ -1445,8 +1446,6 @@ expressive_mark
 unitary_cmd
 	: CMD_CLEF
 		{$$ = $1;}
-	| CMD_KEY
-		{$$ = $1;}
 	| CMD_TIME
 		{$$ = $1;}
 	| CMD_STEMUP
@@ -1486,6 +1485,8 @@ unitary_cmd
 	| CMD_APPOGGIATURA
 		{$$ = $1;}
 	| CMD_SLASHEDGRACE
+		{$$ = $1;}
+	| CMD_LANGUAGE
 		{$$ = $1;}
 	;
 
