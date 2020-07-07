@@ -344,6 +344,11 @@ class Command extends BaseTerm {
 			return this.args[1].durationMagnitude * factor;
 		}
 
+		case "tuplet": {
+			const factor = 1 / eval(this.args[0]);
+			return this.args[this.args.length - 1].durationMagnitude * factor;
+		}
+
 		default:
 			return this.args.filter(arg => arg instanceof BaseTerm).reduce((magnitude, term) => magnitude + term.durationMagnitude, 0);
 		}

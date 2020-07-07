@@ -1373,10 +1373,10 @@ music_identifier
 		{$$ = command($1, $2);}
 	| CMD_TUPLETSPAN DEFAULT
 		{$$ = command($1, $2);}
-	| CMD_TUPLET FRACTION
-		{$$ = command($1, $2);}
-	| CMD_TUPLET FRACTION duration
+	| CMD_TUPLET FRACTION music
 		{$$ = command($1, $2, $3);}
+	| CMD_TUPLET FRACTION duration music
+		{$$ = command($1, $2, $3, $4);}
 	//| binary_cmd value value
 	//	{$$ = command($1, [$2, $3]);}
 	| CMD_TWEAK property_path value
