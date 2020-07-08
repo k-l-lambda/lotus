@@ -115,7 +115,7 @@
 						<td><hr /></td>
 					</tr>
 					<tr>
-						<td>Logs</td>
+						<td>Logger Recorder</td>
 						<td><BoolStoreInput v-model="engraveWithLogs" localKey="lotus-engraveWithLogs" /></td>
 					</tr>
 					<tr>
