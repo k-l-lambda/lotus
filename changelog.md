@@ -19,6 +19,8 @@
 
 *	2020.7.8
 
+	+	playground.vue: source log status button added.
+
 	+	midiChecker.ts: stat store added.
 
 

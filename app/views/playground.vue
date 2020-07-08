@@ -49,7 +49,10 @@
 		<main>
 			<div class="source-container" :class="{loading: converting}">
 				<SourceEditor :source.sync="lilySource" :disabled="converting" />
-				<button class="inspect" @click="inspectLily">&#x1f4d5;</button>
+				<span class="corner">
+					<button class="inspect" @click="inspectLily">&#x1f4d5;</button>
+					<button class="log" :class="engraverLogStatus" v-show="engraverLogStatus" @click="showEngraverLog"></button>
+				</span>
 				<Loading v-show="converting" />
 			</div>
 			<div class="build-container" ref="buildContainer" :class="{
@@ -245,7 +248,7 @@
 				converting: false,
 				engraving: false,
 				svgDocuments: null,
-				//engraverLogs: null,
+				engraverLogs: null,
 				engraverDirty: false,
 				autoEngrave: true,
 				tokenizeStaff: true,
@@ -303,6 +306,20 @@
 					width: this.sheetContainerSize.width / this.lilyMarkups.pageCount - 34,
 					height: this.sheetContainerSize.height - 38,
 				};
+			},
+
+
+			engraverLogStatus () {
+				if (!this.engraverLogs)
+					return null;
+
+				if (/error:/.test(this.engraverLogs))
+					return "error";
+
+				if (/warning:/.test(this.engraverLogs))
+					return "warning";
+
+				return "info";
 			},
 		},
 
@@ -515,7 +532,8 @@
 					body,
 				});
 				if (!response.ok) {
-					console.warn("Engraving failed:", await response.text());
+					this.engraverLogs = await response.text();
+					//console.warn("Engraving failed:", await response.text());
 
 					this.clearSheet();
 					this.svgDocuments = null;
@@ -771,6 +789,11 @@
 			},
 
 
+			showEngraverLog () {
+				console.log(this.engraverLogs);
+			},
+
+
 			executeMarkup (func) {
 				this.updateLilyDocument();
 				if (!this.lilyDocument)
@@ -964,21 +987,70 @@
 					height: 100%;
 				}
 
-				.inspect
+				.corner
 				{
 					position: absolute;
-					top: 0;
-					right: .4em;
-					background: transparent;
-					border: 0;
-					outline: 0;
-					cursor: pointer;
-					font-size: 200%;
-					opacity: .01;
+					top: .2em;
+					right: .2em;
 
-					&:hover
+					button
 					{
-						opacity: 1;
+						border: 0;
+						outline: 0;
+						cursor: pointer;
+						vertical-align: top;
+					}
+
+					.inspect
+					{
+						background: transparent;
+						font-size: 200%;
+						opacity: .01;
+
+						&:hover
+						{
+							opacity: 1;
+						}
+					}
+
+					.log
+					{
+						border-radius: 1em;
+						font-weight: bold;
+
+						&.info
+						{
+							color: green;
+
+							&::before
+							{
+								content: "\24d8";
+							}
+						}
+
+						&.warning
+						{
+							font-size: 160%;
+							color: darkorange;
+							background: lightyellow;
+
+							&::before
+							{
+								content: "\26a0";
+							}
+						}
+
+						&.error
+						{
+							font-size: 160%;
+							color: red;
+							background: pink;
+
+							&::before
+							{
+								content: "\24d4";
+							}
+						}
 					}
 				}
 			}
