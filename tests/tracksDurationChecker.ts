@@ -6,7 +6,7 @@ import "../env.js";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import walkDir from "../backend/walkDir";
 import {LilyDocument} from "../inc/lilyParser";
-import * as statStorage from "../tools/statStorage";
+import * as statStorage from "../backend/statStorage";
 
 
 

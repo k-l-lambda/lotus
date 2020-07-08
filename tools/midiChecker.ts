@@ -9,6 +9,7 @@ import * as ScoreMaker from "../backend/scoreMaker";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import walkDir from "../backend/walkDir";
 import {emptyCache} from "../backend/lilyCommands";
+import * as statStorage from "../backend/statStorage";
 
 
 
@@ -100,7 +101,9 @@ const main = async () => {
 					const sample = await ScoreMaker.makeMIDI(ly, lilyParser, {fixNestedRepeat: argv.fixNestedRepeat});
 	
 					const result = await matchMIDI(criterion, sample);
-	
+
+					statStorage.appendData(lyFile, {midiChecker: result.coverage});
+
 					if (result.coverage === 1)
 						++counting.perfect;
 					else {
@@ -117,6 +120,8 @@ const main = async () => {
 				}
 				catch (err) {
 					++counting.failure;
+
+					statStorage.appendData(lyFile, {midiChecker: 0});
 
 					issues.push({
 						path: lyFile,

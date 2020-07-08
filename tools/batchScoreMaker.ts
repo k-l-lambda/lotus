@@ -11,7 +11,7 @@ import loadLilyParser from "../backend/loadLilyParserNode";
 import {emptyCache} from "../backend/lilyCommands";
 import asyncCall from "../inc/asyncCall";
 import LogRecorder from "../inc/logRecorder";
-import * as statStorage from "../tools/statStorage";
+import * as statStorage from "../backend/statStorage";
 
 
 

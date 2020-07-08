@@ -17,6 +17,11 @@
 
 
 
+*	2020.7.8
+
+	+	midiChecker.ts: stat store added.
+
+
 *	2020.7.7
 
 	+	tracksDurationChecker.ts: stat store added.
