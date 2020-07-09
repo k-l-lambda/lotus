@@ -245,7 +245,7 @@ export class BaseTerm implements LilyTerm {
 }
 
 
-class Root extends BaseTerm {
+export class Root extends BaseTerm {
 	sections: BaseTerm[];
 
 
@@ -265,7 +265,7 @@ class Root extends BaseTerm {
 };
 
 
-class Primitive extends BaseTerm {
+export class Primitive extends BaseTerm {
 	exp: string | number;
 
 
@@ -275,7 +275,7 @@ class Primitive extends BaseTerm {
 };
 
 
-class LiteralString extends BaseTerm {
+export class LiteralString extends BaseTerm {
 	exp: string
 
 
@@ -301,7 +301,7 @@ class LiteralString extends BaseTerm {
 };
 
 
-class Command extends BaseTerm {
+export class Command extends BaseTerm {
 	cmd: string;
 	args: any[];
 
@@ -385,7 +385,7 @@ class Command extends BaseTerm {
 };
 
 
-class MarkupCommand extends Command {
+export class MarkupCommand extends Command {
 	toString () {
 		const strs = [];
 		this.forEachTerm(LiteralString, term => strs.push(term.toString()));
@@ -395,7 +395,7 @@ class MarkupCommand extends Command {
 };
 
 
-class Block extends BaseTerm {
+export class Block extends BaseTerm {
 	head: (string|string[]);
 	body: BaseTerm[];
 
@@ -425,7 +425,7 @@ class Block extends BaseTerm {
 };
 
 
-class InlineBlock extends Block {
+export class InlineBlock extends Block {
 	serialize () {
 		return [
 			"{",
@@ -436,7 +436,7 @@ class InlineBlock extends Block {
 };
 
 
-class MusicBlock extends BaseTerm {
+export class MusicBlock extends BaseTerm {
 	body: BaseTerm[];
 
 
@@ -529,7 +529,7 @@ class MusicBlock extends BaseTerm {
 };
 
 
-class SimultaneousList extends BaseTerm {
+export class SimultaneousList extends BaseTerm {
 	list: BaseTerm[];
 
 
@@ -572,7 +572,7 @@ class SimultaneousList extends BaseTerm {
 };
 
 
-class ContextedMusic extends BaseTerm {
+export class ContextedMusic extends BaseTerm {
 	head: BaseTerm;
 	body: BaseTerm;
 	lyrics?: BaseTerm;
@@ -603,14 +603,14 @@ class ContextedMusic extends BaseTerm {
 };
 
 
-class Divide extends BaseTerm {
+export class Divide extends BaseTerm {
 	serialize () {
 		return ["|\n"];
 	}
 }
 
 
-class Scheme extends BaseTerm {
+export class Scheme extends BaseTerm {
 	exp: (boolean|LilyTerm);
 
 
@@ -634,7 +634,7 @@ class Scheme extends BaseTerm {
 };
 
 
-class SchemeFunction extends BaseTerm {
+export class SchemeFunction extends BaseTerm {
 	func: (string | BaseTerm);
 	args: (string | BaseTerm)[];
 
@@ -675,7 +675,7 @@ class SchemeFunction extends BaseTerm {
 };
 
 
-class SchemePair extends BaseTerm {
+export class SchemePair extends BaseTerm {
 	left: any;
 	right: any;
 
@@ -690,7 +690,7 @@ class SchemePair extends BaseTerm {
 };
 
 
-class SchemePointer extends BaseTerm {
+export class SchemePointer extends BaseTerm {
 	value: any;
 
 
@@ -704,7 +704,7 @@ class SchemePointer extends BaseTerm {
 };
 
 
-class Assignment extends BaseTerm {
+export class Assignment extends BaseTerm {
 	key: (string|any[]);
 	value: object;
 
@@ -747,7 +747,7 @@ class Assignment extends BaseTerm {
 };
 
 
-class Chord extends BaseTerm {
+export class Chord extends BaseTerm {
 	pitches: ChordElement[];
 	duration?: Duration;
 	options: {
@@ -827,7 +827,7 @@ class Chord extends BaseTerm {
 };
 
 
-class ChordElement extends BaseTerm {
+export class ChordElement extends BaseTerm {
 	pitch: string;
 	options: {
 		exclamations?: string[],
@@ -862,7 +862,7 @@ class ChordElement extends BaseTerm {
 };
 
 
-class Duration extends BaseTerm {
+export class Duration extends BaseTerm {
 	number: string;
 	dots: number;
 	multipliers?: string[];
@@ -922,7 +922,7 @@ interface BriefChordBody {
 };
 
 
-class BriefChord extends BaseTerm {
+export class BriefChord extends BaseTerm {
 	body: BriefChordBody;
 	post_events: any[];
 
@@ -959,7 +959,7 @@ class BriefChord extends BaseTerm {
 };
 
 
-class NumberUnit extends BaseTerm {
+export class NumberUnit extends BaseTerm {
 	number: number;
 	unit: string;
 
@@ -978,7 +978,7 @@ class NumberUnit extends BaseTerm {
 }
 
 
-class Tempo extends BaseTerm {
+export class Tempo extends BaseTerm {
 	beatsPerMinute?: number;
 	unit?: Duration;
 	text?: string;
@@ -1003,7 +1003,7 @@ const DIRECTION_CHAR = {
 };
 
 
-class PostEvent extends BaseTerm {
+export class PostEvent extends BaseTerm {
 	direction: string;
 	arg: string | LilyTerm;
 
@@ -1022,7 +1022,7 @@ class PostEvent extends BaseTerm {
 };
 
 
-class Fingering extends BaseTerm {
+export class Fingering extends BaseTerm {
 	value: number;
 
 
@@ -1032,7 +1032,7 @@ class Fingering extends BaseTerm {
 };
 
 
-class Markup extends BaseTerm {
+export class Markup extends BaseTerm {
 	head: any[];
 	body: (string|LilyTerm);
 
@@ -1046,7 +1046,7 @@ class Markup extends BaseTerm {
 };
 
 
-class Lyric extends BaseTerm {
+export class Lyric extends BaseTerm {
 	content: string | LiteralString;
 	duration?: Duration;
 	post_events?: any[];
@@ -1072,7 +1072,7 @@ class Lyric extends BaseTerm {
 }
 
 
-class Unexpect extends BaseTerm {
+export class Unexpect extends BaseTerm {
 	constructor (data) {
 		super(data);
 
