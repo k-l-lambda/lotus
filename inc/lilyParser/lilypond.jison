@@ -331,11 +331,12 @@ toplevel_expression
 		{$$ = $1;}
 	| score_block
 		{$$ = $1;}
+	| book_block
+		{$$ = $1;}
 	| scm_identifier
 		{$$ = $1;}
 	//| full_markup_list
 	//	{$$ = $1;}
-	//| book_block
 	//| bookpart_block
 	//| BOOK_IDENTIFIER
 	//| SCM_TOKEN
@@ -345,6 +346,40 @@ toplevel_expression
 score_block
 	: SCORE '{' score_body '}'
 		{$$ = block("score", $1, $3);}
+	;
+
+book_block
+	: BOOK '{' book_body '}'
+		{$$ = block("book", $1, $3);}
+	;
+
+book_body
+	: %empty
+		{$$ = [];}
+	//| BOOK_IDENTIFIER
+	| book_body paper_block
+		{$$.push($2);}
+	//| book_body bookpart_block
+	//	{$$.push($2);}
+	| book_body score_block
+		{$$.push($2);}
+	| book_body composite_music
+		{$$.push($2);}
+	| book_body full_markup
+		{$$.push($2);}
+	| book_body full_markup_list
+		{$$.push($2);}
+	//| book_body SCM_TOKEN
+	| book_body embedded_scm_active
+		{$$.push($2);}
+	| book_body lilypond_header
+		{$$.push($2);}
+	//| book_body error
+	;
+
+paper_block
+	: output_def
+		{$$ = $1;}
 	;
 
 header_block
@@ -467,7 +502,8 @@ identifier_init_nonumber
 		{$$ = $1;}
 	| context_modification
 		{$$ = $1;}
-	//| book_block
+	| book_block
+		{$$ = $1;}
 	//| bookpart_block
 	//| context_def_spec_block
 	//| partial_markup

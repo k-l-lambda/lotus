@@ -19,6 +19,8 @@
 
 *	2020.7.10
 
+	+	lilypond.jison: added syntax of book_block.
+
 	+	lilyDocument.ts: added globalAttributes item of midiTempo.
 
 	+	package.json: added extern dependencies of jison & xmldom for backend usage client package.
