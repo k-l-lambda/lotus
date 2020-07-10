@@ -1283,6 +1283,37 @@ export default class LilyDocument {
 			},
 		});
 
+		let midiBlock = null;
+		const scores = this.root.sections.filter(section => section instanceof Block && section.head === "\\score") as Block[];
+		for (const score of scores) {
+			midiBlock = score.body.find(term => term instanceof Block && term.head === "\\midi");
+			if (midiBlock)
+				break;
+		}
+
+		const midiTempo = {
+			get value (): Tempo {
+				return midiBlock && midiBlock.body.find(term => term instanceof Tempo);
+			},
+
+			set value (value: Tempo) {
+				if (!midiBlock) {
+					const score = this.root.getBlock("score");
+					if (score) {
+						midiBlock = new Block({block: "score", head: "\\midi", body: []});
+						score.body.push(midiBlock);
+					}
+					else
+						console.warn("no score block, midiTempo assign failed.");
+				}
+
+				if (midiBlock) {
+					midiBlock.body = midiBlock.body.filter(term => !(term instanceof Tempo));
+					midiBlock.body.push(value);
+				}
+			},
+		};
+
 		const attributes = {
 			staffSize,
 			title: header && header.getField("title"),
@@ -1296,6 +1327,7 @@ export default class LilyDocument {
 			systemSpacing: paperPropertySchemeToken("system-system-spacing.basic-distance"),
 			topMarkupSpacing: paperPropertySchemeToken("top-markup-spacing.basic-distance"),
 			raggedLast: paperPropertySchemeToken("ragged-last"),
+			midiTempo,
 		};
 
 		if (readonly)

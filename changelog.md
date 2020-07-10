@@ -17,6 +17,13 @@
 
 
 
+*	2020.7.10
+
+	+	lilyDocument.ts: added globalAttributes item of midiTempo.
+
+	+	package.json: added extern dependencies of jison & xmldom for backend usage client package.
+
+
 *	2020.7.8
 
 	+	playground.vue: source log status button added.
