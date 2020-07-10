@@ -1,5 +1,7 @@
 
 ## TODO
+	lyrics hilighting
+		match chord with voice in the same staff
 	measures clipping, playground.sliceSource
 	measure notes in Notation parsing
 	music duration parsing
@@ -19,7 +21,7 @@
 
 *	2020.7.10
 
-	*	Rythmn lyric characters:
+	*	Rythm lyric characters:
 			dotW = \markup { \char ##x25cb }
 			dotB = \markup { \char ##x25cf }
 
