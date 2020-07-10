@@ -51,7 +51,10 @@
 				<SourceEditor :source.sync="lilySource" :disabled="converting" />
 				<span class="corner">
 					<button class="inspect" @click="inspectLily">&#x1f4d5;</button>
-					<button class="log" :class="engraverLogStatus" v-show="engraverLogStatus" @click="showEngraverLog"></button>
+					<button class="log" :class="engraverLogStatus" v-show="engraverLogStatus"
+						:title="engraverLogs"
+						@click="showEngraverLog"
+					></button>
 				</span>
 				<Loading v-show="converting" />
 			</div>
