@@ -1195,6 +1195,9 @@ lyric_element
 	// extra formula
 	//| general_text
 	//	{$$ = $1;}
+	// extra formula
+	| COMMAND
+		{$$ = $1;}
 	| UNKNOWN_CHAR
 		{$$ = $1;}
 	;
