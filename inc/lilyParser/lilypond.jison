@@ -184,6 +184,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\cm"						return 'CENTIMETER';
 "\\mm"						return 'MILLIMETER';
 
+"\\overrideProperty"		return 'OVERRIDEPROPERTY';
+
 // binary commands
 "\\relative"				return 'CMD_RELATIVE';
 "\\absolute"				return 'CMD_ABSOLUTE';
@@ -608,30 +610,30 @@ markup_word
 		{$$ = $1;}
 	| unsigned_number
 		{$$ = $1;}
-	// extra formla
+	// extra formula
 	| zero_command
 		{$$ = $1;}
 	| unitary_cmd number_expression
 		{$$ = command($1, $2);}
 	| scm_identifier
 		{$$ = $1;}
-	// extra formla
+	// extra formula
 	| music_property_def
 		{$$ = $1;}
 	| context_change
 		{$$ = $1;}
 	| pitch_mode_music
 		{$$ = $1;}
-	// extra formla
+	// extra formula
 	| PITCH
 		{$$ = $1;}
-	// extra formla
+	// extra formula
 	| REAL
 		{$$ = $1;}
-	// extra formla
+	// extra formula
 	| INT
 		{$$ = $1;}
-	// extra formla
+	// extra formula
 	| general_text
 		{$$ = $1;}
 	;
@@ -1011,7 +1013,7 @@ mode_changed_music
 		{$$ = command($1, $2);}
 	| mode_changing_head_with_context optional_context_mods grouped_music_list
 		{$$ = command($1, ...$2, $3);}
-	// extra formla
+	// extra formula
 	| CHORDMODE chordmode_braced_music_list
 		{$$ = command($1, $2);}
 	;
@@ -1190,6 +1192,9 @@ context_change
 music_property_def
 	: OVERRIDE grob_prop_path '=' scalar
 		{$$ = command($1, assignment($2, $4));}
+	// extra formula
+	| OVERRIDEPROPERTY grob_prop_spec scm_identifier
+		{$$ = command($1, $2, $3);}
 	//| REVERT simple_revert_context revert_arg
 	//	{$$ = command($1, $2, $3);}
 	| REVERT revert_arg
@@ -1204,7 +1209,7 @@ revert_arg
 	//: revert_arg_backup BACKUP symbol_list_arg
 	: revert_arg_backup
 		{$$ = $1;}
-	// extra formla
+	// extra formula
 	| revert_arg_backup symbol_list_arg
 		{$$ = [$1, $2];}
 	;
