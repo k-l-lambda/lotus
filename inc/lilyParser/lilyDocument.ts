@@ -320,6 +320,7 @@ export class Command extends BaseTerm {
 		return [
 			"\\" + this.cmd,
 			...[].concat(...this.args.map(BaseTerm.optionalSerialize)),
+			["break", "pageBreak", "overrideProperty"].includes(this.cmd) ? "\n" : null,
 		];
 	}
 
@@ -1316,6 +1317,7 @@ export default class LilyDocument {
 
 		const attributes = {
 			staffSize,
+			midiTempo,
 			title: header && header.getField("title"),
 			composer: header && header.getField("composer"),
 			paperWidth: paperPropertyCommon("paper-width"),
@@ -1327,7 +1329,6 @@ export default class LilyDocument {
 			systemSpacing: paperPropertySchemeToken("system-system-spacing.basic-distance"),
 			topMarkupSpacing: paperPropertySchemeToken("top-markup-spacing.basic-distance"),
 			raggedLast: paperPropertySchemeToken("ragged-last"),
-			midiTempo,
 		};
 
 		if (readonly)
