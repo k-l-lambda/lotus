@@ -313,10 +313,10 @@
 				if (!this.engraverLogs)
 					return null;
 
-				if (/error:/.test(this.engraverLogs))
+				if (/error:/i.test(this.engraverLogs))
 					return "error";
 
-				if (/warning:/.test(this.engraverLogs))
+				if (/warning:/i.test(this.engraverLogs))
 					return "warning";
 
 				return "info";

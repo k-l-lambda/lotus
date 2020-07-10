@@ -19,6 +19,10 @@
 
 *	2020.7.10
 
+	*	Rythmn lyric characters:
+			dotW = \markup { \char ##x25cb }
+			dotB = \markup { \char ##x25cf }
+
 	+	lilypond.jison: added syntax of book_block.
 
 	+	lilyDocument.ts: added globalAttributes item of midiTempo.
