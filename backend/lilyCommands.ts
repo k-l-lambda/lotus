@@ -38,8 +38,9 @@ const emptyCache = async () => {
 			console.log("Temporary directory clear.");
 		}
 	}
-	catch (_) {
-		//console.log("emptyCache error:", err);
+	catch (err) {
+		if (_WINDOWS)
+			console.log("emptyCache error:", err);
 	}
 };
 
