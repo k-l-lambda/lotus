@@ -173,6 +173,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\once"					return 'CMD_ONCE';
 
 "\\tempoLegend"				return 'CMD_TEMPOLEGEND';
+"\\fermata"					return 'CMD_FERMATA';
 
 "\\breve"					return 'CMD_BREVE';
 "\\longa"					return 'CMD_LONGA';
@@ -1480,6 +1481,8 @@ music_identifier
 		{$$ = command($1, $2, $3);}
 	| CMD_SHAPE scm_identifier symbol
 		{$$ = command($1, $2, $3);}
+	| markup_font_size music
+		{$$ = command($1, $2);}
 	| pitch_mode_music
 		{$$ = $1;}
 	| "("
@@ -1517,6 +1520,8 @@ expressive_mark
 	| CMD_DECRESCENDO_BEGIN
 		{$$ = $1;}
 	| CMD_DYNAMICS_END
+		{$$ = $1;}
+	| CMD_FERMATA
 		{$$ = $1;}
 	| "~"
 		{$$ = $1;}
