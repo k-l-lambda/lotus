@@ -1,5 +1,6 @@
 
 ## TODO
+	keep comments in LilyDocument
 	lyrics hilighting
 		match chord with voice in the same staff
 	measures clipping, playground.sliceSource
