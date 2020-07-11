@@ -427,6 +427,9 @@ assignment_id
 		{$$ = $1;}
 	| SYMBOL
 		{$$ = $1;}
+	// extra formula
+	| PITCH
+		{$$ = $1;}
 	;
 
 property_path
