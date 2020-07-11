@@ -144,6 +144,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 [\\][t][i][m][e][s]			return 'CMD_TIMES';
 "\\afterGrace"				return 'CMD_AFTERGRACE';
 "\\parallelMusic"			return 'CMD_PARALLELMUSIC';
+"\\shape"					return 'CMD_SHAPE';
 
 // unitary commands
 "\\clef"					return 'CMD_CLEF';
@@ -169,6 +170,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\appoggiatura"			return 'CMD_APPOGGIATURA';
 "\\slashedGrace"			return 'CMD_SLASHEDGRACE';
 "\\language"				return 'CMD_LANGUAGE';
+"\\once"					return 'CMD_ONCE';
 
 "\\breve"					return 'CMD_BREVE';
 "\\longa"					return 'CMD_LONGA';
@@ -1469,6 +1471,8 @@ music_identifier
 		{$$ = command($1, $2, $3);}
 	| CMD_PARALLELMUSIC scm_identifier composite_music
 		{$$ = command($1, $2, $3);}
+	| CMD_SHAPE scm_identifier symbol
+		{$$ = command($1, $2, $3);}
 	| pitch_mode_music
 		{$$ = $1;}
 	| "("
@@ -1565,6 +1569,8 @@ unitary_cmd
 	| CMD_SLASHEDGRACE
 		{$$ = $1;}
 	| CMD_LANGUAGE
+		{$$ = $1;}
+	| CMD_ONCE
 		{$$ = $1;}
 	;
 
