@@ -130,55 +130,6 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 
 "\\with-url"				return 'CMD_WITH_URL';
 
-// syntax commands
-"\\header"					return 'HEADER';
-"\\markup"					return 'MARKUP';
-"\\markuplist"				return 'MARKUPLIST';
-"\\repeat"					return 'REPEAT';
-"\\context"					return 'CONTEXT';
-"\\accepts"					return 'ACCEPTS';
-"\\addlyrics"				return 'ADDLYRICS';
-"\\alias"					return 'ALIAS';
-"\\alternative"				return 'ALTERNATIVE';
-"\\book"					return 'BOOK';
-"\\bookpart"				return 'BOOKPART';
-"\\change"					return 'CHANGE';
-"\\chordmode"				return 'CHORDMODE';
-"\\chords"					return 'CHORDS';
-"\\consists"				return 'CONSISTS';
-"\\default"					return 'DEFAULT';
-"\\defaultchild"			return 'DEFAULTCHILD';
-"\\denies"					return 'DENIES';
-"\\description"				return 'DESCRIPTION';
-"\\drummode"				return 'DRUMMODE';
-"\\drums"					return 'DRUMS';
-"\\etc"						return 'ETC';
-"\\figuremode"				return 'FIGUREMODE';
-"\\figures"					return 'FIGURES';
-"\\version-error"			return 'INVALID';
-"\\layout"					return 'LAYOUT';
-"\\lyricmode"				return 'LYRICMODE';
-"\\lyrics"					return 'LYRICS';
-"\\lyricsto"				return 'LYRICSTO';
-"\\midi"					return 'MIDI';
-"\\name"					return 'NAME';
-"\\notemode"				return 'NOTEMODE';
-"\\override"				return 'OVERRIDE';
-"\\paper"					return 'PAPER';
-"\\remove"					return 'REMOVE';
-"\\rest"					return 'REST';
-"\\revert"					return 'REVERT';
-"\\score"					return 'SCORE';
-//"\\Score"					return 'SCORE';		// why there is capital score in layout/context block?
-"\\score-lines"				return 'SCORELINES';
-"\\sequential"				return 'SEQUENTIAL';
-"\\set"						return 'SET';
-"\\simultaneous"			return 'SIMULTANEOUS';
-"\\tempo"					return 'TEMPO';
-"\\type"					return 'TYPE';
-"\\unset"					return 'UNSET';
-"\\with"					return 'WITH';
-
 "\\new"						return 'NEWCONTEXT';
 
 "\\cm"						return 'CENTIMETER';
@@ -233,6 +184,9 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\box"						return 'CMD_BOX';
 "\\whiteout"				return 'CMD_WHITEOUT';
 "\\dynamic"					return 'CMD_DYNAMIC';
+"\\abs-fontsize"			return 'CMD_ABS_FONTSIZE';
+"\\with-color"				return 'CMD_WITH_COLOR';
+"\\char"					return 'CMD_CHAR';
 
 "\\huge"					return 'CMD_HUGE';
 "\\large"					return 'CMD_LARGE';
@@ -240,6 +194,55 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\small"					return 'CMD_SMALL';
 "\\tiny"					return 'CMD_TINY';
 "\\teeny"					return 'CMD_TEENY';
+
+// syntax commands
+"\\header"					return 'HEADER';
+"\\markup"					return 'MARKUP';
+"\\markuplist"				return 'MARKUPLIST';
+"\\repeat"					return 'REPEAT';
+"\\context"					return 'CONTEXT';
+"\\accepts"					return 'ACCEPTS';
+"\\addlyrics"				return 'ADDLYRICS';
+"\\alias"					return 'ALIAS';
+"\\alternative"				return 'ALTERNATIVE';
+"\\book"					return 'BOOK';
+"\\bookpart"				return 'BOOKPART';
+"\\change"					return 'CHANGE';
+"\\chordmode"				return 'CHORDMODE';
+"\\chords"					return 'CHORDS';
+"\\consists"				return 'CONSISTS';
+"\\default"					return 'DEFAULT';
+"\\defaultchild"			return 'DEFAULTCHILD';
+"\\denies"					return 'DENIES';
+"\\description"				return 'DESCRIPTION';
+"\\drummode"				return 'DRUMMODE';
+"\\drums"					return 'DRUMS';
+"\\etc"						return 'ETC';
+"\\figuremode"				return 'FIGUREMODE';
+"\\figures"					return 'FIGURES';
+"\\version-error"			return 'INVALID';
+"\\layout"					return 'LAYOUT';
+"\\lyricmode"				return 'LYRICMODE';
+"\\lyrics"					return 'LYRICS';
+"\\lyricsto"				return 'LYRICSTO';
+"\\midi"					return 'MIDI';
+"\\name"					return 'NAME';
+"\\notemode"				return 'NOTEMODE';
+"\\override"				return 'OVERRIDE';
+"\\paper"					return 'PAPER';
+"\\remove"					return 'REMOVE';
+"\\rest"					return 'REST';
+"\\revert"					return 'REVERT';
+"\\score"					return 'SCORE';
+//"\\Score"					return 'SCORE';		// why there is capital score in layout/context block?
+"\\score-lines"				return 'SCORELINES';
+"\\sequential"				return 'SEQUENTIAL';
+"\\set"						return 'SET';
+"\\simultaneous"			return 'SIMULTANEOUS';
+"\\tempo"					return 'TEMPO';
+"\\type"					return 'TYPE';
+"\\unset"					return 'UNSET';
+"\\with"					return 'WITH';
 
 // simple commands
 "\\<"						return 'CMD_CRESCENDO_BEGIN';
@@ -269,6 +272,8 @@ m(?=[\W\d])					return 'CHORD_MODIFIER_WORD';
 
 "#f"						return 'SCM_FALSE';
 "#t"						return 'SCM_TRUE';
+
+"#x"[\da-fA-F]+				return 'SCM_HEX';
 
 "\\("						return yytext;
 "\\)"						return yytext;
@@ -584,6 +589,12 @@ markup_function
 		{$$ = $1;}
 	| CMD_DYNAMIC
 		{$$ = $1;}
+	/*| CMD_ABS_FONTSIZE
+		{$$ = $1;}
+	| CMD_WITH_COLOR
+		{$$ = $1;}
+	| CMD_CHAR
+		{$$ = $1;}*/
 	;
 
 // extra syntax
@@ -724,6 +735,15 @@ simple_markup_noword
 	//| markup_scm MARKUP_IDENTIFIER
 	// extra formula
 	| OVERRIDE scm_identifier
+		{$$ = command($1, $2);}
+	// extra formula
+	| CMD_ABS_FONTSIZE scm_identifier simple_markup
+		{$$ = command($1, $2, $3);}
+	// extra formula
+	| CMD_WITH_COLOR scm_identifier simple_markup
+		{$$ = command($1, $2, $3);}
+	// extra formula
+	| CMD_CHAR scm_identifier
 		{$$ = command($1, $2);}
 	;
 
@@ -2144,6 +2164,8 @@ scheme_expression
 		{$$ = true;}
 	| SCM_FALSE
 		{$$ = false;}
+	| SCM_HEX
+		{$$ = $1}
 	| bare_number
 		{$$ = $1;}
 	| INT
