@@ -1042,7 +1042,7 @@ export class Markup extends BaseTerm {
 	serialize () {
 		return [
 			...cc(this.head.map(BaseTerm.optionalSerialize)),
-			BaseTerm.optionalSerialize(this.body),
+			...BaseTerm.optionalSerialize(this.body),
 		];
 	}
 };
