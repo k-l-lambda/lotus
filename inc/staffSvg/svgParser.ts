@@ -26,8 +26,8 @@ const domNodeToElement = node => {
 		break;
 	case "a":
 		if (!/:(\d+:\d+:\d+)$/.test(elem.href)) {
-			if (!/lilypond/.test(elem.href))
-				console.warn("unexpected a.href:", elem.href);
+			//if (!/lilypond/.test(elem.href))
+			//	console.warn("unexpected a.href:", elem.href);
 
 			delete elem.href;
 		}

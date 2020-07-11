@@ -19,6 +19,11 @@
 
 
 
+*	2020.7.11
+
+	+	lilyDocument.ts: fixed default staff size value.
+
+
 *	2020.7.10
 
 	*	Rythm lyric characters:

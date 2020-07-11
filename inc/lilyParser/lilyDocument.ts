@@ -1,5 +1,6 @@
 
 import TextSource from "../textSource";
+import {LILY_STAFF_SIZE_DEFAULT} from "../constants";
 
 
 
@@ -1206,7 +1207,7 @@ export default class LilyDocument {
 
 		if (!readonly) {
 			if (!staffSize) {
-				this.root.sections.push(new Scheme({exp: {proto: "SchemeFunction", func: "set-global-staff-size", args: [24]}}));
+				this.root.sections.push(new Scheme({exp: {proto: "SchemeFunction", func: "set-global-staff-size", args: [LILY_STAFF_SIZE_DEFAULT]}}));
 				staffSize = this.root.getField("set-global-staff-size");
 			}
 
@@ -1237,6 +1238,8 @@ export default class LilyDocument {
 			if (!paper.getField("paper-height")) 
 				paper.body.push(parseRaw(DEFAULT_PAPER_HEIGHT));
 		}
+		else
+			staffSize = staffSize || {value: LILY_STAFF_SIZE_DEFAULT};
 
 		const paperPropertyCommon = key => ({
 			get value () {

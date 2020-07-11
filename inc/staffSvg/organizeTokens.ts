@@ -149,8 +149,10 @@ const tokensRowsSplit = (tokens, logger) => {
 		lines.forEach(line => pageTile[Math.round(line.y)] = 0);
 
 		// non-staff page
-		if (!lines.length)
+		if (!lines.length) {
+			logger.append("tokensRowsSplit.noConnetionsOrLines", {tokens});
 			return [];
+		}
 
 		let index = -1;
 		let outStaff = true;
