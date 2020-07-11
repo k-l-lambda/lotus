@@ -171,6 +171,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\slashedGrace"			return 'CMD_SLASHEDGRACE';
 "\\language"				return 'CMD_LANGUAGE';
 "\\once"					return 'CMD_ONCE';
+"\\accidentalStyle"			return 'CMD_ACCIDENTALSTYLE';
 
 "\\tempoLegend"				return 'CMD_TEMPOLEGEND';
 "\\fermata"					return 'CMD_FERMATA';
@@ -1490,6 +1491,8 @@ music_identifier
 		{$$ = command($1, $2, $3);}
 	| CMD_SHAPE scm_identifier symbol
 		{$$ = command($1, $2, $3);}
+	| CMD_ACCIDENTALSTYLE grob_prop_path
+		{$$ = command($1, $2);}
 	| markup_font_size music
 		{$$ = command($1, $2);}
 	| pitch_mode_music
