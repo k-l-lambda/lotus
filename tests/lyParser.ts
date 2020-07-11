@@ -82,6 +82,7 @@ const sourceList = argv.original.length > 2 ? argv.original.slice(2) : [
 	"nocturne_opus9_no3.ly",
 	"explicit-position.ly",
 	"10-02-i.ly",
+	"chopin_nocturne_op9_n2.ly",
 ].map(filename => path.resolve("./tests/ly", filename));
 
 main(sourceList);
