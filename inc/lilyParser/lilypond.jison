@@ -284,6 +284,8 @@ m(?=[\W\d])					return 'CHORD_MODIFIER_WORD';
 
 "#x"[\da-fA-F]+				return 'SCM_HEX';
 
+"#:"{SYMBOL}				return 'SCM_COLON';
+
 "\\("						return yytext;
 "\\)"						return yytext;
 
@@ -1523,6 +1525,8 @@ expressive_mark
 		{$$ = $1;}
 	| CMD_FERMATA
 		{$$ = $1;}
+	| CMD_TWEAK property_path scm_identifier
+		{$$ = command($1, $2, $3);}
 	| "~"
 		{$$ = $1;}
 	| "("
@@ -2197,6 +2201,8 @@ scheme_expression
 	| SCM_FALSE
 		{$$ = false;}
 	| SCM_HEX
+		{$$ = $1}
+	| SCM_COLON
 		{$$ = $1}
 	| bare_number
 		{$$ = $1;}
