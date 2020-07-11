@@ -196,6 +196,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\sans"					return 'CMD_SANS';
 "\\concat"					return 'CMD_CONCAT';
 "\\maintainer"				return 'CMD_MAINTAINER';
+"\\footnote"				return 'CMD_FOOTNOTE';
 
 "\\huge"					return 'CMD_HUGE';
 "\\large"					return 'CMD_LARGE';
@@ -763,12 +764,18 @@ simple_markup_noword
 	// extra formula
 	| CMD_CHAR scm_identifier
 		{$$ = command($1, $2);}
+	// extra formula
 	| CMD_CONCAT markup_list
 		{$$ = command($1, ...$2);}
+	// extra formula
 	| CMD_CENTER_COLUMN markup_list
 		{$$ = command($1, ...$2);}
+	// extra formula
 	| CMD_RIGHT_COLUMN markup_list
 		{$$ = command($1, ...$2);}
+	// extra formula
+	| CMD_FOOTNOTE string string
+		{$$ = command($1, $2, $3);}
 	;
 
 markup_command_basic_arguments
@@ -1996,7 +2003,7 @@ markup_top
 		//{$$ = {head: $1, body: $2};}
 		{$$ = $1.concat([$2]);}
 	| simple_markup_noword
-		{$$ = $1;}
+		{$$ = [$1];}
 	;
 
 markup_mode_word
