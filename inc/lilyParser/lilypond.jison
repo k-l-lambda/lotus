@@ -128,8 +128,6 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 
 {E_UNSIGNED}				return 'E_UNSIGNED';
 
-"\\with-url"				return 'CMD_WITH_URL';
-
 "\\new"						return 'NEWCONTEXT';
 
 "\\cm"						return 'CENTIMETER';
@@ -187,6 +185,12 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\abs-fontsize"			return 'CMD_ABS_FONTSIZE';
 "\\with-color"				return 'CMD_WITH_COLOR';
 "\\char"					return 'CMD_CHAR';
+"\\center-column"			return 'CMD_CENTER_COLUMN';
+"\\right-column"			return 'CMD_RIGHT_COLUMN';
+"\\with-url"				return 'CMD_WITH_URL';
+"\\sans"					return 'CMD_SANS';
+"\\concat"					return 'CMD_CONCAT';
+"\\maintainer"				return 'CMD_MAINTAINER';
 
 "\\huge"					return 'CMD_HUGE';
 "\\large"					return 'CMD_LARGE';
@@ -589,12 +593,16 @@ markup_function
 		{$$ = $1;}
 	| CMD_DYNAMIC
 		{$$ = $1;}
-	/*| CMD_ABS_FONTSIZE
+	//| CMD_CENTER_COLUMN
+	//	{$$ = $1;}
+	| CMD_WITH_URL
 		{$$ = $1;}
-	| CMD_WITH_COLOR
+	| CMD_SANS
 		{$$ = $1;}
-	| CMD_CHAR
-		{$$ = $1;}*/
+	//| CMD_CONCAT
+	//	{$$ = $1;}
+	| CMD_MAINTAINER
+		{$$ = $1;}
 	;
 
 // extra syntax
@@ -745,6 +753,12 @@ simple_markup_noword
 	// extra formula
 	| CMD_CHAR scm_identifier
 		{$$ = command($1, $2);}
+	| CMD_CONCAT markup_list
+		{$$ = command($1, ...$2);}
+	| CMD_CENTER_COLUMN markup_list
+		{$$ = command($1, ...$2);}
+	| CMD_RIGHT_COLUMN markup_list
+		{$$ = command($1, ...$2);}
 	;
 
 markup_command_basic_arguments
@@ -1475,8 +1489,8 @@ music_identifier
 zero_command
 	: COMMAND
 		{$$ = command($1);}
-	| CMD_WITH_URL
-		{$$ = command($1);}
+	//| CMD_WITH_URL
+	//	{$$ = command($1);}
 	| CMD_STEMUP
 		{$$ = command($1);}
 	| CMD_STEMDOWN
