@@ -243,6 +243,14 @@ export class BaseTerm implements LilyTerm {
 	static optionalSerialize (item: any): any[] {
 		return BaseTerm.isTerm(item) ? (item as LilyTerm).serialize() : (item === undefined ? [] : [item]);
 	}
+
+
+	static serializeScheme (item: any): any[] {
+		if (typeof item === "boolean")
+			item = item ? "#t" : "#f";
+
+		return BaseTerm.optionalSerialize(item);
+	}
 }
 
 
@@ -638,14 +646,14 @@ export class Scheme extends BaseTerm {
 
 export class SchemeFunction extends BaseTerm {
 	func: (string | BaseTerm);
-	args: (string | BaseTerm)[];
+	args: (boolean | string | BaseTerm)[];
 
 
 	serialize () {
 		return [
 			"(", "\b",
 			...BaseTerm.optionalSerialize(this.func),
-			...cc(this.args.map(BaseTerm.optionalSerialize)),
+			...cc(this.args.map(BaseTerm.serializeScheme)),
 			"\b", ")",
 		];
 	}
@@ -671,7 +679,7 @@ export class SchemeFunction extends BaseTerm {
 	}
 
 
-	get asList (): (string | BaseTerm)[] {
+	get asList (): (boolean | string | BaseTerm)[] {
 		return [this.func, ...this.args];
 	}
 };
