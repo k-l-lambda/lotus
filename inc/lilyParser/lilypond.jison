@@ -105,6 +105,10 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 //(?:#){REAL}					return 'REAL';
 //\s{UNSIGNED}				yytext = yytext.replace(/^\s+/, ""); return 'UNSIGNED';
 
+// extra lex
+// TODO: parse the dollar expression details
+[$][(][^()]*[)]				return 'DOLLAR_SCHEME_EXPRESSION'
+
 \s+							{}	// spaces
 \%\{(.|\n)*?\%\}			{}	// scoped comments
 \%[^\n]*\n					{}	// single comments
@@ -1005,6 +1009,8 @@ scm_identifier
 	//	{$$ = scheme("'" + $3);}
 	: "#" scheme_expression
 		{$$ = scheme($2);}
+	| DOLLAR_SCHEME_EXPRESSION
+		{$$ = $1;}
 	;
 
 composite_music
