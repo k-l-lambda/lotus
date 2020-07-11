@@ -172,6 +172,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\language"				return 'CMD_LANGUAGE';
 "\\once"					return 'CMD_ONCE';
 
+"\\tempoLegend"				return 'CMD_TEMPOLEGEND';
+
 "\\breve"					return 'CMD_BREVE';
 "\\longa"					return 'CMD_LONGA';
 
@@ -1359,6 +1361,8 @@ tempo_event
 		//{$$ = {tempo: $5, unit: $3, text: $2};}
 		{$$ = tempo($5, $3, $2);}
 	| TEMPO text
+		{$$ = tempo(undefined, undefined, $2);}
+	| TEMPO CMD_TEMPOLEGEND
 		{$$ = tempo(undefined, undefined, $2);}
 	;
 
