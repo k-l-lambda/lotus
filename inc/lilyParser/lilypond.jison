@@ -597,12 +597,12 @@ markup_function
 	//	{$$ = $1;}
 	: CMD_LINE
 		{$$ = $1;}
-	| CMD_BOLD
-		{$$ = $1;}
+	//| CMD_BOLD
+	//	{$$ = $1;}
 	| CMD_ITALIC
 		{$$ = $1;}
-	| markup_font_size
-		{$$ = $1;}
+	//| markup_font_size
+	//	{$$ = $1;}
 	| CMD_BOX
 		{$$ = $1;}
 	| CMD_WHITEOUT
@@ -611,10 +611,10 @@ markup_function
 		{$$ = $1;}
 	//| CMD_CENTER_COLUMN
 	//	{$$ = $1;}
-	| CMD_WITH_URL
-		{$$ = $1;}
-	| CMD_SANS
-		{$$ = $1;}
+	//| CMD_WITH_URL
+	//	{$$ = $1;}
+	//| CMD_SANS
+	//	{$$ = $1;}
 	//| CMD_CONCAT
 	//	{$$ = $1;}
 	| CMD_MAINTAINER
@@ -773,6 +773,12 @@ simple_markup_noword
 	| CMD_CHAR scm_identifier
 		{$$ = command($1, $2);}
 	// extra formula
+	| CMD_SANS simple_markup
+		{$$ = command($1, $2);}
+	// extra formula
+	| CMD_SANS markup_list
+		{$$ = command($1, ...$2);}
+	// extra formula
 	| CMD_CONCAT markup_list
 		{$$ = command($1, ...$2);}
 	// extra formula
@@ -787,6 +793,24 @@ simple_markup_noword
 	// extra formula
 	| CMD_FOOTNOTE string string
 		{$$ = command($1, $2, $3);}
+	// extra formula
+	| CMD_WITH_URL scalar string
+		{$$ = command($1, $2, $3);}
+	// extra formula
+	| CMD_WITH_URL scalar markup_list
+		{$$ = command($1, $2, ...$3);}
+	// extra formula
+	| CMD_BOLD markup_list
+		{$$ = command($1, ...$2);}
+	// extra formula
+	| CMD_BOLD simple_markup
+		{$$ = command($1, $2);}
+	// extra formula
+	| markup_font_size simple_markup
+		{$$ = command($1, $2);}
+	// extra formula
+	| markup_font_size markup_list
+		{$$ = command($1, ...$2);}
 	;
 
 markup_command_basic_arguments
