@@ -593,9 +593,9 @@ markup_head_1_item
 
 // equivalent for MARKUP_FUNCTION in lilypond's parser.yy
 markup_function
-	: CMD_COLUMN
-		{$$ = $1;}
-	| CMD_LINE
+	//: CMD_COLUMN
+	//	{$$ = $1;}
+	: CMD_LINE
 		{$$ = $1;}
 	| CMD_BOLD
 		{$$ = $1;}
@@ -764,6 +764,9 @@ simple_markup_noword
 	| CMD_ABS_FONTSIZE scm_identifier simple_markup
 		{$$ = command($1, $2, $3);}
 	// extra formula
+	| CMD_ABS_FONTSIZE scm_identifier markup_list
+		{$$ = command($1, $2, ...$3);}
+	// extra formula
 	| CMD_WITH_COLOR scm_identifier simple_markup
 		{$$ = command($1, $2, $3);}
 	// extra formula
@@ -771,6 +774,9 @@ simple_markup_noword
 		{$$ = command($1, $2);}
 	// extra formula
 	| CMD_CONCAT markup_list
+		{$$ = command($1, ...$2);}
+	// extra formula
+	| CMD_COLUMN markup_list
 		{$$ = command($1, ...$2);}
 	// extra formula
 	| CMD_CENTER_COLUMN markup_list
