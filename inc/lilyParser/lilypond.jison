@@ -37,6 +37,8 @@
 
 	const schemePointer = value => ({proto: "SchemePointer", value});
 
+	const schemeEmbed = value => ({proto: "SchemeEmbed", value});
+
 	const assignment = (key, value) => ({proto: "Assignment", key, value});
 
 	const numberUnit = (number, unit) => ({proto: "NumberUnit", number: preferNumber(number), unit});
@@ -2273,8 +2275,12 @@ scheme_expression
 		{$$ = schemeFunction($2, $3);}
 	| scheme_token
 		{$$ = $1;}
+	| scheme_token "?"
+		{$$ = $1 + $2;}
 	| "'" scheme_expression
 		{$$ = schemePointer($2);}
+	| "#" "{" lilypond "#" "}"
+		{$$ = schemeEmbed($3);}
 	;
 
 scheme_args
@@ -2289,8 +2295,10 @@ scheme_token
 		{$$ = $1;}
 	| symbol
 		{$$ = $1;}
-	| symbol ":" symbol
+	| symbol ":" scheme_token
 		{$$ = $1 + $2 + $3;}
+	| symbol ":" ":" scheme_token
+		{$$ = $1 + $2 + $3 + $4;}
 	;
 
 optional_rest

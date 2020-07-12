@@ -714,6 +714,20 @@ export class SchemePointer extends BaseTerm {
 };
 
 
+export class SchemeEmbed extends BaseTerm {
+	value: Root;
+
+
+	serialize () {
+		return [
+			"#{",
+			...BaseTerm.optionalSerialize(this.value),
+			"#}",
+		];
+	}
+};
+
+
 export class Assignment extends BaseTerm {
 	key: (string|any[]);
 	value: object;
@@ -1102,6 +1116,7 @@ export const termDictionary = {
 	SchemeFunction,
 	SchemePair,
 	SchemePointer,
+	SchemeEmbed,
 	Assignment,
 	Duration,
 	ChordElement,
