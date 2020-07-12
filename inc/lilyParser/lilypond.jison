@@ -439,6 +439,9 @@ assignment_id
 	// extra formula
 	| PITCH
 		{$$ = $1;}
+	// extra formula
+	| CHORD_MODIFIER_WORD
+		{$$ = $1;}
 	;
 
 property_path
@@ -761,19 +764,19 @@ simple_markup_noword
 	| OVERRIDE scm_identifier
 		{$$ = command($1, $2);}
 	// extra formula
-	| CMD_ABS_FONTSIZE scm_identifier simple_markup
+	| CMD_ABS_FONTSIZE scm_identifier markup
 		{$$ = command($1, $2, $3);}
 	// extra formula
 	| CMD_ABS_FONTSIZE scm_identifier markup_list
 		{$$ = command($1, $2, ...$3);}
 	// extra formula
-	| CMD_WITH_COLOR scm_identifier simple_markup
+	| CMD_WITH_COLOR scm_identifier markup
 		{$$ = command($1, $2, $3);}
 	// extra formula
 	| CMD_CHAR scm_identifier
 		{$$ = command($1, $2);}
 	// extra formula
-	| CMD_SANS simple_markup
+	| CMD_SANS markup
 		{$$ = command($1, $2);}
 	// extra formula
 	| CMD_SANS markup_list
@@ -803,16 +806,16 @@ simple_markup_noword
 	| CMD_BOLD markup_list
 		{$$ = command($1, ...$2);}
 	// extra formula
-	| CMD_BOLD simple_markup
+	| CMD_BOLD markup
 		{$$ = command($1, $2);}
 	// extra formula
-	| markup_font_size simple_markup
+	| markup_font_size markup
 		{$$ = command($1, $2);}
 	// extra formula
 	| markup_font_size markup_list
 		{$$ = command($1, ...$2);}
 	// extra formula
-	| CMD_ITALIC simple_markup
+	| CMD_ITALIC markup
 		{$$ = command($1, $2);}
 	// extra formula
 	| CMD_ITALIC markup_list
@@ -1533,7 +1536,7 @@ music_identifier
 		{$$ = command($1, $2, $3);}
 	| CMD_SHAPE scm_identifier symbol
 		{$$ = command($1, $2, $3);}
-	| CMD_ACCIDENTALSTYLE grob_prop_path
+	| CMD_ACCIDENTALSTYLE grob_prop_spec
 		{$$ = command($1, $2);}
 	| markup_font_size music
 		{$$ = command($1, $2);}
