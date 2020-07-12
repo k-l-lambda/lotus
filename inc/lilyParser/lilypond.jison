@@ -599,8 +599,8 @@ markup_function
 		{$$ = $1;}
 	//| CMD_BOLD
 	//	{$$ = $1;}
-	| CMD_ITALIC
-		{$$ = $1;}
+	//| CMD_ITALIC
+	//	{$$ = $1;}
 	//| markup_font_size
 	//	{$$ = $1;}
 	| CMD_BOX
@@ -810,6 +810,12 @@ simple_markup_noword
 		{$$ = command($1, $2);}
 	// extra formula
 	| markup_font_size markup_list
+		{$$ = command($1, ...$2);}
+	// extra formula
+	| CMD_ITALIC simple_markup
+		{$$ = command($1, $2);}
+	// extra formula
+	| CMD_ITALIC markup_list
 		{$$ = command($1, ...$2);}
 	;
 
