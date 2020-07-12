@@ -2205,6 +2205,9 @@ scalar
 	// extra formula
 	| UNSIGNED ',' property_path
 		{$$ = $1 + "," + $3;}
+	// extra formula
+	| COMMAND
+		{$$ = $1;}
 	;
 
 bare_number
