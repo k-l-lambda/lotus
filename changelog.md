@@ -22,6 +22,8 @@
 
 *	2020.7.13
 
+	+	lilyDocument.ts: markup method of unfoldDurationMultipliers.
+
 	+	lilyDocument.ts: term clone method added.
 
 

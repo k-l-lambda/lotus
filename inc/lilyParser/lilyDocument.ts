@@ -1834,4 +1834,25 @@ export default class LilyDocument {
 			}
 		});
 	}*/
+
+
+	unfoldDurationMultipliers () {
+		const unfoldChord = (term): BaseTerm[] => {
+			if (!(term instanceof Chord) || !term.duration || !term.duration.multipliers.length)
+				return [term];
+
+			const factor = term.duration.multipliers.reduce((factor, multiplier) => factor * Number(multiplier), 1);
+			if (!Number.isInteger(factor) || factor <= 0)
+				return [term];
+
+			const chord = term.clone() as Chord;
+			chord.duration.multipliers = [];
+
+			return Array(factor).fill(chord.clone());
+		};
+
+		this.root.forEachTerm(MusicBlock, block => {
+			block.body = cc(block.body.map(unfoldChord));
+		});
+	}
 };
