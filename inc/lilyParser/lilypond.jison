@@ -190,6 +190,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\voiceThree"				return 'CMD_VOICE_NUMBER';
 "\\voiceFour"				return 'CMD_VOICE_NUMBER';
 "\\voiceFive"				return 'CMD_VOICE_NUMBER';
+"\\Score"					return 'CMD_SCORE';
 
 "\\mp"(?=[\s])				return 'CMD_DYNAMIC_MARKINGS';
 "\\mf"(?=[\s])				return 'CMD_DYNAMIC_MARKINGS';
@@ -265,7 +266,6 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\rest"					return 'REST';
 "\\revert"					return 'REVERT';
 "\\score"					return 'SCORE';
-//"\\Score"					return 'SCORE';		// why there is capital score in layout/context block?
 "\\score-lines"				return 'SCORELINES';
 "\\sequential"				return 'SEQUENTIAL';
 "\\set"						return 'SET';
@@ -1595,6 +1595,8 @@ zero_command
 	| CMD_MERGEDIFFERENTLYHEADEDON
 		{$$ = command($1);}
 	| CMD_VOICE_NUMBER
+		{$$ = command($1);}
+	| CMD_SCORE
 		{$$ = command($1);}
 	;
 
