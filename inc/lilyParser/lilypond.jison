@@ -17,6 +17,8 @@
 
 	const command = (cmd, ...args) => ({proto: "Command", cmd: cmd.substr(1), args});
 
+	const variable = name => ({proto: "Variable", name: name.substr(1)});
+
 	const markupCommand = (cmd, ...args) => ({proto: "MarkupCommand", cmd: cmd.substr(1), args});
 
 	const chord = (pitches, duration, {locations, ...options} = {}) => ({proto: "Chord", pitches, duration, _location: location(...locations), options: {...options, proto: "_PLAIN"}});
@@ -181,6 +183,13 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 
 "\\tempoLegend"				return 'CMD_TEMPOLEGEND';
 "\\fermata"					return 'CMD_FERMATA';
+"\\mergeDifferentlyDottedOn"	return 'CMD_MERGEDIFFERENTLYDOTTEDON';
+"\\mergeDifferentlyHeadedOn"	return 'CMD_MERGEDIFFERENTLYHEADEDON';
+"\\voiceOne"				return 'CMD_VOICE_NUMBER';
+"\\voiceTwo"				return 'CMD_VOICE_NUMBER';
+"\\voiceThree"				return 'CMD_VOICE_NUMBER';
+"\\voiceFour"				return 'CMD_VOICE_NUMBER';
+"\\voiceFive"				return 'CMD_VOICE_NUMBER';
 
 "\\breve"					return 'CMD_BREVE';
 "\\longa"					return 'CMD_LONGA';
@@ -1281,7 +1290,7 @@ music
 // extra syntax
 variable_command
 	: COMMAND
-		{$$ = command($1);}
+		{$$ = variable($1);}
 	;
 
 lyric_element_music
@@ -1575,6 +1584,12 @@ zero_command
 	| CMD_STEMDOWN
 		{$$ = command($1);}
 	| CMD_STEMNEUTRAL
+		{$$ = command($1);}
+	| CMD_MERGEDIFFERENTLYDOTTEDON
+		{$$ = command($1);}
+	| CMD_MERGEDIFFERENTLYHEADEDON
+		{$$ = command($1);}
+	| CMD_VOICE_NUMBER
 		{$$ = command($1);}
 	;
 

@@ -405,6 +405,26 @@ export class Command extends BaseTerm {
 };
 
 
+export class Variable extends Command {
+	name: string
+
+
+	constructor ({name}) {
+		super({cmd: name, args: []});
+
+		this.name = name;
+	}
+
+
+	toJSON (): any {
+		return {
+			proto: this.proto,
+			name: this.name,
+		};
+	}
+};
+
+
 export class MarkupCommand extends Command {
 	toString () {
 		const strs = [];
@@ -1119,6 +1139,7 @@ export const termDictionary = {
 	Root,
 	LiteralString,
 	Command,
+	Variable,
 	MarkupCommand,
 	Block,
 	InlineBlock,
@@ -1372,6 +1393,17 @@ export default class LilyDocument {
 			Object.keys(attributes).forEach(key => attributes[key] = attributes[key] && attributes[key].value);
 
 		return attributes;
+	}
+
+
+	getVariables (): Set<string> {
+		const result: Set<string> = new Set();
+
+		this.root.forEachTerm(Variable, variable => {
+			result.add(variable.name);
+		});
+
+		return result;
 	}
 
 
