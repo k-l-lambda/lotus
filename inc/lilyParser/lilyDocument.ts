@@ -125,6 +125,11 @@ export class BaseTerm implements LilyTerm {
 	}
 
 
+	clone (): BaseTerm {
+		return parseRaw(JSON.parse(JSON.stringify(this)));
+	}
+
+
 	get entries (): BaseTerm[] {
 		return null;
 	}
@@ -227,6 +232,11 @@ export class BaseTerm implements LilyTerm {
 		void _measure;
 		void _previous;
 		void _parent;
+
+		Object.entries(data).forEach(([key, value]) => {
+			if (value && typeof value === "object" && !Array.isArray(value) && !(value instanceof BaseTerm))
+				data[key] = {proto: "_PLAIN", ...value};
+		});
 
 		return {
 			proto: this.proto,
@@ -1132,6 +1142,7 @@ export const termDictionary = {
 	Fingering,
 	Markup,
 	Lyric,
+	Primitive,
 };
 
 
@@ -1182,7 +1193,7 @@ const parseRaw = data => {
 };
 
 
-const deepCopyTerm = (term: BaseTerm) => parseRaw(JSON.parse(JSON.stringify(term)));
+//const deepCopyTerm = (term: BaseTerm) => parseRaw(JSON.parse(JSON.stringify(term)));
 
 
 type AttributeValue = number | boolean | string | LilyTerm;
@@ -1705,7 +1716,7 @@ export default class LilyDocument {
 		const isBlock = (head, term) => term instanceof Block && term.head === head;
 
 		const score = this.root.getBlock("score");
-		const newScore = deepCopyTerm(score);
+		const newScore = score.clone() as Block;
 		newScore.forEachTerm(SimultaneousList, simul => {
 			const trimmedList = simul.list.filter(term => !isChordMusic(term));
 			if (trimmedList.length < simul.list.length) {

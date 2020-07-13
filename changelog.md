@@ -20,6 +20,11 @@
 
 
 
+*	2020.7.13
+
+	+	lilyDocument.ts: term clone method added.
+
+
 *	2020.7.11
 
 	+	lilyDocument.ts: fixed default staff size value.
