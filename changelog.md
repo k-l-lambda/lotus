@@ -22,6 +22,8 @@
 
 *	2020.7.13
 
+	+	tests/lilyVariables.ts created.
+
 	+	lilyDocument.ts: added term of Variable.
 
 	+	lilyDocument.ts: markup method of unfoldDurationMultipliers.
