@@ -191,6 +191,11 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\voiceFour"				return 'CMD_VOICE_NUMBER';
 "\\voiceFive"				return 'CMD_VOICE_NUMBER';
 
+"\\mp"(?=[\s])				return 'CMD_DYNAMIC_MARKINGS';
+"\\mf"(?=[\s])				return 'CMD_DYNAMIC_MARKINGS';
+"\\"[p]+(?=[\s])			return 'CMD_DYNAMIC_MARKINGS';
+"\\"[f]+(?=[\s])			return 'CMD_DYNAMIC_MARKINGS';
+
 "\\breve"					return 'CMD_BREVE';
 "\\longa"					return 'CMD_LONGA';
 
@@ -1605,6 +1610,8 @@ expressive_mark
 		{$$ = $1;}
 	| CMD_TWEAK property_path scm_identifier
 		{$$ = command($1, $2, $3);}
+	| CMD_DYNAMIC_MARKINGS
+		{$$ = $1;}
 	| "~"
 		{$$ = $1;}
 	| "("
