@@ -1278,8 +1278,17 @@ music
 	| lyric_element_music
 	;
 
+// extra syntax
+variable_command
+	: COMMAND
+		{$$ = command($1);}
+	;
+
 lyric_element_music
 	: lyric_element optional_notemode_duration post_events
+		{$$ = lyric($1, {duration: $2, post_events: $3, locations: [@1, @3]});}
+	// extra formula
+	| variable_command optional_notemode_duration post_events
 		{$$ = lyric($1, {duration: $2, post_events: $3, locations: [@1, @3]});}
 	;
 
@@ -1294,9 +1303,6 @@ lyric_element
 	// extra formula
 	//| general_text
 	//	{$$ = $1;}
-	// extra formula
-	| COMMAND
-		{$$ = $1;}
 	| UNKNOWN_CHAR
 		{$$ = $1;}
 	;
@@ -1560,8 +1566,8 @@ music_identifier
 
 // extra syntax
 zero_command
-	: COMMAND
-		{$$ = command($1);}
+	: variable_command
+		{$$ = $1;}
 	//| CMD_WITH_URL
 	//	{$$ = command($1);}
 	| CMD_STEMUP
