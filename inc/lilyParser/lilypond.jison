@@ -1317,6 +1317,24 @@ lyric_element
 	// extra formula
 	//| general_text
 	//	{$$ = $1;}
+	// extra formula
+	| ","
+		{$$ = $1;}
+	// extra formula
+	| "."
+		{$$ = $1;}
+	// extra formula
+	| "?"
+		{$$ = $1;}
+	// extra formula
+	| "!"
+		{$$ = $1;}
+	// extra formula
+	| "'"
+		{$$ = $1;}
+	// extra formula
+	| CHORD_MODIFIER_WORD
+		{$$ = $1;}
 	| UNKNOWN_CHAR
 		{$$ = $1;}
 	;
