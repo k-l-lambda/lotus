@@ -1439,25 +1439,19 @@ lyric_element
 		{$$ = $1;}
 	//| LYRIC_ELEMENT
 	// extra formula
-	//| general_text
-	//	{$$ = $1;}
-	// extra formula
-	| ","
-		{$$ = $1;}
-	// extra formula
-	| "."
-		{$$ = $1;}
-	// extra formula
-	| "?"
-		{$$ = $1;}
-	// extra formula
-	| "!"
+	| general_text
 		{$$ = $1;}
 	// extra formula
 	| "'"
 		{$$ = $1;}
 	// extra formula
-	| CHORD_MODIFIER_WORD
+	| UNSIGNED
+		{$$ = $1;}
+	// extra formula
+	| PITCH
+		{$$ = $1;}
+	// extra formula
+	| EXTENDER
 		{$$ = $1;}
 	| UNKNOWN_CHAR
 		{$$ = $1;}
