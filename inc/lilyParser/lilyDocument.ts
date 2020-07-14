@@ -54,7 +54,7 @@ interface MusicVoice {
 
 
 // concat array of array
-const cc = arrays => [].concat(...arrays);
+const cc = <T>(arrays: T[][]): T[] => [].concat(...arrays);
 
 
 const isNullItem = item => item === "" || item === undefined || item === null || (Array.isArray(item) && !item.length);
@@ -125,7 +125,7 @@ export class BaseTerm implements LilyTerm {
 	}
 
 
-	clone (): BaseTerm {
+	clone (): this {
 		return parseRaw(JSON.parse(JSON.stringify(this)));
 	}
 
@@ -441,7 +441,7 @@ export class Repeat extends Command {
 	}
 
 
-	get bodyBlock () {
+	get bodyBlock (): MusicBlock {
 		return this.args[2];
 	}
 
@@ -463,6 +463,46 @@ export class Repeat extends Command {
 		for (let i = 0; i < this.times - this.alternativeBlocks.length; ++ i)
 			list.push(this.alternativeBlocks[0]);
 		list.push(...this.alternativeBlocks);
+
+		return list;
+	}
+
+
+	// \repeat {body} \alternative {{alter1} {alter2}}		=> body alter1 body alter2
+	getUnfoldTerms (): BaseTerm[] {
+		const completeAlternativeBlocks = this.completeAlternativeBlocks;
+
+		const list = [];
+		for (let i = 0; i < this.times; ++i) {
+			list.push(...this.bodyBlock.clone().body);
+
+			if (completeAlternativeBlocks)
+				list.push(...completeAlternativeBlocks[i].clone().body);
+		}
+
+		return list;
+	}
+
+
+	// \repeat {body} \alternative {{alter1} {alter2}}		=> body alter1 alter2
+	getPlainTerms (): BaseTerm[] {
+		const list = [...this.bodyBlock.clone().body];
+
+		const alternativeBlocks = this.alternativeBlocks;
+		if (alternativeBlocks)
+			alternativeBlocks.forEach(block => list.push(...block.clone().body));
+
+		return list;
+	}
+
+
+	// \repeat {body} \alternative {{alter1} {alter2}}		=> body alter2
+	getTailPassTerms (): BaseTerm[] {
+		const list = [...this.bodyBlock.clone().body];
+
+		const alternativeBlocks = this.alternativeBlocks;
+		if (alternativeBlocks)
+			list.push(...alternativeBlocks[alternativeBlocks.length - 1].clone().body);
 
 		return list;
 	}
@@ -600,6 +640,26 @@ export class MusicBlock extends BaseTerm {
 
 	get durationMagnitude (): number {
 		return this.body.reduce((magnitude, term) => magnitude + term.durationMagnitude, 0);
+	}
+
+
+	toUnfoldRepeatsBlock ({ignoreRepeat = true, keepTailPass = false} = {}): this {
+		this.forEachTerm(MusicBlock, block => block.toUnfoldRepeatsBlock());
+
+		this.body = cc(this.body.map(term => {
+			if (term instanceof Repeat) {
+				if (!ignoreRepeat)
+					return term.getUnfoldTerms();
+				else if (keepTailPass)
+					return term.getTailPassTerms();
+				else
+					return term.getPlainTerms();
+			}
+			else
+				return [term];
+		}));
+
+		return this;
 	}
 };
 
@@ -1455,7 +1515,13 @@ export default class LilyDocument {
 	}
 
 
-	get musicTracks (): MusicBlock[] {
+	getMusicTracks (): MusicBlock[] {
+		const score = this.root.getBlock("score");
+		if (!score)
+			return null;
+
+		// TODO: extract sequecial music blocks
+
 		const tracks = [];
 
 		this.root.forEachTopTerm(MusicBlock, block => {

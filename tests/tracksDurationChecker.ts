@@ -23,7 +23,7 @@ const main = async () => {
 			const ly = fs.readFileSync(lyFile).toString();
 			const doc = new LilyDocument(lilyParser.parse(ly));
 
-			const durations = doc.musicTracks.map(track => track.durationMagnitude);
+			const durations = doc.getMusicTracks().map(track => track.durationMagnitude);
 			const dset = new Set(durations);
 
 			let statValue = null;

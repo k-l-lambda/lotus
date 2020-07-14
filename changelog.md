@@ -21,6 +21,13 @@
 
 
 
+*	2020.7.14
+
+	+	lilyDocument.ts: MusicBlock.toUnfoldRepeatsBlock implemented.
+
+	+	lilyDocument.ts: term class of Repeat added.
+
+
 *	2020.7.13
 
 	+	tests/lilyVariables.ts created.
