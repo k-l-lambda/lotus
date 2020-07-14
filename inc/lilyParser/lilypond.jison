@@ -236,6 +236,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 "\\sffz"(?=[\W])			return 'CMD_DYNAMIC_MARKINGS';
 "\\fz"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
 "\\fzp"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
+"\\ffz"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
+"\\ppz"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
 
 "\\breve"					return 'CMD_BREVE';
 "\\longa"					return 'CMD_LONGA';
@@ -270,6 +272,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 "\\fontsize"				return 'CMD_FONTSIZE';
 "\\raise"					return 'CMD_RAISE';
 "\\note"					return 'CMD_NOTE';
+"\\circle"					return 'CMD_CIRCLE';
 
 "\\huge"					return 'CMD_HUGE';
 "\\large"					return 'CMD_LARGE';
@@ -919,6 +922,12 @@ simple_markup_noword
 	// extra formula
 	| CMD_NOTE scm_identifier scm_identifier markup
 		{$$ = command($1, $2, $3, $4);}
+	// extra formula
+	| CMD_CIRCLE markup_list
+		{$$ = command($1, ...$2);}
+	// extra formula
+	| CMD_CIRCLE markup
+		{$$ = command($1, $2);}
 	;
 
 markup_command_basic_arguments
