@@ -165,7 +165,7 @@ export class BaseTerm implements LilyTerm {
 	}
 
 
-	getField (key) {
+	getField (key): any {
 		console.assert(!!this.entries, "[BaseTerm.getField] term's entries is null:", this);
 
 		for (const entry of this.entries) {
@@ -421,6 +421,13 @@ export class Variable extends Command {
 			proto: this.proto,
 			name: this.name,
 		};
+	}
+
+
+	queryValue (dict: BaseTerm): any {
+		const field = dict.getField(this.name);
+
+		return field && field.value;
 	}
 };
 
@@ -1520,14 +1527,22 @@ export default class LilyDocument {
 		if (!score)
 			return null;
 
-		// TODO: extract sequecial music blocks
-
 		const tracks = [];
 
-		this.root.forEachTopTerm(MusicBlock, block => {
-			if (block.durationMagnitude > 0)
-				tracks.push(block);
+		// extract sequential music blocks from score block
+		score.forEachTopTerm(MusicBlock, block => {
+			tracks.push(block.clone());
 		});
+
+		// expand variables in tracks
+		tracks.forEach(track => track.body = track.body.map(term => {
+			if (term instanceof Variable) {
+				const value = term.queryValue(this.root);
+				return value instanceof BaseTerm ? value.clone() : value;
+			}
+
+			return term;
+		}));
 
 		return tracks;
 	}
