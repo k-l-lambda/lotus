@@ -4,6 +4,10 @@
 
 	const location = (begin, end) => ({proto: "_PLAIN", lines: [begin.first_line, end.last_line], columns: [begin.first_column, end.last_column]});
 
+	const commandSubProtos = {
+		markup: "MarkupCommand",
+	};
+
 
 	const root = (sections = []) => ({proto: "Root", sections});
 
@@ -15,11 +19,9 @@
 
 	const string = exp => ({proto: "LiteralString", exp});
 
-	const command = (cmd, ...args) => ({proto: "Command", cmd: cmd.substr(1), args});
+	const command = (cmd, ...args) => ({proto: commandSubProtos[cmd.substr(1)] || "Command", cmd: cmd.substr(1), args});
 
 	const variable = name => ({proto: "Variable", name: name.substr(1)});
-
-	const markupCommand = (cmd, ...args) => ({proto: "MarkupCommand", cmd: cmd.substr(1), args});
 
 	const chord = (pitches, duration, {locations, ...options} = {}) => ({proto: "Chord", pitches, duration, _location: location(...locations), options: {...options, proto: "_PLAIN"}});
 
@@ -2324,7 +2326,7 @@ fingering
 
 full_markup
 	: markup_mode markup_top
-		{$$ = markupCommand($1, ...$2);}
+		{$$ = command($1, ...$2);}
 	| markup_mode_word
 		{$$ = $1;}
 	;
