@@ -183,6 +183,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 "\\numericTimeSignature"	return 'CMD_NUMERICTIMESIGNATURE';
 "\\bendAfter"				return 'CMD_BENDAFTER';
 "\\compoundMeter"			return 'CMD_COMPOUNDMETER';
+"\\transposition"			return 'CMD_TRANSPOSITION';
 
 // zero commands
 "\\tempoLegend"				return 'CMD_TEMPOLEGEND';
@@ -219,6 +220,10 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 "\\flageolet"				return 'CMD_FLAGEOLET';
 "\\slurDashed"				return 'CMD_SLURDASHED';
 "\\slurSolid"				return 'CMD_SLURSOLID';
+"\\break"					return 'CMD_BREAK';
+"\\pageBreak"				return 'CMD_PAGEBREAK';
+"\\startTrillSpan"			return 'CMD_STARTTRILLSPAN';
+"\\stopTrillSpan"			return 'CMD_STOPTRILLSPAN';
 
 "\\mp"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
 "\\mf"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
@@ -1717,6 +1722,8 @@ music_identifier
 		{$$ = command($1, $2);}
 	| CMD_COMPOUNDMETER scm_identifier
 		{$$ = command($1, $2);}
+	| CMD_TRANSPOSITION PITCH
+		{$$ = command($1, $2);}
 	| markup_font_size music
 		{$$ = command($1, $2);}
 	| pitch_mode_music
@@ -1802,6 +1809,14 @@ zero_command
 	| CMD_SLURDASHED
 		{$$ = command($1);}
 	| CMD_SLURSOLID
+		{$$ = command($1);}
+	| CMD_BREAK
+		{$$ = command($1);}
+	| CMD_PAGEBREAK
+		{$$ = command($1);}
+	| CMD_STARTTRILLSPAN
+		{$$ = command($1);}
+	| CMD_STOPTRILLSPAN
 		{$$ = command($1);}
 	;
 
