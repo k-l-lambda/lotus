@@ -780,10 +780,10 @@ markup_word
 	| unsigned_number
 		{$$ = $1;}
 	// extra formula
-	| zero_command
-		{$$ = $1;}
-	//| unitary_cmd number_expression
-	//	{$$ = command($1, $2);}
+	//| zero_command
+	//	{$$ = $1;}
+	| CMD_MUSICGLYPH
+		{$$ = command($1);}
 	| CMD_NATURAL
 		{$$ = $1;}
 	| CMD_FLAT
@@ -1766,8 +1766,6 @@ music_identifier
 
 // extra syntax
 zero_command
-	//: variable_command
-	//	{$$ = $1;}
 	: CMD_FERMATA
 		{$$ = command($1);}
 	| CMD_STEMUP
@@ -1799,8 +1797,6 @@ zero_command
 	| CMD_GLISSANDO
 		{$$ = command($1);}
 	| CMD_MORDENT
-		{$$ = command($1);}
-	| CMD_MUSICGLYPH
 		{$$ = command($1);}
 	| CMD_POWERCHORDS
 		{$$ = command($1);}
