@@ -212,6 +212,9 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 "\\upbow"					return 'CMD_UPBOW';
 "\\downbow"					return 'CMD_DOWNBOW';
 "\\breathe"					return 'CMD_BREATHE';
+"\\startTextSpan"			return 'CMD_STARTTEXTSPAN';
+"\\stopTextSpan"			return 'CMD_STOPTEXTSPAN';
+"\\flageolet"				return 'CMD_FLAGEOLET';
 
 "\\mp"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
 "\\mf"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
@@ -1776,6 +1779,12 @@ zero_command
 	| CMD_DOWNBOW
 		{$$ = command($1);}
 	| CMD_BREATHE
+		{$$ = command($1);}
+	| CMD_STARTTEXTSPAN
+		{$$ = command($1);}
+	| CMD_STOPTEXTSPAN
+		{$$ = command($1);}
+	| CMD_FLAGEOLET
 		{$$ = command($1);}
 	;
 
