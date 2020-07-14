@@ -180,6 +180,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\language"				return 'CMD_LANGUAGE';
 "\\once"					return 'CMD_ONCE';
 "\\accidentalStyle"			return 'CMD_ACCIDENTALSTYLE';
+"\\numericTimeSignature"	return 'CMD_NUMERICTIMESIGNATURE';
 
 "\\tempoLegend"				return 'CMD_TEMPOLEGEND';
 "\\fermata"					return 'CMD_FERMATA';
@@ -191,11 +192,34 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\voiceFour"				return 'CMD_VOICE_NUMBER';
 "\\voiceFive"				return 'CMD_VOICE_NUMBER';
 "\\Score"					return 'CMD_SCORE';
+"\\arpeggio"				return 'CMD_ARPEGGIO';
+"\\arpeggioArrowDown"		return 'CMD_ARPEGGIOARROWDOWN';
+"\\arpeggioArrowUp"			return 'CMD_ARPEGGIOARROWUP';
+"\\arpeggioNormal"			return 'CMD_ARPEGGIONORMAL';
+"\\glissando"				return 'CMD_GLISSANDO';
+"\\mordent"					return 'CMD_MORDENT';
+"\\musicglyph"				return 'CMD_MUSICGLYPH';
+"\\powerChords"				return 'CMD_POWERCHORDS';
+"\\prall"					return 'CMD_PRALL';
+"\\sustainOff"				return 'CMD_SUSTAINOFF';
+"\\sustainOn"				return 'CMD_SUSTAINON';
+"\\trill"					return 'CMD_TRILL';
+"\\turn"					return 'CMD_TURN';
 
-"\\mp"(?=[\s])				return 'CMD_DYNAMIC_MARKINGS';
-"\\mf"(?=[\s])				return 'CMD_DYNAMIC_MARKINGS';
-"\\"[p]+(?=[\s])			return 'CMD_DYNAMIC_MARKINGS';
-"\\"[f]+(?=[\s])			return 'CMD_DYNAMIC_MARKINGS';
+"\\mp"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
+"\\mf"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
+"\\"[p]+(?=[\W])			return 'CMD_DYNAMIC_MARKINGS';
+"\\"[f]+(?=[\W])			return 'CMD_DYNAMIC_MARKINGS';
+"\\sf"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
+"\\sff"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
+"\\sfp"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
+"\\sfpp"(?=[\W])			return 'CMD_DYNAMIC_MARKINGS';
+"\\fp"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
+"\\rf"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
+"\\rfz"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
+"\\sfz"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
+"\\sffz"(?=[\W])			return 'CMD_DYNAMIC_MARKINGS';
+"\\fz"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
 
 "\\breve"					return 'CMD_BREVE';
 "\\longa"					return 'CMD_LONGA';
@@ -219,6 +243,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\concat"					return 'CMD_CONCAT';
 "\\maintainer"				return 'CMD_MAINTAINER';
 "\\footnote"				return 'CMD_FOOTNOTE';
+"\\natural"					return 'CMD_NATURAL';
 
 "\\huge"					return 'CMD_HUGE';
 "\\large"					return 'CMD_LARGE';
@@ -705,6 +730,8 @@ markup_word
 		{$$ = $1;}
 	| unitary_cmd number_expression
 		{$$ = command($1, $2);}
+	| CMD_NATURAL
+		{$$ = $1;}
 	| scm_identifier
 		{$$ = $1;}
 	// extra formula
@@ -1578,6 +1605,8 @@ music_identifier
 		{$$ = command($1, $2, $3);}
 	| CMD_ACCIDENTALSTYLE grob_prop_spec
 		{$$ = command($1, $2);}
+	| CMD_NUMERICTIMESIGNATURE music_identifier
+		{$$ = command($1, $2);}
 	| markup_font_size music
 		{$$ = command($1, $2);}
 	| pitch_mode_music
@@ -1616,6 +1645,32 @@ zero_command
 		{$$ = command($1);}
 	| CMD_SCORE
 		{$$ = command($1);}
+	| CMD_ARPEGGIO
+		{$$ = command($1);}
+	| CMD_ARPEGGIOARROWDOWN
+		{$$ = command($1);}
+	| CMD_ARPEGGIOARROWUP
+		{$$ = command($1);}
+	| CMD_ARPEGGIONORMAL
+		{$$ = command($1);}
+	| CMD_GLISSANDO
+		{$$ = command($1);}
+	| CMD_MORDENT
+		{$$ = command($1);}
+	| CMD_MUSICGLYPH
+		{$$ = command($1);}
+	| CMD_POWERCHORDS
+		{$$ = command($1);}
+	| CMD_PRALL
+		{$$ = command($1);}
+	| CMD_SUSTAINOFF
+		{$$ = command($1);}
+	| CMD_SUSTAINON
+		{$$ = command($1);}
+	| CMD_TRILL
+		{$$ = command($1);}
+	| CMD_TURN
+		{$$ = command($1);}
 	;
 
 // extra syntax
@@ -1631,7 +1686,7 @@ expressive_mark
 	| CMD_TWEAK property_path scm_identifier
 		{$$ = command($1, $2, $3);}
 	| CMD_DYNAMIC_MARKINGS
-		{$$ = $1;}
+		{$$ = command($1);}
 	| "~"
 		{$$ = $1;}
 	| "("
