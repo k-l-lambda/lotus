@@ -224,6 +224,26 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 "\\pageBreak"				return 'CMD_PAGEBREAK';
 "\\startTrillSpan"			return 'CMD_STARTTRILLSPAN';
 "\\stopTrillSpan"			return 'CMD_STOPTRILLSPAN';
+"\\cadenzaOn"				return 'CMD_CADENZAON';
+"\\cadenzaOff"				return 'CMD_CADENZAOFF';
+"\\cresc"					return 'CMD_CRESC';
+"\\dim"(?=[\W])				return 'CMD_DIM';
+"\\dimTextDim"				return 'CMD_DIMTEXTDIM';
+"\\dynamicUp"				return 'CMD_DYNAMICUP';
+"\\hideNotes"				return 'CMD_HIDENOTES';
+"\\unHideNotes"				return 'CMD_UNHIDENOTES';
+"\\newSpacingSection"		return 'CMD_NEWSPACINGSECTION';
+"\\noBeam"					return 'CMD_NOBEAM';
+"\\oneVoice"				return 'CMD_ONEVOICE';
+"\\phrasingSlurDown"		return 'CMD_PHRASINGSLURDOWN';
+"\\phrasingSlurNeutral"		return 'CMD_PHRASINGSLURNEUTRAL';
+"\\phrasingSlurUp"			return 'CMD_PHRASINGSLURUP';
+"\\slurDown"				return 'CMD_SLURDOWN';
+"\\slurNeutral"				return 'CMD_SLURNEUTRAL';
+"\\slurUp"					return 'CMD_SLURUP';
+"\\tieDown"					return 'CMD_TIEDOWN';
+"\\tieNeutral"				return 'CMD_TIENEUTRAL';
+"\\tieUp"					return 'CMD_TIEUP';
 
 "\\mp"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
 "\\mf"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
@@ -1746,9 +1766,9 @@ music_identifier
 zero_command
 	//: variable_command
 	//	{$$ = $1;}
-	//| CMD_WITH_URL
-	//	{$$ = command($1);}
-	: CMD_STEMUP
+	: CMD_FERMATA
+		{$$ = command($1);}
+	| CMD_STEMUP
 		{$$ = command($1);}
 	| CMD_STEMDOWN
 		{$$ = command($1);}
@@ -1817,6 +1837,46 @@ zero_command
 	| CMD_STARTTRILLSPAN
 		{$$ = command($1);}
 	| CMD_STOPTRILLSPAN
+		{$$ = command($1);}
+	| CMD_CADENZAON
+		{$$ = command($1);}
+	| CMD_CADENZAOFF
+		{$$ = command($1);}
+	| CMD_CRESC
+		{$$ = command($1);}
+	| CMD_DIM
+		{$$ = command($1);}
+	| CMD_DIMTEXTDIM
+		{$$ = command($1);}
+	| CMD_DYNAMICUP
+		{$$ = command($1);}
+	| CMD_HIDENOTES
+		{$$ = command($1);}
+	| CMD_UNHIDENOTES
+		{$$ = command($1);}
+	| CMD_NEWSPACINGSECTION
+		{$$ = command($1);}
+	| CMD_NOBEAM
+		{$$ = command($1);}
+	| CMD_ONEVOICE
+		{$$ = command($1);}
+	| CMD_PHRASINGSLURDOWN
+		{$$ = command($1);}
+	| CMD_PHRASINGSLURNEUTRAL
+		{$$ = command($1);}
+	| CMD_PHRASINGSLURUP
+		{$$ = command($1);}
+	| CMD_SLURDOWN
+		{$$ = command($1);}
+	| CMD_SLURNEUTRAL
+		{$$ = command($1);}
+	| CMD_SLURUP
+		{$$ = command($1);}
+	| CMD_TIEDOWN
+		{$$ = command($1);}
+	| CMD_TIENEUTRAL
+		{$$ = command($1);}
+	| CMD_TIEUP
 		{$$ = command($1);}
 	;
 
