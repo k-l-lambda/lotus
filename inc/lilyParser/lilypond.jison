@@ -192,6 +192,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\voiceFour"				return 'CMD_VOICE_NUMBER';
 "\\voiceFive"				return 'CMD_VOICE_NUMBER';
 "\\Score"					return 'CMD_SCORE';
+"\\Voice"					return 'CMD_VOICE';
+"\\Staff"					return 'CMD_STAFF';
 "\\arpeggio"				return 'CMD_ARPEGGIO';
 "\\arpeggioArrowDown"		return 'CMD_ARPEGGIOARROWDOWN';
 "\\arpeggioArrowUp"			return 'CMD_ARPEGGIOARROWUP';
@@ -205,6 +207,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\sustainOn"				return 'CMD_SUSTAINON';
 "\\trill"					return 'CMD_TRILL';
 "\\turn"					return 'CMD_TURN';
+"\\pointAndClickOff"		return 'CMD_POINTANDCLICKOFF';
 
 "\\mp"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
 "\\mf"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
@@ -244,6 +247,16 @@ PLACEHOLDER_PITCH	[s](?=[\W\d])
 "\\maintainer"				return 'CMD_MAINTAINER';
 "\\footnote"				return 'CMD_FOOTNOTE';
 "\\natural"					return 'CMD_NATURAL';
+"\\flat"					return 'CMD_FLAT';
+"\\sharp"					return 'CMD_SHARP';
+"\\hspace"					return 'CMD_HSPACE';
+"\\footer"					return 'CMD_FOOTER';
+"\\center-align"			return 'CMD_CENTER_ALIGN';
+"\\lower"					return 'CMD_LOWER';
+"\\finger"					return 'CMD_FINGER';
+"\\fontsize"				return 'CMD_FONTSIZE';
+"\\raise"					return 'CMD_RAISE';
+"\\note"					return 'CMD_NOTE';
 
 "\\huge"					return 'CMD_HUGE';
 "\\large"					return 'CMD_LARGE';
@@ -732,6 +745,12 @@ markup_word
 		{$$ = command($1, $2);}
 	| CMD_NATURAL
 		{$$ = $1;}
+	| CMD_FLAT
+		{$$ = $1;}
+	| CMD_SHARP
+		{$$ = $1;}
+	| CMD_FOOTER
+		{$$ = $1;}
 	| scm_identifier
 		{$$ = $1;}
 	// extra formula
@@ -819,6 +838,9 @@ simple_markup_noword
 	| CMD_CHAR scm_identifier
 		{$$ = command($1, $2);}
 	// extra formula
+	| CMD_HSPACE scm_identifier
+		{$$ = command($1, $2);}
+	// extra formula
 	| CMD_SANS markup
 		{$$ = command($1, $2);}
 	// extra formula
@@ -863,6 +885,27 @@ simple_markup_noword
 	// extra formula
 	| CMD_ITALIC markup_list
 		{$$ = command($1, ...$2);}
+	// extra formula
+	| CMD_CENTER_ALIGN markup_list
+		{$$ = command($1, ...$2);}
+	// extra formula
+	| CMD_CENTER_ALIGN markup
+		{$$ = command($1, $2);}
+	// extra formula
+	| CMD_LOWER scm_identifier
+		{$$ = command($1, $2);}
+	// extra formula
+	| CMD_FINGER string
+		{$$ = command($1, $2);}
+	// extra formula
+	| CMD_FONTSIZE scm_identifier
+		{$$ = command($1, $2);}
+	// extra formula
+	| CMD_RAISE scm_identifier
+		{$$ = command($1, $2);}
+	// extra formula
+	| CMD_NOTE scm_identifier scm_identifier markup
+		{$$ = command($1, $2, $3, $4);}
 	;
 
 markup_command_basic_arguments
@@ -1119,6 +1162,9 @@ contextable_music
 		{$$ = $1;}
 	| event_chord
 		{$$ = $1;}
+	// extra formula
+	| variable_command
+		{$$ = $1;}
 	;
 
 new_lyrics
@@ -1322,6 +1368,9 @@ music
 // extra syntax
 variable_command
 	: COMMAND
+		{$$ = variable($1);}
+	// some test case use \lower as a variable name!?
+	| CMD_LOWER
 		{$$ = variable($1);}
 	;
 
@@ -1627,11 +1676,11 @@ music_identifier
 
 // extra syntax
 zero_command
-	: variable_command
-		{$$ = $1;}
+	//: variable_command
+	//	{$$ = $1;}
 	//| CMD_WITH_URL
 	//	{$$ = command($1);}
-	| CMD_STEMUP
+	: CMD_STEMUP
 		{$$ = command($1);}
 	| CMD_STEMDOWN
 		{$$ = command($1);}
@@ -1644,6 +1693,10 @@ zero_command
 	| CMD_VOICE_NUMBER
 		{$$ = command($1);}
 	| CMD_SCORE
+		{$$ = command($1);}
+	| CMD_VOICE
+		{$$ = command($1);}
+	| CMD_STAFF
 		{$$ = command($1);}
 	| CMD_ARPEGGIO
 		{$$ = command($1);}
@@ -1670,6 +1723,8 @@ zero_command
 	| CMD_TRILL
 		{$$ = command($1);}
 	| CMD_TURN
+		{$$ = command($1);}
+	| CMD_POINTANDCLICKOFF
 		{$$ = command($1);}
 	;
 
@@ -2056,6 +2111,9 @@ post_event_nofinger
 	// extra formula
 	| ")"
 		{$$ = $1;}
+	// extra formula
+	| script_dir variable_command
+		{$$ = postEvent($1, $2);}
 	;
 
 direction_reqd_event
