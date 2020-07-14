@@ -23,6 +23,8 @@
 
 *	2020.7.14
 
+	+	lilyDocument.ts: MusicBlock.expandVariables added.
+
 	+	lilyDocument.ts: refined getMusicTracks by score block content.
 
 	+	lilyDocument.ts: MusicBlock.toUnfoldRepeatsBlock implemented.

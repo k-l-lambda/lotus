@@ -668,6 +668,27 @@ export class MusicBlock extends BaseTerm {
 
 		return this;
 	}
+
+
+	expandVariables (dict: BaseTerm) {
+		this.body = this.body.map(term => {
+			if (term instanceof Variable) {
+				const value = term.queryValue(dict);
+				const clonedValue = value instanceof BaseTerm ? value.clone() : value;
+
+				if (clonedValue instanceof BaseTerm) {
+					clonedValue.forEachTerm(MusicBlock, block => block.expandVariables(dict));
+
+					if (clonedValue instanceof MusicBlock)
+						clonedValue.expandVariables(dict);
+				}
+
+				return clonedValue;
+			}
+
+			return term;
+		});
+	}
 };
 
 
@@ -1535,14 +1556,7 @@ export default class LilyDocument {
 		});
 
 		// expand variables in tracks
-		tracks.forEach(track => track.body = track.body.map(term => {
-			if (term instanceof Variable) {
-				const value = term.queryValue(this.root);
-				return value instanceof BaseTerm ? value.clone() : value;
-			}
-
-			return term;
-		}));
+		tracks.forEach(track => track.expandVariables(this.root));
 
 		return tracks;
 	}
