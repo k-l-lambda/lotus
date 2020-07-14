@@ -1797,6 +1797,8 @@ zero_command
 		{$$ = command($1);}
 	| CMD_STOPTEXTSPAN
 		{$$ = command($1);}
+	| CMD_FLAGEOLET
+		{$$ = command($1);}
 	| CMD_SLURDASHED
 		{$$ = command($1);}
 	| CMD_SLURSOLID
@@ -1815,6 +1817,8 @@ expressive_mark
 		{$$ = $1;}
 	| CMD_TWEAK property_path scm_identifier
 		{$$ = command($1, $2, $3);}
+	| CMD_BENDAFTER scm_identifier
+		{$$ = command($1, $2);}
 	| CMD_DYNAMIC_MARKINGS
 		{$$ = command($1);}
 	| "~"
