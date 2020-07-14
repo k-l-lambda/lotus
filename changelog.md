@@ -1,5 +1,8 @@
 
 ## TODO
+	MusicBlock.unfoldRelativeBlocks
+		Chord pitch value
+		relative pitch value from ChordElement
 	normalize lilyDocument, extract voices.
 	keep comments in LilyDocument
 	lyrics hilighting

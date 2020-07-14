@@ -68,6 +68,7 @@ export class BaseTerm implements LilyTerm {
 	_location?: Location;
 	_measure?: number;
 	_previous?: BaseTerm;
+	_relativePitch?: ChordElement;
 	_parent?: BaseTerm;
 
 
@@ -227,10 +228,11 @@ export class BaseTerm implements LilyTerm {
 
 	toJSON () {
 		// exlude meta fields in JSON
-		const {_location, _measure, _previous, _parent, ...data} = this;
+		const {_location, _measure, _previous, _relativePitch, _parent, ...data} = this;
 		void _location;
 		void _measure;
 		void _previous;
+		void _relativePitch;
 		void _parent;
 
 		Object.entries(data).forEach(([key, value]) => {
@@ -650,6 +652,25 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	get relativePitch (): ChordElement {
+		if (this._parent instanceof Command && this._parent.cmd === "relative")
+			return this._parent.args[0];
+	}
+
+
+	updateChordChains () {
+		let previous: Chord = null;
+
+		this.forEachTerm(Chord, chord => {
+			chord._previous = previous;
+			if (!previous)
+				chord._relativePitch = this.relativePitch;
+
+			previous = chord;
+		});
+	}
+
+
 	toUnfoldRepeatsBlock ({ignoreRepeat = true, keepTailPass = false} = {}): this {
 		this.forEachTerm(MusicBlock, block => block.toUnfoldRepeatsBlock());
 
@@ -936,6 +957,7 @@ export class Chord extends BaseTerm {
 	};
 
 	_previous?: Chord;
+	_relativePitch?: ChordElement;
 
 
 	constructor (data: object) {
@@ -1036,6 +1058,24 @@ export class ChordElement extends BaseTerm {
 			...postfix,
 		];
 	}
+
+
+	get pitchOctave (): number {
+		const positive = (this.pitch.match(/'/g) || []).length;
+		const negative = (this.pitch.match(/,/g) || []).length;
+
+		return positive - negative;
+	}
+
+
+	/*get phonet (): string {
+		// TODO:
+	}
+
+
+	get alters (): string {
+		// TODO:
+	}*/
 };
 
 
@@ -1532,14 +1572,7 @@ export default class LilyDocument {
 
 
 	updateChordChains () {
-		this.root.forEachTopTerm(MusicBlock, block => {
-			let previous: Chord = null;
-
-			block.forEachTerm(Chord, chord => {
-				chord._previous = previous;
-				previous = chord;
-			});
-		});
+		this.root.forEachTopTerm(MusicBlock, block => block.updateChordChains());
 	}
 
 
