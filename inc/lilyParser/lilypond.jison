@@ -182,6 +182,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 "\\accidentalStyle"			return 'CMD_ACCIDENTALSTYLE';
 "\\numericTimeSignature"	return 'CMD_NUMERICTIMESIGNATURE';
 
+// zero commands
 "\\tempoLegend"				return 'CMD_TEMPOLEGEND';
 "\\fermata"					return 'CMD_FERMATA';
 "\\mergeDifferentlyDottedOn"	return 'CMD_MERGEDIFFERENTLYDOTTEDON';
@@ -208,6 +209,9 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 "\\trill"					return 'CMD_TRILL';
 "\\turn"					return 'CMD_TURN';
 "\\pointAndClickOff"		return 'CMD_POINTANDCLICKOFF';
+"\\upbow"					return 'CMD_UPBOW';
+"\\downbow"					return 'CMD_DOWNBOW';
+"\\breathe"					return 'CMD_BREATHE';
 
 "\\mp"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
 "\\mf"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
@@ -1766,6 +1770,12 @@ zero_command
 	| CMD_TURN
 		{$$ = command($1);}
 	| CMD_POINTANDCLICKOFF
+		{$$ = command($1);}
+	| CMD_UPBOW
+		{$$ = command($1);}
+	| CMD_DOWNBOW
+		{$$ = command($1);}
+	| CMD_BREATHE
 		{$$ = command($1);}
 	;
 
