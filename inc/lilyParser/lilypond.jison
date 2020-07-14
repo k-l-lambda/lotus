@@ -96,7 +96,7 @@ BOM_UTF8			\357\273\277
 
 PHONET				[abcdefgrRqh]
 PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
-PLACEHOLDER_PITCH	[s](?=[\W\d])
+PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 //DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
 
 //UNICODE_HAN			[\p{Script=Han}]
@@ -1238,6 +1238,41 @@ mode_changed_music
 	// extra formula
 	| CHORDMODE chordmode_braced_music_list
 		{$$ = command($1, $2);}
+	// extra formula
+	| LYRICMODE lyricmode_braced_music_list
+		{$$ = command($1, $2);}
+	;
+
+// extra syntax
+lyricmode_braced_music_list
+	: '{' lyricmode_music_list '}'
+		{$$ = musicBlock($2);}
+	;
+
+// extra syntax
+lyricmode_music_list
+	: %empty
+		{$$ = [];}
+	| lyricmode_music_list lyricmode_music
+		{$$ = $1.concat([$2]);}
+	;
+
+// extra syntax
+lyricmode_music
+	: lyric_element_music
+		{$$ = $1;}
+	| music_assign
+		{$$ = $1;}
+	| lyricmode_repeated_music
+		{$$ = $1;}
+	;
+
+// extra syntax
+lyricmode_repeated_music
+	: REPEAT simple_string unsigned_number lyricmode_braced_music_list
+		{$$ = command($1, $2, $3, $4);}
+	| REPEAT simple_string unsigned_number lyricmode_braced_music_list ALTERNATIVE lyricmode_braced_music_list
+		{$$ = command($1, $2, $3, $4, command($5, $6));}
 	;
 
 // extra syntax
@@ -1294,8 +1329,8 @@ mode_changing_head
 		{$$ = $1;}
 	//| CHORDMODE
 	//	{$$ = $1;}
-	| LYRICMODE
-		{$$ = $1;}
+	//| LYRICMODE
+	//	{$$ = $1;}
 	;
 
 grouped_music_list
@@ -1362,7 +1397,13 @@ music
 		{$$ = $1;}
 	| pitch_as_music
 		{$$ = $1;}
-	| lyric_element_music
+	//| lyric_element_music
+	// extra formula
+	| variable_command
+		{$$ = $1;}
+	// extra formula
+	| COMMAND full_markup
+		{$$ = command($1, $2);}
 	;
 
 // extra syntax
