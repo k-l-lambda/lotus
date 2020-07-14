@@ -782,9 +782,6 @@ markup_word
 		{$$ = $1;}
 	| unsigned_number
 		{$$ = $1;}
-	// extra formula
-	//| zero_command
-	//	{$$ = $1;}
 	| CMD_MUSICGLYPH
 		{$$ = command($1);}
 	| CMD_NATURAL
@@ -1448,12 +1445,6 @@ music
 	| pitch_as_music
 		{$$ = $1;}
 	//| lyric_element_music
-	// extra formula
-	| variable_command
-		{$$ = $1;}
-	// extra formula
-	| COMMAND full_markup
-		{$$ = command($1, $2);}
 	;
 
 // extra syntax
@@ -1519,6 +1510,12 @@ simple_music
 		{$$ = $1;}
 	| context_change
 		{$$ = $1;}
+	// extra formula
+	| variable_command
+		{$$ = $1;}
+	// extra formula
+	| COMMAND full_markup
+		{$$ = command($1, $2);}
 	;
 
 context_change
@@ -1711,7 +1708,42 @@ simple_string
 music_identifier
 	: zero_command
 		{$$ = $1;}
-	| unitary_cmd value
+	//| unitary_cmd value
+	//	{$$ = command($1, $2);}
+	| CMD_CLEF string
+		{$$ = command($1, $2);}
+	| CMD_TIME FRACTION
+		{$$ = command($1, $2);}
+	| CMD_BAR string
+		{$$ = command($1, $2);}
+	| CMD_OMIT property_path
+		{$$ = command($1, $2);}
+	| CMD_OTTAVA property_path
+		{$$ = command($1, $2);}
+	| CMD_BARNUMBERCHECK scm_identifier
+		{$$ = command($1, $2);}
+	| CMD_MARK full_markup
+		{$$ = command($1, $2);}
+	// TODO:
+	| CMD_INCLUDE string
+		{$$ = command($1, $2);}
+	| CMD_SKIP unsigned_number
+		{$$ = command($1, $2);}
+	//| CMD_PARENTHESIZE property_path
+	//	{$$ = command($1, $2);}
+	| CMD_UNFOLDREPEATS music
+		{$$ = command($1, $2);}
+	| CMD_GRACE music
+		{$$ = command($1, $2);}
+	| CMD_ACCIACCATURA music
+		{$$ = command($1, $2);}
+	| CMD_APPOGGIATURA music
+		{$$ = command($1, $2);}
+	| CMD_SLASHEDGRACE music
+		{$$ = command($1, $2);}
+	| CMD_LANGUAGE string
+		{$$ = command($1, $2);}
+	| CMD_ONCE music_assign
 		{$$ = command($1, $2);}
 	| CMD_PARTIAL duration
 		{$$ = command($1, $2);}
@@ -1725,7 +1757,7 @@ music_identifier
 		{$$ = command($1, $2, $3, $4);}
 	//| binary_cmd value value
 	//	{$$ = command($1, [$2, $3]);}
-	| CMD_TWEAK property_path value
+	| CMD_TWEAK property_path scalar
 		{$$ = command($1, $2, $3);}
 	| CMD_KEY PITCH COMMAND
 		{$$ = command($1, $2, $3);}
@@ -1879,6 +1911,8 @@ zero_command
 		{$$ = command($1);}
 	| CMD_TIEUP
 		{$$ = command($1);}
+	| CMD_PARENTHESIZE
+		{$$ = command($1);}
 	;
 
 // extra syntax
@@ -1909,8 +1943,7 @@ expressive_mark
 		{$$ = $1;}
 	;
 
-// TODO: dismiss this syntax 
-// extra syntax
+/*// extra syntax
 unitary_cmd
 	: CMD_CLEF
 		{$$ = $1;}
@@ -1934,8 +1967,6 @@ unitary_cmd
 		{$$ = $1;}
 	| CMD_UNFOLDREPEATS
 		{$$ = $1;}
-	| CMD_GRACE
-		{$$ = $1;}
 	| CMD_ACCIACCATURA
 		{$$ = $1;}
 	| CMD_APPOGGIATURA
@@ -1946,7 +1977,7 @@ unitary_cmd
 		{$$ = $1;}
 	| CMD_ONCE
 		{$$ = $1;}
-	;
+	;*/
 
 // extra syntax
 pitch_mode_music
@@ -1956,8 +1987,7 @@ pitch_mode_music
 	//	{$$ = command($1, $2, $3);}
 	;
 
-// TODO: dismiss this syntax 
-// extra syntax
+/*// extra syntax
 value
 	: music
 		{$$ = $1;}
@@ -1977,7 +2007,7 @@ value
 		{$$ = $1;}
 	| SYMBOL '.' property_path
 		{$$ = $1 + "." + $3;}
-	;
+	;*/
 
 pitch_or_music
 	//: pitch exclamations questions octave_check maybe_notemode_duration erroneous_quotes optional_rest post_events
