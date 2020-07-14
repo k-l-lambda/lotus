@@ -87,6 +87,7 @@ const sourceList = argv.original.length > 2 ? argv.original.slice(2) : [
 	"markup-chopin-op28-no1.ly",
 	"markup-chopin-op72-no1.ly",
 	"chopin-op-25-01.ly",
+	"bluebird.ly",
 ].map(filename => path.resolve("./tests/ly", filename));
 
 main(sourceList);
