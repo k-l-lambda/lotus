@@ -782,8 +782,8 @@ markup_word
 	// extra formula
 	| zero_command
 		{$$ = $1;}
-	| unitary_cmd number_expression
-		{$$ = command($1, $2);}
+	//| unitary_cmd number_expression
+	//	{$$ = command($1, $2);}
 	| CMD_NATURAL
 		{$$ = $1;}
 	| CMD_FLAT
@@ -1910,20 +1910,12 @@ expressive_mark
 		{$$ = $1;}
 	;
 
-/*binary_cmd
-	;*/
-
+// TODO: dismiss this syntax 
 // extra syntax
 unitary_cmd
 	: CMD_CLEF
 		{$$ = $1;}
 	| CMD_TIME
-		{$$ = $1;}
-	| CMD_STEMUP
-		{$$ = $1;}
-	| CMD_STEMDOWN
-		{$$ = $1;}
-	| CMD_STEMNEUTRAL
 		{$$ = $1;}
 	| CMD_BAR
 		{$$ = $1;}
@@ -1933,16 +1925,10 @@ unitary_cmd
 		{$$ = $1;}
 	| CMD_BARNUMBERCHECK
 		{$$ = $1;}
-	//| CMD_PARTIAL
-	//	{$$ = $1;}
 	| CMD_MARK
 		{$$ = $1;}
 	| CMD_INCLUDE
 		{$$ = $1;}
-	//| CMD_TUPLETSPAN
-	//	{$$ = $1;}
-	//| CMD_TUPLET
-	//	{$$ = $1;}
 	| CMD_SKIP
 		{$$ = $1;}
 	| CMD_PARENTHESIZE
@@ -1971,6 +1957,7 @@ pitch_mode_music
 	//	{$$ = command($1, $2, $3);}
 	;
 
+// TODO: dismiss this syntax 
 // extra syntax
 value
 	: music
@@ -1981,8 +1968,6 @@ value
 		{$$ = $1;}
 	| UNSIGNED
 		{$$ = $1;}
-	//| INT
-	//	{$$ = $1;}
 	| REAL
 		{$$ = $1;}
 	| literal_string
