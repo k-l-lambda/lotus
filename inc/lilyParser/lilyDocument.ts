@@ -435,6 +435,40 @@ export class MarkupCommand extends Command {
 };
 
 
+export class Repeat extends Command {
+	get times () {
+		return Number(this.args[1]);
+	}
+
+
+	get bodyBlock () {
+		return this.args[2];
+	}
+
+
+	get alternativeBlocks (): MusicBlock[] {
+		return this.args[3] && this.args[3].args[0].body;
+	}
+
+
+	// this result length equal to times, if not null
+	get completeAlternativeBlocks (): MusicBlock[] {
+		if (!this.alternativeBlocks || !this.alternativeBlocks.length)
+			return null;
+
+		if (this.alternativeBlocks.length >= this.times)
+			return this.alternativeBlocks.slice(0, this.times);
+
+		const list = [];
+		for (let i = 0; i < this.times - this.alternativeBlocks.length; ++ i)
+			list.push(this.alternativeBlocks[0]);
+		list.push(...this.alternativeBlocks);
+
+		return list;
+	}
+};
+
+
 export class Block extends BaseTerm {
 	head: (string|string[]);
 	body: BaseTerm[];
@@ -535,6 +569,7 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	// for parallelMusic only
 	get voiceNames () {
 		const header = this._parent as Command;
 		if (header && header.cmd === "parallelMusic") {
@@ -1141,6 +1176,7 @@ export const termDictionary = {
 	Command,
 	Variable,
 	MarkupCommand,
+	Repeat,
 	Block,
 	InlineBlock,
 	Scheme,
