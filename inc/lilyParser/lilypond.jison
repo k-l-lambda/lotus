@@ -181,6 +181,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 "\\once"					return 'CMD_ONCE';
 "\\accidentalStyle"			return 'CMD_ACCIDENTALSTYLE';
 "\\numericTimeSignature"	return 'CMD_NUMERICTIMESIGNATURE';
+"\\bendAfter"				return 'CMD_BENDAFTER';
+"\\compoundMeter"			return 'CMD_COMPOUNDMETER';
 
 // zero commands
 "\\tempoLegend"				return 'CMD_TEMPOLEGEND';
@@ -215,6 +217,8 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 "\\startTextSpan"			return 'CMD_STARTTEXTSPAN';
 "\\stopTextSpan"			return 'CMD_STOPTEXTSPAN';
 "\\flageolet"				return 'CMD_FLAGEOLET';
+"\\slurDashed"				return 'CMD_SLURDASHED';
+"\\slurSolid"				return 'CMD_SLURSOLID';
 
 "\\mp"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
 "\\mf"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
@@ -225,11 +229,13 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 "\\sfp"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
 "\\sfpp"(?=[\W])			return 'CMD_DYNAMIC_MARKINGS';
 "\\fp"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
+"\\mfp"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
 "\\rf"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
 "\\rfz"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
 "\\sfz"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
 "\\sffz"(?=[\W])			return 'CMD_DYNAMIC_MARKINGS';
 "\\fz"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
+"\\fzp"(?=[\W])				return 'CMD_DYNAMIC_MARKINGS';
 
 "\\breve"					return 'CMD_BREVE';
 "\\longa"					return 'CMD_LONGA';
@@ -1698,6 +1704,10 @@ music_identifier
 		{$$ = command($1, $2);}
 	| CMD_NUMERICTIMESIGNATURE music_identifier
 		{$$ = command($1, $2);}
+	| CMD_BENDAFTER scm_identifier
+		{$$ = command($1, $2);}
+	| CMD_COMPOUNDMETER scm_identifier
+		{$$ = command($1, $2);}
 	| markup_font_size music
 		{$$ = command($1, $2);}
 	| pitch_mode_music
@@ -1778,7 +1788,9 @@ zero_command
 		{$$ = command($1);}
 	| CMD_STOPTEXTSPAN
 		{$$ = command($1);}
-	| CMD_FLAGEOLET
+	| CMD_SLURDASHED
+		{$$ = command($1);}
+	| CMD_SLURSOLID
 		{$$ = command($1);}
 	;
 
