@@ -145,7 +145,6 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 
 // binary commands
 "\\relative"				return 'CMD_RELATIVE';
-"\\absolute"				return 'CMD_ABSOLUTE';
 "\\tweak"					return 'CMD_TWEAK';
 "\\key"						return 'CMD_KEY';
 //"\\times"					return 'CMD_TIMES';
@@ -184,6 +183,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 "\\bendAfter"				return 'CMD_BENDAFTER';
 "\\compoundMeter"			return 'CMD_COMPOUNDMETER';
 "\\transposition"			return 'CMD_TRANSPOSITION';
+"\\absolute"				return 'CMD_ABSOLUTE';
 
 // zero commands
 "\\tempoLegend"				return 'CMD_TEMPOLEGEND';
@@ -1744,6 +1744,8 @@ music_identifier
 		{$$ = command($1, $2);}
 	| CMD_TRANSPOSITION PITCH
 		{$$ = command($1, $2);}
+	| CMD_ABSOLUTE music
+		{$$ = command($1, $2);}
 	| markup_font_size music
 		{$$ = command($1, $2);}
 	| pitch_mode_music
@@ -1963,20 +1965,12 @@ unitary_cmd
 
 // extra syntax
 pitch_mode_music
-	: pitch_mode pitch music
+	: CMD_RELATIVE pitch music
 		{$$ = command($1, $2, $3);}
-	| pitch_mode pitch COMMAND
+	| CMD_RELATIVE pitch COMMAND
 		{$$ = command($1, $2, $3);}
-	| pitch_mode music
+	| CMD_RELATIVE music
 		{$$ = command($1, null, $2);}
-	;
-
-// extra syntax
-pitch_mode
-	: CMD_RELATIVE
-		{$$ = $1;}
-	| CMD_ABSOLUTE
-		{$$ = $1;}
 	;
 
 // extra syntax
