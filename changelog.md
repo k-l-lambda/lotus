@@ -27,6 +27,8 @@
 
 *	2020.7.15
 
+	+	lilyDocument.ts: term of MusicEvent added.
+
 	+	lilyDocument.ts: Chord.absolutePitch implemented.
 
 

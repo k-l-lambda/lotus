@@ -24,7 +24,9 @@
 
 	const variable = name => ({proto: "Variable", name: name.substr(1)});
 
-	const chord = (pitches, duration, {locations, ...options} = {}) => ({proto: "Chord", pitches, duration, _location: location(...locations), options: {...options, proto: "_PLAIN"}});
+	const chord = (pitches, duration, {locations, post_events, ...options} = {}) => ({proto: "Chord", pitches, duration, post_events, _location: location(...locations), options: {...options, proto: "_PLAIN"}});
+
+	const rest = ({name, duration, post_events = null}) => ({proto: "Rest", name, duration, post_events});
 
 	const chordElem = (pitch, {locations, ...options}) => ({proto: "ChordElement", pitch, _location: location(...locations), options: {...options, proto: "_PLAIN"}});
 
@@ -91,15 +93,15 @@ STRICTREAL			{UNSIGNED}\.{UNSIGNED}
 WHITE				[ \n\t\f\r]
 HORIZONTALWHITE		[ \t]
 BLACK				[^ \n\t\f\r]
-RESTNAME			[rs]
+RESTNAME			[rRs](?=[\W\d_])
 ESCAPED				[nt\\''""]
 EXTENDER			\_\_
 HYPHEN				\-\-
 BOM_UTF8			\357\273\277
 
-PHONET				[abcdefgrRqh]
+PHONET				[abcdefgqh]
 PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
-PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
+//PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 //DURATION			"1"|"2"|"4"|"8"|"16"|"32"|"64"|"128"|"256"
 
 //UNICODE_HAN			[\p{Script=Han}]
@@ -364,8 +366,9 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 {COMMAND}							return 'COMMAND';
 
 {PITCH}								return 'PITCH';
-{PLACEHOLDER_PITCH}					return 'PLACEHOLDER_PITCH';
+//{PLACEHOLDER_PITCH}					return 'PLACEHOLDER_PITCH';
 //{UNSIGNED}						return 'POST_UNSIGNED';
+{RESTNAME}							return 'RESTNAME';
 
 {FRACTION}							return 'FRACTION';
 //{REAL}							return 'REAL';
@@ -850,7 +853,9 @@ general_text
 		{$$ = $1;}
 	| UNKNOWN_CHAR
 		{$$ = $1;}
-	| PLACEHOLDER_PITCH
+	//| PLACEHOLDER_PITCH
+	//	{$$ = $1;}
+	| RESTNAME
 		{$$ = $1;}
 	;
 
@@ -1619,7 +1624,8 @@ event_chord
 		{$$ = $1;}
 	| tempo_event
 		{$$ = $1;}
-	//| simple_element post_events
+	| simple_element post_events
+		{$$ = rest({...$1, post_events: $2});}
 	//| CHORD_REPETITION optional_notemode_duration post_events
 	//| MULTI_MEASURE_REST optional_notemode_duration post_events
 	;
@@ -1646,8 +1652,8 @@ tempo_range
 
 simple_element
 	//: DRUM_PITCH optional_notemode_duration
-	: RESTNAME optional_notemode_duration	// TODO: resolve RESTNAME
-		{$$ = $1 + $2;}
+	: RESTNAME optional_notemode_duration
+		{$$ = {name: $1, duration: $2};}
 	;
 
 optional_notemode_duration
@@ -2209,8 +2215,8 @@ pitch
 		{$$ = $1 + $2;}
 	//| steno_pitch
 	// extra formula
-	| PLACEHOLDER_PITCH
-		{$$ = $1;}
+	//| PLACEHOLDER_PITCH
+	//	{$$ = $1;}
 	;
 
 quotes

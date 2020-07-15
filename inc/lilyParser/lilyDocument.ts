@@ -676,9 +676,9 @@ export class MusicBlock extends BaseTerm {
 
 
 	updateChordChains () {
-		let previous: Chord = null;
+		let previous: MusicEvent = null;
 
-		this.forEachTerm(Chord, chord => {
+		this.forEachTerm(MusicEvent, chord => {
 			chord._previous = previous;
 			if (this.isRelative && !previous)
 				chord._anchorPitch = this.anchorPitch || chord.pitches[0];
@@ -962,27 +962,50 @@ export class Assignment extends BaseTerm {
 };
 
 
-export class Chord extends BaseTerm {
-	pitches: ChordElement[];
+export class MusicEvent extends BaseTerm {
 	duration?: Duration;
-	options: {
-		exclamations?: string[],
-		questions?: string[],
-		post_events?: PostEvent[],
-		rest?: string,
-		withAngle?: boolean,
-	};
+	post_events?: PostEvent[];
 
-	_previous?: Chord;
+	_previous?: MusicEvent;
 	_anchorPitch?: ChordElement;
 
 
 	constructor (data: object) {
 		super(data);
 
-		if (this.options.post_events)
-			this.options.post_events = this.options.post_events.map(parseRaw);
+		if (this.post_events)
+			this.post_events = this.post_events.map(parseRaw);
 	}
+
+
+	getPreviousT (T) {
+		if (this._previous instanceof T)
+			return this._previous;
+
+		if (this._previous)
+			return this._previous.getPreviousT(T);
+	}
+
+
+	get durationValue (): Duration {
+		return this.duration || (this._previous ? this._previous.durationValue : Duration.default);
+	}
+
+
+	get durationMagnitude (): number {
+		return this.durationValue.magnitude;
+	}
+};
+
+
+export class Chord extends MusicEvent {
+	pitches: ChordElement[];
+	options: {
+		exclamations?: string[],
+		questions?: string[],
+		rest?: string,
+		withAngle?: boolean,
+	};
 
 
 	get single () {
@@ -991,10 +1014,11 @@ export class Chord extends BaseTerm {
 
 
 	get entries () {
-		if (this.options && this.options.post_events)
-			return this.options.post_events;
+		const list: BaseTerm[] = [...this.pitches];
+		if (Array.isArray(this.post_events))
+			list.push(...this.post_events);
 
-		return null;
+		return list;
 	}
 
 
@@ -1004,11 +1028,11 @@ export class Chord extends BaseTerm {
 			"<", "\b", ...cc(innerPitches), "\b", ">",
 		];
 
-		const {exclamations, questions, rest, post_events} = this.options;
+		const {exclamations, questions, rest} = this.options;
 		const postfix = cc([...(exclamations || []), ...(questions || []), ...BaseTerm.optionalSerialize(this.duration), rest]
 			.filter(item => item)
 			.map(item => ["\b", item]),
-		).concat(...(post_events || []).map(BaseTerm.optionalSerialize));
+		).concat(...(this.post_events || []).map(BaseTerm.optionalSerialize));
 
 		return [
 			...pitches,
@@ -1032,16 +1056,6 @@ export class Chord extends BaseTerm {
 	}
 
 
-	get durationValue (): Duration {
-		return this.duration || (this._previous ? this._previous.durationValue : Duration.default);
-	}
-
-
-	get durationMagnitude (): number {
-		return this.durationValue.magnitude;
-	}
-
-
 	get absolutePitch (): ChordElement {
 		const anchor = this.pitches[0];
 		if (anchor.phonet === "q")
@@ -1057,10 +1071,27 @@ export class Chord extends BaseTerm {
 		if (this._anchorPitch)
 			return this._anchorPitch;
 
-		if (this._previous)
-			return this._previous.absolutePitch;
+		const previous = this.getPreviousT(Chord);
+		if (previous)
+			return previous.absolutePitch;
 
 		return this.pitches[0];
+	}
+};
+
+
+export class Rest extends MusicEvent {
+	name: string;
+
+
+	serialize () {
+		return [
+			...compact([
+				this.name,
+				...BaseTerm.optionalSerialize(this.duration),
+			]),
+			...cc((this.post_events || []).map(BaseTerm.optionalSerialize)),
+		];
 	}
 };
 
@@ -1382,6 +1413,7 @@ export const termDictionary = {
 	Duration,
 	ChordElement,
 	Chord,
+	Rest,
 	BriefChord,
 	NumberUnit,
 	MusicBlock,
@@ -2048,8 +2080,8 @@ export default class LilyDocument {
 							tieing = false;
 							lastChord = term;
 
-							if (term.options.post_events) {
-								for (const event of term.options.post_events) {
+							if (term.post_events) {
+								for (const event of term.post_events) {
 									if (event.arg === "~")
 										tieing = true;
 								}
