@@ -194,7 +194,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\voiceTwo"						return 'CMD_VOICE_NUMBER';
 "\\voiceThree"						return 'CMD_VOICE_NUMBER';
 "\\voiceFour"						return 'CMD_VOICE_NUMBER';
-"\\voiceFive"						return 'CMD_VOICE_NUMBER';
+//"\\voiceFive"						return 'CMD_VOICE_NUMBER';
 "\\Score"							return 'CMD_SCORE';
 "\\Voice"							return 'CMD_VOICE';
 "\\Staff"							return 'CMD_STAFF';
