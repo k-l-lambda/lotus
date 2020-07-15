@@ -842,8 +842,13 @@ export class MusicBlock extends BaseTerm {
 
 
 	// with side effect
-	unfoldDurationMultipliers () {
+	unfoldDurationMultipliers (): this {
+		let timeDenominator = 4;
+
 		const unfoldMultipliers = (term): BaseTerm[] => {
+			if (term instanceof TimeSignature)
+				timeDenominator = term.value.denominator;
+
 			if (!(term instanceof MusicEvent) || !term.duration || !term.duration.multipliers.length)
 				return [term];
 
@@ -851,15 +856,25 @@ export class MusicBlock extends BaseTerm {
 			if (!Number.isInteger(factor) || factor <= 0)
 				return [term];
 
-			// TODO: break large rests duration by time signature
+			const denominator = Math.max(term.duration.denominator, timeDenominator);
 
 			const event = term.clone() as MusicEvent;
 			event.duration.multipliers = [];
 
-			return Array(factor).fill(null).map(() => event.clone());
+			// break duration into multiple rest events
+			const restCount = (event.duration.magnitude / WHOLE_DURATION_MAGNITUDE) * (factor - 1) * denominator;
+			if (!Number.isInteger(restCount))
+				console.warn("Rest count is not integear:", restCount, denominator, event.duration.magnitude, factor);
+
+			const rests = Array(Math.floor(restCount)).fill(null).map(() => 
+				new Rest({name: "s", duration: new Duration({number: denominator, dots: 0})}));
+
+			return [event, ...rests];
 		};
 
 		this.body = cc(this.body.map(unfoldMultipliers));
+
+		return this;
 	}
 
 

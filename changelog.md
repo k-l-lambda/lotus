@@ -23,6 +23,8 @@
 
 *	2020.7.15
 
+	+	lilyDocument.ts: refined MusicBlock.unfoldDurationMultipliers by break rest duration.
+
 	+	lilyDocument.ts: term class of TimeSignature added.
 
 	+	lilyDocument.ts: MusicBlock.spreadRelativeBlocks implemented.
