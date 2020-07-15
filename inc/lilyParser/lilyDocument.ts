@@ -64,11 +64,14 @@ const compact = items => cc(items.map((item, index) => isNullItem(item) ? [] : [
 const WHOLE_DURATION_MAGNITUDE = 128 * 3 * 5;
 
 
+const PHONETS = "cdefgab";
+
+
 export class BaseTerm implements LilyTerm {
 	_location?: Location;
 	_measure?: number;
 	_previous?: BaseTerm;
-	_relativePitch?: ChordElement;
+	_anchorPitch?: ChordElement;
 	_parent?: BaseTerm;
 
 
@@ -228,11 +231,11 @@ export class BaseTerm implements LilyTerm {
 
 	toJSON () {
 		// exlude meta fields in JSON
-		const {_location, _measure, _previous, _relativePitch, _parent, ...data} = this;
+		const {_location, _measure, _previous, _anchorPitch, _parent, ...data} = this;
 		void _location;
 		void _measure;
 		void _previous;
-		void _relativePitch;
+		void _anchorPitch;
 		void _parent;
 
 		Object.entries(data).forEach(([key, value]) => {
@@ -652,9 +655,20 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
-	get relativePitch (): ChordElement {
-		if (this._parent instanceof Command && this._parent.cmd === "relative")
-			return this._parent.args[0];
+	get isRelative (): boolean {
+		return this._parent instanceof Command && this._parent.cmd === "relative";
+	}
+
+
+	get anchorPitch (): ChordElement {
+		if (this.isRelative) {
+			const arg0 = (this._parent as Command).args[0];
+
+			if (arg0 instanceof ChordElement)
+				return arg0;
+		}
+
+		return null;
 	}
 
 
@@ -663,8 +677,8 @@ export class MusicBlock extends BaseTerm {
 
 		this.forEachTerm(Chord, chord => {
 			chord._previous = previous;
-			if (!previous)
-				chord._relativePitch = this.relativePitch;
+			if (this.isRelative && !previous)
+				chord._anchorPitch = this.anchorPitch || chord.pitches[0];
 
 			previous = chord;
 		});
@@ -957,7 +971,7 @@ export class Chord extends BaseTerm {
 	};
 
 	_previous?: Chord;
-	_relativePitch?: ChordElement;
+	_anchorPitch?: ChordElement;
 
 
 	constructor (data: object) {
@@ -1023,6 +1037,25 @@ export class Chord extends BaseTerm {
 	get durationMagnitude (): number {
 		return this.durationValue.magnitude;
 	}
+
+
+	get absolutePitch (): ChordElement {
+		const anchor = this.pitches[0];
+		const octave = anchor.absoluteOctave(this.anchorPitch);
+
+		return ChordElement.from({phonet: anchor.phonet, alters: anchor.alters, octave});
+	}
+
+
+	get anchorPitch (): ChordElement {
+		if (this._anchorPitch)
+			return this._anchorPitch;
+
+		if (this._previous)
+			return this._previous.absolutePitch;
+
+		return this.pitches[0];
+	}
 };
 
 
@@ -1033,6 +1066,14 @@ export class ChordElement extends BaseTerm {
 		questions?: string[],
 		post_events?: PostEvent[],
 	};
+
+
+	static from ({phonet, alters, octave, options = {proto: "_PLAIN"}}): ChordElement {
+		const octaveString = octave ? Array(Math.abs(octave)).fill(octave > 0 ? "'" : ",").join("") : "";
+		const pitch = phonet + (alters || "") + octaveString;
+
+		return new ChordElement({pitch, options});
+	}
 
 
 	constructor (data: object) {
@@ -1060,7 +1101,7 @@ export class ChordElement extends BaseTerm {
 	}
 
 
-	get pitchOctave (): number {
+	get octave (): number {
 		const positive = (this.pitch.match(/'/g) || []).length;
 		const negative = (this.pitch.match(/,/g) || []).length;
 
@@ -1068,14 +1109,28 @@ export class ChordElement extends BaseTerm {
 	}
 
 
-	/*get phonet (): string {
-		// TODO:
+	get phonet (): string {
+		return this.pitch.substr(0, 1);
+	}
+
+
+	get phonetStep (): number {
+		return PHONETS.indexOf(this.phonet);
 	}
 
 
 	get alters (): string {
-		// TODO:
-	}*/
+		const captures = this.pitch.substr(1).match(/^\w+/);
+		return captures && captures[0];
+	}
+
+
+	absoluteOctave (anchor: ChordElement): number {
+		const phonetDiffer = this.phonetStep - anchor.phonetStep;
+		const shift = phonetDiffer > 3 ? -1 : (phonetDiffer < -3 ? 1 : 0);
+
+		return anchor.octave + shift + this.octave;
+	}
 };
 
 

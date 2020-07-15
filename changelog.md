@@ -1,5 +1,6 @@
 
 ## TODO
+	Rest term in LilyDocument
 	MusicBlock.unfoldRelativeBlocks
 		Chord pitch value
 		relative pitch value from ChordElement
@@ -22,6 +23,11 @@
 	source editor
 		cursor position column
 
+
+
+*	2020.7.15
+
+	+	lilyDocument.ts: Chord.absolutePitch implemented.
 
 
 *	2020.7.14
