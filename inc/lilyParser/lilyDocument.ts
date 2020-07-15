@@ -65,6 +65,9 @@ const WHOLE_DURATION_MAGNITUDE = 128 * 3 * 5;
 
 
 const PHONETS = "cdefgab";
+const PHONETS_ALIAS = {
+	h: "b",
+};
 
 
 export class BaseTerm implements LilyTerm {
@@ -1041,6 +1044,9 @@ export class Chord extends BaseTerm {
 
 	get absolutePitch (): ChordElement {
 		const anchor = this.pitches[0];
+		if (anchor.phonet === "q")
+			return this.anchorPitch;
+
 		const octave = anchor.absoluteOctave(this.anchorPitch);
 
 		return ChordElement.from({phonet: anchor.phonet, alters: anchor.alters, octave});
@@ -1110,7 +1116,9 @@ export class ChordElement extends BaseTerm {
 
 
 	get phonet (): string {
-		return this.pitch.substr(0, 1);
+		const ph = this.pitch.substr(0, 1);
+
+		return PHONETS_ALIAS[ph] || ph;
 	}
 
 
@@ -1126,6 +1134,9 @@ export class ChordElement extends BaseTerm {
 
 
 	absoluteOctave (anchor: ChordElement): number {
+		if (this.phonet === "q")
+			return anchor.octave;
+
 		const phonetDiffer = this.phonetStep - anchor.phonetStep;
 		const shift = phonetDiffer > 3 ? -1 : (phonetDiffer < -3 ? 1 : 0);
 
