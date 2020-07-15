@@ -201,6 +201,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 "\\Score"					return 'CMD_SCORE';
 "\\Voice"					return 'CMD_VOICE';
 "\\Staff"					return 'CMD_STAFF';
+"\\PianoStaff"				return 'CMD_PIANOSTAFF';
 "\\arpeggio"				return 'CMD_ARPEGGIO';
 "\\arpeggioArrowDown"		return 'CMD_ARPEGGIOARROWDOWN';
 "\\arpeggioArrowUp"			return 'CMD_ARPEGGIOARROWUP';
@@ -295,6 +296,7 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 "\\hspace"					return 'CMD_HSPACE';
 "\\footer"					return 'CMD_FOOTER';
 "\\center-align"			return 'CMD_CENTER_ALIGN';
+"\\right-align"				return 'CMD_RIGHT_ALIGN';
 "\\lower"					return 'CMD_LOWER';
 "\\finger"					return 'CMD_FINGER';
 "\\fontsize"				return 'CMD_FONTSIZE';
@@ -931,6 +933,12 @@ simple_markup_noword
 		{$$ = command($1, ...$2);}
 	// extra formula
 	| CMD_CENTER_ALIGN markup
+		{$$ = command($1, $2);}
+	// extra formula
+	| CMD_RIGHT_ALIGN markup_list
+		{$$ = command($1, ...$2);}
+	// extra formula
+	| CMD_RIGHT_ALIGN markup
 		{$$ = command($1, $2);}
 	// extra formula
 	| CMD_LOWER scm_identifier
@@ -1820,6 +1828,8 @@ zero_command
 	| CMD_VOICE
 		{$$ = command($1);}
 	| CMD_STAFF
+		{$$ = command($1);}
+	| CMD_PIANOSTAFF
 		{$$ = command($1);}
 	| CMD_ARPEGGIO
 		{$$ = command($1);}
