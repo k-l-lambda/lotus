@@ -1,6 +1,5 @@
 
 ## TODO
-	MusicBlock.unfoldRelativeBlocks
 	normalize lilyDocument, extract voices.
 	keep comments in LilyDocument
 	lyrics hilighting
@@ -23,6 +22,8 @@
 
 
 *	2020.7.15
+
+	+	lilyDocument.ts: MusicBlock.spreadRelativeBlocks implemented.
 
 	+	lilyDocument.ts: term class of Relative added.
 

@@ -69,6 +69,8 @@ const PHONETS_ALIAS = {
 	h: "b",
 };
 
+const phonetDifferToShift = differ => differ > 3 ? -1 : (differ < -3 ? 1 : 0);
+
 
 export class BaseTerm implements LilyTerm {
 	_location?: Location;
@@ -215,6 +217,26 @@ export class BaseTerm implements LilyTerm {
 	
 			if (entry instanceof BaseTerm) {
 				const result = entry.findFirst(termClass);
+				if (result)
+					return result;
+			}
+		}
+	}
+
+
+	findLast (termClass): BaseTerm {
+		if (!this.entries)
+			return null;
+
+		const reversedEntries = [...this.entries];
+		reversedEntries.reverse();
+
+		for (const entry of reversedEntries) {
+			if (entry instanceof termClass)
+				return entry;
+	
+			if (entry instanceof BaseTerm) {
+				const result = entry.findLast(termClass);
 				if (result)
 					return result;
 			}
@@ -542,9 +564,11 @@ export class Repeat extends Command {
 
 
 export class Relative extends Command {
-	static makeBlock (block: MusicBlock): Relative {
-		const chord = block.findFirst(Chord) as Chord;
-		const anchor = chord && chord.anchorPitch;
+	static makeBlock (block: MusicBlock, {anchor}: {anchor?: ChordElement} = {}): Relative {
+		if (!anchor) {
+			const chord = block.findFirst(Chord) as Chord;
+			anchor = chord && chord.anchorPitch;
+		}
 
 		return new Relative({cmd: "relative", args: [anchor, block].filter(term => term)});
 	}
@@ -555,6 +579,31 @@ export class Relative extends Command {
 			return this.args[0];
 
 		return null;
+	}
+
+
+	get headChord (): Chord {
+		return this.findFirst(Chord) as Chord;
+	}
+
+
+	get tailPitch (): ChordElement {
+		const tail = this.findLast(Chord) as Chord;
+
+		return tail && tail.absolutePitch;
+	}
+
+
+	// with side effect
+	shiftBody (newAnchor: ChordElement): BaseTerm[] {
+		if (newAnchor && this.headChord)
+			this.headChord.shiftAnchor(newAnchor);
+
+		const music = this.args[this.args.length - 1];
+		if (music instanceof MusicBlock)
+			return music.body;
+
+		return [music];
 	}
 }
 
@@ -706,19 +755,28 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	updateChordAnchors () {
+		const chord = this.findFirst(Chord) as Chord;
+		chord._anchorPitch = this.anchorPitch;
+	}
+
+
 	updateChordChains () {
 		let previous: MusicEvent = null;
 
+		this.updateChordAnchors();
+
+		this.forEachTerm(MusicBlock, block => block.updateChordChains());
+
 		this.forEachTerm(MusicEvent, event => {
 			event._previous = previous;
-			if (this.isRelative && !previous)
-				event._anchorPitch = this.anchorPitch || event.pitches[0];
 
 			previous = event;
 		});
 	}
 
 
+	// with side effect
 	spreadRepeatBlocks ({ignoreRepeat = true, keepTailPass = false} = {}): this {
 		this.forEachTerm(MusicBlock, block => block.spreadRepeatBlocks());
 
@@ -739,12 +797,19 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	// with side effect
 	spreadRelativeBlocks (): this {
 		this.forEachTerm(MusicBlock, block => block.spreadRelativeBlocks());
 
+		let anchorPitch = null;
+
 		this.body = cc(this.body.map(term => {
 			if (term instanceof Relative) {
-				// TODO:
+				const list = term.shiftBody(anchorPitch);
+
+				anchorPitch = term.tailPitch || anchorPitch;
+
+				return list;
 			}
 			else
 				return [term];
@@ -754,6 +819,21 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	flatten (): Relative {
+		this.updateChordChains();
+
+		const chord = this.findFirst(Chord) as Chord;
+		const anchor = this.anchorPitch || (chord && chord.anchorPitch);
+
+		const block = this.clone();
+		block.spreadRepeatBlocks();
+		block.spreadRelativeBlocks();
+
+		return Relative.makeBlock(block, {anchor: anchor && anchor.clone()});
+	}
+
+
+	// with side effect
 	expandVariables (dict: BaseTerm) {
 		this.body = this.body.map(term => {
 			if (term instanceof Variable) {
@@ -1092,9 +1172,9 @@ export class Chord extends MusicEvent {
 	}
 
 
-	get isSpacer () {
+	/*get isSpacer () {
 		return this.pitches.length === 1 && this.pitches[0].pitch === "s";
-	}
+	}*/
 
 
 	get pitchNames () {
@@ -1102,8 +1182,13 @@ export class Chord extends MusicEvent {
 	}
 
 
+	get basePitch () {
+		return this.pitches[0];
+	}
+
+
 	get absolutePitch (): ChordElement {
-		const anchor = this.pitches[0];
+		const anchor = this.basePitch;
 		if (anchor.phonet === "q")
 			return this.anchorPitch;
 
@@ -1121,7 +1206,15 @@ export class Chord extends MusicEvent {
 		if (previous)
 			return previous.absolutePitch;
 
-		return this.pitches[0];
+		return this.basePitch;
+	}
+
+
+	shiftAnchor (newAnchor: ChordElement) {
+		const shift = phonetDifferToShift(this.basePitch.phonetStep - newAnchor.phonetStep);
+		const relativeOctave = this.basePitch.absoluteOctave(this.anchorPitch) - newAnchor.octave - shift;
+
+		this.pitches[0] = ChordElement.from({phonet: this.basePitch.phonet, alters: this.basePitch.alters, octave: relativeOctave});
 	}
 };
 
@@ -1151,11 +1244,11 @@ export class ChordElement extends BaseTerm {
 	};
 
 
-	static from ({phonet, alters, octave, options = {proto: "_PLAIN"}}): ChordElement {
+	static from ({phonet, alters, octave, options = {}}): ChordElement {
 		const octaveString = octave ? Array(Math.abs(octave)).fill(octave > 0 ? "'" : ",").join("") : "";
 		const pitch = phonet + (alters || "") + octaveString;
 
-		return new ChordElement({pitch, options});
+		return new ChordElement({pitch, options: {...options, proto: "_PLAIN"}});
 	}
 
 
@@ -1215,7 +1308,7 @@ export class ChordElement extends BaseTerm {
 			return anchor.octave;
 
 		const phonetDiffer = this.phonetStep - anchor.phonetStep;
-		const shift = phonetDiffer > 3 ? -1 : (phonetDiffer < -3 ? 1 : 0);
+		const shift = phonetDifferToShift(phonetDiffer);
 
 		return anchor.octave + shift + this.octave;
 	}
