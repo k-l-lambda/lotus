@@ -297,12 +297,15 @@ PLACEHOLDER_PITCH	[s](?=[\W\d_^-])
 "\\footer"					return 'CMD_FOOTER';
 "\\center-align"			return 'CMD_CENTER_ALIGN';
 "\\right-align"				return 'CMD_RIGHT_ALIGN';
+"\\general-align"			return 'CMD_GENERAL_ALIGN';
 "\\lower"					return 'CMD_LOWER';
 "\\finger"					return 'CMD_FINGER';
 "\\fontsize"				return 'CMD_FONTSIZE';
 "\\raise"					return 'CMD_RAISE';
 "\\note"					return 'CMD_NOTE';
 "\\circle"					return 'CMD_CIRCLE';
+"\\pad-markup"				return 'CMD_PAD_MARKUP';
+"\\smaller"					return 'CMD_SMALLER';
 
 "\\huge"					return 'CMD_HUGE';
 "\\large"					return 'CMD_LARGE';
@@ -941,6 +944,9 @@ simple_markup_noword
 	| CMD_RIGHT_ALIGN markup
 		{$$ = command($1, $2);}
 	// extra formula
+	| CMD_GENERAL_ALIGN scm_identifier scm_identifier markup
+		{$$ = command($1, $2, $3, $4);}
+	// extra formula
 	| CMD_LOWER scm_identifier
 		{$$ = command($1, $2);}
 	// extra formula
@@ -960,6 +966,12 @@ simple_markup_noword
 		{$$ = command($1, ...$2);}
 	// extra formula
 	| CMD_CIRCLE markup
+		{$$ = command($1, $2);}
+	// extra formula
+	| CMD_PAD_MARKUP scm_identifier
+		{$$ = command($1, $2);}
+	// extra formula
+	| CMD_SMALLER markup
 		{$$ = command($1, $2);}
 	;
 
