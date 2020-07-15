@@ -757,7 +757,8 @@ export class MusicBlock extends BaseTerm {
 
 	updateChordAnchors () {
 		const chord = this.findFirst(Chord) as Chord;
-		chord._anchorPitch = this.anchorPitch;
+		if (chord)
+			chord._anchorPitch = this.anchorPitch;
 	}
 
 
@@ -819,6 +820,28 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	// with side effect
+	unfoldDurationMultipliers () {
+		const unfoldMultipliers = (term): BaseTerm[] => {
+			if (!(term instanceof MusicEvent) || !term.duration || !term.duration.multipliers.length)
+				return [term];
+
+			const factor = term.duration.multipliers.reduce((factor, multiplier) => factor * Number(multiplier), 1);
+			if (!Number.isInteger(factor) || factor <= 0)
+				return [term];
+
+			// TODO: break large rests duration by time signature
+
+			const event = term.clone() as MusicEvent;
+			event.duration.multipliers = [];
+
+			return Array(factor).fill(null).map(() => event.clone());
+		};
+
+		this.body = cc(this.body.map(unfoldMultipliers));
+	}
+
+
 	flatten (): Relative {
 		this.updateChordChains();
 
@@ -828,6 +851,7 @@ export class MusicBlock extends BaseTerm {
 		const block = this.clone();
 		block.spreadRepeatBlocks();
 		block.spreadRelativeBlocks();
+		block.unfoldDurationMultipliers();
 
 		return Relative.makeBlock(block, {anchor: anchor && anchor.clone()});
 	}
@@ -2271,22 +2295,8 @@ export default class LilyDocument {
 
 
 	unfoldDurationMultipliers () {
-		const unfoldChord = (term): BaseTerm[] => {
-			if (!(term instanceof Chord) || !term.duration || !term.duration.multipliers.length)
-				return [term];
-
-			const factor = term.duration.multipliers.reduce((factor, multiplier) => factor * Number(multiplier), 1);
-			if (!Number.isInteger(factor) || factor <= 0)
-				return [term];
-
-			const chord = term.clone() as Chord;
-			chord.duration.multipliers = [];
-
-			return Array(factor).fill(chord.clone());
-		};
-
 		this.root.forEachTerm(MusicBlock, block => {
-			block.body = cc(block.body.map(unfoldChord));
+			block.unfoldDurationMultipliers();
 		});
 	}
 };
