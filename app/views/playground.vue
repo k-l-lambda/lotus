@@ -55,6 +55,7 @@
 						:title="engraverLogs"
 						@click="showEngraverLog"
 					></button>
+					<Loading v-show="loadingLilyParser" />
 				</span>
 				<Loading v-show="converting" />
 			</div>
@@ -291,6 +292,7 @@
 				lilyMarkupMethods: Object.getOwnPropertyNames(LilyDocument.prototype),
 				chosenLilyMarkupMethod: null,
 				operating: false,
+				loadingLilyParser: false,
 			};
 		},
 
@@ -333,7 +335,9 @@
 			if (MidiAudio.WebAudio.empty())
 				MidiAudio.loadPlugin({soundfontUrl: "/soundfont/", api: "webaudio"}).then(() => console.log("Soundfont loaded."));
 
+			this.loadingLilyParser = true;
 			this.lilyParser = await loadLilyParser();
+			this.loadingLilyParser = false;
 			console.log("lily parser loaded.");
 
 			this.updateLilyDocument();
