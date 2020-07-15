@@ -1999,8 +1999,8 @@ unitary_cmd
 pitch_mode_music
 	: CMD_RELATIVE pitch music
 		{$$ = command($1, chordElem($2, {locations: [@2, @2]}), $3);}
-	//| CMD_RELATIVE pitch COMMAND
-	//	{$$ = command($1, $2, $3);}
+	| CMD_RELATIVE music
+		{$$ = command($1, $2);}
 	;
 
 /*// extra syntax
