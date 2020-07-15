@@ -205,6 +205,23 @@ export class BaseTerm implements LilyTerm {
 	}
 
 
+	findFirst (termClass): BaseTerm {
+		if (!this.entries)
+			return null;
+
+		for (const entry of this.entries) {
+			if (entry instanceof termClass)
+				return entry;
+	
+			if (entry instanceof BaseTerm) {
+				const result = entry.findFirst(termClass);
+				if (result)
+					return result;
+			}
+		}
+	}
+
+
 	forEachTerm (termClass, handle) {
 		if (!this.entries)
 			return;
@@ -524,6 +541,24 @@ export class Repeat extends Command {
 };
 
 
+export class Relative extends Command {
+	static makeBlock (block: MusicBlock): Relative {
+		const chord = block.findFirst(Chord) as Chord;
+		const anchor = chord && chord.anchorPitch;
+
+		return new Relative({cmd: "relative", args: [anchor, block].filter(term => term)});
+	}
+
+
+	get anchor (): ChordElement {
+		if (this.args[0] instanceof ChordElement)
+			return this.args[0];
+
+		return null;
+	}
+}
+
+
 export class Block extends BaseTerm {
 	head: (string|string[]);
 	body: BaseTerm[];
@@ -659,17 +694,13 @@ export class MusicBlock extends BaseTerm {
 
 
 	get isRelative (): boolean {
-		return this._parent instanceof Command && this._parent.cmd === "relative";
+		return this._parent instanceof Relative;
 	}
 
 
 	get anchorPitch (): ChordElement {
-		if (this.isRelative) {
-			const arg0 = (this._parent as Command).args[0];
-
-			if (arg0 instanceof ChordElement)
-				return arg0;
-		}
+		if (this.isRelative) 
+			return (this._parent as Relative).anchor;
 
 		return null;
 	}
@@ -678,18 +709,18 @@ export class MusicBlock extends BaseTerm {
 	updateChordChains () {
 		let previous: MusicEvent = null;
 
-		this.forEachTerm(MusicEvent, chord => {
-			chord._previous = previous;
+		this.forEachTerm(MusicEvent, event => {
+			event._previous = previous;
 			if (this.isRelative && !previous)
-				chord._anchorPitch = this.anchorPitch || chord.pitches[0];
+				event._anchorPitch = this.anchorPitch || event.pitches[0];
 
-			previous = chord;
+			previous = event;
 		});
 	}
 
 
-	toUnfoldRepeatsBlock ({ignoreRepeat = true, keepTailPass = false} = {}): this {
-		this.forEachTerm(MusicBlock, block => block.toUnfoldRepeatsBlock());
+	spreadRepeatBlocks ({ignoreRepeat = true, keepTailPass = false} = {}): this {
+		this.forEachTerm(MusicBlock, block => block.spreadRepeatBlocks());
 
 		this.body = cc(this.body.map(term => {
 			if (term instanceof Repeat) {
@@ -699,6 +730,21 @@ export class MusicBlock extends BaseTerm {
 					return term.getTailPassTerms();
 				else
 					return term.getPlainTerms();
+			}
+			else
+				return [term];
+		}));
+
+		return this;
+	}
+
+
+	spreadRelativeBlocks (): this {
+		this.forEachTerm(MusicBlock, block => block.spreadRelativeBlocks());
+
+		this.body = cc(this.body.map(term => {
+			if (term instanceof Relative) {
+				// TODO:
 			}
 			else
 				return [term];
@@ -1402,6 +1448,7 @@ export const termDictionary = {
 	Variable,
 	MarkupCommand,
 	Repeat,
+	Relative,
 	Block,
 	InlineBlock,
 	Scheme,

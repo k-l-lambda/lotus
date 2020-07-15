@@ -7,6 +7,7 @@
 	const commandSubProtos = {
 		markup: "MarkupCommand",
 		repeat: "Repeat",
+		relative: "Relative",
 	};
 
 

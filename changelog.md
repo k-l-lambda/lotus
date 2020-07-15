@@ -1,9 +1,6 @@
 
 ## TODO
-	Rest term in LilyDocument
 	MusicBlock.unfoldRelativeBlocks
-		Chord pitch value
-		relative pitch value from ChordElement
 	normalize lilyDocument, extract voices.
 	keep comments in LilyDocument
 	lyrics hilighting
@@ -26,6 +23,8 @@
 
 
 *	2020.7.15
+
+	+	lilyDocument.ts: term class of Relative added.
 
 	+	lilyDocument.ts: term of MusicEvent added.
 
