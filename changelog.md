@@ -23,6 +23,8 @@
 
 *	2020.7.15
 
+	+	lilyDocument.ts: term class of TimeSignature added.
+
 	+	lilyDocument.ts: MusicBlock.spreadRelativeBlocks implemented.
 
 	+	lilyDocument.ts: term class of Relative added.

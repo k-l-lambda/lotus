@@ -8,6 +8,7 @@
 		markup: "MarkupCommand",
 		repeat: "Repeat",
 		relative: "Relative",
+		time: "TimeSignature",
 	};
 
 

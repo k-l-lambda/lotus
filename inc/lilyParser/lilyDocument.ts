@@ -72,6 +72,20 @@ const PHONETS_ALIAS = {
 const phonetDifferToShift = differ => differ > 3 ? -1 : (differ < -3 ? 1 : 0);
 
 
+class FractionNumber {
+	denominator: number;
+	numerator: number;
+
+
+	constructor (exp) {
+		const [numerator, denominator] = exp.match(/\d+/g);
+
+		this.denominator = Number(denominator);
+		this.numerator = Number(numerator);
+	}
+};
+
+
 export class BaseTerm implements LilyTerm {
 	_location?: Location;
 	_measure?: number;
@@ -606,6 +620,13 @@ export class Relative extends Command {
 		return [music];
 	}
 }
+
+
+export class TimeSignature extends Command {
+	get value (): FractionNumber {
+		return new FractionNumber(this.args[0]);
+	}
+};
 
 
 export class Block extends BaseTerm {
@@ -1566,6 +1587,7 @@ export const termDictionary = {
 	MarkupCommand,
 	Repeat,
 	Relative,
+	TimeSignature,
 	Block,
 	InlineBlock,
 	Scheme,
