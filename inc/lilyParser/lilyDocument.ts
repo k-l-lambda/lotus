@@ -130,7 +130,7 @@ class DurationContext {
 		this.time += duration;
 
 		this.measureTime += duration;
-		while (this.measureTime > this.measureLength) {
+		while (this.measureTime >= this.measureLength) {
 			++this.measureIndex;
 			this.measureTime -= this.measureLength;
 		}
@@ -1310,7 +1310,15 @@ export class SchemeEmbed extends BaseTerm {
 
 export class Assignment extends BaseTerm {
 	key: (string|any[]);
-	value: object;
+	value: any;
+
+
+	constructor (data) {
+		super(data);
+
+		if (this.value instanceof BaseTerm)
+			this.value._parent = this;
+	}
 
 
 	serialize () {
@@ -2100,9 +2108,14 @@ export default class LilyDocument {
 	}
 
 
+	static normalTrackName (index: number): string {
+		return `Voice_${romanize(index + 1)}`;
+	};
+
+
 	// extract music tracks into variables
 	normalizeMusic () {
-		const trackName = index => `Voice_${romanize(index + 1)}`;
+		const trackName = LilyDocument.normalTrackName;
 
 		const tracks = this.getMusicTracks();
 		if (!tracks) {
@@ -2132,6 +2145,14 @@ export default class LilyDocument {
 		// insert new variables
 		this.root.sections.splice(scorePosition, 0,
 			...trackBodys.map((track, i) => new Assignment({key: trackName(i), value: track})));
+	}
+
+
+	// require normalization
+	get normalMusicTracks (): MusicBlock[] {
+		return this.root.sections
+			.filter(section => section instanceof Assignment && /Voice_\w+/.test(section.key as string))
+			.map((section: Assignment) => (section.value as Relative).music as MusicBlock);
 	}
 
 
@@ -2539,5 +2560,13 @@ export default class LilyDocument {
 		this.root.forEachTerm(MusicBlock, block => {
 			block.unfoldDurationMultipliers();
 		});
+	}
+
+
+	// require normalization
+	sliceMeasures (start: number, count: number) {
+		const tracks = this.normalMusicTracks;
+
+		tracks.forEach(track => (track._parent._parent as Assignment).value = track.sliceMeasures(start, count));
 	}
 };
