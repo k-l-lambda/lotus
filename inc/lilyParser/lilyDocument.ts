@@ -1,6 +1,7 @@
 
 import TextSource from "../textSource";
 import {LILY_STAFF_SIZE_DEFAULT} from "../constants";
+import {romanize} from "../romanNumeral";
 
 
 
@@ -779,7 +780,7 @@ export class MusicBlock extends BaseTerm {
 	updateChordAnchors () {
 		const chord = this.findFirst(Chord) as Chord;
 		if (chord)
-			chord._anchorPitch = this.anchorPitch;
+			chord._anchorPitch = chord._anchorPitch || this.anchorPitch;
 	}
 
 
@@ -788,7 +789,7 @@ export class MusicBlock extends BaseTerm {
 
 		this.updateChordAnchors();
 
-		this.forEachTerm(MusicBlock, block => block.updateChordChains());
+		this.forEachTerm(MusicBlock, block => block.updateChordAnchors());
 
 		this.forEachTerm(MusicEvent, event => {
 			event._previous = previous;
@@ -878,14 +879,15 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
-	flatten (): Relative {
+	flatten ({spreadRepeats = false} = {}): Relative {
 		this.updateChordChains();
 
 		const chord = this.findFirst(Chord) as Chord;
 		const anchor = this.anchorPitch || (chord && chord.anchorPitch);
 
 		const block = this.clone();
-		block.spreadRepeatBlocks();
+		if (spreadRepeats)
+			block.spreadRepeatBlocks();
 		block.spreadRelativeBlocks();
 		block.unfoldDurationMultipliers();
 
@@ -894,7 +896,7 @@ export class MusicBlock extends BaseTerm {
 
 
 	// with side effect
-	expandVariables (dict: BaseTerm) {
+	expandVariables (dict: BaseTerm): this {
 		this.body = this.body.map(term => {
 			if (term instanceof Variable) {
 				const value = term.queryValue(dict);
@@ -912,6 +914,8 @@ export class MusicBlock extends BaseTerm {
 
 			return term;
 		});
+
+		return this;
 	}
 };
 
@@ -1870,27 +1874,58 @@ export default class LilyDocument {
 	}
 
 
-	updateChordChains () {
+	/*updateChordChains () {
 		this.root.forEachTopTerm(MusicBlock, block => block.updateChordChains());
-	}
+	}*/
 
 
-	getMusicTracks (): MusicBlock[] {
+	getMusicTracks ({expand = false} = {}): MusicBlock[] {
 		const score = this.root.getBlock("score");
 		if (!score)
 			return null;
 
-		const tracks = [];
+		let tracks = [];
 
 		// extract sequential music blocks from score block
 		score.forEachTopTerm(MusicBlock, block => {
-			tracks.push(block.clone());
+			tracks.push(block);
 		});
 
 		// expand variables in tracks
-		tracks.forEach(track => track.expandVariables(this.root));
+		if (expand)
+			tracks = tracks.map(track => track.clone().expandVariables(this.root));
 
 		return tracks;
+	}
+
+
+	// extract music tracks into variables
+	normalizeMusic () {
+		const trackName = index => `Voice_${romanize(index + 1)}`;
+
+		const tracks = this.getMusicTracks();
+		if (!tracks) {
+			console.warn("no music tracks");
+			return;
+		}
+
+		const trackBodys = tracks.map(track => track.clone().expandVariables(this.root).flatten());
+
+		const oldVariables = [];
+
+		tracks.forEach((track, i) => {
+			oldVariables.push(...track.body.filter(term => term instanceof Variable).map((variable: Variable) => variable.name));
+			track.body = [new Variable({name: trackName(i)})];
+		});
+
+		// remove old variables
+		this.root.sections = this.root.sections.filter(term => !(term instanceof Assignment) || !oldVariables.includes(term.key));
+
+		const scorePosition = this.root.sections.findIndex(section => section instanceof Block && section.head === "\\score");
+
+		// insert new variables
+		this.root.sections.splice(scorePosition, 0,
+			...trackBodys.map((track, i) => new Assignment({key: trackName(i), value: track})));
 	}
 
 

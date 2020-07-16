@@ -1,6 +1,5 @@
 
 ## TODO
-	normalize lilyDocument, extract voices.
 	keep comments in LilyDocument
 	lyrics hilighting
 		match chord with voice in the same staff
@@ -22,6 +21,8 @@
 
 
 *	2020.7.16
+
+	+	lilyDocument.ts: normalizeMusic implemented.
 
 	+	inc/romanNumeral.ts created.
 

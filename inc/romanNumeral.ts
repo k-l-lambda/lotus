@@ -23,4 +23,6 @@ function romanize (num) {
 
 
 
-export default romanize;
+export {
+	romanize,
+};
