@@ -1098,6 +1098,24 @@ export class MusicBlock extends BaseTerm {
 
 		this.body = body.reverse();
 	}
+
+
+	sliceMeasures (start: number, count: number): Relative {
+		const flatten = this.clone().flatten({spreadRepeats: true});
+		const block = flatten.music as MusicBlock;
+		block.updateChordChains();
+		block.allocateMeasures();
+
+		// TODO: keep key & time signatures in clipping
+
+		const terms = block.body.filter(term => term._measure >= start && term._measure < start + count);
+		const headChord = terms.find(term => term instanceof Chord);
+		const anchor = headChord && (headChord as Chord).absolutePitch;
+
+		const newBlock = new MusicBlock({body: terms.map(term => term.clone())});
+
+		return new Relative({cmd: "relative", args: [anchor, newBlock].filter(term => term)});
+	}
 };
 
 
