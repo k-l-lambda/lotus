@@ -21,6 +21,11 @@
 
 
 
+*	2020.7.16
+
+	+	inc/romanNumeral.ts created.
+
+
 *	2020.7.15
 
 	+	lilyDocument.ts: refined MusicBlock.unfoldDurationMultipliers by break rest duration.
