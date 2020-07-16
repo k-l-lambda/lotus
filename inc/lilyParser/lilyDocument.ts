@@ -78,11 +78,72 @@ class FractionNumber {
 	numerator: number;
 
 
-	constructor (exp) {
+	static fromExpression (exp: string): FractionNumber {
 		const [numerator, denominator] = exp.match(/\d+/g);
 
-		this.denominator = Number(denominator);
-		this.numerator = Number(numerator);
+		return new FractionNumber(Number(numerator), Number(denominator));
+	}
+
+
+	constructor (numerator, denominator) {
+		this.numerator = numerator;
+		this.denominator = denominator;
+	}
+
+
+	get value () {
+		return this.numerator / this.denominator;
+	}
+
+
+	get reciprocal (): FractionNumber {
+		return new FractionNumber(this.denominator, this.numerator);
+	}
+};
+
+
+interface DurationContextStatus {
+	factor?: FractionNumber;
+};
+
+
+class DurationContext {
+	stack: DurationContextStatus[] = [];
+	time: number = 0;
+	measureLength: number = WHOLE_DURATION_MAGNITUDE;
+	measureIndex: number = 1;
+	measureTime: number = 0;
+
+
+	get factor () {
+		for (let i = this.stack.length - 1; i >= 0; i--) {
+			const status = this.stack[i];
+			if (status.factor)
+				return status.factor;
+		}
+
+		return null;
+	}
+
+
+	elapse (duration: number) {
+		this.time += duration;
+
+		this.measureTime += duration;
+		while (this.measureTime > this.measureLength) {
+			++this.measureIndex;
+			this.measureTime -= this.measureLength;
+		}
+	}
+
+
+	push (status: DurationContextStatus) {
+		this.stack.push(status);
+	}
+
+	
+	pop () {
+		this.stack.pop();
 	}
 };
 
@@ -597,6 +658,11 @@ export class Relative extends Command {
 	}
 
 
+	get music (): BaseTerm {
+		return this.args[this.args.length - 1];
+	}
+
+
 	get headChord (): Chord {
 		return this.findFirst(Chord) as Chord;
 	}
@@ -614,7 +680,7 @@ export class Relative extends Command {
 		if (newAnchor && this.headChord)
 			this.headChord.shiftAnchor(newAnchor);
 
-		const music = this.args[this.args.length - 1];
+		const music = this.music;
 		if (music instanceof MusicBlock)
 			return music.body;
 
@@ -625,7 +691,31 @@ export class Relative extends Command {
 
 export class TimeSignature extends Command {
 	get value (): FractionNumber {
-		return new FractionNumber(this.args[0]);
+		return FractionNumber.fromExpression(this.args[0]);
+	}
+};
+
+
+export class Times extends Command {
+	get factor (): FractionNumber {
+		return FractionNumber.fromExpression(this.args[0]);
+	}
+
+
+	get music (): BaseTerm {
+		return this.args[this.args.length - 1];
+	}
+};
+
+
+export class Tuplet extends Command {
+	get diivider (): FractionNumber {
+		return FractionNumber.fromExpression(this.args[0]);
+	}
+
+
+	get music (): BaseTerm {
+		return this.args[this.args.length - 1];
 	}
 };
 
@@ -850,7 +940,7 @@ export class MusicBlock extends BaseTerm {
 			if (term instanceof TimeSignature)
 				timeDenominator = term.value.denominator;
 
-			if (!(term instanceof MusicEvent) || !term.duration || !term.duration.multipliers.length)
+			if (!(term instanceof MusicEvent) || !term.duration || !term.duration.multipliers || !term.duration.multipliers.length)
 				return [term];
 
 			const factor = term.duration.multipliers.reduce((factor, multiplier) => factor * Number(multiplier), 1);
@@ -916,6 +1006,97 @@ export class MusicBlock extends BaseTerm {
 		});
 
 		return this;
+	}
+
+
+	// allocate measure number according to duration
+	allocateMeasures (context: DurationContext = new DurationContext()) {
+		this.unfoldDurationMultipliers();
+
+		for (const term of this.body) {
+			if (term instanceof MusicEvent) {
+				term._measure = context.measureIndex;
+				context.elapse(term.durationMagnitude);
+			}
+			else if (term instanceof MusicBlock)
+				term.allocateMeasures(context);
+			else if (term instanceof TimeSignature) {
+				term._measure = context.measureIndex;
+				context.measureLength = term.value.value * WHOLE_DURATION_MAGNITUDE;
+			}
+			else if (term instanceof Repeat) {
+				term.bodyBlock.allocateMeasures(context);
+
+				if (term.alternativeBlocks) {
+					for (const block of term.alternativeBlocks)
+						block.allocateMeasures(context);
+				}
+			}
+			else if (term instanceof Relative) {
+				if (term.music instanceof MusicEvent) {
+					term._measure = context.measureIndex;
+					context.elapse(term.durationMagnitude);
+				}
+				else if (term.music instanceof MusicBlock)
+					term.music.allocateMeasures(context);
+			}
+			else if (term instanceof Times) {
+				term._measure = context.measureIndex;
+				context.push({factor: term.factor});
+			}
+			else if (term instanceof Tuplet) {
+				term._measure = context.measureIndex;
+				context.push({factor: term.diivider.reciprocal});
+			}
+			else {
+				if (term.isMusic)
+					console.warn("unexpected music term:", term);
+
+				term._measure = context.measureIndex;
+			}
+		}
+	}
+
+
+	// with side effects
+	redivide ({recursive = true} = {}) {
+		if (recursive)
+			this.forEachTerm(MusicBlock, block => block.redivide());
+
+		const isPostTerm = term => term instanceof PostEvent
+				|| (term as Primitive).exp === "~"
+				|| (term as Command).cmd === "bar"
+				|| (term as Command).cmd === "arpeggio"
+				|| (term as Command).cmd === "glissando"
+				;
+
+		const list = this.body.filter(term => !(term instanceof Divide));
+		let measure = null;
+		for (const term of list) {
+			if (Number.isInteger(measure) && isPostTerm(term))
+				term._measure = measure;
+			else
+				measure = term._measure;
+		}
+
+		const body: BaseTerm[] = [];
+		const measures = new Set();
+
+		list.reverse().forEach(term => {
+			if (term instanceof BaseTerm) {
+				const newMeasures = term.measures.filter(m => !measures.has(m));
+				if (newMeasures.length) {
+					if (body.length)
+						body.push(new Divide({}));
+
+					newMeasures.forEach(m => measures.add(m));
+				}
+			}
+
+			body.push(term);
+		});
+
+		this.body = body.reverse();
 	}
 };
 
@@ -1607,6 +1788,8 @@ export const termDictionary = {
 	Repeat,
 	Relative,
 	TimeSignature,
+	Times,
+	Tuplet,
 	Block,
 	InlineBlock,
 	Scheme,
@@ -1910,6 +2093,11 @@ export default class LilyDocument {
 		}
 
 		const trackBodys = tracks.map(track => track.clone().expandVariables(this.root).flatten());
+		trackBodys.forEach(cmd => {
+			const block = cmd.music as MusicBlock;
+			block.allocateMeasures();
+			block.redivide();
+		});
 
 		const oldVariables = [];
 
@@ -2195,44 +2383,7 @@ export default class LilyDocument {
 
 
 	redivide () {
-		this.root.forEachTerm(MusicBlock, (block: MusicBlock) => {
-			const isPostTerm = term => term instanceof PostEvent
-				//|| (term as Primitive).exp === "]"
-				|| (term as Primitive).exp === "~"
-				//|| (term as Primitive).exp === ")"
-				|| (term as Command).cmd === "bar"
-				|| (term as Command).cmd === "arpeggio"
-				|| (term as Command).cmd === "glissando"
-				;
-
-			const list = block.body.filter(term => !(term instanceof Divide));
-			let measure = null;
-			for (const term of list) {
-				if (Number.isInteger(measure) && isPostTerm(term))
-					term._measure = measure;
-				else
-					measure = term._measure;
-			}
-
-			const body: BaseTerm[] = [];
-			const measures = new Set();
-
-			list.reverse().forEach(term => {
-				if (term instanceof BaseTerm) {
-					const newMeasures = term.measures.filter(m => !measures.has(m));
-					if (newMeasures.length) {
-						if (body.length)
-							body.push(new Divide({}));
-
-						newMeasures.forEach(m => measures.add(m));
-					}
-				}
-
-				body.push(term);
-			});
-
-			block.body = body.reverse();
-		});
+		this.root.forEachTopTerm(MusicBlock, (block: MusicBlock) => block.redivide());
 	}
 
 

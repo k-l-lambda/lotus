@@ -9,6 +9,8 @@
 		repeat: "Repeat",
 		relative: "Relative",
 		time: "TimeSignature",
+		times: "Times",
+		tuplet: "Tuplet",
 	};
 
 

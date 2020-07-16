@@ -22,6 +22,8 @@
 
 *	2020.7.16
 
+	+	lilyDocument.ts: MusicBlock.allocateMeasures implemented.
+
 	+	lilyDocument.ts: normalizeMusic implemented.
 
 	+	inc/romanNumeral.ts created.
