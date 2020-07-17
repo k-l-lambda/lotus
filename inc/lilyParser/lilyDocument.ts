@@ -182,6 +182,12 @@ class StaffContext {
 			this.octave = term;
 		else if (term instanceof Chord)
 			this.pitch = term.absolutePitch;
+		else if (term.isMusic) {
+			term.forEachTopTerm(MusicBlock, block => {
+				for (const subterm of block.body)
+					this.append(subterm);
+			});
+		}
 	}
 
 
