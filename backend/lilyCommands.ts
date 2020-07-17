@@ -406,7 +406,7 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 };
 
 
-const engraveSvgWithStream = async (source: string, output: Writable) => {
+const engraveSvgWithStream = async (source: string, output: Writable, {includeFolders = []}: {includeFolders?: string[]} = {}) => {
 	const hash = genHashString();
 	const sourceFilename = `${env.TEMP_DIR}engrave-${hash}.ly`;
 
@@ -446,7 +446,9 @@ const engraveSvgWithStream = async (source: string, output: Writable) => {
 			loadFile(line);
 	};
 
-	const proc = child_process.exec(`cd ${env.TEMP_DIR} && ${LILYPOND_PATH} -dbackend=svg .${sourceFilename}`);
+	const includeParameters = includeFolders.map(folder => `--include=${folder}`).join(" ");
+
+	const proc = child_process.exec(`${LILYPOND_PATH} -dbackend=svg -o ${env.TEMP_DIR} ${includeParameters} ${sourceFilename}`);
 	proc.childProcess.stdout.on("data", checkFile);
 	proc.childProcess.stderr.on("data", checkFile);
 
