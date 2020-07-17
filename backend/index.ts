@@ -51,7 +51,7 @@ const service = {
 	"/engrave": {
 		post: (req, res) => formidableHandle("engrave", req, res,
 			async ({source, tokenize = false, log = false}) => {
-				const result = await lilyCommands.engraveSvg(source);
+				const result = await lilyCommands.engraveSvg(source, {includeFolders: ["../ly"]});
 				if (!tokenize)
 					return JSON.stringify(result);
 
@@ -62,12 +62,6 @@ const service = {
 
 				const logger = new LogRecorder({enabled: log});
 
-				/*const pages = result.svgs.map(svg => staffSvg.parseSvgPage(svg, source, {lilyDocument, DOMParser, logger, attributes}));
-				const doc = {
-					__prototype: "SheetDocument",
-					pages: pages.map(page => page.structure),
-				};
-				const hashTable = pages.reduce((sum, page) => ({...sum, ...page.hashTable}), {});*/
 				const {doc, hashTable} = staffSvg.createSheetDocumentFromSvgs(result.svgs, source, lilyDocument, {logger, DOMParser});
 
 				return JSON.stringify({

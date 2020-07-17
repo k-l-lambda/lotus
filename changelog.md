@@ -22,6 +22,8 @@
 
 *	2020.7.17
 
+	+	lilyCommands.ts: added include folders for engrave command.
+
 	+	lilyDocument.ts: LilyDocument.noteDurationSubdivider added.
 
 	+	lilyDocument.ts: refined MusicBlock.sliceMeasures by StaffContext.

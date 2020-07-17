@@ -312,10 +312,11 @@ if (_WINDOWS)
 	LILYPOND_PATH = `"${LILYPOND_PATH}"`;
 
 
-const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: {
+const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, includeFolders = []}: {
 	onProcStart?: () => void,
 	onMidiRead?: (content: MIDI.MidiData) => void,
 	onSvgRead?: (content: string) => void,
+	includeFolders?: string[],	// include folder path should be relative to TEMP_DIR
 } = {}) => {
 	const hash = genHashString();
 	const sourceFilename = `${env.TEMP_DIR}engrave-${hash}.ly`;
@@ -379,7 +380,11 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead}: 
 			loadProcs.push(loadFile(line));
 	};
 
-	const proc = child_process.exec(`cd ${env.TEMP_DIR} && ${LILYPOND_PATH} -dbackend=svg .${sourceFilename}`, {maxBuffer: 0x100000});
+	const includeParameters = includeFolders.map(folder => `--include=${folder}`).join(" ");
+
+	const proc = child_process.exec(`${LILYPOND_PATH} -dbackend=svg -o ${env.TEMP_DIR} ${includeParameters} ${sourceFilename}`,
+		{maxBuffer: 0x100000});
+	//const proc = child_process.spawn(LILYPOND_PATH, ["-dbackend=svg", `-o ${env.TEMP_DIR}`, sourceFilename], {maxBuffer: 0x100000});
 	proc.childProcess.stdout.on("data", checkFile);
 	proc.childProcess.stderr.on("data", checkFile);
 
