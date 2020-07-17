@@ -14,6 +14,8 @@
 		clef: "Clef",
 		key: "KeySignature",
 		ottava: "OctaveShift",
+		include: "Include",
+		version: "Version",
 	};
 
 

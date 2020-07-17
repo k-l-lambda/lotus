@@ -495,6 +495,11 @@ export class Root extends BaseTerm {
 	getBlock (head): Block {
 		return this.entries.find((entry: any) => entry.head === head || (entry.head === "\\" + head)) as Block;
 	}
+
+
+	get includeFiles (): string[] {
+		return this.sections.filter(section => section instanceof Include).map((include: Include) => include.filename);
+	}
 };
 
 
@@ -820,6 +825,20 @@ export class KeySignature extends Command {
 
 
 export class OctaveShift extends Command {
+};
+
+
+export class Include extends Command {
+	get filename (): string {
+		return this.args[0].toString();
+	}
+};
+
+
+export class Version extends Command {
+	get version (): string {
+		return this.args[0].toString();
+	}
 };
 
 
@@ -1974,6 +1993,8 @@ export const termDictionary = {
 	Clef,
 	KeySignature,
 	OctaveShift,
+	Include,
+	Version,
 	Block,
 	InlineBlock,
 	Scheme,
@@ -2319,6 +2340,15 @@ export default class LilyDocument {
 		const subdivider = lcmMulti(...this.normalMusicTracks.map(getDurationSubdivider));
 
 		return subdivider;
+	}
+
+
+	appendIncludeFile (filename: string) {
+		if (!this.root.includeFiles.includes(filename)) {
+			const versionPos = this.root.sections.findIndex(term => term instanceof Version);
+			this.root.sections.splice(versionPos + 1, 0,
+				new Include({cmd: "include", args: [new LiteralString({exp: JSON.stringify(filename)})]}));
+		}
 	}
 
 
