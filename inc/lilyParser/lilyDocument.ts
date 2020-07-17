@@ -4,6 +4,7 @@ import _ from "lodash";
 import TextSource from "../textSource";
 import {LILY_STAFF_SIZE_DEFAULT} from "../constants";
 import {romanize} from "../romanNumeral";
+import {WHOLE_DURATION_MAGNITUDE} from "./utils";
 
 
 
@@ -62,9 +63,6 @@ const cc = <T>(arrays: T[][]): T[] => [].concat(...arrays);
 
 const isNullItem = item => item === "" || item === undefined || item === null || (Array.isArray(item) && !item.length);
 const compact = items => cc(items.map((item, index) => isNullItem(item) ? [] : [index > 0 ? "\b" : null, item]));
-
-
-const WHOLE_DURATION_MAGNITUDE = 128 * 3 * 5;
 
 
 const PHONETS = "cdefgab";
@@ -611,9 +609,9 @@ export class Command extends BaseTerm {
 	}
 
 
-	get isGrace () {
+	/*get isGrace () {
 		return GRACE_COMMANDS.includes(this.cmd);
-	}
+	}*/
 
 
 	get musicChunks (): MusicChunk[] {
@@ -634,11 +632,13 @@ export class Command extends BaseTerm {
 
 	get durationMagnitude (): number {
 		switch (this.cmd) {
+		// TODO: refine this in Times
 		case "times": {
 			const factor = eval(this.args[0]);
 			return this.args[1].durationMagnitude * factor;
 		}
 
+		// TODO: refine this in Tuplet
 		case "tuplet": {
 			const factor = 1 / eval(this.args[0]);
 			return this.args[this.args.length - 1].durationMagnitude * factor;
@@ -648,7 +648,7 @@ export class Command extends BaseTerm {
 			return this.args[0].durationMagnitude;
 
 		default:
-			if (this.isGrace)
+			if (this instanceof Grace)
 				return 0;
 
 			return this.args.filter(arg => arg instanceof BaseTerm).reduce((magnitude, term) => magnitude + term.durationMagnitude, 0);
@@ -2160,9 +2160,6 @@ export interface LilyDocumentAttributeReadOnly {
 };
 
 
-const GRACE_COMMANDS = ["grace", "acciaccatura", "appoggiatura", "slashedGrace"];
-
-
 
 export default class LilyDocument {
 	root: Root;
@@ -2413,7 +2410,7 @@ export default class LilyDocument {
 		if (!this.root.includeFiles.includes(filename)) {
 			const versionPos = this.root.sections.findIndex(term => term instanceof Version);
 			this.root.sections.splice(versionPos + 1, 0,
-				new Include({cmd: "include", args: [new LiteralString({exp: JSON.stringify(filename)})]}));
+				new Include({cmd: "include", args: [LiteralString.fromString(filename)]}));
 		}
 	}
 
@@ -2541,7 +2538,7 @@ export default class LilyDocument {
 	mergeContinuousGraces () {
 		this.removeEmptySubMusicBlocks();
 
-		const isGraceCommand = term => term instanceof Command && term.isGrace;
+		const isGraceCommand = term => term instanceof Grace;
 		const isGraceInnerTerm = term => isGraceCommand(term) || term instanceof Divide || term instanceof PostEvent;
 
 		this.root.forEachTerm(MusicBlock, block => {

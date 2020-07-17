@@ -1,12 +1,29 @@
 
-import LilyDocument, {MusicBlock, LyricMode, ContextedMusic, SimultaneousList, Variable, Assignment, Command} from "./lilyDocument";
+import {MusicBlock, LyricMode, ContextedMusic, Variable, Assignment, Command, Duration, Lyric, Times} from "./lilyDocument";
+import {WHOLE_DURATION_MAGNITUDE} from "./utils";
+
+// eslint-disable-next-line
+import LilyDocument, {SimultaneousList} from "./lilyDocument";
 
 
 
-const createPianoRhythmTrack = (voices: MusicBlock[]): LyricMode => {
-	// TODO:
+const createPianoRhythmTrack = (voices: MusicBlock[], subdivider: number): LyricMode => {
+	const ticks = new Set([].concat(...voices.map(voice => voice.ticks)));
+	const granularity = WHOLE_DURATION_MAGNITUDE / subdivider;
+	//console.log("ticks:", ticks, granularity);
 
-	return new LyricMode({cmd: "lyricmode", args: [new MusicBlock({body: []})]});
+	const duration1 = new Duration({number: 1, dots: 0});
+
+	const body = [];
+	for (let tick = 0; tick < voices[0].durationMagnitude; tick += granularity) {
+		const variable = new Variable({name: ticks.has(tick) ? "dotB" : "dotW"});
+		const lyric = new Lyric({content: variable, duration: tick === 0 ? duration1.clone() : null});
+		body.push(lyric);
+	}
+
+	const times = new Times({cmd: "times", args: [`1/${subdivider}`, new MusicBlock({body})]});
+
+	return new LyricMode({cmd: "lyricmode", args: [new MusicBlock({body: [times]})]});
 };
 
 
@@ -39,10 +56,14 @@ export const createPianoRhythm = (doc: LilyDocument) => {
 			.map((assignment: Assignment) => assignment.value.music) as MusicBlock[];
 		//console.log("voices", voices);
 
-		const lyric = createPianoRhythmTrack(voices);
+		voices.forEach(voice => voice.allocateMeasures());
+
+		const lyric = createPianoRhythmTrack(voices, doc.noteDurationSubdivider);
 		// TODO: create with clause at pos[2] in \new command: \with { \override VerticalAxisGroup.staff-affinity = #UP }
 		const music = new ContextedMusic({head: new Command({cmd: "new", args: ["Lyrics"]}), body: lyric});
 
 		list.list.splice(upStaffPos + i, 0, music);
 	});
+
+	doc.appendIncludeFile("rhythmSymbols.ly");
 };

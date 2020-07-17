@@ -1,0 +1,8 @@
+
+const WHOLE_DURATION_MAGNITUDE = 128 * 3 * 5;
+
+
+
+export {
+	WHOLE_DURATION_MAGNITUDE,
+};

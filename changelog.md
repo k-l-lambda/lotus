@@ -1,5 +1,6 @@
 
 ## TODO
+	lyrics in music normalization
 	keep comments in LilyDocument
 	lyrics hilighting
 		match chord with voice in the same staff
@@ -21,6 +22,8 @@
 
 
 *	2020.7.17
+
+	+	pianoRhythm.ts: createPianoRhythmTrack implemented.
 
 	+	lilyDocument.ts: added term class of Grace.
 

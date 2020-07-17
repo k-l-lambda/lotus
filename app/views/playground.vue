@@ -899,6 +899,16 @@
 
 				this.executeMarkup("redivide");
 			},
+
+
+			createPianoRhythm () {
+				this.updateLilyDocument();
+				createPianoRhythm(this.lilyDocument);
+
+				this.lilySource = this.lilyDocument.toString();
+
+				this.$nextTick(() => this.lilyDocumentDirty = false);
+			},
 		},
 
 
