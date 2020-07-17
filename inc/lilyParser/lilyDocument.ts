@@ -378,13 +378,15 @@ export class BaseTerm implements LilyTerm {
 	}
 
 
-	findFirst (condition: any): BaseTerm {
+	findFirst (condition: Function): BaseTerm {
 		if (!this.entries)
 			return null;
 
-		if (typeof condition !== "function")
-			condition = term => term instanceof condition;
-
+		if (BaseTerm.isPrototypeOf(condition)) {
+			const termClass = condition;
+			condition = term => term instanceof termClass;
+		}
+	
 		for (const entry of this.entries) {
 			if (condition(entry))
 				return entry;
@@ -398,23 +400,51 @@ export class BaseTerm implements LilyTerm {
 	}
 
 
-	findLast (termClass): BaseTerm {
+	findLast (condition: any): BaseTerm {
 		if (!this.entries)
 			return null;
 
+		if (BaseTerm.isPrototypeOf(condition)) {
+			const termClass = condition;
+			condition = term => term instanceof termClass;
+		}
+	
 		const reversedEntries = [...this.entries];
 		reversedEntries.reverse();
 
 		for (const entry of reversedEntries) {
-			if (entry instanceof termClass)
+			if (condition(entry))
 				return entry;
 	
 			if (entry instanceof BaseTerm) {
-				const result = entry.findLast(termClass);
+				const result = entry.findLast(condition);
 				if (result)
 					return result;
 			}
 		}
+	}
+
+
+	findAll (condition: any): any[] {
+		if (!this.entries)
+			return [];
+
+		if (BaseTerm.isPrototypeOf(condition)) {
+			const termClass = condition;
+			condition = term => term instanceof termClass;
+		}
+
+		const result = [];
+
+		for (const entry of this.entries) {
+			if (condition(entry))
+				result.push(entry);
+	
+			if (entry instanceof BaseTerm)
+				result.push(...entry.findAll(condition));
+		}
+
+		return result;
 	}
 
 
@@ -2276,13 +2306,7 @@ export default class LilyDocument {
 
 
 	getVariables (): Set<string> {
-		const result: Set<string> = new Set();
-
-		this.root.forEachTerm(Variable, variable => {
-			result.add(variable.name);
-		});
-
-		return result;
+		return new Set(this.root.findAll(Variable).map(variable => variable.name));
 	}
 
 
