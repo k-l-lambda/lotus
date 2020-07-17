@@ -126,10 +126,17 @@ class DurationContext {
 	}
 
 
-	elapse (duration: number) {
-		this.time += duration;
+	get factorValue () {
+		return this.factor ? this.factor.value : 1;
+	}
 
-		this.measureTime += duration;
+
+	elapse (duration: number) {
+		const increment = duration * this.factorValue;
+
+		this.time += increment;
+
+		this.measureTime += increment;
 		while (this.measureTime >= this.measureLength) {
 			++this.measureIndex;
 			this.measureTime -= this.measureLength;
