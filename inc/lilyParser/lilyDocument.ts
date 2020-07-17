@@ -157,6 +157,40 @@ class DurationContext {
 };
 
 
+class StaffContext {
+	clef?: Clef;
+	key?: KeySignature;
+	time?: TimeSignature;
+	octave?: OctaveShift;
+
+	pitch?: ChordElement;
+
+
+	constructor ({anchorPitch = null} = {}) {
+		this.pitch = anchorPitch;
+	}
+
+
+	append (term: BaseTerm) {
+		if (term instanceof Clef)
+			this.clef = term;
+		else if (term instanceof KeySignature)
+			this.key = term;
+		else if (term instanceof TimeSignature)
+			this.time = term;
+		else if (term instanceof OctaveShift)
+			this.octave = term;
+		else if (term instanceof Chord)
+			this.pitch = term.absolutePitch;
+	}
+
+
+	get declarations (): BaseTerm[] {
+		return [this.clef, this.key, this.time, this.octave].filter(term => term);
+	}
+};
+
+
 export class BaseTerm implements LilyTerm {
 	_location?: Location;
 	_measure?: number;
@@ -726,6 +760,18 @@ export class Tuplet extends Command {
 };
 
 
+export class Clef extends Command {
+};
+
+
+export class KeySignature extends Command {
+};
+
+
+export class OctaveShift extends Command {
+};
+
+
 export class Block extends BaseTerm {
 	head: (string|string[]);
 	body: BaseTerm[];
@@ -1142,12 +1188,21 @@ export class MusicBlock extends BaseTerm {
 		block.updateChordChains();
 		block.allocateMeasures();
 
-		// TODO: keep key & time signatures in clipping
+		const context = new StaffContext({anchorPitch: block.anchorPitch});
+		for (const term of block.body) {
+			if (Number.isInteger(term._measure)) {
+				if (term._measure < start)
+					context.append(term);
+				else
+					break;
+			}
+		}
 
-		const terms = block.body.filter(term => term._measure >= start && term._measure < start + count);
-		const headMusic = terms.find(term => term.isMusic);
-		const headChord = (headMusic instanceof Chord ? headMusic : headMusic.findFirst(Chord)) as Chord;
-		const anchor = headChord && headChord.absolutePitch;
+		const terms = context.declarations.concat(block.body.filter(term => term._measure >= start && term._measure < start + count));
+		//const headMusic = terms.find(term => term.isMusic);
+		//const headChord = (headMusic instanceof Chord ? headMusic : headMusic.findFirst(Chord)) as Chord;
+		//const anchor = headChord && headChord.absolutePitch;
+		const anchor = context.pitch;
 
 		const newBlock = new MusicBlock({body: terms.map(term => term.clone())});
 
@@ -1853,6 +1908,9 @@ export const termDictionary = {
 	TimeSignature,
 	Times,
 	Tuplet,
+	Clef,
+	KeySignature,
+	OctaveShift,
 	Block,
 	InlineBlock,
 	Scheme,

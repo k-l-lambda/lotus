@@ -23,6 +23,8 @@
 
 *	2020.7.17
 
+	+	lilyDocument.ts: refined MusicBlock.sliceMeasures by StaffContext.
+
 	+	playground.vue: sliceMeasures added.
 
 	+	lilyDocument.ts: MusicBlock.clone added, to keep anchorPitch constant when clone.

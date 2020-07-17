@@ -11,6 +11,9 @@
 		time: "TimeSignature",
 		times: "Times",
 		tuplet: "Tuplet",
+		clef: "Clef",
+		key: "KeySignature",
+		ottava: "OctaveShift",
 	};
 
 

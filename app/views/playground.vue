@@ -634,6 +634,9 @@
 
 
 			async sliceMeasures (start, count) {
+				this.updateLilyDocument();
+
+				this.lilyDocument.normalizeMusic();
 				this.lilyDocument.sliceMeasures(start, count);
 				this.lilySource = this.lilyDocument.toString();
 
