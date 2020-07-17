@@ -633,6 +633,15 @@
 			},
 
 
+			async sliceMeasures (start, count) {
+				this.lilyDocument.sliceMeasures(start, count);
+				this.lilySource = this.lilyDocument.toString();
+
+				await this.$nextTick();
+				this.lilyDocumentDirty = false;
+			},
+
+
 			updateSheetNotation () {
 				this.sheetNotation = null;
 				this.matcherNotations = null;
