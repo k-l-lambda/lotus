@@ -22,6 +22,10 @@
 
 *	2020.7.17
 
+	+	inc/lilyParser/pianoRhythm.ts created.
+
+	+	lilyDocument.ts: appendIncludeFile added.
+
 	+	lilyCommands.ts: added include folders for engrave command.
 
 	+	lilyDocument.ts: LilyDocument.noteDurationSubdivider added.

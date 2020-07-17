@@ -5,6 +5,7 @@ import LilyDocument from "./lilyDocument";
 import {termDictionary, getDurationSubdivider} from "./lilyDocument";
 
 import * as measures from "./measures";
+import {createPianoRhythm} from "./pianoRhythm";
 
 
 
@@ -42,4 +43,5 @@ export {
 	LilyTerms,
 	getDurationSubdivider,
 	measures,
+	createPianoRhythm,
 };

@@ -16,6 +16,8 @@
 		ottava: "OctaveShift",
 		include: "Include",
 		version: "Version",
+		lyricmode: "LyricMode",
+		chordmode: "ChordMode",
 	};
 
 

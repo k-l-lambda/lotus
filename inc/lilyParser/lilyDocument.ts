@@ -378,16 +378,19 @@ export class BaseTerm implements LilyTerm {
 	}
 
 
-	findFirst (termClass): BaseTerm {
+	findFirst (condition: any): BaseTerm {
 		if (!this.entries)
 			return null;
 
+		if (typeof condition !== "function")
+			condition = term => term instanceof condition;
+
 		for (const entry of this.entries) {
-			if (entry instanceof termClass)
+			if (condition(entry))
 				return entry;
 	
 			if (entry instanceof BaseTerm) {
-				const result = entry.findFirst(termClass);
+				const result = entry.findFirst(condition);
 				if (result)
 					return result;
 			}
@@ -838,6 +841,20 @@ export class Include extends Command {
 export class Version extends Command {
 	get version (): string {
 		return this.args[0].toString();
+	}
+};
+
+
+export class LyricMode extends Command {
+	get block (): MusicBlock {
+		return this.args[0];
+	}
+};
+
+
+export class ChordMode extends Command {
+	get block (): MusicBlock {
+		return this.args[0];
 	}
 };
 
@@ -1331,7 +1348,7 @@ export class SimultaneousList extends BaseTerm {
 
 
 export class ContextedMusic extends BaseTerm {
-	head: BaseTerm;
+	head: Command;
 	body: BaseTerm;
 	lyrics?: BaseTerm;
 
@@ -1352,6 +1369,11 @@ export class ContextedMusic extends BaseTerm {
 
 	get entries () {
 		return [this.head, this.body];
+	}
+
+
+	get type (): string {
+		return this.head.args[0];
 	}
 
 
@@ -1995,6 +2017,8 @@ export const termDictionary = {
 	OctaveShift,
 	Include,
 	Version,
+	LyricMode,
+	ChordMode,
 	Block,
 	InlineBlock,
 	Scheme,
