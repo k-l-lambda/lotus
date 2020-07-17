@@ -187,7 +187,7 @@
 	import LogRecorder from "../../inc/logRecorder.ts";
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import loadLilyParser from "../loadLilyParser.js";
-	import {LilyDocument, replaceSourceToken, measures} from "../../inc/lilyParser";
+	import {LilyDocument, replaceSourceToken, measures, getDurationSubdivider} from "../../inc/lilyParser";
 	import {CM_TO_PX} from "../../inc/constants.ts";
 	import TextSource from "../../inc/textSource.ts";
 	import * as SheetBaker from "../sheetBaker.ts";
@@ -205,6 +205,10 @@
 	import Dialog from "../components/dialog.vue";
 
 	import QuitClearner from "../mixins/quit-cleaner";
+
+
+
+	window.getDurationSubdivider = getDurationSubdivider;
 
 
 

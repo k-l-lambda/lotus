@@ -125,11 +125,13 @@ class FractionNumber {
 };
 
 
-const getDurationSubdivider = (term: BaseTerm): number => {
+export const getDurationSubdivider = (term: BaseTerm): number => {
 	if (term instanceof MusicEvent)
 		return term.duration.subdivider;
 	else if (term instanceof MusicBlock)
-		return lcmMulti(...term.body.map(term => getDurationSubdivider(term)));
+		return lcmMulti(...term.body.map(getDurationSubdivider));
+	else if (term instanceof MusicChunk)
+		return lcmMulti(...term.terms.map(getDurationSubdivider));
 	else if ((term instanceof Times) || (term instanceof Tuplet)) {
 		const divider = term instanceof Tuplet ? term.divider : term.factor.reciprocal;
 		divider.numerator *= getDurationSubdivider(term.music);
@@ -981,6 +983,15 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	get ticks (): number[] {
+		const ticks = this.body.filter(term => Number.isFinite(term._tick)).map(term => term._tick);
+
+		this.forEachTopTerm(MusicBlock, block => ticks.push(...block.ticks));
+
+		return Array.from(new Set(ticks)).sort((t1, t2) => t1 - t2);
+	}
+
+
 	updateChordAnchors () {
 		const chord = this.findFirst(Chord) as Chord;
 		if (chord)
@@ -1248,9 +1259,6 @@ export class MusicBlock extends BaseTerm {
 		}
 
 		const terms = context.declarations.concat(block.body.filter(term => term._measure >= start && term._measure < start + count));
-		//const headMusic = terms.find(term => term.isMusic);
-		//const headChord = (headMusic instanceof Chord ? headMusic : headMusic.findFirst(Chord)) as Chord;
-		//const anchor = headChord && headChord.absolutePitch;
 		const anchor = context.pitch;
 
 		const newBlock = new MusicBlock({body: terms.map(term => term.clone())});

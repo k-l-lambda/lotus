@@ -2,7 +2,7 @@
 import jison from "jison";
 
 import LilyDocument from "./lilyDocument";
-import {termDictionary} from "./lilyDocument";
+import {termDictionary, getDurationSubdivider} from "./lilyDocument";
 
 import * as measures from "./measures";
 
@@ -40,5 +40,6 @@ export {
 	replaceSourceToken,
 	LilyDocument,
 	LilyTerms,
+	getDurationSubdivider,
 	measures,
 };
