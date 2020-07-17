@@ -18,6 +18,10 @@
 		version: "Version",
 		lyricmode: "LyricMode",
 		chordmode: "ChordMode",
+		grace: "Grace",
+		acciaccatura: "Grace",
+		appoggiatura: "Grace",
+		slashedGrace: "Grace",
 	};
 
 

@@ -150,7 +150,7 @@ export const getDurationSubdivider = (term: BaseTerm): number => {
 
 
 interface DurationContextStatus {
-	factor?: FractionNumber;
+	factor?: {value: number};
 };
 
 
@@ -849,6 +849,13 @@ export class Tuplet extends Command {
 };
 
 
+export class Grace extends Command {
+	get music (): BaseTerm {
+		return this.args[this.args.length - 1];
+	}
+};
+
+
 export class Clef extends Command {
 };
 
@@ -1218,9 +1225,10 @@ export class MusicBlock extends BaseTerm {
 		};
 
 		for (const term of this.body) {
-			if (term instanceof MusicEvent) 
+			if (!term)
+				console.warn("null term:", term, this);
+			else if (term instanceof MusicEvent)
 				elpaseMusic(term);
-			
 			else if (term instanceof MusicBlock)
 				term.allocateMeasures(context);
 			else if (term instanceof TimeSignature) {
@@ -1254,6 +1262,14 @@ export class MusicBlock extends BaseTerm {
 				elpaseMusic(term.music);
 				context.pop();
 			}
+			else if (term instanceof Grace) {
+				term._measure = context.measureIndex;
+				term._tick = context.tick;
+
+				context.push({factor: {value: 0}});
+				elpaseMusic(term.music);
+				context.pop();
+			}
 			else {
 				if (term.isMusic)
 					console.warn("unexpected music term:", term);
@@ -1270,12 +1286,13 @@ export class MusicBlock extends BaseTerm {
 		if (recursive)
 			this.forEachTerm(MusicBlock, block => block.redivide());
 
-		const isPostTerm = term => term instanceof PostEvent
-				|| (term as Primitive).exp === "~"
-				|| (term as Command).cmd === "bar"
-				|| (term as Command).cmd === "arpeggio"
-				|| (term as Command).cmd === "glissando"
-				;
+		const isPostTerm = term => !term
+			|| term instanceof PostEvent
+			|| (term as Primitive).exp === "~"
+			|| (term as Command).cmd === "bar"
+			|| (term as Command).cmd === "arpeggio"
+			|| (term as Command).cmd === "glissando"
+			;
 
 		const list = this.body.filter(term => !(term instanceof Divide));
 		let measure = null;
@@ -1996,10 +2013,10 @@ export class Markup extends BaseTerm {
 };
 
 
-export class Lyric extends BaseTerm {
+export class Lyric extends MusicEvent {
 	content: string | LiteralString;
-	duration?: Duration;
-	post_events?: any[];
+	//duration?: Duration;
+	//post_events?: any[];
 
 
 	serialize () {
@@ -2011,14 +2028,14 @@ export class Lyric extends BaseTerm {
 	}
 
 
-	get isMusic () {
+	/*get isMusic () {
 		return true;
 	}
 
 
 	get durationMagnitude (): number {
 		return this.duration ? this.duration.magnitude : 0;
-	}
+	}*/
 }
 
 
@@ -2042,6 +2059,7 @@ export const termDictionary = {
 	TimeSignature,
 	Times,
 	Tuplet,
+	Grace,
 	Clef,
 	KeySignature,
 	OctaveShift,

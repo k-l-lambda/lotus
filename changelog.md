@@ -22,6 +22,8 @@
 
 *	2020.7.17
 
+	+	lilyDocument.ts: added term class of Grace.
+
 	+	inc/lilyParser/pianoRhythm.ts created.
 
 	+	lilyDocument.ts: appendIncludeFile added.
