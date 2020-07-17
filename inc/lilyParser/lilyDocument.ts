@@ -139,7 +139,7 @@ class DurationContext {
 		this.tick += increment;
 
 		this.measureTick += increment;
-		while (this.measureTick >= this.measureLength) {
+		while (Math.round(this.measureTick) >= Math.round(this.measureLength)) {
 			++this.measureIndex;
 			this.measureTick -= this.measureLength;
 		}
