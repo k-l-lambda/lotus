@@ -1,4 +1,6 @@
 
+import _ from "lodash";
+
 import TextSource from "../textSource";
 import {LILY_STAFF_SIZE_DEFAULT} from "../constants";
 import {romanize} from "../romanNumeral";
@@ -356,12 +358,8 @@ export class BaseTerm implements LilyTerm {
 
 	toJSON () {
 		// exlude meta fields in JSON
-		const {_location, _measure, _previous, _anchorPitch, _parent, ...data} = this;
-		void _location;
-		void _measure;
-		void _previous;
-		void _anchorPitch;
-		void _parent;
+		const fields = Object.keys(this).filter(key => !/^_/.test(key));
+		const data = _.pick(this, fields);
 
 		Object.entries(data).forEach(([key, value]) => {
 			if (value && typeof value === "object" && !Array.isArray(value) && !(value instanceof BaseTerm))
