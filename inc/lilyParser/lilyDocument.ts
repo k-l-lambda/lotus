@@ -111,10 +111,10 @@ interface DurationContextStatus {
 
 class DurationContext {
 	stack: DurationContextStatus[] = [];
-	time: number = 0;
+	tick: number = 0;
 	measureLength: number = WHOLE_DURATION_MAGNITUDE;
 	measureIndex: number = 1;
-	measureTime: number = 0;
+	measureTick: number = 0;
 
 
 	get factor () {
@@ -136,12 +136,12 @@ class DurationContext {
 	elapse (duration: number) {
 		const increment = duration * this.factorValue;
 
-		this.time += increment;
+		this.tick += increment;
 
-		this.measureTime += increment;
-		while (this.measureTime >= this.measureLength) {
+		this.measureTick += increment;
+		while (this.measureTick >= this.measureLength) {
 			++this.measureIndex;
-			this.measureTime -= this.measureLength;
+			this.measureTick -= this.measureLength;
 		}
 	}
 
@@ -160,6 +160,7 @@ class DurationContext {
 export class BaseTerm implements LilyTerm {
 	_location?: Location;
 	_measure?: number;
+	_tick?: number;
 	_previous?: BaseTerm;
 	_anchorPitch?: ChordElement;
 	_parent?: BaseTerm;
@@ -714,7 +715,7 @@ export class Times extends Command {
 
 
 export class Tuplet extends Command {
-	get diivider (): FractionNumber {
+	get divider (): FractionNumber {
 		return FractionNumber.fromExpression(this.args[0]);
 	}
 
@@ -1031,11 +1032,22 @@ export class MusicBlock extends BaseTerm {
 	allocateMeasures (context: DurationContext = new DurationContext()) {
 		this.unfoldDurationMultipliers();
 
-		for (const term of this.body) {
-			if (term instanceof MusicEvent) {
-				term._measure = context.measureIndex;
-				context.elapse(term.durationMagnitude);
+		const elpaseMusic = (music: BaseTerm) => {
+			if (music instanceof MusicEvent) {
+				music._measure = context.measureIndex;
+				music._tick = context.tick;
+				context.elapse(music.durationMagnitude);
 			}
+			else if (music instanceof MusicBlock)
+				music.allocateMeasures(context);
+			else
+				console.warn("unexpected music term:", music);
+		};
+
+		for (const term of this.body) {
+			if (term instanceof MusicEvent) 
+				elpaseMusic(term);
+			
 			else if (term instanceof MusicBlock)
 				term.allocateMeasures(context);
 			else if (term instanceof TimeSignature) {
@@ -1050,27 +1062,31 @@ export class MusicBlock extends BaseTerm {
 						block.allocateMeasures(context);
 				}
 			}
-			else if (term instanceof Relative) {
-				if (term.music instanceof MusicEvent) {
-					term._measure = context.measureIndex;
-					context.elapse(term.durationMagnitude);
-				}
-				else if (term.music instanceof MusicBlock)
-					term.music.allocateMeasures(context);
-			}
+			else if (term instanceof Relative) 
+				elpaseMusic(term.music);
+			
 			else if (term instanceof Times) {
 				term._measure = context.measureIndex;
+				term._tick = context.tick;
+
 				context.push({factor: term.factor});
+				elpaseMusic(term.music);
+				context.pop();
 			}
 			else if (term instanceof Tuplet) {
 				term._measure = context.measureIndex;
-				context.push({factor: term.diivider.reciprocal});
+				term._tick = context.tick;
+
+				context.push({factor: term.divider.reciprocal});
+				elpaseMusic(term.music);
+				context.pop();
 			}
 			else {
 				if (term.isMusic)
 					console.warn("unexpected music term:", term);
 
 				term._measure = context.measureIndex;
+				term._tick = context.tick;
 			}
 		}
 	}
