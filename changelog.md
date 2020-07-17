@@ -21,6 +21,11 @@
 
 
 
+*	2020.7.17
+
+	+	lilyDocument.ts: MusicBlock.clone added, to keep anchorPitch constant when clone.
+
+
 *	2020.7.16
 
 	+	lilyDocument.ts: LilyDocument.sliceMeasures added.

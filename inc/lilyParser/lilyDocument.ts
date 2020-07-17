@@ -782,6 +782,19 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	clone (): this {
+		if (this._parent) {
+			const parent = this._parent.clone();
+			const block = parent.findFirst(MusicBlock);
+			console.assert(block && block._parent === parent, "invalid block-parent relation", parent, block);
+
+			return block as this;
+		}
+
+		return BaseTerm.prototype.clone.call(this) as this;
+	}
+
+
 	get entries () {
 		return this.body;
 	}
