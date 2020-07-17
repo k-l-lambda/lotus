@@ -22,6 +22,8 @@
 
 *	2020.7.17
 
+	+	lilyDocument.ts: LilyDocument.noteDurationSubdivider added.
+
 	+	lilyDocument.ts: refined MusicBlock.sliceMeasures by StaffContext.
 
 	+	playground.vue: sliceMeasures added.

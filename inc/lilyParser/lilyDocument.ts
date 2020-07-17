@@ -75,6 +75,20 @@ const PHONETS_ALIAS = {
 const phonetDifferToShift = differ => differ > 3 ? -1 : (differ < -3 ? 1 : 0);
 
 
+// Greatest common divisor & Least common multiple
+const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
+/*const gcd = (a: number, b: number): number => {
+	if (!Number.isFinite(a) || !Number.isFinite(b)) {
+		debugger;
+		return NaN;
+	}
+
+	return b === 0 ? a : gcd(b, a % b);
+};*/
+const lcm = (a: number, b: number): number => a * b / gcd(a, b);
+const lcmMulti: (...numbers: number[]) => number = (a, b, ...numbers) => numbers.length ? lcmMulti(lcm(a, b), ...numbers) : lcm(a, b);
+
+
 class FractionNumber {
 	denominator: number;
 	numerator: number;
@@ -101,6 +115,35 @@ class FractionNumber {
 	get reciprocal (): FractionNumber {
 		return new FractionNumber(this.denominator, this.numerator);
 	}
+
+
+	get reduced (): FractionNumber {
+		const divider = gcd(this.denominator, this.numerator);
+
+		return new FractionNumber(this.numerator / divider, this.denominator / divider);
+	}
+};
+
+
+const getDurationSubdivider = (term: BaseTerm): number => {
+	if (term instanceof MusicEvent)
+		return term.duration.subdivider;
+	else if (term instanceof MusicBlock)
+		return lcmMulti(...term.body.map(term => getDurationSubdivider(term)));
+	else if ((term instanceof Times) || (term instanceof Tuplet)) {
+		const divider = term instanceof Tuplet ? term.divider : term.factor.reciprocal;
+		divider.numerator *= getDurationSubdivider(term.music);
+
+		return divider.reduced.numerator;
+	}
+	else if (term instanceof Repeat)
+		return getDurationSubdivider(term.bodyBlock);
+	else if (term instanceof Relative)
+		return getDurationSubdivider(term.music);
+	else if (term.isMusic)
+		console.warn("unexpected music term:", term);
+
+	return 1;
 };
 
 
@@ -1722,6 +1765,12 @@ export class Duration extends BaseTerm {
 	}
 
 
+	// how many smallest rhythm unit in a whole note
+	get subdivider (): number {
+		return this.denominator * (2 ** this.dots);
+	}
+
+
 	get magnitude (): number {
 		let value = WHOLE_DURATION_MAGNITUDE / this.denominator;
 
@@ -2254,6 +2303,14 @@ export default class LilyDocument {
 		return this.root.sections
 			.filter(section => section instanceof Assignment && /Voice_\w+/.test(section.key as string))
 			.map((section: Assignment) => (section.value as Relative).music as MusicBlock);
+	}
+
+
+	// require normalization
+	get noteDurationSubdivider (): number {
+		const subdivider = lcmMulti(...this.normalMusicTracks.map(getDurationSubdivider));
+
+		return subdivider;
 	}
 
 
