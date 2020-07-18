@@ -605,23 +605,23 @@ export default class LilyDocument {
 		this.root.forEachTerm(MusicBlock, (block: MusicBlock) => {
 			for (const voice of block.voices) {
 				let lastChord: Chord = null;
-				let tieing = false;
+				let tying = false;
 				let afterBlock = false;
 				let atHead = true;
 
 				for (const chunk of voice.body) {
 					for (const term of chunk.terms) {
 						if (term instanceof Primitive && term.exp === "~") {
-							tieing = true;
+							tying = true;
 							afterBlock = false;
 						}
 						else if (hasMusicBlock(term)) {
 							afterBlock = true;
-							tieing = false;
+							tying = false;
 							//console.log("afterBlock:", term);
 						}
 						else if (term instanceof Chord) {
-							if (tieing && lastChord) 
+							if (tying && lastChord) 
 								chordPairs.push([lastChord, term]);
 							// maybe there is a tie at tail of the last block
 							else if (afterBlock)
@@ -634,13 +634,13 @@ export default class LilyDocument {
 
 							atHead = false;
 							afterBlock = false;
-							tieing = false;
+							tying = false;
 							lastChord = term;
 
 							if (term.post_events) {
 								for (const event of term.post_events) {
 									if (event.arg === "~")
-										tieing = true;
+										tying = true;
 								}
 							}
 						}
