@@ -87,7 +87,7 @@ const lcm = (a: number, b: number): number => a * b / gcd(a, b);
 const lcmMulti: (...numbers: number[]) => number = (a, b, ...numbers) => numbers.length ? lcmMulti(lcm(a, b), ...numbers) : lcm(a, b);
 
 
-class FractionNumber {
+export class FractionNumber {
 	denominator: number;
 	numerator: number;
 
@@ -102,6 +102,11 @@ class FractionNumber {
 	constructor (numerator, denominator) {
 		this.numerator = numerator;
 		this.denominator = denominator;
+	}
+
+
+	toString (): string {
+		return `${this.numerator}/${this.denominator}`;
 	}
 
 

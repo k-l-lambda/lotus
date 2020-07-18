@@ -1,5 +1,5 @@
 
-import {MusicBlock, LyricMode, ContextedMusic, Variable, Assignment, Command, Duration, Lyric, Times} from "./lilyDocument";
+import {MusicBlock, LyricMode, ContextedMusic, Variable, Assignment, Command, Duration, Lyric, Times, FractionNumber} from "./lilyDocument";
 import {WHOLE_DURATION_MAGNITUDE} from "./utils";
 
 // eslint-disable-next-line
@@ -12,18 +12,23 @@ const createPianoRhythmTrack = (voices: MusicBlock[], subdivider: number): Lyric
 	const granularity = WHOLE_DURATION_MAGNITUDE / subdivider;
 	//console.log("ticks:", ticks, granularity);
 
-	const duration1 = new Duration({number: 1, dots: 0});
+	const denominator = 2 ** Math.floor(Math.log2(subdivider));
+	const duration = new Duration({number: denominator, dots: 0});
 
-	const body = [];
+	let body = [];
 	for (let tick = 0; tick < voices[0].durationMagnitude; tick += granularity) {
 		const variable = new Variable({name: ticks.has(tick) ? "dotB" : "dotW"});
-		const lyric = new Lyric({content: variable, duration: tick === 0 ? duration1.clone() : null});
+		const lyric = new Lyric({content: variable, duration: tick === 0 ? duration.clone() : null});
 		body.push(lyric);
 	}
 
-	const times = new Times({cmd: "times", args: [`1/${subdivider}`, new MusicBlock({body})]});
+	if (denominator !== subdivider) {
+		const fraction = new FractionNumber(denominator, subdivider).reduced;
+		const times = new Times({cmd: "times", args: [fraction.toString(), new MusicBlock({body})]});
+		body = [times];
+	}
 
-	return new LyricMode({cmd: "lyricmode", args: [new MusicBlock({body: [times]})]});
+	return new LyricMode({cmd: "lyricmode", args: [new MusicBlock({body})]});
 };
 
 

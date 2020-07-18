@@ -21,6 +21,11 @@
 
 
 
+*	2020.7.18
+
+	+	pianoRhythm.ts: refined times fraction value.
+
+
 *	2020.7.17
 
 	+	pianoRhythm.ts: createPianoRhythmTrack implemented.
