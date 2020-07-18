@@ -1587,6 +1587,15 @@ export class Chord extends MusicEvent {
 	};
 
 
+	constructor (data) {
+		super(data);
+
+		this.pitches[0]._parent = this;
+		for (let i = 1; i < this.pitches.length; ++i)
+			this.pitches[i]._previous = this.pitches[i - 1];
+	}
+
+
 	get single () {
 		return this.pitches.length === 1;
 	}
@@ -1625,11 +1634,6 @@ export class Chord extends MusicEvent {
 	}
 
 
-	/*get isSpacer () {
-		return this.pitches.length === 1 && this.pitches[0].pitch === "s";
-	}*/
-
-
 	get pitchNames () {
 		return this.pitches.map(elem => elem.pitch.replace(/'|,/g, ""));
 	}
@@ -1641,13 +1645,14 @@ export class Chord extends MusicEvent {
 
 
 	get absolutePitch (): ChordElement {
-		const anchor = this.basePitch;
-		if (anchor.phonet === "q")
+		/*const base = this.basePitch;
+		if (base.phonet === "q")
 			return this.anchorPitch;
 
-		const octave = anchor.absoluteOctave(this.anchorPitch);
+		const octave = base.absoluteOctave(this.anchorPitch);
 
-		return ChordElement.from({phonet: anchor.phonet, alters: anchor.alters, octave});
+		return ChordElement.from({phonet: base.phonet, alters: base.alters, octave});*/
+		return this.basePitch.absolutePitch;
 	}
 
 
@@ -1695,6 +1700,10 @@ export class ChordElement extends BaseTerm {
 		questions?: string[],
 		post_events?: PostEvent[],
 	};
+
+	_parent?: Chord;
+	_previous?: ChordElement;
+	_tied?: boolean;
 
 
 	static from ({phonet, alters, octave, options = {}}): ChordElement {
@@ -1753,6 +1762,33 @@ export class ChordElement extends BaseTerm {
 	get alters (): string {
 		const captures = this.pitch.substr(1).match(/^\w+/);
 		return captures && captures[0];
+	}
+
+
+	get alteredPhonet (): string {
+		const captures = this.pitch.match(/^\w+/);
+		return captures && captures[0];
+	}
+
+
+	get anchorPitch (): ChordElement {
+		if (this._previous)
+			return this._previous.absolutePitch;
+
+		if (this._parent)
+			return this._parent.anchorPitch;
+
+		return this;
+	}
+
+
+	get absolutePitch (): ChordElement {
+		if (this.phonet === "q")
+			return this.anchorPitch;
+
+		const octave = this.absoluteOctave(this.anchorPitch);
+
+		return ChordElement.from({phonet: this.phonet, alters: this.alters, octave});
 	}
 
 

@@ -23,6 +23,8 @@
 
 *	2020.7.18
 
+	+	lilyInterpreter.ts: update pitch tied in StaffContext.
+
 	+	lilyParser/lilyInterpreter.ts created.
 
 	+	lilyParser: separated lilyTerms from lilyDocument.

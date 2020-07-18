@@ -1,5 +1,6 @@
 
 import {WHOLE_DURATION_MAGNITUDE} from "./utils";
+import {parseRaw, Primitive} from "./lilyTerms";
 
 // eslint-disable-next-line
 import {BaseTerm, Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, Clef, KeySignature, OctaveShift, Duration, ChordElement, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic} from "./lilyTerms";
@@ -32,6 +33,7 @@ class StaffContext {
 	partialDuration: Duration = null;
 
 	event: MusicEvent = null;
+	tying: boolean = false;
 
 
 	constructor ({anchorPitch = null} = {}) {
@@ -95,17 +97,34 @@ class StaffContext {
 		term._tick = this.tick;
 
 		if (term instanceof MusicEvent) {
-			if (term instanceof Chord)
+			if (term instanceof Chord) {
 				this.pitch = term.absolutePitch;
+
+				// update tied for ChordElement
+				if (this.event && this.event instanceof Chord) {
+					const pitches = new Set(this.event.pitches.map(pitch => pitch.absolutePitch.pitch));
+					term.pitches.forEach(pitch => {
+						if (pitches.has(pitch.absolutePitch.pitch))
+							pitch._tied = true;
+					});
+				}
+			}
 
 			term._previous = this.event;
 			this.event = term;
 
 			this.elapse(term.durationMagnitude);
+
+			this.tying = false;
+			const wave = term.post_events && term.post_events.find(e => e.arg === "~");
+			if (wave)
+				this.tying = true;
 		}
 		else if (term instanceof MusicBlock) {
 			if (!this.track)
 				this.track = term;
+
+			term.updateChordAnchors();
 
 			for (const subterm of term.body)
 				this.execute(subterm);
@@ -151,6 +170,10 @@ class StaffContext {
 			this.time = term;
 		else if (term instanceof OctaveShift)
 			this.octave = term;
+		else if (term instanceof Primitive) {
+			if (term.exp === "~")
+				this.tying = true;
+		}
 		else {
 			if (term.isMusic)
 				console.warn("unexpected music term:", term);
@@ -177,11 +200,11 @@ export default class LilyInterpreter {
 
 
 	interpretMusic (music: BaseTerm) {
-		console.log("interpretMusic:", music);
-		//const context = new StaffContext();
-		//context.execute(music);
+		//console.log("interpretMusic:", music);
+		const context = new StaffContext();
+		context.execute(music);
 
-		//this.musicTracks.push(context.track);
+		this.musicTracks.push(context.track);
 	}
 
 
@@ -222,7 +245,7 @@ export default class LilyInterpreter {
 		else if (term instanceof ContextedMusic)
 			return new ContextedMusic({head: this.execute(term.head), lyrics: this.execute(term.lyrics), body: this.execute(term.body, {execMusic})});
 		else if (term instanceof Command) {
-			const result = new Command({cmd: term.cmd, args: term.args.map(arg => this.execute(arg))});
+			const result = parseRaw({proto: term.proto, cmd: term.cmd, args: term.args.map(arg => this.execute(arg))});
 			if (execMusic && result.isMusic)
 				this.interpretMusic(result);
 
