@@ -74,8 +74,8 @@ const createSheetDocumentFromSvgs = (svgs: string[], ly: string, lilyDocument: L
 	const attributes = lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
 
 	const source = new TextSource(ly);
-
-	const tieLocations = lilyDocument.getTiedNoteLocations(source).reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
+	//const tieLocations = lilyDocument.getTiedNoteLocations(source).reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
+	const tieLocations = lilyDocument.getTiedNoteLocations2().reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
 	//logger.append("tieLocations:", Object.keys(tieLocations));
 
 	const pages = svgs.map(svg => parseSvgPage(svg, source, {DOMParser, logger, attributes, tieLocations}));

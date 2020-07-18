@@ -97,20 +97,23 @@ class StaffContext {
 		term._tick = this.tick;
 
 		if (term instanceof MusicEvent) {
+			term._previous = this.event;
+
 			if (term instanceof Chord) {
 				this.pitch = term.absolutePitch;
 
 				// update tied for ChordElement
-				if (this.event && this.event instanceof Chord) {
+				if (this.tying && this.event && this.event instanceof Chord) {
 					const pitches = new Set(this.event.pitches.map(pitch => pitch.absolutePitch.pitch));
 					term.pitches.forEach(pitch => {
 						if (pitches.has(pitch.absolutePitch.pitch))
 							pitch._tied = true;
+						//else
+						//	console.log("missed tie:", `${pitch._location.lines[0]}:${pitch._location.columns[0]}`, pitch.absolutePitch.pitch, pitches);
 					});
 				}
 			}
 
-			term._previous = this.event;
 			this.event = term;
 
 			this.elapse(term.durationMagnitude);

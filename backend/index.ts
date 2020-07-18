@@ -5,7 +5,7 @@ import {DOMParser} from "xmldom";
 import * as lilyCommands from "./lilyCommands";
 import * as staffSvg from "../inc/staffSvg";
 import loadLilyParser from "./loadLilyParserNode";
-import {LilyDocument} from "../inc/lilyParser";
+import {LilyDocument, LilyInterpreter} from "../inc/lilyParser";
 import LogRecorder from "../inc/logRecorder";
 import * as ScoreMaker from "./scoreMaker";
 
@@ -59,6 +59,8 @@ const service = {
 				const lilyDocument = new LilyDocument(lilyParser.parse(source));
 				//const attributes = lilyDocument.globalAttributes({readonly: true});
 				//console.log("attributes:", attributes);
+
+				new LilyInterpreter().execute(lilyDocument.root);
 
 				const logger = new LogRecorder({enabled: log});
 

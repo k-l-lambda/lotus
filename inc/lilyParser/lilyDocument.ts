@@ -672,6 +672,19 @@ export default class LilyDocument {
 	}
 
 
+	// generate tied notehead location candidates
+	getTiedNoteLocations2 (): [number, number][] {
+		const locations = [];
+
+		this.root.forEachTerm(Chord, chord => chord.pitches.forEach(pitch => {
+			if (pitch._tied)
+				locations.push([pitch._location.lines[0], pitch._location.columns[0]]);
+		}));
+
+		return locations;
+	}
+
+
 	/*removeAloneSpacer () {
 		this.root.forEachTopTerm(MusicBlock, block => {
 			const aloneSpacers = cc(block.musicChunks.filter(chunk => chunk.size === 1 && chunk.terms[0].isSpacer).map(chunk => chunk.terms));
