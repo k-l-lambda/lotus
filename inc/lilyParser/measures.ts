@@ -1,7 +1,8 @@
 
+import {BaseTerm} from "./lilyTerms";
+
 // eslint-disable-next-line
 import LilyDocument from "./lilyDocument";
-import {BaseTerm} from "./lilyDocument";
 
 
 

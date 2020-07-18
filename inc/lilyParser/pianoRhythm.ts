@@ -1,9 +1,11 @@
 
-import {MusicBlock, LyricMode, ContextedMusic, Variable, Assignment, Command, Duration, Lyric, Times, FractionNumber} from "./lilyDocument";
-import {WHOLE_DURATION_MAGNITUDE} from "./utils";
+import {MusicBlock, LyricMode, ContextedMusic, Variable, Assignment, Command, Duration, Lyric, Times} from "./lilyTerms";
+import {WHOLE_DURATION_MAGNITUDE, FractionNumber} from "./utils";
 
 // eslint-disable-next-line
-import LilyDocument, {SimultaneousList} from "./lilyDocument";
+import LilyDocument from "./lilyDocument";
+// eslint-disable-next-line
+import {SimultaneousList} from "./lilyTerms";
 
 
 
