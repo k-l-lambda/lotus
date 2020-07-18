@@ -1306,7 +1306,7 @@ music_bare
 	: grouped_music_list
 		{$$ = $1;}
 	| music_identifier
-		{}
+		{$$ = $1;}
 	| mode_changed_music
 		{$$ = $1;}
 	;
@@ -1342,10 +1342,64 @@ lyricmode_music_list
 lyricmode_music
 	: lyric_element_music
 		{$$ = $1;}
-	| music_assign
+	//| music_assign
+	//	{$$ = $1;}
+	| music_property_def
+		{$$ = $1;}
+	| lyricmode_music_identifier
 		{$$ = $1;}
 	| lyricmode_repeated_music
 		{$$ = $1;}
+	| lyricmode_braced_music_list
+		{$$ = $1;}
+	;
+
+// extra syntax
+lyricmode_music_identifier
+	: zero_command
+		{$$ = $1;}
+	| CMD_TIME FRACTION
+		{$$ = command($1, $2);}
+	| CMD_BAR string
+		{$$ = command($1, $2);}
+	| CMD_OMIT property_path
+		{$$ = command($1, $2);}
+	| CMD_OTTAVA property_path
+		{$$ = command($1, $2);}
+	| CMD_BARNUMBERCHECK scm_identifier
+		{$$ = command($1, $2);}
+	| CMD_MARK full_markup
+		{$$ = command($1, $2);}
+	| CMD_SKIP unsigned_number
+		{$$ = command($1, $2);}
+	| CMD_UNFOLDREPEATS lyricmode_music
+		{$$ = command($1, $2);}
+	| CMD_ONCE music_assign
+		{$$ = command($1, $2);}
+	| CMD_PARTIAL duration
+		{$$ = command($1, $2);}
+	| CMD_TUPLETSPAN duration
+		{$$ = command($1, $2);}
+	| CMD_TUPLETSPAN DEFAULT
+		{$$ = command($1, $2);}
+	| CMD_TUPLET FRACTION lyricmode_music
+		{$$ = command($1, $2, $3);}
+	| CMD_TUPLET FRACTION duration lyricmode_music
+		{$$ = command($1, $2, $3, $4);}
+	| CMD_TWEAK property_path scalar
+		{$$ = command($1, $2, $3);}
+	| CMD_TIMES FRACTION lyricmode_music
+		{$$ = command($1, $2, $3);}
+	| CMD_SHAPE scm_identifier symbol
+		{$$ = command($1, $2, $3);}
+	| CMD_ACCIDENTALSTYLE grob_prop_spec
+		{$$ = command($1, $2);}
+	| CMD_NUMERICTIMESIGNATURE lyricmode_music_identifier
+		{$$ = command($1, $2);}
+	| CMD_BENDAFTER scm_identifier
+		{$$ = command($1, $2);}
+	| CMD_COMPOUNDMETER scm_identifier
+		{$$ = command($1, $2);}
 	;
 
 // extra syntax
@@ -1743,8 +1797,6 @@ simple_string
 music_identifier
 	: zero_command
 		{$$ = $1;}
-	//| unitary_cmd value
-	//	{$$ = command($1, $2);}
 	| CMD_CLEF string
 		{$$ = command($1, $2);}
 	| CMD_TIME FRACTION
@@ -1790,8 +1842,6 @@ music_identifier
 		{$$ = command($1, $2, $3);}
 	| CMD_TUPLET FRACTION duration music
 		{$$ = command($1, $2, $3, $4);}
-	//| binary_cmd value value
-	//	{$$ = command($1, [$2, $3]);}
 	| CMD_TWEAK property_path scalar
 		{$$ = command($1, $2, $3);}
 	| CMD_KEY PITCH COMMAND
@@ -1980,42 +2030,6 @@ expressive_mark
 		{$$ = $1;}
 	;
 
-/*// extra syntax
-unitary_cmd
-	: CMD_CLEF
-		{$$ = $1;}
-	| CMD_TIME
-		{$$ = $1;}
-	| CMD_BAR
-		{$$ = $1;}
-	| CMD_OMIT
-		{$$ = $1;}
-	| CMD_OTTAVA
-		{$$ = $1;}
-	| CMD_BARNUMBERCHECK
-		{$$ = $1;}
-	| CMD_MARK
-		{$$ = $1;}
-	| CMD_INCLUDE
-		{$$ = $1;}
-	| CMD_SKIP
-		{$$ = $1;}
-	| CMD_PARENTHESIZE
-		{$$ = $1;}
-	| CMD_UNFOLDREPEATS
-		{$$ = $1;}
-	| CMD_ACCIACCATURA
-		{$$ = $1;}
-	| CMD_APPOGGIATURA
-		{$$ = $1;}
-	| CMD_SLASHEDGRACE
-		{$$ = $1;}
-	| CMD_LANGUAGE
-		{$$ = $1;}
-	| CMD_ONCE
-		{$$ = $1;}
-	;*/
-
 // extra syntax
 pitch_mode_music
 	: CMD_RELATIVE pitch music
@@ -2023,28 +2037,6 @@ pitch_mode_music
 	| CMD_RELATIVE music
 		{$$ = command($1, $2);}
 	;
-
-/*// extra syntax
-value
-	: music
-		{$$ = $1;}
-	| full_markup
-		{$$ = $1;}
-	| FRACTION
-		{$$ = $1;}
-	| UNSIGNED
-		{$$ = $1;}
-	| REAL
-		{$$ = $1;}
-	| literal_string
-		{$$ = $1;}
-	| SYMBOL
-		{$$ = $1;}
-	| scm_identifier
-		{$$ = $1;}
-	| SYMBOL '.' property_path
-		{$$ = $1 + "." + $3;}
-	;*/
 
 pitch_or_music
 	//: pitch exclamations questions octave_check maybe_notemode_duration erroneous_quotes optional_rest post_events
