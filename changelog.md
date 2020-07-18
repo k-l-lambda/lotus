@@ -23,6 +23,8 @@
 
 *	2020.7.18
 
+	+	lilyParser/lilyInterpreter.ts created.
+
 	+	lilyParser: separated lilyTerms from lilyDocument.
 
 	+	lilyDocument.ts: term class of Partial added.

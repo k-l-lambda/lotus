@@ -256,7 +256,7 @@ export default class LilyDocument {
 
 		const scorePosition = this.root.sections.findIndex(section => section instanceof Block && section.head === "\\score");
 
-		// insert new variables
+		// insert new variables assignments
 		this.root.sections.splice(scorePosition, 0,
 			...trackBodys.map((track, i) => new Assignment({key: trackName(i), value: track})));
 	}

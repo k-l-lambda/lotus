@@ -187,7 +187,7 @@
 	import LogRecorder from "../../inc/logRecorder.ts";
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import loadLilyParser from "../loadLilyParser.js";
-	import {LilyDocument, replaceSourceToken, measures, getDurationSubdivider, createPianoRhythm} from "../../inc/lilyParser";
+	import {LilyDocument, LilyInterpreter, replaceSourceToken, measures, getDurationSubdivider, createPianoRhythm} from "../../inc/lilyParser";
 	import {CM_TO_PX} from "../../inc/constants.ts";
 	import TextSource from "../../inc/textSource.ts";
 	import * as SheetBaker from "../sheetBaker.ts";
@@ -209,7 +209,8 @@
 
 
 	window.getDurationSubdivider = getDurationSubdivider;
-	window.createPianoRhythm = createPianoRhythm;
+	window.LilyInterpreter = LilyInterpreter;
+
 
 
 

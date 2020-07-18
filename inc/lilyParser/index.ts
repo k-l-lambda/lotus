@@ -1,8 +1,9 @@
 
 import jison from "jison";
 
-import LilyDocument from "./lilyDocument";
 import {termDictionary, getDurationSubdivider} from "./lilyTerms";
+import LilyDocument from "./lilyDocument";
+import LilyInterpreter from "./lilyInterpreter";
 
 import * as measures from "./measures";
 import {createPianoRhythm} from "./pianoRhythm";
@@ -40,6 +41,7 @@ export {
 	hookJisonPrint,
 	replaceSourceToken,
 	LilyDocument,
+	LilyInterpreter,
 	LilyTerms,
 	getDurationSubdivider,
 	measures,

@@ -841,6 +841,7 @@ export class ChordMode extends Command {
 
 
 export class Block extends BaseTerm {
+	block: string;
 	head: (string|string[]);
 	body: BaseTerm[];
 
@@ -1989,6 +1990,7 @@ export const termDictionary = {
 	Repeat,
 	Relative,
 	TimeSignature,
+	Partial,
 	Times,
 	Tuplet,
 	Grace,
