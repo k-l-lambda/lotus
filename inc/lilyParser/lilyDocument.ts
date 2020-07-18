@@ -830,6 +830,13 @@ export class TimeSignature extends Command {
 };
 
 
+export class Partial extends Command {
+	get duration (): Duration {
+		return this.args[0];
+	}
+};
+
+
 export class Times extends Command {
 	get factor (): FractionNumber {
 		return FractionNumber.fromExpression(this.args[0]);
@@ -1830,7 +1837,7 @@ export class ChordElement extends BaseTerm {
 
 export class Duration extends BaseTerm {
 	number: string;
-	dots: number;
+	dots: number = 0;
 	multipliers?: string[];
 
 

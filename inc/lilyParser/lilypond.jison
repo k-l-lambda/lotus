@@ -9,6 +9,7 @@
 		repeat: "Repeat",
 		relative: "Relative",
 		time: "TimeSignature",
+		partial: "Partial",
 		times: "Times",
 		tuplet: "Tuplet",
 		clef: "Clef",

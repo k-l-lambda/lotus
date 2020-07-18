@@ -23,6 +23,8 @@
 
 *	2020.7.18
 
+	+	lilyDocument.ts: term class of Partial added.
+
 	+	pianoRhythm.ts: refined times fraction value.
 
 
