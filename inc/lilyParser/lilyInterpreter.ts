@@ -312,11 +312,17 @@ export default class LilyInterpreter {
 
 
 	toDocument (): LilyDocument {
+		// append music track assignments
+		this.musicTracks.forEach((track, i) => this.variableTable.set(LilyInterpreter.trackName(i + 1), track));
+
+		const variables = [].concat(...[this.paper, this.layout, this.score].map(block => block.findAll(Variable).map(variable => variable.name)));
+		const assignments = variables.map(name => new Assignment({key: name, value: this.variableTable.get(name)}));
+
 		const root = new Root({sections: [
 			this.version,
 			this.header,
 			...this.statements,
-			// TODO: insert track assignments
+			...assignments,
 			this.paper,
 			this.layout,
 			this.score,
