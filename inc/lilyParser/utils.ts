@@ -4,8 +4,16 @@ const WHOLE_DURATION_MAGNITUDE = 128 * 3 * 5;
 
 // Greatest common divisor & Least common multiple
 const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
+/*const gcd = (a: number, b: number): number => {
+	if (!Number.isFinite(a) || !Number.isFinite(b)) {
+		console.warn("NAN:", a, b);
+		debugger;
+		return NaN;
+	}
+	return b === 0 ? a : gcd(b, a % b);
+};*/
 const lcm = (a: number, b: number): number => a * b / gcd(a, b);
-const lcmMulti: (...numbers: number[]) => number = (a, b, ...numbers) => numbers.length ? lcmMulti(lcm(a, b), ...numbers) : lcm(a, b);
+const lcmMulti: (...numbers: number[]) => number = (a, b, ...numbers) => Number.isFinite(b) ? (numbers.length ? lcmMulti(lcm(a, b), ...numbers) : lcm(a, b)) : (Number.isFinite(a) ? a : 1);
 
 
 class FractionNumber {

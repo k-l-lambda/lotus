@@ -1,10 +1,14 @@
 
 import {romanize} from "../romanNumeral";
-import {WHOLE_DURATION_MAGNITUDE} from "./utils";
-import {parseRaw} from "./lilyTerms";
+import {WHOLE_DURATION_MAGNITUDE, lcmMulti} from "./utils";
+import {parseRaw, getDurationSubdivider} from "./lilyTerms";
 
-// eslint-disable-next-line
-import {BaseTerm, Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, Clef, KeySignature, OctaveShift, Duration, ChordElement, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version, Scheme, Include, Rest} from "./lilyTerms";
+import {
+	// eslint-disable-next-line
+	BaseTerm, ChordElement,
+	LiteralString, Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, Clef, Scheme, Include, Rest,
+	KeySignature, OctaveShift, Duration, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version,
+} from "./lilyTerms";
 // eslint-disable-next-line
 import LilyDocument from "./lilyDocument";
 
@@ -17,9 +21,11 @@ interface DurationContextStackStatus {
 type MusicTransformer = (music: BaseTerm, context: StaffContext) => BaseTerm[];
 
 
-class MusicTrack {
+export class MusicTrack {
 	block: MusicBlock;
 	anchorPitch: ChordElement;
+
+	name?: string;
 
 
 	static fromBlockAnchor (block: MusicBlock, anchorPitch: ChordElement): MusicTrack {
@@ -33,10 +39,22 @@ class MusicTrack {
 
 
 	get music (): BaseTerm {
-		if (!this.block._parent)
+		if (!this.block._parent) {
 			this.block._parent = new Relative({cmd: "relative", args: this.anchorPitch ? [this.anchorPitch.clone(), this.block] : [this.block]});
+			this.block.updateChordAnchors();
+		}
 
 		return this.block._parent;
+	}
+
+
+	get noteDurationSubdivider (): number {
+		return getDurationSubdivider(this.block);
+	}
+
+
+	get durationMagnitude (): number {
+		return this.block && this.block.durationMagnitude;
 	}
 
 
@@ -358,6 +376,7 @@ export default class LilyInterpreter {
 
 	version: Version = null;
 	header: Block = null;
+	includeFiles: Set<string> = new Set;
 	statements: BaseTerm[] = [];
 	paper: Block = null;
 	layout: Block = null;
@@ -382,6 +401,8 @@ export default class LilyInterpreter {
 		this.musicTracks.push(context.track);
 
 		const varName = LilyInterpreter.trackName(this.musicTracks.length);
+
+		context.track.name = varName;
 
 		return new Variable({name: varName});
 	}
@@ -462,6 +483,8 @@ export default class LilyInterpreter {
 			return new SimultaneousList({list: term.list.map(subterm => this.execute(subterm, {execMusic})).filter(term => term)});
 		else if (term instanceof ContextedMusic)
 			return new ContextedMusic({head: this.execute(term.head), lyrics: this.execute(term.lyrics), body: this.execute(term.body, {execMusic})});
+		else if (term instanceof Include)
+			this.includeFiles.add(term.filename);
 		else if (term instanceof Command)
 			return parseRaw({proto: term.proto, cmd: term.cmd, args: term.args.map(arg => this.execute(arg, {execMusic}))});
 
@@ -469,20 +492,26 @@ export default class LilyInterpreter {
 	}
 
 
-	toDocument (): LilyDocument {
-		// append music track assignments
+	updateTrackAssignments () {
 		this.musicTracks.forEach((track, i) => this.variableTable.set(LilyInterpreter.trackName(i + 1), track.music));
+	}
+
+
+	toDocument (): LilyDocument {
+		this.updateTrackAssignments();
 
 		const variables = [].concat(...[this.paper, this.layout, this.score].map(block => block.findAll(Variable).map(variable => variable.name)));
 		const assignments = variables.map(name => new Assignment({key: name, value: this.variableTable.get(name)}));
+		const includes = Array.from(this.includeFiles).map(filename => new Include({cmd: "include", args: [LiteralString.fromString(filename)]}));
 
 		const root = new Root({sections: [
 			this.version,
 			this.header,
+			...includes,
 			...this.statements,
-			...assignments,
 			this.paper,
 			this.layout,
+			...assignments,
 			this.score,
 		].filter(section => section)});
 
@@ -490,7 +519,19 @@ export default class LilyInterpreter {
 	}
 
 
+	getNoteDurationSubdivider (): number {
+		const subdivider = lcmMulti(...this.musicTracks.map(track => track.noteDurationSubdivider));
+
+		return subdivider;
+	}
+
+
 	sliceMeasures (start: number, count: number) {
 		this.musicTracks = this.musicTracks.map(track => track.sliceMeasures(start, count));
+	}
+
+
+	addIncludeFile (filename: string) {
+		this.includeFiles.add(filename);
 	}
 };

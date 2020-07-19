@@ -4,9 +4,8 @@ import _ from "lodash";
 import TextSource from "../textSource";
 import {LILY_STAFF_SIZE_DEFAULT} from "../constants";
 import {romanize} from "../romanNumeral";
-import {lcmMulti} from "./utils";
 import {
-	parseRaw, getDurationSubdivider,
+	parseRaw,
 	BaseTerm, Assignment, LiteralString, Command, Variable, MarkupCommand, Grace, Include, Version, Block, InlineBlock,
 	Scheme, Chord, BriefChord, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive,
 } from "./lilyTerms";

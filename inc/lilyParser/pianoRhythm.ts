@@ -1,16 +1,18 @@
 
-import {MusicBlock, LyricMode, ContextedMusic, Variable, Assignment, Command, Duration, Lyric, Times} from "./lilyTerms";
 import {WHOLE_DURATION_MAGNITUDE, FractionNumber} from "./utils";
+import {MusicBlock, LyricMode, ContextedMusic, Variable, Assignment, Command, Duration, Lyric, Times} from "./lilyTerms";
 
 // eslint-disable-next-line
 import LilyDocument from "./lilyDocument";
+// eslint-disable-next-line
+import LilyInterpreter, {MusicTrack} from "./lilyInterpreter";
 // eslint-disable-next-line
 import {SimultaneousList} from "./lilyTerms";
 
 
 
-const createPianoRhythmTrack = (voices: MusicBlock[], subdivider: number): LyricMode => {
-	const ticks = new Set([].concat(...voices.map(voice => voice.ticks)));
+const createPianoRhythmTrack = (voices: MusicTrack[], subdivider: number): LyricMode => {
+	const ticks = new Set([].concat(...voices.map(voice => voice.block.ticks)));	// TODO: use voice.noteTicks
 	const granularity = WHOLE_DURATION_MAGNITUDE / subdivider;
 	//console.log("ticks:", ticks, granularity);
 
@@ -34,14 +36,10 @@ const createPianoRhythmTrack = (voices: MusicBlock[], subdivider: number): Lyric
 };
 
 
-export const createPianoRhythm = (doc: LilyDocument) => {
-	/*const score = doc.root.getBlock("score");
-	if (!score) {
-		console.warn("no score block");
-		return;
-	}
+export const createPianoRhythm = (interpreter: LilyInterpreter) => {
+	console.assert(interpreter.score, "interpreter.score is null.");
 
-	const pianoMusic = score.findFirst(term => term instanceof ContextedMusic && term.type === "PianoStaff") as ContextedMusic;
+	const pianoMusic = interpreter.score.findFirst(term => term instanceof ContextedMusic && term.type === "PianoStaff") as ContextedMusic;
 	//console.log("pianoMusic:", pianoMusic);
 	if (!pianoMusic) {
 		console.warn("no pianoMusic");
@@ -56,21 +54,24 @@ export const createPianoRhythm = (doc: LilyDocument) => {
 	const staves = list.list.filter(music => music instanceof ContextedMusic &&  music.type === "Staff");
 	const upStaffPos = list.list.indexOf(staves[0]) + 1;
 
+	interpreter.updateTrackAssignments();
+
 	//console.log("staves:", staves);
 	staves.forEach((staff, i) => {
 		const variables = staff.findAll(Variable).map(variable => variable.name);
-		const voices = doc.root.sections.filter(term => term instanceof Assignment && variables.includes(term.key) && term.value.music)
-			.map((assignment: Assignment) => assignment.value.music) as MusicBlock[];
+		//const voices = doc.root.sections.filter(term => term instanceof Assignment && variables.includes(term.key) && term.value.music)
+		//	.map((assignment: Assignment) => assignment.value.music) as MusicBlock[];
+		const voices = interpreter.musicTracks.filter(track => variables.includes(track.name));
 		//console.log("voices", voices);
 
-		voices.forEach(voice => voice.allocateMeasures());
+		//voices.forEach(voice => voice.allocateMeasures());
 
-		const lyric = createPianoRhythmTrack(voices, doc.noteDurationSubdivider);
+		const lyric = createPianoRhythmTrack(voices, interpreter.getNoteDurationSubdivider());
 		// TODO: create with clause at pos[2] in \new command: \with { \override VerticalAxisGroup.staff-affinity = #UP }
 		const music = new ContextedMusic({head: new Command({cmd: "new", args: ["Lyrics"]}), body: lyric});
 
 		list.list.splice(upStaffPos + i, 0, music);
 	});
 
-	doc.appendIncludeFile("rhythmSymbols.ly");*/
+	interpreter.addIncludeFile("rhythmSymbols.ly");
 };

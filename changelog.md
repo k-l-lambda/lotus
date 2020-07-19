@@ -2,7 +2,6 @@
 ## TODO
 	lilyInterpreter
 		execute parallelMusic
-		refine allocateMeasures, sliceMeasures
 		MusicBlock.notes
 	lyrics in music normalization
 	keep comments in LilyDocument
@@ -26,6 +25,8 @@
 
 
 *	2020.7.19
+
+	+	pianoRhythm.ts: refined by LilyInterpreter.
 
 	+	lilyInterpreter.ts: MusicTrack.sliceMeasures added.
 

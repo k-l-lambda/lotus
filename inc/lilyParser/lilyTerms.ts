@@ -89,7 +89,7 @@ interface DurationContextStatus {
 };
 
 
-class DurationContext {
+/*class DurationContext {
 	stack: DurationContextStatus[] = [];
 	tick: number = 0;
 	measureLength: number = WHOLE_DURATION_MAGNITUDE;
@@ -174,7 +174,7 @@ class StaffContext {
 	get declarations (): BaseTerm[] {
 		return [this.clef, this.key, this.time, this.octave].filter(term => term);
 	}
-};
+};*/
 
 
 export class BaseTerm {

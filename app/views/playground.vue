@@ -907,8 +907,12 @@
 
 			createPianoRhythm () {
 				this.updateLilyDocument();
-				createPianoRhythm(this.lilyDocument);
 
+				const interperter = new LilyInterpreter();
+				interperter.interpretDocument(this.lilyDocument);
+				createPianoRhythm(interperter);
+
+				this.lilyDocument = interperter.toDocument();
 				this.lilySource = this.lilyDocument.toString();
 
 				this.$nextTick(() => this.lilyDocumentDirty = false);
