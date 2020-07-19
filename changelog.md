@@ -2,7 +2,6 @@
 ## TODO
 	lilyInterpreter
 		execute parallelMusic
-		MusicBlock.notes
 	lyrics in music normalization
 	keep comments in LilyDocument
 	lyrics hilighting
@@ -25,6 +24,8 @@
 
 
 *	2020.7.19
+
+	+	lilyTerms.ts: Chord.notes added.
 
 	+	pianoRhythm.ts: refined by LilyInterpreter.
 

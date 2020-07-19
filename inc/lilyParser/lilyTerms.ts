@@ -89,94 +89,6 @@ interface DurationContextStatus {
 };
 
 
-/*class DurationContext {
-	stack: DurationContextStatus[] = [];
-	tick: number = 0;
-	measureLength: number = WHOLE_DURATION_MAGNITUDE;
-	measureIndex: number = 1;
-	measureTick: number = 0;
-
-
-	get factor () {
-		for (let i = this.stack.length - 1; i >= 0; i--) {
-			const status = this.stack[i];
-			if (status.factor)
-				return status.factor;
-		}
-
-		return null;
-	}
-
-
-	get factorValue () {
-		return this.factor ? this.factor.value : 1;
-	}
-
-
-	elapse (duration: number) {
-		const increment = duration * this.factorValue;
-
-		this.tick += increment;
-
-		this.measureTick += increment;
-		while (Math.round(this.measureTick) >= Math.round(this.measureLength)) {
-			++this.measureIndex;
-			this.measureTick -= this.measureLength;
-		}
-	}
-
-
-	push (status: DurationContextStatus) {
-		this.stack.push(status);
-	}
-
-	
-	pop () {
-		this.stack.pop();
-	}
-};
-
-
-class StaffContext {
-	clef?: Clef;
-	key?: KeySignature;
-	time?: TimeSignature;
-	octave?: OctaveShift;
-
-	pitch?: ChordElement;
-
-
-	constructor ({anchorPitch = null} = {}) {
-		this.pitch = anchorPitch;
-	}
-
-
-	append (term: BaseTerm) {
-		if (term instanceof Clef)
-			this.clef = term;
-		else if (term instanceof KeySignature)
-			this.key = term;
-		else if (term instanceof TimeSignature)
-			this.time = term;
-		else if (term instanceof OctaveShift)
-			this.octave = term;
-		else if (term instanceof Chord)
-			this.pitch = term.absolutePitch;
-		else if (term.isMusic) {
-			term.forEachTopTerm(MusicBlock, block => {
-				for (const subterm of block.body)
-					this.append(subterm);
-			});
-		}
-	}
-
-
-	get declarations (): BaseTerm[] {
-		return [this.clef, this.key, this.time, this.octave].filter(term => term);
-	}
-};*/
-
-
 export class BaseTerm {
 	_location?: Location;
 	_measure?: number;
@@ -544,11 +456,6 @@ export class Command extends BaseTerm {
 
 		return false;
 	}
-
-
-	/*get isGrace () {
-		return GRACE_COMMANDS.includes(this.cmd);
-	}*/
 
 
 	get musicChunks (): MusicChunk[] {
@@ -1002,13 +909,27 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
-	get ticks (): number[] {
+	get notes (): Chord[] {
+		const notes = this.body.filter(term => term instanceof Chord && !term.completeTied && !term.isRest) as Chord[];
+		this.forEachTopTerm(MusicBlock, block => notes.push(...block.notes));
+
+		return notes;
+	}
+
+
+	get noteTicks (): number[] {
+		const ticks = this.notes.map(note => note._tick);
+		return Array.from(new Set(ticks)).sort((t1, t2) => t1 - t2);
+	}
+
+
+	/*get ticks (): number[] {
 		const ticks = this.body.filter(term => Number.isFinite(term._tick)).map(term => term._tick);
 
 		this.forEachTopTerm(MusicBlock, block => ticks.push(...block.ticks));
 
 		return Array.from(new Set(ticks)).sort((t1, t2) => t1 - t2);
-	}
+	}*/
 
 
 	updateChordAnchors () {
@@ -1671,6 +1592,16 @@ export class Chord extends MusicEvent {
 			return previous.absolutePitch;
 
 		return this.basePitch;
+	}
+
+
+	get isRest (): boolean {
+		return !!this.options.rest;
+	}
+
+
+	get completeTied (): boolean {
+		return this.pitches.filter(pitch => !pitch._tied).length === 0;
 	}
 
 

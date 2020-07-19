@@ -198,7 +198,7 @@ class StaffContext {
 	}
 
 
-	get factor () {
+	get factor (): {value: number} {
 		for (let i = this.stack.length - 1; i >= 0; i--) {
 			const status = this.stack[i];
 			if (status.factor)
@@ -209,12 +209,12 @@ class StaffContext {
 	}
 
 
-	get factorValue () {
+	get factorValue (): number {
 		return this.factor ? this.factor.value : 1;
 	}
 
 
-	get currentMeasureSpan () {
+	get currentMeasureSpan (): number {
 		return Math.round(this.partialDuration ? this.partialDuration.magnitude : this.measureSpan);
 	}
 
@@ -398,6 +398,7 @@ export default class LilyInterpreter {
 		const context = new StaffContext();
 		context.execute(music.clone());
 
+		context.track.spreadRelativeBlocks();
 		this.musicTracks.push(context.track);
 
 		const varName = LilyInterpreter.trackName(this.musicTracks.length);

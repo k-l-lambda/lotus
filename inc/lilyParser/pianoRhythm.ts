@@ -1,9 +1,7 @@
 
 import {WHOLE_DURATION_MAGNITUDE, FractionNumber} from "./utils";
-import {MusicBlock, LyricMode, ContextedMusic, Variable, Assignment, Command, Duration, Lyric, Times} from "./lilyTerms";
+import {MusicBlock, LyricMode, ContextedMusic, Variable, Command, Duration, Lyric, Times} from "./lilyTerms";
 
-// eslint-disable-next-line
-import LilyDocument from "./lilyDocument";
 // eslint-disable-next-line
 import LilyInterpreter, {MusicTrack} from "./lilyInterpreter";
 // eslint-disable-next-line
@@ -12,7 +10,7 @@ import {SimultaneousList} from "./lilyTerms";
 
 
 const createPianoRhythmTrack = (voices: MusicTrack[], subdivider: number): LyricMode => {
-	const ticks = new Set([].concat(...voices.map(voice => voice.block.ticks)));	// TODO: use voice.noteTicks
+	const ticks = new Set([].concat(...voices.map(voice => voice.block.noteTicks)));	// TODO: use voice.noteTicks
 	const granularity = WHOLE_DURATION_MAGNITUDE / subdivider;
 	//console.log("ticks:", ticks, granularity);
 
@@ -59,12 +57,7 @@ export const createPianoRhythm = (interpreter: LilyInterpreter) => {
 	//console.log("staves:", staves);
 	staves.forEach((staff, i) => {
 		const variables = staff.findAll(Variable).map(variable => variable.name);
-		//const voices = doc.root.sections.filter(term => term instanceof Assignment && variables.includes(term.key) && term.value.music)
-		//	.map((assignment: Assignment) => assignment.value.music) as MusicBlock[];
 		const voices = interpreter.musicTracks.filter(track => variables.includes(track.name));
-		//console.log("voices", voices);
-
-		//voices.forEach(voice => voice.allocateMeasures());
 
 		const lyric = createPianoRhythmTrack(voices, interpreter.getNoteDurationSubdivider());
 		// TODO: create with clause at pos[2] in \new command: \with { \override VerticalAxisGroup.staff-affinity = #UP }

@@ -638,22 +638,6 @@
 			},
 
 
-			async sliceMeasures (start, count) {
-				this.updateLilyDocument();
-
-				//this.lilyDocument.normalizeMusic();
-				//this.lilyDocument.sliceMeasures(start, count);
-				const interperter = new LilyInterpreter();
-				interperter.interpretDocument(this.lilyDocument);
-				interperter.sliceMeasures(start, count);
-				this.lilyDocument = interperter.toDocument();
-				this.lilySource = this.lilyDocument.toString();
-
-				await this.$nextTick();
-				this.lilyDocumentDirty = false;
-			},
-
-
 			updateSheetNotation () {
 				this.sheetNotation = null;
 				this.matcherNotations = null;
@@ -902,6 +886,22 @@
 				//console.log("lilyDocument:", this.lilyDocument);
 
 				this.executeMarkup("redivide");
+			},
+
+
+			async sliceMeasures (start, count) {
+				this.updateLilyDocument();
+
+				//this.lilyDocument.normalizeMusic();
+				//this.lilyDocument.sliceMeasures(start, count);
+				const interperter = new LilyInterpreter();
+				interperter.interpretDocument(this.lilyDocument);
+				interperter.sliceMeasures(start, count);
+				this.lilyDocument = interperter.toDocument();
+				this.lilySource = this.lilyDocument.toString();
+
+				await this.$nextTick();
+				this.lilyDocumentDirty = false;
 			},
 
 
