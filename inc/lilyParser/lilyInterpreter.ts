@@ -73,6 +73,31 @@ class MusicTrack {
 				return [term];
 		});
 	}
+
+
+	spreadRepeatBlocks ({ignoreRepeat = true, keepTailPass = false} = {}) {
+		this.transform(term => {
+			if (term instanceof Repeat) {
+				if (!ignoreRepeat)
+					return term.getUnfoldTerms();
+				else if (keepTailPass)
+					return term.getTailPassTerms();
+				else
+					return term.getPlainTerms();
+			}
+			else
+				return [term];
+		});
+	}
+
+
+	flatten ({spreadRepeats = false} = {}) {
+		this.unfoldDurationMultipliers();
+		this.spreadRelativeBlocks();
+
+		if (spreadRepeats)
+			this.spreadRepeatBlocks();
+	}
 };
 
 
