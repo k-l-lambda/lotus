@@ -37,7 +37,7 @@ export default class LilyDocument {
 	root: Root;
 
 
-	constructor (data) {
+	constructor (data: object) {
 		//console.log("raw data:", data);
 		this.root = parseRaw(data);
 	}

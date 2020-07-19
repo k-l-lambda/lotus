@@ -209,7 +209,6 @@
 
 
 	window.getDurationSubdivider = getDurationSubdivider;
-	window.LilyInterpreter = LilyInterpreter;
 
 
 
@@ -909,6 +908,16 @@
 				this.lilySource = this.lilyDocument.toString();
 
 				this.$nextTick(() => this.lilyDocumentDirty = false);
+			},
+
+
+			testInterperter () {
+				this.updateLilyDocument();
+
+				const interperter = new LilyInterpreter();
+				const newDoc = interperter.interpretDocument(this.lilyDocument).toDocument();
+
+				console.log("new doc:", interperter, newDoc);
 			},
 		},
 

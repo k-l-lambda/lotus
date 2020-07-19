@@ -1,5 +1,9 @@
 
 ## TODO
+	lilyInterpreter
+		execute parallelMusic
+		refine allocateMeasures, sliceMeasures
+		MusicBlock.notes
 	lyrics in music normalization
 	keep comments in LilyDocument
 	lyrics hilighting
@@ -19,6 +23,11 @@
 	source editor
 		cursor position column
 
+
+
+*	2020.7.19
+
+	+	lilyInterpreter.ts: saved global status.
 
 
 *	2020.7.18
