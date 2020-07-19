@@ -22,9 +22,19 @@ class MusicTrack {
 	anchorPitch: ChordElement;
 
 
+	static fromBlockAnchor (block: MusicBlock, anchorPitch: ChordElement): MusicTrack {
+		const track = new MusicTrack;
+
+		track.block = block;
+		track.anchorPitch = anchorPitch;
+
+		return track;
+	}
+
+
 	get music (): BaseTerm {
 		if (!this.block._parent)
-			this.block._parent = new Relative({cmd: "relative", args: [this.anchorPitch.clone(), this.block]});
+			this.block._parent = new Relative({cmd: "relative", args: this.anchorPitch ? [this.anchorPitch.clone(), this.block] : [this.block]});
 
 		return this.block._parent;
 	}
@@ -36,8 +46,13 @@ class MusicTrack {
 
 
 	unfoldDurationMultipliers () {
+		// check if traverse is nessary
+		const term = this.block.findFirst(term => term instanceof MusicEvent && term.withMultiplier);
+		if (!term)
+			return;
+
 		this.transform((term, context) => {
-			if (!(term instanceof MusicEvent) || !term.duration || !term.duration.multipliers || !term.duration.multipliers.length)
+			if (!(term instanceof MusicEvent) || !term.withMultiplier)
 				return [term];
 
 			const factor = term.duration.multipliers.reduce((factor, multiplier) => factor * Number(multiplier), 1);
@@ -66,6 +81,11 @@ class MusicTrack {
 
 
 	spreadRelativeBlocks () {
+		// check if traverse is nessary
+		const term = this.block.findFirst(Relative);
+		if (!term)
+			return;
+
 		this.transform((term, context) => {
 			if (term instanceof Relative)
 				return term.shiftBody(context.pitch);
@@ -76,6 +96,11 @@ class MusicTrack {
 
 
 	spreadRepeatBlocks ({ignoreRepeat = true, keepTailPass = false} = {}) {
+		// check if traverse is nessary
+		const term = this.block.findFirst(Repeat);
+		if (!term)
+			return;
+
 		this.transform(term => {
 			if (term instanceof Repeat) {
 				if (!ignoreRepeat)
@@ -97,6 +122,29 @@ class MusicTrack {
 
 		if (spreadRepeats)
 			this.spreadRepeatBlocks();
+	}
+
+
+	sliceMeasures (start: number, count: number): MusicTrack {
+		this.flatten({spreadRepeats: true});
+
+		const context = new StaffContext(this);
+		context.pitch = this.anchorPitch;
+		this.block.updateChordAnchors();
+
+		for (const term of this.block.body) {
+			if (Number.isInteger(term._measure)) {
+				if (term._measure < start)
+					context.execute(term);
+				else
+					break;
+			}
+		}
+
+		const terms = context.declarations.concat(this.block.body.filter(term => term._measure >= start && term._measure < start + count));
+		const newBlock = new MusicBlock({body: terms.map(term => term.clone())});
+
+		return MusicTrack.fromBlockAnchor(newBlock, context.pitch);
 	}
 };
 
@@ -244,8 +292,10 @@ class StaffContext {
 					this.execute(subterm);
 			}
 		}
-		else if (term instanceof TimeSignature)
+		else if (term instanceof TimeSignature) {
+			this.time = term;
 			this.measureSpan = term.value.value * WHOLE_DURATION_MAGNITUDE;
+		}
 		else if (term instanceof Partial)
 			this.partialDuration = term.duration;
 		else if (term instanceof Repeat) {
@@ -281,8 +331,6 @@ class StaffContext {
 			this.clef = term;
 		else if (term instanceof KeySignature)
 			this.key = term;
-		else if (term instanceof TimeSignature)
-			this.time = term;
 		else if (term instanceof OctaveShift)
 			this.octave = term;
 		else if (term instanceof Primitive) {
@@ -439,5 +487,10 @@ export default class LilyInterpreter {
 		].filter(section => section)});
 
 		return new LilyDocument(root);
+	}
+
+
+	sliceMeasures (start: number, count: number) {
+		this.musicTracks = this.musicTracks.map(track => track.sliceMeasures(start, count));
 	}
 };

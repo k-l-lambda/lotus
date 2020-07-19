@@ -1154,7 +1154,7 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
-	// allocate measure number according to duration
+	/*// allocate measure number according to duration
 	allocateMeasures (context: DurationContext = new DurationContext()) {
 		this.unfoldDurationMultipliers();
 
@@ -1224,7 +1224,7 @@ export class MusicBlock extends BaseTerm {
 				term._tick = context.tick;
 			}
 		}
-	}
+	}*/
 
 
 	// with side effects
@@ -1270,7 +1270,7 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
-	// pure
+	/*// pure
 	sliceMeasures (start: number, count: number): Relative {
 		const flatten = this.flatten({spreadRepeats: true});
 		const block = flatten.music as MusicBlock;
@@ -1293,7 +1293,7 @@ export class MusicBlock extends BaseTerm {
 		const newBlock = new MusicBlock({body: terms.map(term => term.clone())});
 
 		return new Relative({cmd: "relative", args: [anchor, newBlock].filter(term => term)});
-	}
+	}*/
 };
 
 
@@ -1575,6 +1575,11 @@ export class MusicEvent extends BaseTerm {
 	get durationMagnitude (): number {
 		return this.durationValue.magnitude;
 	}
+
+
+	get withMultiplier () {
+		return this.duration && this.duration.withMultiplier;
+	}
 };
 
 
@@ -1827,6 +1832,11 @@ export class Duration extends BaseTerm {
 		return compact([
 			this.number, dots, multipliers,
 		]);
+	}
+
+
+	get withMultiplier () {
+		return this.multipliers && this.multipliers.length > 0;
 	}
 
 

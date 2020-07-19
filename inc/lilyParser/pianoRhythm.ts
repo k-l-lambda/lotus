@@ -35,7 +35,7 @@ const createPianoRhythmTrack = (voices: MusicBlock[], subdivider: number): Lyric
 
 
 export const createPianoRhythm = (doc: LilyDocument) => {
-	const score = doc.root.getBlock("score");
+	/*const score = doc.root.getBlock("score");
 	if (!score) {
 		console.warn("no score block");
 		return;
@@ -72,5 +72,5 @@ export const createPianoRhythm = (doc: LilyDocument) => {
 		list.list.splice(upStaffPos + i, 0, music);
 	});
 
-	doc.appendIncludeFile("rhythmSymbols.ly");
+	doc.appendIncludeFile("rhythmSymbols.ly");*/
 };

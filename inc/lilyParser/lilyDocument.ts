@@ -227,7 +227,7 @@ export default class LilyDocument {
 	};
 
 
-	// extract music tracks into variables
+	/*// extract music tracks into variables
 	normalizeMusic () {
 		const trackName = LilyDocument.normalTrackName;
 
@@ -275,7 +275,7 @@ export default class LilyDocument {
 		const subdivider = lcmMulti(...this.normalMusicTracks.map(getDurationSubdivider));
 
 		return subdivider;
-	}
+	}*/
 
 
 	appendIncludeFile (filename: string) {
@@ -707,10 +707,10 @@ export default class LilyDocument {
 	}
 
 
-	// require normalization
+	/*// require normalization
 	sliceMeasures (start: number, count: number) {
 		const tracks = this.normalMusicTracks;
 
 		tracks.forEach(track => (track._parent._parent as Assignment).value = track.sliceMeasures(start, count));
-	}
+	}*/
 };

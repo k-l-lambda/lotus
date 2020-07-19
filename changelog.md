@@ -27,6 +27,8 @@
 
 *	2020.7.19
 
+	+	lilyInterpreter.ts: MusicTrack.sliceMeasures added.
+
 	+	lilyInterpreter.ts: MusicTrack.flatten added.
 	+	lilyInterpreter.ts: MusicTrack.spreadRepeatBlocks added.
 	+	lilyInterpreter.ts: MusicTrack.spreadRelativeBlocks added.

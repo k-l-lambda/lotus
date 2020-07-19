@@ -641,8 +641,12 @@
 			async sliceMeasures (start, count) {
 				this.updateLilyDocument();
 
-				this.lilyDocument.normalizeMusic();
-				this.lilyDocument.sliceMeasures(start, count);
+				//this.lilyDocument.normalizeMusic();
+				//this.lilyDocument.sliceMeasures(start, count);
+				const interperter = new LilyInterpreter();
+				interperter.interpretDocument(this.lilyDocument);
+				interperter.sliceMeasures(start, count);
+				this.lilyDocument = interperter.toDocument();
 				this.lilySource = this.lilyDocument.toString();
 
 				await this.$nextTick();
