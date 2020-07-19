@@ -4,7 +4,7 @@ import {WHOLE_DURATION_MAGNITUDE} from "./utils";
 import {parseRaw} from "./lilyTerms";
 
 // eslint-disable-next-line
-import {BaseTerm, Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, Clef, KeySignature, OctaveShift, Duration, ChordElement, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version, Scheme, Include} from "./lilyTerms";
+import {BaseTerm, Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, Clef, KeySignature, OctaveShift, Duration, ChordElement, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version, Scheme, Include, Rest} from "./lilyTerms";
 // eslint-disable-next-line
 import LilyDocument from "./lilyDocument";
 
@@ -14,6 +14,9 @@ interface DurationContextStackStatus {
 };
 
 
+type MusicTransformer = (music: BaseTerm, context: StaffContext) => BaseTerm[];
+
+
 class MusicTrack {
 	block: MusicBlock;
 	anchorPitch: ChordElement;
@@ -21,15 +24,51 @@ class MusicTrack {
 
 	get music (): BaseTerm {
 		if (!this.block._parent)
-			this.block._parent = new Relative({cmd: "\\relative", args: [this.anchorPitch.clone(), this.block]});
+			this.block._parent = new Relative({cmd: "relative", args: [this.anchorPitch.clone(), this.block]});
 
 		return this.block._parent;
+	}
+
+
+	transform (transformer: MusicTransformer) {
+		new StaffContext(this, {transformer}).execute(this.music);
+	}
+
+
+	unfoldDurationMultipliers () {
+		this.transform((term, context) => {
+			if (!(term instanceof MusicEvent) || !term.duration || !term.duration.multipliers || !term.duration.multipliers.length)
+				return [term];
+
+			const factor = term.duration.multipliers.reduce((factor, multiplier) => factor * Number(multiplier), 1);
+			if (!Number.isInteger(factor) || factor <= 0) {
+				console.warn("invalid multiplier:", factor, term.duration.multipliers);
+				return [term];
+			}
+
+			const timeDenominator = context.time ? context.time.value.denominator : 4;
+			const denominator = Math.max(term.duration.denominator, timeDenominator);
+
+			const event = term.clone() as MusicEvent;
+			event.duration.multipliers = [];
+
+			// break duration into multiple rest events
+			const restCount = (event.duration.magnitude / WHOLE_DURATION_MAGNITUDE) * (factor - 1) * denominator;
+			if (!Number.isInteger(restCount))
+				console.warn("Rest count is not integear:", restCount, denominator, event.duration.magnitude, factor);
+
+			const rests = Array(Math.floor(restCount)).fill(null).map(() =>
+				new Rest({name: "s", duration: new Duration({number: denominator})}));
+
+			return [event, ...rests];
+		});
 	}
 };
 
 
 class StaffContext {
-	track: MusicTrack = new MusicTrack;
+	track: MusicTrack;
+	transformer?: MusicTransformer;
 
 	stack: DurationContextStackStatus[] = [];
 
@@ -52,9 +91,10 @@ class StaffContext {
 	tying: boolean = false;
 
 
-	/*constructor ({anchorPitch = null} = {}) {
-		this.pitch = anchorPitch;
-	}*/
+	constructor (track = new MusicTrack, {transformer = null}: {transformer?: MusicTransformer} = {}) {
+		this.track = track;
+		this.transformer = transformer;
+	}
 
 
 	get factor () {
@@ -79,7 +119,7 @@ class StaffContext {
 
 
 	setPitch (pitch: ChordElement) {
-		if (!this.pitch)
+		if (!this.track.anchorPitch)
 			this.track.anchorPitch = pitch;
 
 		this.pitch = pitch;
@@ -153,8 +193,21 @@ class StaffContext {
 
 			term.updateChordAnchors();
 
-			for (const subterm of term.body)
-				this.execute(subterm);
+			if (this.transformer) {
+				const body = [];
+				for (const subterm of term.body) {
+					const terms = this.transformer(subterm, this);
+					terms.forEach(t => this.execute(t));
+
+					body.push(...terms);
+				}
+	
+				term.body = body;
+			}
+			else {
+				for (const subterm of term.body)
+					this.execute(subterm);
+			}
 		}
 		else if (term instanceof TimeSignature)
 			this.measureSpan = term.value.value * WHOLE_DURATION_MAGNITUDE;

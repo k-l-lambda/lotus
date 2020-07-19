@@ -27,6 +27,8 @@
 
 *	2020.7.19
 
+	+	lilyInterpreter.ts: MusicTrack.unfoldDurationMultipliers added.
+
 	+	lilyInterpreter.ts: MusicTrack added.
 
 	+	lilyInterpreter.ts: saved global status.

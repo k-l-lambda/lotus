@@ -915,7 +915,10 @@
 				this.updateLilyDocument();
 
 				const interperter = new LilyInterpreter();
-				const newDoc = interperter.interpretDocument(this.lilyDocument).toDocument();
+				interperter.interpretDocument(this.lilyDocument);
+
+				interperter.musicTracks.forEach(track => track.unfoldDurationMultipliers());
+				const newDoc = interperter.toDocument();
 
 				console.log("new doc:", interperter, newDoc);
 			},
