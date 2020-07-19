@@ -27,6 +27,8 @@
 
 *	2020.7.19
 
+	+	lilyInterpreter.ts: MusicTrack added.
+
 	+	lilyInterpreter.ts: saved global status.
 
 

@@ -14,8 +14,22 @@ interface DurationContextStackStatus {
 };
 
 
+class MusicTrack {
+	block: MusicBlock;
+	anchorPitch: ChordElement;
+
+
+	get music (): BaseTerm {
+		if (!this.block._parent)
+			this.block._parent = new Relative({cmd: "\\relative", args: [this.anchorPitch.clone(), this.block]});
+
+		return this.block._parent;
+	}
+};
+
+
 class StaffContext {
-	track: MusicBlock = null;
+	track: MusicTrack = new MusicTrack;
 
 	stack: DurationContextStackStatus[] = [];
 
@@ -38,9 +52,9 @@ class StaffContext {
 	tying: boolean = false;
 
 
-	constructor ({anchorPitch = null} = {}) {
+	/*constructor ({anchorPitch = null} = {}) {
 		this.pitch = anchorPitch;
-	}
+	}*/
 
 
 	get factor () {
@@ -61,6 +75,14 @@ class StaffContext {
 
 	get currentMeasureSpan () {
 		return Math.round(this.partialDuration ? this.partialDuration.magnitude : this.measureSpan);
+	}
+
+
+	setPitch (pitch: ChordElement) {
+		if (!this.pitch)
+			this.track.anchorPitch = pitch;
+
+		this.pitch = pitch;
 	}
 
 
@@ -102,7 +124,7 @@ class StaffContext {
 			term._previous = this.event;
 
 			if (term instanceof Chord) {
-				this.pitch = term.absolutePitch;
+				this.setPitch(term.absolutePitch);
 
 				// update tied for ChordElement
 				if (this.tying && this.event && this.event instanceof Chord) {
@@ -126,8 +148,8 @@ class StaffContext {
 				this.tying = true;
 		}
 		else if (term instanceof MusicBlock) {
-			if (!this.track)
-				this.track = term;
+			if (!this.track.block)
+				this.track.block = term;
 
 			term.updateChordAnchors();
 
@@ -148,7 +170,7 @@ class StaffContext {
 		}
 		else if (term instanceof Relative) {
 			if (term.anchor)
-				this.pitch = term.anchor;
+				this.setPitch(term.anchor);
 
 			this.execute(term.music);
 		}
@@ -196,7 +218,7 @@ class StaffContext {
 export default class LilyInterpreter {
 	variableTable: Map<string, BaseTerm> = new Map();
 
-	musicTracks: MusicBlock[] = [];
+	musicTracks: MusicTrack[] = [];
 
 	version: Version = null;
 	header: Block = null;
@@ -219,7 +241,7 @@ export default class LilyInterpreter {
 	interpretMusic (music: BaseTerm): Variable {
 		//console.log("interpretMusic:", music);
 		const context = new StaffContext();
-		context.execute(music);
+		context.execute(music.clone());
 
 		this.musicTracks.push(context.track);
 
@@ -313,7 +335,7 @@ export default class LilyInterpreter {
 
 	toDocument (): LilyDocument {
 		// append music track assignments
-		this.musicTracks.forEach((track, i) => this.variableTable.set(LilyInterpreter.trackName(i + 1), track));
+		this.musicTracks.forEach((track, i) => this.variableTable.set(LilyInterpreter.trackName(i + 1), track.music));
 
 		const variables = [].concat(...[this.paper, this.layout, this.score].map(block => block.findAll(Variable).map(variable => variable.name)));
 		const assignments = variables.map(name => new Assignment({key: name, value: this.variableTable.get(name)}));
