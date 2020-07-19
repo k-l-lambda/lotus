@@ -61,8 +61,10 @@ const phonetDifferToShift = differ => differ > 3 ? -1 : (differ < -3 ? 1 : 0);
 
 
 export const getDurationSubdivider = (term: BaseTerm): number => {
-	if (term instanceof MusicEvent)
-		return term.duration.subdivider;
+	if (term instanceof MusicEvent) {
+		if (!(term instanceof Rest) || !term.isSpacer)
+			return term.durationValue.subdivider;
+	}
 	else if (term instanceof MusicBlock)
 		return lcmMulti(...term.body.map(getDurationSubdivider));
 	else if (term instanceof MusicChunk)
@@ -1626,6 +1628,11 @@ export class Rest extends MusicEvent {
 			]),
 			...cc((this.post_events || []).map(BaseTerm.optionalSerialize)),
 		];
+	}
+
+
+	get isSpacer () {
+		return this.name === "s";
 	}
 };
 
