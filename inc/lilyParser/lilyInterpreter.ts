@@ -427,8 +427,6 @@ export default class LilyInterpreter {
 					this.version = sec;
 				else if (sec instanceof Scheme)
 					this.statements.push(sec);
-				else if (sec instanceof Include)
-					this.statements.push(sec);
 				else if (sec instanceof Block) {
 					switch (sec.head) {
 					case "\\header":
