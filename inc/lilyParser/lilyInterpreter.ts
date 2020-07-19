@@ -58,9 +58,19 @@ class MusicTrack {
 				console.warn("Rest count is not integear:", restCount, denominator, event.duration.magnitude, factor);
 
 			const rests = Array(Math.floor(restCount)).fill(null).map(() =>
-				new Rest({name: "s", duration: new Duration({number: denominator})}));
+				new Rest({name: "s", duration: new Duration({number: denominator, dots: 0})}));
 
 			return [event, ...rests];
+		});
+	}
+
+
+	spreadRelativeBlocks () {
+		this.transform((term, context) => {
+			if (term instanceof Relative)
+				return term.shiftBody(context.pitch);
+			else
+				return [term];
 		});
 	}
 };

@@ -742,9 +742,10 @@ export class Relative extends Command {
 
 
 	// with side effect
-	shiftBody (newAnchor: ChordElement): BaseTerm[] {
-		if (newAnchor && this.headChord)
-			this.headChord.shiftAnchor(newAnchor);
+	shiftBody (newAnchor?: ChordElement): BaseTerm[] {
+		const headChord = this.headChord;
+		if (newAnchor && headChord)
+			headChord.shiftAnchor(newAnchor);
 
 		const music = this.music;
 		if (music instanceof MusicBlock)
@@ -1806,7 +1807,7 @@ export class ChordElement extends BaseTerm {
 
 export class Duration extends BaseTerm {
 	number: string;
-	dots: number = 0;
+	dots: number;
 	multipliers?: string[];
 
 
