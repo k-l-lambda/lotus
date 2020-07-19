@@ -35,7 +35,7 @@ const createPianoRhythmTrack = (voices: MusicTrack[], subdivider: number): Lyric
 
 
 export const createPianoRhythm = (interpreter: LilyInterpreter) => {
-	console.assert(interpreter.score, "interpreter.score is null.");
+	console.assert(!!interpreter.score, "interpreter.score is null.");
 
 	const pianoMusic = interpreter.score.findFirst(term => term instanceof ContextedMusic && term.type === "PianoStaff") as ContextedMusic;
 	//console.log("pianoMusic:", pianoMusic);
