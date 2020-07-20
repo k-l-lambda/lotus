@@ -6,7 +6,7 @@ import {parseRaw, getDurationSubdivider} from "./lilyTerms";
 import {
 	// eslint-disable-next-line
 	BaseTerm, ChordElement,
-	LiteralString, Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, Clef, Scheme, Include, Rest,
+	LiteralString, Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, AfterGrace, Clef, Scheme, Include, Rest,
 	KeySignature, OctaveShift, Duration, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version,
 	ChordMode, LyricMode,
 } from "./lilyTerms";
@@ -350,6 +350,13 @@ class StaffContext {
 		else if (term instanceof Grace) {
 			this.push({factor: {value: 0}});
 			this.execute(term.music);
+			this.pop();
+		}
+		else if (term instanceof AfterGrace) {
+			this.execute(term.body);
+
+			this.push({factor: {value: 0}});
+			this.execute(term.grace);
 			this.pop();
 		}
 		else if (term instanceof Clef)

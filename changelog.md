@@ -25,6 +25,8 @@
 
 *	2020.7.20
 
+	+	lilyInterpreter.ts: added AfterGrace for StaffContext.execute.
+
 	+	scoreMaker.ts: use getTiedNoteLocations2 by LilyInterpreter.
 
 

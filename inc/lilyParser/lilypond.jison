@@ -23,6 +23,7 @@
 		acciaccatura: "Grace",
 		appoggiatura: "Grace",
 		slashedGrace: "Grace",
+		afterGrace: "AfterGrace",
 	};
 
 

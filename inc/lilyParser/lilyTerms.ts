@@ -710,6 +710,17 @@ export class Grace extends Command {
 };
 
 
+export class AfterGrace extends Command {
+	get body (): BaseTerm {
+		return this.args[0];
+	}
+
+	get grace (): BaseTerm {
+		return this.args[1];
+	}
+};
+
+
 export class Clef extends Command {
 };
 
@@ -1979,6 +1990,7 @@ export const termDictionary = {
 	Times,
 	Tuplet,
 	Grace,
+	AfterGrace,
 	Clef,
 	KeySignature,
 	OctaveShift,
