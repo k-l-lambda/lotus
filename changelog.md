@@ -11,6 +11,7 @@
 	music duration parsing
 		parse measure ticks from ly
 	staffSvg
+		try fix notes' time by lily interpreter
 		fix partial measures
 			add partial on standalone block
 				parse duration in \times
