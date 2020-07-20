@@ -80,7 +80,7 @@ export const getDurationSubdivider = (term: BaseTerm): number => {
 	else if (term instanceof Relative)
 		return getDurationSubdivider(term.music);
 	else if (term.isMusic)
-		console.warn("unexpected music term:", term);
+		console.warn("[getDurationSubdivider]	unexpected music term:", term);
 
 	return 1;
 };

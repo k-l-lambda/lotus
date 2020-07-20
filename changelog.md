@@ -23,6 +23,11 @@
 
 
 
+*	2020.7.20
+
+	+	scoreMaker.ts: use getTiedNoteLocations2 by LilyInterpreter.
+
+
 *	2020.7.19
 
 	+	lilyTerms.ts: Chord.notes added.

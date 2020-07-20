@@ -60,7 +60,7 @@ const service = {
 				//const attributes = lilyDocument.globalAttributes({readonly: true});
 				//console.log("attributes:", attributes);
 
-				new LilyInterpreter().execute(lilyDocument.root);
+				new LilyInterpreter().interpretDocument(lilyDocument);
 
 				const logger = new LogRecorder({enabled: log});
 

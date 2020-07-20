@@ -8,6 +8,7 @@ import {
 	BaseTerm, ChordElement,
 	LiteralString, Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, Clef, Scheme, Include, Rest,
 	KeySignature, OctaveShift, Duration, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version,
+	ChordMode, LyricMode,
 } from "./lilyTerms";
 // eslint-disable-next-line
 import LilyDocument from "./lilyDocument";
@@ -330,6 +331,12 @@ class StaffContext {
 
 			this.execute(term.music);
 		}
+		else if (term instanceof LyricMode) {
+			// ignore lyric mode
+		}
+		else if (term instanceof ChordMode) {
+			// ignore chord mode
+		}
 		else if (term instanceof Times) {
 			this.push({factor: term.factor});
 			this.execute(term.music);
@@ -357,7 +364,7 @@ class StaffContext {
 		}
 		else {
 			if (term.isMusic)
-				console.warn("unexpected music term:", term);
+				console.warn("[StaffContext]	unexpected music term:", term);
 		}
 	}
 
@@ -396,7 +403,8 @@ export default class LilyInterpreter {
 	interpretMusic (music: BaseTerm): Variable {
 		//console.log("interpretMusic:", music);
 		const context = new StaffContext();
-		context.execute(music.clone());
+		//context.execute(music.clone());
+		context.execute(music);
 
 		context.track.spreadRelativeBlocks();
 		this.musicTracks.push(context.track);

@@ -6,10 +6,10 @@ import {MusicNotation} from "@k-l-lambda/web-widgets";
 import {MIDI} from "@k-l-lambda/web-widgets";
 
 import {xml2ly, engraveSvg} from "./lilyCommands";
-import {LilyDocument, replaceSourceToken, LilyTerms} from "../inc/lilyParser";
+import {LilyDocument, LilyInterpreter, replaceSourceToken, LilyTerms} from "../inc/lilyParser";
 import * as staffSvg from "../inc/staffSvg";
 import {SingleLock} from "../inc/mutex";
-import TextSource from "../inc/textSource";
+//import TextSource from "../inc/textSource";
 // eslint-disable-next-line
 import LogRecorder from "../inc/logRecorder";
 // eslint-disable-next-line
@@ -296,13 +296,16 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 		// do some work during lilypond process running to save time
 		onProcStart: () => {
 			//console.log("tp.0:", Date.now() - t0);
-			if (!lilyDocument)
+			if (!lilyDocument) {
 				lilyDocument = new LilyDocument(lilyParser.parse(source));
+				new LilyInterpreter().interpretDocument(lilyDocument);
+			}
 
 			const attributes = lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
 
-			const text = new TextSource(source);
-			const tieLocations = lilyDocument.getTiedNoteLocations(text)
+			//const text = new TextSource(source);
+			//const tieLocations = lilyDocument.getTiedNoteLocations(text)
+			const tieLocations = lilyDocument.getTiedNoteLocations2()
 				.reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
 
 			argsGen.release({attributes, tieLocations});
@@ -360,6 +363,7 @@ const makeScoreV3 = async (source: string, lilyParser: GrammarParser, {midi, log
 
 	if (unfoldRepeats) {
 		lilyDocument = new LilyDocument(lilyParser.parse(source));
+		new LilyInterpreter().interpretDocument(lilyDocument);
 		if (lilyDocument.containsRepeat()) {
 			lilyDocument.unfoldRepeats();
 			unfoldSource = lilyDocument.toString();
