@@ -25,6 +25,8 @@
 
 *	2020.7.25
 
+	+	playground.vue: turn player cursor by pointer click added.
+
 	+	sheet-live.vue: tick lookup for pointer added.
 
 	+	sheet-live.vue: measure index lookup for pointer added.

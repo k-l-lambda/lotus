@@ -99,6 +99,7 @@
 						@midi="onMidi"
 						@cursorPageShift="onCursorPageShift"
 						@pointerUpdate="onPointerUpdate"
+						@pointerClick="onPointerClick"
 					/>
 				</div>
 				<Loading v-show="engraving" />
@@ -310,7 +311,7 @@
 				chosenLilyMarkupMethod: null,
 				operating: false,
 				loadingLilyParser: false,
-				enabledPointer: false,
+				enabledPointer: true,
 				pointerData: null,
 			};
 		},
@@ -493,6 +494,12 @@
 			onPointerUpdate (point) {
 				//console.log("onPointerUpdate:", point);
 				this.pointerData = point;
+			},
+
+
+			onPointerClick (point) {
+				if (Number.isFinite(point.tick))
+					this.midiPlayer.progressTicks = point.tick;
 			},
 
 
