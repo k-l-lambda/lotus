@@ -41,6 +41,7 @@ interface SheetStaff {
 interface SheetRows {
 	index?: number;
 	pageIndex?: number;
+	measureIndices?: [number, number][];	// [end_x, index]
 	staves: SheetStaff[];
 };
 
@@ -155,8 +156,10 @@ class SheetDocument {
 			row.width = row.tokens.concat(...row.staves.map(staff => staff.tokens))
 				.reduce((max, token) => Math.max(max, token.x), 0);
 
+			row.measureIndices = [];
+
 			row.staves = row.staves.filter(s => s);
-			row.staves.forEach(staff => {
+			row.staves.forEach((staff, t) => {
 				staff.measures.forEach((measure, i) => {
 					measure.index = rowMeasureIndex + i;
 
@@ -165,6 +168,9 @@ class SheetDocument {
 						token.measure = measure.index;
 						token.endX = measure.noteRange.end;
 					});
+
+					if (t === 0)
+						row.measureIndices.push([measure.noteRange.end, measure.index]);
 				});
 
 				staff.markings = [];
@@ -250,6 +256,17 @@ class SheetDocument {
 		})));
 
 		return table;
+	}
+
+
+	lookupMeasureIndex (rowIndex, x): number {
+		const row = this.rows[rowIndex];
+		if (!row || !row.measureIndices)
+			return null;
+
+		const [_, index] = row.measureIndices.find(([end]) => x < end) || [null, null];
+
+		return index;
 	}
 };
 

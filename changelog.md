@@ -25,6 +25,8 @@
 
 *	2020.7.25
 
+	+	sheet-live.vue: measure index lookup for pointer added.
+
 	+	sheet-live.vue: pointer pad added.
 
 

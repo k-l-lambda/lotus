@@ -13,6 +13,8 @@
 					:transform="`translate(${row.x}, ${row.y})`"
 				>
 					<rect class="pad" :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top"
+						@mousemove="onMousemovePad(row, $event)"
+						@mouseleave="onMouseleavePad(row, $event)"
 						@click="onClickPad(row, $event)"
 					/>
 				</g>
@@ -390,12 +392,37 @@
 			},
 
 
-			onClickPad (row, event) {
-				const x = event.offsetX / this.svgScale - row.x;
-				const y = event.offsetY / this.svgScale - row.y;
+			eventToRowPosition (row, event) {
+				return {
+					x: event.offsetX / this.svgScale - row.x,
+					y: event.offsetY / this.svgScale - row.y,
+				};
+			},
 
-				//console.log("onClickPad:", row.index, x, y);
-				this.$emit("pointerClick", {row: row.index, x, y});
+
+			eventToPointer (row, event) {
+				const pos = this.eventToRowPosition(row, event);
+				const rowIndex = row.index;
+				const measureIndex = this.doc.lookupMeasureIndex(rowIndex, pos.x);
+
+				return {
+					rowIndex, measureIndex, ...pos,
+				};
+			},
+
+
+			onMousemovePad (row, event) {
+				this.$emit("pointerUpdate", this.eventToPointer(row, event));
+			},
+
+
+			onMouseleavePad () {
+				this.$emit("pointerUpdate", null);
+			},
+
+
+			onClickPad (row, event) {
+				this.$emit("pointerClick", this.eventToPointer(row, event));
 			},
 		},
 

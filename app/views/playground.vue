@@ -45,6 +45,13 @@
 				<CheckButton content="&#x1f35e;" v-model="bakingSheet" title="baking sheet" />
 				<CheckButton v-show="bakingSheet" content="&#x1f9b2;" v-model="hideBakingImages" title="hide baking images" />
 			</fieldset>
+			<fieldset>
+				<BoolStoreInput v-show="false" v-model="enabledPointer" sessionKey="lotus-enabledPointer" />
+				<CheckButton content="&#x2b9d;" v-model="enabledPointer" />
+				<span class="pointer-info" v-if="enabledPointer">
+					<span v-if="pointerData">m: <em>{{pointerData.measureIndex}}</em></span>
+				</span>
+			</fieldset>
 		</header>
 		<main>
 			<div class="source-container" :class="{loading: converting}">
@@ -82,13 +89,13 @@
 						:pitchContextGroup="pitchContextGroup"
 						:midiPlayer.sync="midiPlayer"
 						:showMark="true"
-						:enablePointerPad="true"
+						:enablePointerPad="enabledPointer"
 						:showCursor="showCursor"
 						:bakingMode="bakingSheet"
 						:backgroundImages="hideBakingImages ? null : bakingImages"
 						@midi="onMidi"
 						@cursorPageShift="onCursorPageShift"
-						@pointerClick="onPointerClick"
+						@pointerUpdate="onPointerUpdate"
 					/>
 				</div>
 				<Loading v-show="engraving" />
@@ -300,6 +307,8 @@
 				chosenLilyMarkupMethod: null,
 				operating: false,
 				loadingLilyParser: false,
+				enabledPointer: false,
+				pointerData: null,
 			};
 		},
 
@@ -478,8 +487,9 @@
 			},
 
 
-			onPointerClick (point) {
-				console.log("onPointerClick:", point);
+			onPointerUpdate (point) {
+				//console.log("onPointerUpdate:", point);
+				this.pointerData = point;
 			},
 
 
@@ -1024,6 +1034,12 @@
 			&.buzy
 			{
 				background-color: #ffc;
+			}
+
+			.pointer-info
+			{
+				display: inline-block;
+				width: 4em;
 			}
 		}
 
