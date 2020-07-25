@@ -49,7 +49,10 @@
 				<BoolStoreInput v-show="false" v-model="enabledPointer" sessionKey="lotus-enabledPointer" />
 				<CheckButton content="&#x2b9d;" v-model="enabledPointer" />
 				<span class="pointer-info" v-if="enabledPointer">
-					<span v-if="pointerData">m: <em>{{pointerData.measureIndex}}</em></span>
+					<span v-if="pointerData">
+						<span>m: <em>{{pointerData.measureIndex}}</em></span>
+						<span v-if="Number.isFinite(pointerData.tick)">t: <em>{{Math.round(pointerData.tick)}}</em></span>
+					</span>
 				</span>
 			</fieldset>
 		</header>
@@ -1039,7 +1042,13 @@
 			.pointer-info
 			{
 				display: inline-block;
-				width: 4em;
+				width: 8em;
+
+				& > span > span + span
+				{
+					display: inline-block;
+					margin-left: .6em;
+				}
 			}
 		}
 

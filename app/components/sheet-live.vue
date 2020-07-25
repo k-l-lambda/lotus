@@ -404,9 +404,10 @@
 				const pos = this.eventToRowPosition(row, event);
 				const rowIndex = row.index;
 				const measureIndex = this.doc.lookupMeasureIndex(rowIndex, pos.x);
+				const tick = this.scheduler.lookupTick({row: rowIndex, x: pos.x});
 
 				return {
-					rowIndex, measureIndex, ...pos,
+					rowIndex, measureIndex, tick, ...pos,
 				};
 			},
 
