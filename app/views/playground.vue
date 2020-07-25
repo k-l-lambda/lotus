@@ -82,11 +82,13 @@
 						:pitchContextGroup="pitchContextGroup"
 						:midiPlayer.sync="midiPlayer"
 						:showMark="true"
+						:enablePointerPad="true"
 						:showCursor="showCursor"
 						:bakingMode="bakingSheet"
 						:backgroundImages="hideBakingImages ? null : bakingImages"
 						@midi="onMidi"
 						@cursorPageShift="onCursorPageShift"
+						@pointerClick="onPointerClick"
 					/>
 				</div>
 				<Loading v-show="engraving" />
@@ -473,6 +475,11 @@
 
 			onCursorPageShift (pageIndex) {
 				console.log("onCursorPageShift:", pageIndex);
+			},
+
+
+			onPointerClick (point) {
+				console.log("onPointerClick:", point);
 			},
 
 

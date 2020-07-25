@@ -8,6 +8,15 @@
 			:viewBox="`${page.viewBox.x} ${page.viewBox.y} ${page.viewBox.width} ${page.viewBox.height}`"
 			:style="{['background-image']: backgroundImages && backgroundImages[i] && `url(${backgroundImages[i]})`}"
 		>
+			<g v-if="enablePointerPad" class="pointer-pad">
+				<g class="row" v-for="(row, ii) of page.rows" :key="ii"
+					:transform="`translate(${row.x}, ${row.y})`"
+				>
+					<rect class="pad" :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top"
+						@click="onClickPad(row, $event)"
+					/>
+				</g>
+			</g>
 			<g v-if="!bakingMode">
 				<g class="page-tokens">
 					<SheetToken v-for="(token, ii) of page.tokens" :key="ii" :token="token" />
@@ -132,6 +141,10 @@
 				default: false,
 			},
 			backgroundImages: Array,
+			enablePointerPad: {
+				type: Boolean,
+				default: false,
+			},
 		},
 
 
@@ -190,6 +203,15 @@
 					return null;
 
 				return row.pageIndex;
+			},
+
+
+			svgScale () {
+				const page = this.doc && this.doc.pages[0];
+				if (page)
+					return this.doc.pageSize.width / page.viewBox.width;
+
+				return 1;
 			},
 		},
 
@@ -366,6 +388,15 @@
 				this.clearNoteStatus();
 				this.clearMarkings();
 			},
+
+
+			onClickPad (row, event) {
+				const x = event.offsetX / this.svgScale - row.x;
+				const y = event.offsetY / this.svgScale - row.y;
+
+				//console.log("onClickPad:", row.index, x, y);
+				this.$emit("pointerClick", {row: row.index, x, y});
+			},
 		},
 
 
@@ -424,6 +455,7 @@
 				text
 				{
 					user-select: none;
+					pointer-events: none;
 					font-size: $musicFontSize;
 					fill: $token-default-color;
 
@@ -448,6 +480,14 @@
 			.alter
 			{
 				text-anchor: end;
+			}
+		}
+
+		.pointer-pad
+		{
+			rect
+			{
+				fill: transparent;
 			}
 		}
 	}

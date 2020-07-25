@@ -23,6 +23,11 @@
 
 
 
+*	2020.7.25
+
+	+	sheet-live.vue: pointer pad added.
+
+
 *	2020.7.19
 
 	+	lilyTerms.ts: Chord.notes added.
