@@ -87,8 +87,8 @@
 	const comment = ({loc, ...data}) => ({proto: "Comment", _location: location(loc, loc), ...data});
 
 
-	const lineHeadTable = {};
-	const lineTailTable = {};
+	let lineHeadTable = {};
+	let lineTailTable = {};
 
 	const lineHead = (loc, term) => {
 		if (!term || typeof term !== "object")
@@ -135,6 +135,10 @@
 				// TODO: attach on root's tail
 			});
 		}
+
+		// reset parser states
+		lineHeadTable = {};
+		lineTailTable = {};
 	};
 %}
 
@@ -502,11 +506,11 @@ lilypond
 	: %empty
 		{$$ = root();}
 	| version
-		{$$ = root([$1]);}
+		{$$ = root([$1]); lineRegister(@1, $1);}
 	| lilypond toplevel_expression
-		{$$ = appendSection($1, $2); lineHead(@2, $2);}
+		{$$ = appendSection($1, $2); lineRegister(@2, $2);}
 	| lilypond assignment
-		{$$ = appendSection($1, $2); lineHead(@2, $2);}
+		{$$ = appendSection($1, $2); lineRegister(@2, $2);}
 	;
 
 version
