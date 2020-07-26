@@ -24,6 +24,8 @@
 
 *	2020.7.26
 
+	+	lilyCommands.ts: refined file path resolving.
+
 	+	lilyParser: added more comment line registers.
 
 	+	lilyParser: comments parsing added.
