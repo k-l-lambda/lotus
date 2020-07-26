@@ -23,6 +23,11 @@
 
 
 
+*	2020.7.26
+
+	+	lilyParser: comments parsing added.
+
+
 *	2020.7.25
 
 	+	playground.vue: turn player cursor by pointer click added.

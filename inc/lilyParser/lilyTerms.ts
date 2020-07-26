@@ -86,11 +86,6 @@ export const getDurationSubdivider = (term: BaseTerm): number => {
 };
 
 
-interface DurationContextStatus {
-	factor?: {value: number};
-};
-
-
 export class BaseTerm {
 	_location?: Location;
 	_measure?: number;
@@ -98,6 +93,9 @@ export class BaseTerm {
 	_previous?: BaseTerm;
 	_anchorPitch?: ChordElement;
 	_parent?: BaseTerm;
+
+	_headComment: Comment;
+	_tailComment: Comment;
 
 
 	constructor (data: object) {
@@ -131,6 +129,9 @@ export class BaseTerm {
 				pop(" ");
 				continue;
 			}
+
+			if (word === "\n")
+				pop(" ");
 
 			if (/^(\}|>>)/.test(word))
 				pop("\t"); // remove the last tab
@@ -347,7 +348,15 @@ export class BaseTerm {
 
 
 	static optionalSerialize (item: any): any[] {
-		return BaseTerm.isTerm(item) ? (item as BaseTerm).serialize() : (item === undefined ? [] : [item]);
+		//return BaseTerm.isTerm(item) ? (item as BaseTerm).serialize() : (item === undefined ? [] : [item]);
+		if (!BaseTerm.isTerm(item))
+			return item === undefined ? [] : [item];
+
+		return [
+			...BaseTerm.optionalSerialize(item._headComment),
+			...item.serialize(),
+			...BaseTerm.optionalSerialize(item._tailComment),
+		];
 	}
 
 
@@ -365,7 +374,7 @@ export class Root extends BaseTerm {
 
 
 	serialize () {
-		return [].concat(...this.sections.map(section => [...section.serialize(), "\n\n"]));
+		return cc(this.sections.map(section => [...BaseTerm.optionalSerialize(section), "\n\n"]));
 	}
 
 
@@ -1954,7 +1963,21 @@ export class Lyric extends MusicEvent {
 			...cc((this.post_events || []).map(BaseTerm.optionalSerialize)),
 		];
 	}
-}
+};
+
+
+export class Comment extends BaseTerm {
+	text: string;
+	scoped: boolean;
+
+
+	serialize () {
+		return [
+			this.text,
+			"\n",
+		];
+	}
+};
 
 
 export class Unexpect extends BaseTerm {
@@ -2010,6 +2033,7 @@ export const termDictionary = {
 	Markup,
 	Lyric,
 	Primitive,
+	Comment,
 };
 
 
