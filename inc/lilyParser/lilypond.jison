@@ -106,6 +106,11 @@
 			lineTailTable[loc.last_line] = {column: loc.last_column, term};
 	};
 
+	const lineRegister = (loc, term) => {
+		lineHead(loc, term);
+		lineTail(loc, term);
+	};
+
 
 	const attachComments = yy => {
 		if (yy.$lotusComments && yy.$lotusComments.length > 0) {
@@ -585,7 +590,7 @@ lilypond_header_body
 	: %empty
 		{$$ = [];}
 	| lilypond_header_body assignment
-		{$$.push($2);}
+		{$$.push($2); lineRegister(@2, $2);}
 	//| lilypond_header_body SCM_TOKEN
 	//| lilypond_header_body embedded_scm_active
 	;
@@ -1162,9 +1167,9 @@ score_items
 	: %empty
 		{$$ = [];}
 	| score_items score_item
-		{$$ = $1.concat([$2]);}
+		{$$ = $1.concat([$2]); lineHead(@2, $2);}
 	| score_items lilypond_header
-		{$$ = $1.concat([$2]);}
+		{$$ = $1.concat([$2]); lineHead(@2, $2);}
 	;
 
 score_item
@@ -1560,7 +1565,7 @@ music_list
 	: %empty
 		{$$ = [];}
 	| music_list music_embedded
-		{$$ = $1.concat([$2]);}
+		{$$ = $1.concat([$2]); lineRegister(@2, $2);}
 	;
 
 music_embedded

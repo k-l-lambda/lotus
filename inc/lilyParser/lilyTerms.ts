@@ -119,19 +119,29 @@ export class BaseTerm {
 		const result = [];
 
 		const pop = char => {
-			if (!char || result[result.length - 1] === char)
+			if (!char || result[result.length - 1] === char) {
 				result.pop();
+				return true;
+			}
 		};
 
 		for (const word of words) {
-			if (word === "\b") {
-				// remove the last space
+			switch (word) {
+			case "\b":
+				// remove last space
 				pop(" ");
 				continue;
-			}
 
-			if (word === "\n")
+			case "\b\n":
+				// remove last newline
+				while (pop("\t")) {}
+				pop("\n");
+				continue;
+
+			case "\n":
+				// no space at line tail
 				pop(" ");
+			}
 
 			if (/^(\}|>>)/.test(word))
 				pop("\t"); // remove the last tab
@@ -355,6 +365,7 @@ export class BaseTerm {
 		return [
 			...BaseTerm.optionalSerialize(item._headComment),
 			...item.serialize(),
+			...(item._tailComment ? ["\b\n", "\t"] : []),
 			...BaseTerm.optionalSerialize(item._tailComment),
 		];
 	}
@@ -1310,7 +1321,7 @@ export class ContextedMusic extends BaseTerm {
 
 export class Divide extends BaseTerm {
 	serialize () {
-		return ["|\n"];
+		return ["|", "\n"];
 	}
 }
 

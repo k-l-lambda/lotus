@@ -3,7 +3,6 @@
 	lilyInterpreter
 		execute parallelMusic
 	lyrics in music normalization
-	keep comments in LilyDocument
 	lyrics hilighting
 		match chord with voice in the same staff
 	measures clipping, playground.sliceSource
@@ -24,6 +23,8 @@
 
 
 *	2020.7.26
+
+	+	lilyParser: added more comment line registers.
 
 	+	lilyParser: comments parsing added.
 
