@@ -193,7 +193,7 @@
 	import {MIDI, MidiAudio, MidiUtils, MusicNotation} from "@k-l-lambda/web-widgets";
 
 	import {downloadUrl} from "../utils.js";
-	import {mutexDelay} from "../delay.js";
+	import {mutexDelay, animationDelay} from "../delay.js";
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
 	import StaffToken from "../../inc/staffSvg/staffToken.ts";
 	import SheetDocument from "../../inc/staffSvg/sheetDocument.ts";
@@ -497,9 +497,19 @@
 			},
 
 
-			onPointerClick (point) {
-				if (Number.isFinite(point.tick))
+			async onPointerClick (point) {
+				if (Number.isFinite(point.tick)) {
+					const isPlaying = this.midiPlayer.isPlaying;
+					if (isPlaying) {
+						this.midiPlayer.pause();
+						await animationDelay();
+					}
+
 					this.midiPlayer.progressTicks = point.tick;
+
+					if (isPlaying)
+						this.midiPlayer.play();
+				}
 			},
 
 
