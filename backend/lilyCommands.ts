@@ -27,6 +27,12 @@ const _WINDOWS = process.platform === "win32";
 const genHashString = (len = 8) => Buffer.from(Math.random().toString()).toString("base64").substr(3, 3 + len);
 
 
+const filePathResolve = (...parts: string[]): string => {
+	const result = path.join(...parts);
+	return _WINDOWS ? `"${result}"` : result;
+};
+
+
 const emptyCache = async () => {
 	// empty temporary directory
 	try {
@@ -254,6 +260,10 @@ const postProcessLy = (ly, {
 };
 
 
+const MUSICXML2LY_PATH = filePathResolve(env.LILYPOND_DIR, "musicxml2ly");
+const MIDI2LY_PATH = filePathResolve(env.LILYPOND_DIR, "midi2ly");
+
+
 const xml2ly = async (xml: string | Buffer, options: LilyProcessOptions): Promise<string> => {
 	xml = preprocessXml(xml, options);
 	//console.log("xml:", options, xml.substr(0, 100));
@@ -270,7 +280,7 @@ const xml2ly = async (xml: string | Buffer, options: LilyProcessOptions): Promis
 			{maxBuffer: 0x80000});
 	}
 	else
-		await child_process.exec(`${env.LILYPOND_DIR}musicxml2ly ${xmlFileName} -o ${lyFileName}`, {maxBuffer: 0x80000});
+		await child_process.exec(`${MUSICXML2LY_PATH} ${xmlFileName} -o ${lyFileName}`, {maxBuffer: 0x80000});
 	//console.log("musicxml2ly:", result.stdout, result.stderr);
 
 	const ly = await asyncCall(fs.readFile, lyFileName);
@@ -286,7 +296,7 @@ const midi2ly = async (midi, options: LilyProcessOptions) => {
 
 	const lyFileName = `${env.TEMP_DIR}midi2ly-${hash}-midi.ly`;
 
-	const result = await child_process.exec(`${env.LILYPOND_DIR}midi2ly ${midi.path} -o ${lyFileName}`);
+	const result = await child_process.exec(`${MIDI2LY_PATH} ${midi.path} -o ${lyFileName}`);
 	console.log("midi2ly:", result.stdout, result.stderr);
 
 	const ly = await asyncCall(fs.readFile, lyFileName);
@@ -307,9 +317,7 @@ const postProcessSvg = svg => {
 const FILE_BORN_OUPUT_PATTERN = /output\sto\s`(.+)'/;
 
 
-let LILYPOND_PATH = path.join(env.LILYPOND_DIR, "lilypond");
-if (_WINDOWS)
-	LILYPOND_PATH = `"${LILYPOND_PATH}"`;
+const LILYPOND_PATH = filePathResolve(env.LILYPOND_DIR, "lilypond");
 
 
 const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, includeFolders = []}: {

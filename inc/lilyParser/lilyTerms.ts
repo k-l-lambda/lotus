@@ -86,11 +86,6 @@ export const getDurationSubdivider = (term: BaseTerm): number => {
 };
 
 
-interface DurationContextStatus {
-	factor?: {value: number};
-};
-
-
 export class BaseTerm {
 	_location?: Location;
 	_measure?: number;
@@ -98,6 +93,9 @@ export class BaseTerm {
 	_previous?: BaseTerm;
 	_anchorPitch?: ChordElement;
 	_parent?: BaseTerm;
+
+	_headComment: Comment;
+	_tailComment: Comment;
 
 
 	constructor (data: object) {
@@ -121,15 +119,28 @@ export class BaseTerm {
 		const result = [];
 
 		const pop = char => {
-			if (!char || result[result.length - 1] === char)
+			if (!char || result[result.length - 1] === char) {
 				result.pop();
+				return true;
+			}
 		};
 
 		for (const word of words) {
-			if (word === "\b") {
-				// remove the last space
+			switch (word) {
+			case "\b":
+				// remove last space
 				pop(" ");
 				continue;
+
+			case "\b\n":
+				// remove last newline
+				while (pop("\t")) {}
+				pop("\n");
+				continue;
+
+			case "\n":
+				// no space at line tail
+				pop(" ");
 			}
 
 			if (/^(\}|>>)/.test(word))
@@ -347,7 +358,16 @@ export class BaseTerm {
 
 
 	static optionalSerialize (item: any): any[] {
-		return BaseTerm.isTerm(item) ? (item as BaseTerm).serialize() : (item === undefined ? [] : [item]);
+		//return BaseTerm.isTerm(item) ? (item as BaseTerm).serialize() : (item === undefined ? [] : [item]);
+		if (!BaseTerm.isTerm(item))
+			return item === undefined ? [] : [item];
+
+		return [
+			...BaseTerm.optionalSerialize(item._headComment),
+			...item.serialize(),
+			...(item._tailComment ? ["\b\n", "\t"] : []),
+			...BaseTerm.optionalSerialize(item._tailComment),
+		];
 	}
 
 
@@ -365,7 +385,7 @@ export class Root extends BaseTerm {
 
 
 	serialize () {
-		return [].concat(...this.sections.map(section => [...section.serialize(), "\n\n"]));
+		return cc(this.sections.map(section => [...BaseTerm.optionalSerialize(section), "\n\n"]));
 	}
 
 
@@ -1312,7 +1332,7 @@ export class ContextedMusic extends BaseTerm {
 
 export class Divide extends BaseTerm {
 	serialize () {
-		return ["|\n"];
+		return ["|", "\n"];
 	}
 }
 
@@ -1965,7 +1985,21 @@ export class Lyric extends MusicEvent {
 			...cc((this.post_events || []).map(BaseTerm.optionalSerialize)),
 		];
 	}
-}
+};
+
+
+export class Comment extends BaseTerm {
+	text: string;
+	scoped: boolean;
+
+
+	serialize () {
+		return [
+			this.text,
+			"\n",
+		];
+	}
+};
 
 
 export class Unexpect extends BaseTerm {
@@ -2022,6 +2056,7 @@ export const termDictionary = {
 	Markup,
 	Lyric,
 	Primitive,
+	Comment,
 };
 
 

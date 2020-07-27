@@ -84,6 +84,63 @@
 	const lyric = (content, {locations, ...options}) => ({proto: "Lyric", content, _location: location(...locations), ...options});
 
 	const duration = ({number, dots, multipliers}) => ({proto: "Duration", number, dots, multipliers});
+
+	const comment = ({loc, ...data}) => ({proto: "Comment", _location: location(loc, loc), ...data});
+
+
+	let lineHeadTable = {};
+	let lineTailTable = {};
+
+	const lineHead = (loc, term) => {
+		if (!term || typeof term !== "object")
+			return;
+
+		if (!lineHeadTable[loc.first_line] || lineHeadTable[loc.first_line].column > loc.first_column)
+			lineHeadTable[loc.first_line] = {column: loc.first_column, term};
+	};
+
+	const lineTail = (loc, term) => {
+		if (!term || typeof term !== "object")
+			return;
+
+		if (!lineTailTable[loc.last_line] || lineTailTable[loc.last_line].column < loc.last_column)
+			lineTailTable[loc.last_line] = {column: loc.last_column, term};
+	};
+
+	const lineRegister = (loc, term) => {
+		lineHead(loc, term);
+		lineTail(loc, term);
+	};
+
+
+	const attachComments = yy => {
+		if (yy.$lotusComments && yy.$lotusComments.length > 0) {
+			//console.log("attachComments:", yy.$lotusComments, lineTable);
+			const headLineNumbers = Object.keys(lineHeadTable).map(Number);
+
+			yy.$lotusComments.forEach(data => {
+				const comm = comment(data);
+
+				const tailLine = lineTailTable[data.loc.first_line];
+				if (tailLine) {
+					tailLine.term._tailComment = comm;
+					return;
+				}
+
+				const line = headLineNumbers.find(line => line >= data.loc.last_line);
+				if (Number.isFinite(line) && lineHeadTable[line]) {
+					lineHeadTable[line].term._headComment = comm;
+					return;
+				}
+
+				// TODO: attach on root's tail
+			});
+		}
+
+		// reset parser states
+		lineHeadTable = {};
+		lineTailTable = {};
+	};
 %}
 
 
@@ -130,8 +187,8 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 [$][(][^()]*[)]						return 'DOLLAR_SCHEME_EXPRESSION'
 
 \s+									{}	// spaces
-\%\{(.|\n)*?\%\}					{}	// scoped comments
-\%[^\n]*\n							{}	// single comments
+\%\{(.|\n)*?\%\}					yy.$lotusComments = yy.$lotusComments || []; yy.$lotusComments.push({text: yytext, loc: yylloc, scoped: true});	// scoped comments
+\%[^\n]*(?=\n)						yy.$lotusComments = yy.$lotusComments || []; yy.$lotusComments.push({text: yytext, loc: yylloc});	// scoped comments
 \"(\\\"|[^"])*\"					return 'STRING';
 
 {EXTENDER}							return 'EXTENDER';
@@ -439,7 +496,10 @@ m(?=[\W\d])							return 'CHORD_MODIFIER_WORD';
 
 start_symbol
 	: lilypond EOF
-		{ return $1; }
+		{
+			attachComments(yy);
+			return $1;
+		}
 	//| embedded_lilypond
 	;
 
@@ -447,11 +507,11 @@ lilypond
 	: %empty
 		{$$ = root();}
 	| version
-		{$$ = root([$1]);}
+		{$$ = root([$1]); lineRegister(@1, $1);}
 	| lilypond toplevel_expression
-		{$$ = appendSection($1, $2);}
+		{$$ = appendSection($1, $2); lineRegister(@2, $2);}
 	| lilypond assignment
-		{$$ = appendSection($1, $2);}
+		{$$ = appendSection($1, $2); lineRegister(@2, $2);}
 	;
 
 version
@@ -535,7 +595,7 @@ lilypond_header_body
 	: %empty
 		{$$ = [];}
 	| lilypond_header_body assignment
-		{$$.push($2);}
+		{$$.push($2); lineRegister(@2, $2);}
 	//| lilypond_header_body SCM_TOKEN
 	//| lilypond_header_body embedded_scm_active
 	;
@@ -1112,9 +1172,9 @@ score_items
 	: %empty
 		{$$ = [];}
 	| score_items score_item
-		{$$ = $1.concat([$2]);}
+		{$$ = $1.concat([$2]); lineHead(@2, $2);}
 	| score_items lilypond_header
-		{$$ = $1.concat([$2]);}
+		{$$ = $1.concat([$2]); lineHead(@2, $2);}
 	;
 
 score_item
@@ -1510,7 +1570,7 @@ music_list
 	: %empty
 		{$$ = [];}
 	| music_list music_embedded
-		{$$ = $1.concat([$2]);}
+		{$$ = $1.concat([$2]); lineRegister(@2, $2);}
 	;
 
 music_embedded

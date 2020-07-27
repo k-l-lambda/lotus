@@ -8,6 +8,17 @@
 			:viewBox="`${page.viewBox.x} ${page.viewBox.y} ${page.viewBox.width} ${page.viewBox.height}`"
 			:style="{['background-image']: backgroundImages && backgroundImages[i] && `url(${backgroundImages[i]})`}"
 		>
+			<g v-if="enablePointerPad" class="pointer-pad">
+				<g class="row" v-for="(row, ii) of page.rows" :key="ii"
+					:transform="`translate(${row.x}, ${row.y})`"
+				>
+					<rect class="pad" :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top"
+						@mousemove="onMousemovePad(row, $event)"
+						@mouseleave="onMouseleavePad(row, $event)"
+						@click="onClickPad(row, $event)"
+					/>
+				</g>
+			</g>
 			<g v-if="!bakingMode">
 				<g class="page-tokens">
 					<SheetToken v-for="(token, ii) of page.tokens" :key="ii" :token="token" />
@@ -132,6 +143,10 @@
 				default: false,
 			},
 			backgroundImages: Array,
+			enablePointerPad: {
+				type: Boolean,
+				default: false,
+			},
 		},
 
 
@@ -190,6 +205,15 @@
 					return null;
 
 				return row.pageIndex;
+			},
+
+
+			svgScale () {
+				const page = this.doc && this.doc.pages[0];
+				if (page)
+					return this.doc.pageSize.width / page.viewBox.width;
+
+				return 1;
 			},
 		},
 
@@ -366,6 +390,41 @@
 				this.clearNoteStatus();
 				this.clearMarkings();
 			},
+
+
+			eventToRowPosition (row, event) {
+				return {
+					x: event.offsetX / this.svgScale - row.x,
+					y: event.offsetY / this.svgScale - row.y,
+				};
+			},
+
+
+			eventToPointer (row, event) {
+				const pos = this.eventToRowPosition(row, event);
+				const rowIndex = row.index;
+				const measureIndex = this.doc.lookupMeasureIndex(rowIndex, pos.x);
+				const tick = this.scheduler.lookupTick({row: rowIndex, x: pos.x});
+
+				return {
+					rowIndex, measureIndex, tick, ...pos,
+				};
+			},
+
+
+			onMousemovePad (row, event) {
+				this.$emit("pointerUpdate", this.eventToPointer(row, event));
+			},
+
+
+			onMouseleavePad () {
+				this.$emit("pointerUpdate", null);
+			},
+
+
+			onClickPad (row, event) {
+				this.$emit("pointerClick", this.eventToPointer(row, event));
+			},
 		},
 
 
@@ -424,6 +483,7 @@
 				text
 				{
 					user-select: none;
+					pointer-events: none;
 					font-size: $musicFontSize;
 					fill: $token-default-color;
 
@@ -448,6 +508,14 @@
 			.alter
 			{
 				text-anchor: end;
+			}
+		}
+
+		.pointer-pad
+		{
+			rect
+			{
+				fill: transparent;
 			}
 		}
 	}

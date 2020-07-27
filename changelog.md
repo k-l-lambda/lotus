@@ -3,7 +3,6 @@
 	lilyInterpreter
 		execute parallelMusic
 	lyrics in music normalization
-	keep comments in LilyDocument
 	lyrics hilighting
 		match chord with voice in the same staff
 	measures clipping, playground.sliceSource
@@ -22,6 +21,26 @@
 	source editor
 		cursor position column
 
+
+
+*	2020.7.26
+
+	+	lilyCommands.ts: refined file path resolving.
+
+	+	lilyParser: added more comment line registers.
+
+	+	lilyParser: comments parsing added.
+
+
+*	2020.7.25
+
+	+	playground.vue: turn player cursor by pointer click added.
+
+	+	sheet-live.vue: tick lookup for pointer added.
+
+	+	sheet-live.vue: measure index lookup for pointer added.
+
+	+	sheet-live.vue: pointer pad added.
 
 
 *	2020.7.20

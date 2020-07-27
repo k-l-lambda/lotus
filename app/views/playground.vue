@@ -45,6 +45,16 @@
 				<CheckButton content="&#x1f35e;" v-model="bakingSheet" title="baking sheet" />
 				<CheckButton v-show="bakingSheet" content="&#x1f9b2;" v-model="hideBakingImages" title="hide baking images" />
 			</fieldset>
+			<fieldset>
+				<BoolStoreInput v-show="false" v-model="enabledPointer" sessionKey="lotus-enabledPointer" />
+				<CheckButton content="&#x2b9d;" v-model="enabledPointer" />
+				<span class="pointer-info" v-if="enabledPointer">
+					<span v-if="pointerData">
+						<span>m: <em>{{pointerData.measureIndex}}</em></span>
+						<span v-if="Number.isFinite(pointerData.tick)">t: <em>{{Math.round(pointerData.tick)}}</em></span>
+					</span>
+				</span>
+			</fieldset>
 		</header>
 		<main>
 			<div class="source-container" :class="{loading: converting}">
@@ -82,11 +92,14 @@
 						:pitchContextGroup="pitchContextGroup"
 						:midiPlayer.sync="midiPlayer"
 						:showMark="true"
+						:enablePointerPad="enabledPointer"
 						:showCursor="showCursor"
 						:bakingMode="bakingSheet"
 						:backgroundImages="hideBakingImages ? null : bakingImages"
 						@midi="onMidi"
 						@cursorPageShift="onCursorPageShift"
+						@pointerUpdate="onPointerUpdate"
+						@pointerClick="onPointerClick"
 					/>
 				</div>
 				<Loading v-show="engraving" />
@@ -180,7 +193,7 @@
 	import {MIDI, MidiAudio, MidiUtils, MusicNotation} from "@k-l-lambda/web-widgets";
 
 	import {downloadUrl} from "../utils.js";
-	import {mutexDelay} from "../delay.js";
+	import {mutexDelay, animationDelay} from "../delay.js";
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
 	import StaffToken from "../../inc/staffSvg/staffToken.ts";
 	import SheetDocument from "../../inc/staffSvg/sheetDocument.ts";
@@ -298,6 +311,8 @@
 				chosenLilyMarkupMethod: null,
 				operating: false,
 				loadingLilyParser: false,
+				enabledPointer: true,
+				pointerData: null,
 			};
 		},
 
@@ -473,6 +488,28 @@
 
 			onCursorPageShift (pageIndex) {
 				console.log("onCursorPageShift:", pageIndex);
+			},
+
+
+			onPointerUpdate (point) {
+				//console.log("onPointerUpdate:", point);
+				this.pointerData = point;
+			},
+
+
+			async onPointerClick (point) {
+				if (Number.isFinite(point.tick)) {
+					const isPlaying = this.midiPlayer.isPlaying;
+					if (isPlaying) {
+						this.midiPlayer.pause();
+						await animationDelay();
+					}
+
+					this.midiPlayer.progressTicks = point.tick;
+
+					if (isPlaying)
+						this.midiPlayer.play();
+				}
 			},
 
 
@@ -1017,6 +1054,18 @@
 			&.buzy
 			{
 				background-color: #ffc;
+			}
+
+			.pointer-info
+			{
+				display: inline-block;
+				width: 8em;
+
+				& > span > span + span
+				{
+					display: inline-block;
+					margin-left: .6em;
+				}
 			}
 		}
 
