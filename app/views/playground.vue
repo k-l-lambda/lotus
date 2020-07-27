@@ -428,8 +428,8 @@
 							//console.log("xml:", xml);
 							this.lilySource = await this.musicxml2ly(xml);
 						}
-						catch (_) {
-							return;
+						catch (err) {
+							console.warn("musicxml2ly failed:", err);
 						}
 
 						this.clearSheet();
