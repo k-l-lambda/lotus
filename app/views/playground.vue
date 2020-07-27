@@ -47,7 +47,7 @@
 			</fieldset>
 			<fieldset>
 				<BoolStoreInput v-show="false" v-model="enabledPointer" sessionKey="lotus-enabledPointer" />
-				<CheckButton content="&#x2b9d;" v-model="enabledPointer" />
+				<CheckButton content="&#x2196;" v-model="enabledPointer" />
 				<span class="pointer-info" v-if="enabledPointer">
 					<span v-if="pointerData">
 						<span>m: <em>{{pointerData.measureIndex}}</em></span>
