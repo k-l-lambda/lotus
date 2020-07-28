@@ -37,6 +37,7 @@ interface SheetMeasures {
 
 interface SheetStaff {
 	measures: SheetMeasures[];
+	tokens: StaffToken[];
 
 	markings: StaffMarking[];
 
@@ -44,6 +45,10 @@ interface SheetStaff {
 	//	The third staff line Y supposed to be zero, but regarding to the line stroke width,
 	//	there is some error for original values in SVG document (which erased by coordinate rounding).
 	yRoundOffset: number; // 0.0657 for default
+
+	x: number;
+	y: number;
+	top?: number;
 };
 
 
@@ -52,14 +57,28 @@ interface SheetRows {
 	pageIndex?: number;
 	measureIndices?: [number, number][];	// [end_x, index]
 	staves: SheetStaff[];
+	tokens: StaffToken[];
+
+	x: number;
+	y: number;
+	width: number;
+	top: number;
+	bottom: number;
 };
 
 
 interface SheetPage {
 	width: string;
 	height: string;
+	viewBox: {
+		x: number,
+		y: number,
+		width: number,
+		height: number,
+	};
 
 	rows: SheetRows[];
+	tokens: StaffToken[];
 };
 
 
@@ -201,7 +220,7 @@ class SheetDocument {
 			row.staves.forEach(staff =>
 				staff.measures.forEach(measure => {
 					measure.matchedTokens = measure.tokens.filter(token => token.href && matchedIds.has(token.href));
-					
+
 					if (!staff.yRoundOffset) {
 						const token = measure.matchedTokens[0];
 						if (token)
@@ -281,6 +300,33 @@ class SheetDocument {
 		const [_, index] = row.measureIndices.find(([end]) => x < end) || [null, null];
 
 		return index;
+	}
+
+
+	fitPageViewbox ({margin = 5} = {}) {
+		if (!this.pages || !this.pages.length)
+			return;
+
+		const svgScale = this.pageSize.width / this.pages[0].viewBox.width;
+
+		for (const page of this.pages) {
+			const rects = page.rows.map(row => [row.x, row.x + row.width, row.y + row.top, row.y + row.bottom ]);
+
+			const left = Math.min(...rects.map(rect => rect[0]));
+			const right = Math.max(...rects.map(rect => rect[1]));
+			const top = Math.min(...rects.map(rect => rect[2]));
+			const bottom = Math.max(...rects.map(rect => rect[3]));
+
+			page.viewBox = {
+				x: left - margin,
+				y: top - margin,
+				width: right - left + margin * 2,
+				height: bottom - top + margin * 2,
+			};
+
+			page.width = (page.viewBox.width * svgScale).toString();
+			page.height = (page.viewBox.height * svgScale).toString();
+		}
 	}
 };
 

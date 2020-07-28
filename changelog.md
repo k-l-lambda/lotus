@@ -25,6 +25,8 @@
 
 *	2020.7.28
 
+	+	sheetDocument.ts: fitPageViewbox added.
+
 	+	sheet-live.vue: added custom class on measures.
 
 	+	sheet-live.vue: measure mark rect added.
