@@ -23,6 +23,13 @@ interface StaffMarking {
 interface SheetMeasures {
 	index: number;
 	tokens: StaffToken[];
+	headX: number;
+	lineX?: number;
+	matchedTokens?: StaffToken[];
+	noteRange: {
+		begin: number,
+		end: number,
+	};
 };
 
 
@@ -168,6 +175,10 @@ class SheetDocument {
 						token.measure = measure.index;
 						token.endX = measure.noteRange.end;
 					});
+
+					measure.lineX = measure.lineX || 0;
+					if (i < staff.measures.length - 1)
+						staff.measures[i + 1].lineX = measure.noteRange.end;
 
 					if (t === 0)
 						row.measureIndices.push([measure.noteRange.end, measure.index]);

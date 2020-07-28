@@ -24,9 +24,8 @@
 						<circle />
 						<line v-if="Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
 						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
-							<g>
-								<text :x="measure.headX">'{{measure.index}}</text>
-							</g>
+							<rect :x="measure.lineX" :y="-2" :width="measure.noteRange.end - measure.lineX" :height="4"/>
+							<text :x="measure.headX">'{{measure.index}}</text>
 						</g>
 					</g>
 				</g>

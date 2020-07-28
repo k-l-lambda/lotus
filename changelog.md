@@ -25,6 +25,8 @@
 
 *	2020.7.28
 
+	+	sheet-live.vue: measure mark rect added.
+
 	+	sheet-live.vue: refined mark graph.
 
 	+	lilyParser: refined measures redivide.
