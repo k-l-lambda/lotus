@@ -11,12 +11,11 @@
 			<g v-if="showMark" class="mark">
 				<g class="row" v-for="(row, ii) of page.rows" :key="ii"
 					:transform="`translate(${row.x}, ${row.y})`"
+					@mousemove="enablePointer && onMousemovePad(row, $event)"
+					@mouseleave="enablePointer && onMouseleavePad(row, $event)"
+					@click="onClickPad(row, $event)"
 				>
-					<rect :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top"
-						@mousemove="enablePointer && onMousemovePad(row, $event)"
-						@mouseleave="enablePointer && onMouseleavePad(row, $event)"
-						@click="onClickPad(row, $event)"
-					/>
+					<rect :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top" />
 					<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
 						:transform="`translate(${staff.x}, ${staff.y})`"
 					>
@@ -408,7 +407,7 @@
 				const pos = this.eventToRowPosition(row, event);
 				const rowIndex = row.index;
 				const measureIndex = this.doc.lookupMeasureIndex(rowIndex, pos.x);
-				const tick = this.scheduler.lookupTick({row: rowIndex, x: pos.x});
+				const tick = this.scheduler && this.scheduler.lookupTick({row: rowIndex, x: pos.x});
 
 				return {
 					rowIndex, measureIndex, tick, ...pos,
