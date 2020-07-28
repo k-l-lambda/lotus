@@ -23,7 +23,7 @@
 						<rect class="head" :x="0" :y="-2" :width="staff.headWidth" :height="4" />
 						<circle />
 						<line v-if="Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
-						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
+						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4" :class="measure.class">
 							<rect :x="measure.lineX" :y="-2" :width="measure.noteRange.end - measure.lineX" :height="4"/>
 							<text :x="measure.headX">'{{measure.index}}</text>
 						</g>
@@ -478,6 +478,11 @@
 				font-size: 2px;
 				text-anchor: start;
 				pointer-events: none;
+			}
+
+			rect
+			{
+				fill: transparent;
 			}
 		}
 

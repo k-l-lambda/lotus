@@ -25,6 +25,8 @@
 
 *	2020.7.28
 
+	+	sheet-live.vue: added custom class on measures.
+
 	+	sheet-live.vue: measure mark rect added.
 
 	+	sheet-live.vue: refined mark graph.

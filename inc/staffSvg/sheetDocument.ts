@@ -30,6 +30,8 @@ interface SheetMeasures {
 		begin: number,
 		end: number,
 	};
+
+	class?: {[key: string]: boolean};
 };
 
 
@@ -169,6 +171,7 @@ class SheetDocument {
 			row.staves.forEach((staff, t) => {
 				staff.measures.forEach((measure, i) => {
 					measure.index = rowMeasureIndex + i;
+					measure.class = {};
 
 					measure.tokens.forEach(token => {
 						token.row = index;
