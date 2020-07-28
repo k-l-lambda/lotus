@@ -169,8 +169,10 @@ HORIZONTALWHITE		[ \t]
 BLACK				[^ \n\t\f\r]
 RESTNAME			[rRs](?=[\W\d_])
 ESCAPED				[nt\\''""]
-EXTENDER			\_\_
-HYPHEN				\-\-
+//EXTENDER			\_\_
+//HYPHEN				\-\-
+PRE_EXTENDER		\_(?=\_)
+PRE_HYPHEN			\-(?=\-)
 BOM_UTF8			\357\273\277
 
 PHONET				[abcdefgqh]
@@ -191,8 +193,10 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 \%[^\n]*(?=\n)						yy.$lotusComments = yy.$lotusComments || []; yy.$lotusComments.push({text: yytext, loc: yylloc});	// scoped comments
 \"(\\\"|[^"])*\"					return 'STRING';
 
-{EXTENDER}							return 'EXTENDER';
-{HYPHEN}							return 'HYPHEN';
+//{EXTENDER}							return 'EXTENDER';
+//{HYPHEN}							return 'HYPHEN';
+{PRE_EXTENDER}						return 'PRE_EXTENDER';
+{PRE_HYPHEN}						return 'PRE_HYPHEN';
 
 //"/+"								return CHORD_BASS;
 //"^"								return CHORD_CARET;
@@ -895,6 +899,14 @@ markup_word
 	;
 
 // extra syntax
+long_extender
+	: PRE_EXTENDER "_"
+		{$$ = $1 + $2}
+	| PRE_EXTENDER long_extender
+		{$$ = $1 + $2}
+	;
+
+// extra syntax
 general_text
 	: CHORD_MODIFIER_WORD
 		{$$ = $1;}
@@ -904,7 +916,9 @@ general_text
 		{$$ = $1;}
 	| "_"
 		{$$ = $1;}
-	| HYPHEN
+	| PRE_HYPHEN
+		{$$ = $1;}
+	| long_extender
 		{$$ = $1;}
 	| "="
 		{$$ = $1;}
@@ -1634,9 +1648,6 @@ lyric_element
 	// extra formula
 	| PITCH
 		{$$ = $1;}
-	// extra formula
-	| EXTENDER
-		{$$ = $1;}
 	| UNKNOWN_CHAR
 		{$$ = $1;}
 	;
@@ -2317,6 +2328,20 @@ post_event
 	| '-' fingering
 		//{$$ = {type: "fingering", direction: "middle", value: $2};}
 		{$$ = postEvent("middle", fingering($2));}
+	;
+
+HYPHEN
+	: PRE_HYPHEN "-"
+		{$$ = "--";}
+	| PRE_HYPHEN PRE_HYPHEN
+		{$$ = "--";}
+	;
+
+EXTENDER
+	: PRE_EXTENDER "_"
+		{$$ = "__";}
+	| PRE_EXTENDER PRE_EXTENDER
+		{$$ = "__";}
 	;
 
 post_event_nofinger
