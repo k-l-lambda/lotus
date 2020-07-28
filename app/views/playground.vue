@@ -916,11 +916,15 @@
 
 
 			redivideLilyDocument () {
-				const locations = this.sheetDocument.getLocationTable();
+				//const locations = this.sheetDocument.getLocationTable();
 
-				this.updateLilyDocument();
-				measures.assignMeasures(this.lilyDocument, locations);
+				//this.updateLilyDocument();
+				//measures.assignMeasures(this.lilyDocument, locations);
 				//console.log("lilyDocument:", this.lilyDocument);
+				const interperter = new LilyInterpreter();
+				interperter.interpretDocument(this.lilyDocument);
+				this.lilyDocument = interperter.toDocument();
+				this.lilySource = this.lilyDocument.toString();
 
 				this.executeMarkup("redivide");
 			},

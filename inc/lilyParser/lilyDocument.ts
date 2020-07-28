@@ -226,57 +226,6 @@ export default class LilyDocument {
 	};
 
 
-	/*// extract music tracks into variables
-	normalizeMusic () {
-		const trackName = LilyDocument.normalTrackName;
-
-		const tracks = this.getMusicTracks();
-		if (!tracks) {
-			console.warn("no music tracks");
-			return;
-		}
-
-		const trackBodys = tracks.map(track => track.clone().expandVariables(this.root).flatten());
-		trackBodys.forEach(cmd => {
-			const block = cmd.music as MusicBlock;
-			block.allocateMeasures();
-			block.redivide();
-		});
-
-		const oldVariables = [];
-
-		tracks.forEach((track, i) => {
-			oldVariables.push(...track.body.filter(term => term instanceof Variable).map((variable: Variable) => variable.name));
-			track.body = [new Variable({name: trackName(i)})];
-		});
-
-		// remove old variables
-		this.root.sections = this.root.sections.filter(term => !(term instanceof Assignment) || !oldVariables.includes(term.key));
-
-		const scorePosition = this.root.sections.findIndex(section => section instanceof Block && section.head === "\\score");
-
-		// insert new variables assignments
-		this.root.sections.splice(scorePosition, 0,
-			...trackBodys.map((track, i) => new Assignment({key: trackName(i), value: track})));
-	}
-
-
-	// require normalization
-	get normalMusicTracks (): MusicBlock[] {
-		return this.root.sections
-			.filter(section => section instanceof Assignment && /Voice_\w+/.test(section.key as string))
-			.map((section: Assignment) => (section.value as Relative).music as MusicBlock);
-	}
-
-
-	// require normalization
-	get noteDurationSubdivider (): number {
-		const subdivider = lcmMulti(...this.normalMusicTracks.map(getDurationSubdivider));
-
-		return subdivider;
-	}*/
-
-
 	appendIncludeFile (filename: string) {
 		if (!this.root.includeFiles.includes(filename)) {
 			const versionPos = this.root.sections.findIndex(term => term instanceof Version);

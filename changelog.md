@@ -23,6 +23,11 @@
 
 
 
+*	2020.7.28
+
+	+	lilyParser: refined measures redivide.
+
+
 *	2020.7.26
 
 	+	lilyCommands.ts: refined file path resolving.

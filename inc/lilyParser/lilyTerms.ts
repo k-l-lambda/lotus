@@ -1189,9 +1189,7 @@ export class MusicBlock extends BaseTerm {
 		const isPostTerm = term => !term
 			|| term instanceof PostEvent
 			|| (term as Primitive).exp === "~"
-			|| (term as Command).cmd === "bar"
-			|| (term as Command).cmd === "arpeggio"
-			|| (term as Command).cmd === "glissando"
+			|| ["bar", "arpeggio", "glissando", "sustainOff", "sustainOn"].includes((term as Command).cmd)
 			;
 
 		const list = this.body.filter(term => !(term instanceof Divide));
