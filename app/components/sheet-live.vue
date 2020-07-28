@@ -8,15 +8,27 @@
 			:viewBox="`${page.viewBox.x} ${page.viewBox.y} ${page.viewBox.width} ${page.viewBox.height}`"
 			:style="{['background-image']: backgroundImages && backgroundImages[i] && `url(${backgroundImages[i]})`}"
 		>
-			<g v-if="enablePointerPad" class="pointer-pad">
+			<g v-if="showMark" class="mark">
 				<g class="row" v-for="(row, ii) of page.rows" :key="ii"
 					:transform="`translate(${row.x}, ${row.y})`"
 				>
-					<rect class="pad" :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top"
-						@mousemove="onMousemovePad(row, $event)"
-						@mouseleave="onMouseleavePad(row, $event)"
+					<rect :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top"
+						@mousemove="enablePointer && onMousemovePad(row, $event)"
+						@mouseleave="enablePointer && onMouseleavePad(row, $event)"
 						@click="onClickPad(row, $event)"
 					/>
+					<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
+						:transform="`translate(${staff.x}, ${staff.y})`"
+					>
+						<rect class="head" :x="0" :y="-2" :width="staff.headWidth" :height="4" />
+						<circle />
+						<line v-if="Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
+						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
+							<g>
+								<text :x="measure.headX">'{{measure.index}}</text>
+							</g>
+						</g>
+					</g>
 				</g>
 			</g>
 			<g v-if="!bakingMode">
@@ -26,7 +38,6 @@
 				<g class="row" v-for="(row, ii) of page.rows" :key="ii"
 					:transform="`translate(${row.x}, ${row.y})`"
 				>
-					<rect class="mark" v-if="showMark" :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top" />
 					<rect class="cursor" v-if="showCursor && cursorPosition && cursorPosition.row === row.index"
 						:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
 					/>
@@ -36,16 +47,10 @@
 					<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
 						:transform="`translate(${staff.x}, ${staff.y})`"
 					>
-						<rect class="mark head" v-if="showMark" :x="0" :y="-2" :width="staff.headWidth" :height="4" />
-						<circle class="mark" v-if="showMark" />
-						<line class="mark" v-if="showMark && Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
 						<g>
 							<SheetToken v-for="(token, i5) of staff.tokens" :key="i5" :token="token" />
 						</g>
 						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
-							<g class="mark" v-if="showMark">
-								<text :x="measure.headX">'{{measure.index}}</text>
-							</g>
 							<SheetToken v-for="(token, i5) of measure.tokens" :key="i5"
 								:token="token"
 								:classes="{
@@ -143,7 +148,7 @@
 				default: false,
 			},
 			backgroundImages: Array,
-			enablePointerPad: {
+			enablePointer: {
 				type: Boolean,
 				default: false,
 			},
@@ -466,12 +471,20 @@
 	{
 		.mark
 		{
-			visibility: hidden;
+			//visibility: hidden;
+			opacity: 0;
 
 			text
 			{
+				font-size: 2px;
 				text-anchor: start;
+				pointer-events: none;
 			}
+		}
+
+		.cursor
+		{
+			pointer-events: none;
 		}
 
 		.bake
@@ -508,14 +521,6 @@
 			.alter
 			{
 				text-anchor: end;
-			}
-		}
-
-		.pointer-pad
-		{
-			rect
-			{
-				fill: transparent;
 			}
 		}
 	}

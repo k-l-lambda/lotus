@@ -136,6 +136,43 @@
 	.mark
 	{
 		visibility: visible;
+		opacity: 1;
+
+		.row > rect
+		{
+			fill: #ffff0008;
+			stroke: #ff0a;
+			stroke-width: 0.3;
+		}
+	
+		.staff
+		{
+			circle
+			{
+				r: 1;
+				fill: #4086;
+			}
+
+			line
+			{
+				stroke: black;
+				stroke-width: 0.1;
+				stroke-dasharray: 0.5, 0.5;
+			}
+	
+			rect.head
+			{
+				fill: #0002;
+			}
+		}
+
+		.measure
+		{
+			text
+			{
+				fill: #0046;
+			}
+		}
 	}
 
 	.measure .text
@@ -146,43 +183,5 @@
 	.page-tokens .text
 	{
 		fill: #eee;
-	}
-
-	.row > rect.mark
-	{
-		fill: #ffff0008;
-		stroke: #ff0a;
-		stroke-width: 0.3;
-	}
-
-	.staff
-	{
-		circle.mark
-		{
-			r: 1;
-			fill: #4086;
-		}
-
-		line.mark
-		{
-			stroke: black;
-			stroke-width: 0.1;
-			stroke-dasharray: 0.5, 0.5;
-		}
-
-		rect.mark.head
-		{
-			fill: #0002;
-		}
-	}
-
-	.measure > .mark
-	{
-		text
-		{
-			font-size: 2px;
-			fill: #0046;
-			text-anchor: start;
-		}
 	}
 }

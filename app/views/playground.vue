@@ -92,7 +92,7 @@
 						:pitchContextGroup="pitchContextGroup"
 						:midiPlayer.sync="midiPlayer"
 						:showMark="true"
-						:enablePointerPad="enabledPointer"
+						:enablePointer="enabledPointer"
 						:showCursor="showCursor"
 						:bakingMode="bakingSheet"
 						:backgroundImages="hideBakingImages ? null : bakingImages"
@@ -200,7 +200,7 @@
 	import LogRecorder from "../../inc/logRecorder.ts";
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import loadLilyParser from "../loadLilyParser.js";
-	import {LilyDocument, LilyInterpreter, replaceSourceToken, measures, getDurationSubdivider, createPianoRhythm} from "../../inc/lilyParser";
+	import {LilyDocument, LilyInterpreter, replaceSourceToken, createPianoRhythm} from "../../inc/lilyParser";
 	import {CM_TO_PX} from "../../inc/constants.ts";
 	import TextSource from "../../inc/textSource.ts";
 	import * as SheetBaker from "../sheetBaker.ts";
@@ -218,10 +218,6 @@
 	import Dialog from "../components/dialog.vue";
 
 	import QuitClearner from "../mixins/quit-cleaner";
-
-
-
-	window.getDurationSubdivider = getDurationSubdivider;
 
 
 
@@ -933,8 +929,6 @@
 			async sliceMeasures (start, count) {
 				this.updateLilyDocument();
 
-				//this.lilyDocument.normalizeMusic();
-				//this.lilyDocument.sliceMeasures(start, count);
 				const interperter = new LilyInterpreter();
 				interperter.interpretDocument(this.lilyDocument);
 				interperter.sliceMeasures(start, count);
