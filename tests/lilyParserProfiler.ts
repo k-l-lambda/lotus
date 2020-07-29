@@ -7,21 +7,30 @@ import asyncCall from "../inc/asyncCall";
 
 
 
-const testParserLoading = async revision => {
+const testParserLoading = async (revision, times = 3) => {
 	child_process.spawn("git", ["checkout", revision, "./inc/lilyParser/lilypond.jison"]);
 
 	const grammar = (await asyncCall(fs.readFile, "./inc/lilyParser/lilypond.jison")).toString();
 
 	lilyParser.hookJisonPrint();
 
-	const t0 = Date.now();
+	const costs = [];
 
-	lilyParser.createParser(grammar);
+	for (let i = 0; i < times; ++i) {
+		const t0 = Date.now();
 
-	const cost = Date.now() - t0;
-	console.log("revision cost:", revision, cost);
+		try {
+			lilyParser.createParser(grammar);
+		}
+		catch (_) {
+			console.log("revison error:", revision);
+		}
+	
+		const cost = Date.now() - t0;
+		costs.push(cost);
+	}
 
-	return cost;
+	console.log("revision cost:", revision, Math.min(...costs), costs);
 };
 
 
