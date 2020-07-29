@@ -8,7 +8,8 @@ import asyncCall from "../inc/asyncCall";
 
 
 const testParserLoading = async (revision, times = 3) => {
-	child_process.spawn("git", ["checkout", revision, "./inc/lilyParser/lilypond.jison"]);
+	if (revision)
+		child_process.spawn("git", ["checkout", revision, "./inc/lilyParser/lilypond.jison"]);
 
 	const grammar = (await asyncCall(fs.readFile, "./inc/lilyParser/lilypond.jison")).toString();
 
@@ -42,7 +43,7 @@ const main = async revisionList => {
 	console.log("Done.");
 };
 
-main(["HEAD"]);
+main([null, "HEAD"]);
 
 
 
