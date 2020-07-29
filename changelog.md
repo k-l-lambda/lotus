@@ -25,6 +25,8 @@
 
 *	2020.7.29
 
+	*	Long zero_command syntax result in lily parser loading large cost.
+
 	+	lilyParserProfiler.ts: parser loading cost test added.
 
 
