@@ -16,21 +16,21 @@ const testParserLoading = async (revision, times = 3) => {
 
 	const costs = [];
 
-	for (let i = 0; i < times; ++i) {
-		const t0 = Date.now();
+	try {
+		for (let i = 0; i < times; ++i) {
+			const t0 = Date.now();
 
-		try {
 			lilyParser.createParser(grammar);
-		}
-		catch (_) {
-			console.log("revison error:", revision);
-		}
 	
-		const cost = Date.now() - t0;
-		costs.push(cost);
-	}
+			const cost = Date.now() - t0;
+			costs.push(cost);
+		}
 
-	console.log("revision cost:", revision, Math.min(...costs), costs);
+		console.log("revision cost:", revision, Math.min(...costs), costs);
+	}
+	catch (_) {
+		console.log("revison error:", revision);
+	}
 };
 
 
