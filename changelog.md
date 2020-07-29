@@ -23,6 +23,11 @@
 
 
 
+*	2020.7.29
+
+	+	lilyParserProfiler.ts: parser loading cost test added.
+
+
 *	2020.7.28
 
 	+	sheetDocument.ts: fitPageViewbox added.
