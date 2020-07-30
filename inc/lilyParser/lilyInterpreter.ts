@@ -524,7 +524,7 @@ export default class LilyInterpreter {
 		this.updateTrackAssignments();
 
 		const variables = [].concat(...[this.paper, this.layout, this.score].filter(block => block).map(block => block.findAll(Variable).map(variable => variable.name)));
-		const assignments = variables.map(name => new Assignment({key: name, value: this.variableTable.get(name)}));
+		const assignments = variables.filter(name => this.variableTable.get(name)).map(name => new Assignment({key: name, value: this.variableTable.get(name)}));
 		const includes = Array.from(this.includeFiles).map(filename => new Include({cmd: "include", args: [LiteralString.fromString(filename)]}));
 
 		const root = new Root({sections: [

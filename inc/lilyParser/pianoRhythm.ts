@@ -9,7 +9,7 @@ import {SimultaneousList} from "./lilyTerms";
 
 
 
-const createPianoRhythmTrack = (voices: MusicTrack[], subdivider: number): LyricMode => {
+const createPianoRhythmTrack = (voices: MusicTrack[], subdivider: number, {color = null}: {color?: string} = {}): LyricMode => {
 	const ticks = new Set([].concat(...voices.map(voice => voice.block.noteTicks)));	// TODO: use voice.noteTicks
 	const granularity = WHOLE_DURATION_MAGNITUDE / subdivider;
 	//console.log("ticks:", ticks, granularity);
@@ -18,6 +18,9 @@ const createPianoRhythmTrack = (voices: MusicTrack[], subdivider: number): Lyric
 	const duration = new Duration({number: denominator, dots: 0});
 
 	let body = [];
+	if (color)
+		body.push(new Variable({name: color}));
+
 	for (let tick = 0; tick < voices[0].durationMagnitude; tick += granularity) {
 		const variable = new Variable({name: ticks.has(tick) ? "dotB" : "dotW"});
 		const lyric = new Lyric({content: variable, duration: tick === 0 ? duration.clone() : null});
@@ -34,7 +37,14 @@ const createPianoRhythmTrack = (voices: MusicTrack[], subdivider: number): Lyric
 };
 
 
-export const createPianoRhythm = (interpreter: LilyInterpreter) => {
+interface PianoRhythmOptions {
+	colored?: boolean;
+	numberTrack?: boolean;
+	dotTracks?: boolean;
+};
+
+
+export const createPianoRhythm = (interpreter: LilyInterpreter, {colored = true}: PianoRhythmOptions = {}) => {
 	console.assert(!!interpreter.score, "interpreter.score is null.");
 
 	const pianoMusic = interpreter.score.findFirst(term => term instanceof ContextedMusic && term.type === "PianoStaff") as ContextedMusic;
@@ -59,7 +69,9 @@ export const createPianoRhythm = (interpreter: LilyInterpreter) => {
 		const variables = staff.findAll(Variable).map(variable => variable.name);
 		const voices = interpreter.musicTracks.filter(track => variables.includes(track.name));
 
-		const lyric = createPianoRhythmTrack(voices, interpreter.getNoteDurationSubdivider());
+		const color = i ? "lyrGreen" : "lyrRed";
+
+		const lyric = createPianoRhythmTrack(voices, interpreter.getNoteDurationSubdivider(), {color: colored ? color : null});
 		// TODO: create with clause at pos[2] in \new command: \with { \override VerticalAxisGroup.staff-affinity = #UP }
 		const music = new ContextedMusic({head: new Command({cmd: "new", args: ["Lyrics"]}), body: lyric});
 

@@ -25,6 +25,8 @@
 
 *	2020.7.30
 
+	+	pianoRhythm.ts: added color option.
+
 	+	sheet-live.vue: markings for non-baking mode added.
 
 	+	lilyInterpreter.ts: splitLongRests added.
