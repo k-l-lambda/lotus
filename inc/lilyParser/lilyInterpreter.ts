@@ -1,6 +1,6 @@
 
 import {romanize} from "../romanNumeral";
-import {WHOLE_DURATION_MAGNITUDE, lcmMulti} from "./utils";
+import {WHOLE_DURATION_MAGNITUDE, lcmMulti, lcm} from "./utils";
 import {parseRaw, getDurationSubdivider} from "./lilyTerms";
 
 import {
@@ -64,37 +64,42 @@ export class MusicTrack {
 	}
 
 
-	unfoldDurationMultipliers () {
-		// check if traverse is nessary
-		const term = this.block.findFirst(term => term instanceof MusicEvent && term.withMultiplier);
-		if (!term)
-			return;
-
+	splitLongRests () {
 		this.transform((term, context) => {
-			if (!(term instanceof MusicEvent) || !term.withMultiplier)
+			if (!(term instanceof MusicEvent) || (!term.withMultiplier && !(term instanceof Rest)))
 				return [term];
-
-			const factor = term.duration.multipliers.reduce((factor, multiplier) => factor * Number(multiplier), 1);
-			if (!Number.isInteger(factor) || factor <= 0) {
-				console.warn("invalid multiplier:", factor, term.duration.multipliers);
-				return [term];
-			}
 
 			const timeDenominator = context.time ? context.time.value.denominator : 4;
 			const denominator = Math.max(term.duration.denominator, timeDenominator);
 
-			const event = term.clone() as MusicEvent;
-			event.duration.multipliers = [];
+			if (term.withMultiplier) {
+				const factor = term.duration.multipliers.reduce((factor, multiplier) => factor * Number(multiplier), 1);
+				if (!Number.isInteger(factor) || factor <= 0) {
+					console.warn("invalid multiplier:", factor, term.duration.multipliers);
+					return [term];
+				}
 
-			// break duration into multiple rest events
-			const restCount = (event.duration.magnitude / WHOLE_DURATION_MAGNITUDE) * (factor - 1) * denominator;
-			if (!Number.isInteger(restCount))
-				console.warn("Rest count is not integear:", restCount, denominator, event.duration.magnitude, factor);
+				const event = term.clone() as MusicEvent;
+				event.duration.multipliers = [];
+	
+				// break duration into multiple rest events
+				const restCount = (event.duration.magnitude / WHOLE_DURATION_MAGNITUDE) * (factor - 1) * denominator;
+				if (!Number.isInteger(restCount))
+					console.warn("Rest count is not integear:", restCount, denominator, event.duration.magnitude, factor);
+	
+				const rests = Array(Math.floor(restCount)).fill(null).map(() =>
+					new Rest({name: "s", duration: new Duration({number: denominator, dots: 0})}));
 
-			const rests = Array(Math.floor(restCount)).fill(null).map(() =>
-				new Rest({name: "s", duration: new Duration({number: denominator, dots: 0})}));
+				return [event, ...rests];
+			}
+			else {
+				const divider = lcm(term.duration.subdivider, denominator);
+				const restCount = term.durationMagnitude * divider / WHOLE_DURATION_MAGNITUDE;
+				console.assert(Number.isInteger(restCount), "rest count is not an integer:", restCount);
 
-			return [event, ...rests];
+				return Array(restCount).fill(null).map(() =>
+					new Rest({name: "s", duration: new Duration({number: divider, dots: 0})}));
+			}
 		});
 	}
 
@@ -136,7 +141,7 @@ export class MusicTrack {
 
 
 	flatten ({spreadRepeats = false} = {}) {
-		this.unfoldDurationMultipliers();
+		this.splitLongRests();
 		this.spreadRelativeBlocks();
 
 		if (spreadRepeats)

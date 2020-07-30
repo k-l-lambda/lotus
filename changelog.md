@@ -1,7 +1,5 @@
 
 ## TODO
-	measure slice bug
-		chord's base pitch's _parent missed
 	lilyInterpreter
 		execute parallelMusic
 	lyrics in music normalization
@@ -26,6 +24,8 @@
 
 
 *	2020.7.30
+
+	+	lilyInterpreter.ts: splitLongRests added.
 
 	+	lilyParser: fixed pitch anchor issue.
 
