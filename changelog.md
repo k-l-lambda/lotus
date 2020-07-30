@@ -1,5 +1,7 @@
 
 ## TODO
+	measure slice bug
+		chord's base pitch's _parent missed
 	lilyInterpreter
 		execute parallelMusic
 	lyrics in music normalization
@@ -21,6 +23,11 @@
 	source editor
 		cursor position column
 
+
+
+*	2020.7.30
+
+	+	lilyParser: fixed pitch anchor issue.
 
 
 *	2020.7.29

@@ -278,6 +278,7 @@ class StaffContext {
 						//	console.log("missed tie:", `${pitch._location.lines[0]}:${pitch._location.columns[0]}`, pitch.absolutePitch.pitch, pitches);
 					});
 				}
+				//console.log("chord:", term.pitches[0]);
 			}
 
 			this.event = term;
@@ -485,7 +486,10 @@ export default class LilyInterpreter {
 			return result;
 		}
 		else if (term instanceof MusicBlock) {
-			const result = new MusicBlock({body: term.body.map(subterm => this.execute(subterm)).filter(term => term)});
+			const result = new MusicBlock({
+				_parent: term._parent,
+				body: term.body.map(subterm => this.execute(subterm)).filter(term => term),
+			});
 			if (execMusic) {
 				const variable = this.interpretMusic(result);
 				return new MusicBlock({body: [variable]});
@@ -514,7 +518,7 @@ export default class LilyInterpreter {
 	toDocument (): LilyDocument {
 		this.updateTrackAssignments();
 
-		const variables = [].concat(...[this.paper, this.layout, this.score].map(block => block.findAll(Variable).map(variable => variable.name)));
+		const variables = [].concat(...[this.paper, this.layout, this.score].filter(block => block).map(block => block.findAll(Variable).map(variable => variable.name)));
 		const assignments = variables.map(name => new Assignment({key: name, value: this.variableTable.get(name)}));
 		const includes = Array.from(this.includeFiles).map(filename => new Include({cmd: "include", args: [LiteralString.fromString(filename)]}));
 
