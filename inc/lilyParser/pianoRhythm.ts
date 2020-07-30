@@ -44,7 +44,7 @@ interface PianoRhythmOptions {
 };
 
 
-export const createPianoRhythm = (interpreter: LilyInterpreter, {colored = true}: PianoRhythmOptions = {}) => {
+export const createPianoRhythm = (interpreter: LilyInterpreter, {dotTracks = true, numberTrack, colored}: PianoRhythmOptions = {}) => {
 	console.assert(!!interpreter.score, "interpreter.score is null.");
 
 	const pianoMusic = interpreter.score.findFirst(term => term instanceof ContextedMusic && term.type === "PianoStaff") as ContextedMusic;
@@ -65,18 +65,30 @@ export const createPianoRhythm = (interpreter: LilyInterpreter, {colored = true}
 	interpreter.updateTrackAssignments();
 
 	//console.log("staves:", staves);
-	staves.forEach((staff, i) => {
-		const variables = staff.findAll(Variable).map(variable => variable.name);
-		const voices = interpreter.musicTracks.filter(track => variables.includes(track.name));
+	if (dotTracks) {
+		staves.forEach((staff, i) => {
+			const variables = staff.findAll(Variable).map(variable => variable.name);
+			const voices = interpreter.musicTracks.filter(track => variables.includes(track.name));
 
-		const color = i ? "lyrGreen" : "lyrRed";
+			const color = i ? "lyrGreen" : "lyrRed";
 
-		const lyric = createPianoRhythmTrack(voices, interpreter.getNoteDurationSubdivider(), {color: colored ? color : null});
-		// TODO: create with clause at pos[2] in \new command: \with { \override VerticalAxisGroup.staff-affinity = #UP }
+			const lyric = createPianoRhythmTrack(voices, interpreter.getNoteDurationSubdivider(), {color: colored ? color : null});
+			// TODO: create with clause at pos[2] in \new command: \with { \override VerticalAxisGroup.staff-affinity = #UP }
+			const music = new ContextedMusic({head: new Command({cmd: "new", args: ["Lyrics"]}), body: lyric});
+
+			list.list.splice(upStaffPos + i, 0, music);
+		});
+	}
+
+	if (numberTrack) {
+		const pos = upStaffPos + (dotTracks ? 1 : 0);
+
+		// TODO: fill the music body with numbers
+		const lyric = new LyricMode({cmd: "lyricmode", args: [new MusicBlock({body: []})]});
 		const music = new ContextedMusic({head: new Command({cmd: "new", args: ["Lyrics"]}), body: lyric});
 
-		list.list.splice(upStaffPos + i, 0, music);
-	});
+		list.list.splice(pos, 0, music);
+	}
 
 	interpreter.addIncludeFile("rhythmSymbols.ly");
 };
