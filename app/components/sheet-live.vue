@@ -60,6 +60,15 @@
 								:showTitle="showMark"
 							/>
 						</g>
+						<g class="markings">
+							<g v-for="marking of staff.markings" :key="marking.index"
+								:transform="`translate(${marking.x}, ${marking.y + staff.yRoundOffset})`"
+								:class="marking.cls"
+							>
+								<text>{{marking.text}}</text>
+								<text class="alter" v-if="marking.alterText" x="-0.2" y="0">{{marking.alterText}}</text>
+							</g>
+						</g>
 					</g>
 				</g>
 			</g>

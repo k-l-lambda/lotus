@@ -25,6 +25,8 @@
 
 *	2020.7.30
 
+	+	sheet-live.vue: markings for non-baking mode added.
+
 	+	lilyInterpreter.ts: splitLongRests added.
 
 	+	lilyParser: fixed pitch anchor issue.
