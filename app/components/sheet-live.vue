@@ -526,6 +526,7 @@
 		{
 			text
 			{
+				font-family: lotus-music;
 				user-select: none;
 				font-size: $musicFontSize;
 			}
