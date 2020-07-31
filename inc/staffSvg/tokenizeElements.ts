@@ -22,6 +22,7 @@ const normalizeElement = (elem, attributes) => {
 		data.y = elem.transform.translate.y;
 		data.href = elem.href;
 		data.identity.text = elem.text;
+		data.identity.color = elem.color;
 		data.identity["font-size"] = elem["font-size"];
 		data.identity["font-weight"] = elem["font-weight"];
 		data.identity["font-style"] = elem["font-style"];

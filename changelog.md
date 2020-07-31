@@ -25,6 +25,8 @@
 
 *	2020.7.31
 
+	+	staffSvg: added text color attribute.
+
 	+	scoreMaker.ts: added option of includeFolders. 
 
 	+	pianoRhythm.ts: number track added.

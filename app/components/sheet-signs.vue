@@ -28,6 +28,7 @@
 					:font-weight="sign.def['font-weight']"
 					:font-style="sign.def['font-style']"
 					:text-anchor="sign.def['text-anchor']"
+					:fill="sign.def.color"
 				>
 					<tspan>{{sign.def.text}}</tspan>
 				</text>

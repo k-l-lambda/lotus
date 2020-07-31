@@ -1,7 +1,7 @@
 
 const preservedAttributes = {
 	...[
-		"viewBox", "transform", "x", "y", "width", "height", "ry", "d", "x1", "y1", "x2", "y2",
+		"viewBox", "transform", "x", "y", "width", "height", "ry", "d", "x1", "y1", "x2", "y2", "color",
 		"stroke-width", "points", "stroke-dasharray", "font-size", "font-weight", "font-style", "text-anchor",
 	].reduce((dict, key) => ({...dict, [key]: key}), {}),
 	"xlink:href": "href",
@@ -115,6 +115,9 @@ const svgToElements = (svgText, {logger = null, DOMParser = null} = {}) => {
 
 	const root = domNodeToElement(svg);
 
+	//if (logger)
+	//	logger.append("svgToElements.root", JSON.parse(JSON.stringify(root)));
+
 	if (!root.children) {
 		console.log("invalid svg:", root, svgText);
 		return null;
@@ -127,6 +130,7 @@ const svgToElements = (svgText, {logger = null, DOMParser = null} = {}) => {
 			const a = root.children[index];
 			a.children.forEach(p => {
 				p.href = a.href;
+				p.color = a.color;
 			});
 
 			root.children.splice(index, 1, ...a.children);
@@ -147,6 +151,9 @@ const svgToElements = (svgText, {logger = null, DOMParser = null} = {}) => {
 						child.transform.scale.x *= g.transform.scale.x;
 						child.transform.scale.y *= g.transform.scale.y;
 					}
+
+					if (g.color)
+						child.color = g.color;
 				}
 	
 				root.children.splice(gi, 1, ...g.children);
