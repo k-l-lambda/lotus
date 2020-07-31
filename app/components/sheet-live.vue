@@ -286,7 +286,7 @@
 			updateTokenStatus () {
 				if (this.midiNotation && this.noteHighlight) {
 					for (const note of this.midiNotation.notes) {
-						const on = this.midiPlayer.progressTime >= note.start && this.midiPlayer.progressTime < note.start + note.duration;
+						const on = this.midiPlayer.isPlaying && this.midiPlayer.progressTime >= note.start && this.midiPlayer.progressTime < note.start + note.duration;
 						if (note.ids) {
 							note.ids.forEach(id => {
 								const status = this.statusMap.get(id);
