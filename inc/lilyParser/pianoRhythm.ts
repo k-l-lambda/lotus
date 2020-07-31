@@ -9,8 +9,7 @@ import {SimultaneousList} from "./lilyTerms";
 
 
 
-const createPianoRhythmTrack = (voices: MusicTrack[], subdivider: number, {color = null}: {color?: string} = {}): LyricMode => {
-	const ticks = new Set([].concat(...voices.map(voice => voice.block.noteTicks)));	// TODO: use voice.noteTicks
+const createPianoRhythmTrack = ({ticks, durationMagnitude, subdivider, color = null}: {ticks: Set<number>, durationMagnitude: number, subdivider: number, color?: string}): LyricMode => {
 	const granularity = WHOLE_DURATION_MAGNITUDE / subdivider;
 	//console.log("ticks:", ticks, granularity);
 
@@ -21,7 +20,7 @@ const createPianoRhythmTrack = (voices: MusicTrack[], subdivider: number, {color
 	if (color)
 		body.push(new Variable({name: color}));
 
-	for (let tick = 0; tick < voices[0].durationMagnitude; tick += granularity) {
+	for (let tick = 0; tick < durationMagnitude; tick += granularity) {
 		const variable = new Variable({name: ticks.has(tick) ? "dotB" : "dotW"});
 		const lyric = new Lyric({content: variable, duration: tick === 0 ? duration.clone() : null});
 		body.push(lyric);
@@ -34,6 +33,12 @@ const createPianoRhythmTrack = (voices: MusicTrack[], subdivider: number, {color
 	}
 
 	return new LyricMode({cmd: "lyricmode", args: [new MusicBlock({body})]});
+};
+
+
+const createPianoNumberTrack = (): LyricMode => {
+	// TODO:
+	return new LyricMode({cmd: "lyricmode", args: [new MusicBlock({body: []})]});
 };
 
 
@@ -64,15 +69,23 @@ export const createPianoRhythm = (interpreter: LilyInterpreter, {dotTracks = tru
 
 	interpreter.updateTrackAssignments();
 
+
+	const trackTicks: Set<number>[] = staves.map(staff => {
+		const variables = staff.findAll(Variable).map(variable => variable.name);
+		const voices = interpreter.musicTracks.filter(track => variables.includes(track.name));
+
+		return new Set([].concat(...voices.map(voice => voice.block.noteTicks)));
+	});
+
+	const subdivider = interpreter.getNoteDurationSubdivider();
+	const durationMagnitude = interpreter.musicTracks[0].durationMagnitude;
+
 	//console.log("staves:", staves);
 	if (dotTracks) {
-		staves.forEach((staff, i) => {
-			const variables = staff.findAll(Variable).map(variable => variable.name);
-			const voices = interpreter.musicTracks.filter(track => variables.includes(track.name));
-
+		trackTicks.forEach((ticks, i) => {
 			const color = i ? "lyrGreen" : "lyrRed";
 
-			const lyric = createPianoRhythmTrack(voices, interpreter.getNoteDurationSubdivider(), {color: colored ? color : null});
+			const lyric = createPianoRhythmTrack({ticks, durationMagnitude, subdivider, color: colored ? color : null});
 			// TODO: create with clause at pos[2] in \new command: \with { \override VerticalAxisGroup.staff-affinity = #UP }
 			const music = new ContextedMusic({head: new Command({cmd: "new", args: ["Lyrics"]}), body: lyric});
 
@@ -83,8 +96,7 @@ export const createPianoRhythm = (interpreter: LilyInterpreter, {dotTracks = tru
 	if (numberTrack) {
 		const pos = upStaffPos + (dotTracks ? 1 : 0);
 
-		// TODO: fill the music body with numbers
-		const lyric = new LyricMode({cmd: "lyricmode", args: [new MusicBlock({body: []})]});
+		const lyric = createPianoNumberTrack();
 		const music = new ContextedMusic({head: new Command({cmd: "new", args: ["Lyrics"]}), body: lyric});
 
 		list.list.splice(pos, 0, music);
