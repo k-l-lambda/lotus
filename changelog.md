@@ -23,6 +23,11 @@
 
 
 
+*	2020.7.31
+
+	+	pianoRhythm.ts: number track added.
+
+
 *	2020.7.30
 
 	+	pianoRhythm.ts: added color option.

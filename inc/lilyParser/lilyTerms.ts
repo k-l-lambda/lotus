@@ -956,6 +956,20 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	get measureTicks (): [number, number][] {
+		const tickTable: {[key: string]: number} = {};
+
+		this.body.forEach(term => {
+			if (Number.isFinite(term._measure) && Number.isFinite(term._tick)) {
+				if (!Number.isFinite(tickTable[term._measure]))
+					tickTable[term._measure] = term._tick;
+			}
+		});
+
+		return Object.entries(tickTable).map(([measure, tick]) => [Number(measure), tick]);
+	}
+
+
 	/*get ticks (): number[] {
 		const ticks = this.body.filter(term => Number.isFinite(term._tick)).map(term => term._tick);
 

@@ -940,12 +940,12 @@
 			},
 
 
-			createPianoRhythm () {
+			createPianoRhythm (options) {
 				this.updateLilyDocument();
 
 				const interperter = new LilyInterpreter();
 				interperter.interpretDocument(this.lilyDocument);
-				createPianoRhythm(interperter);
+				createPianoRhythm(interperter, options);
 
 				this.lilyDocument = interperter.toDocument();
 				this.lilySource = this.lilyDocument.toString();
