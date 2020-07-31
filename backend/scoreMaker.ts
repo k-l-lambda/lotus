@@ -279,7 +279,7 @@ const makeScoreV2 = async (source: string, lilyParser: GrammarParser, {midi, log
 };
 
 
-const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {withNotation = true, logger, lilyDocument}: {withNotation?: boolean, logger?: LogRecorder, lilyDocument?: LilyDocument} = {}): Promise<SheetNotationResult> => {
+const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {withNotation = true, logger, lilyDocument, includeFolders}: {withNotation?: boolean, logger?: LogRecorder, lilyDocument?: LilyDocument, includeFolders?: string[]} = {}): Promise<SheetNotationResult> => {
 	let midi = null;
 	let midiNotation = null;
 
@@ -293,6 +293,7 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 	const argsGen = new SingleLock<ParserArguments>(true);
 
 	const engraving = await engraveSvg(source, {
+		includeFolders,
 		// do some work during lilypond process running to save time
 		onProcStart: () => {
 			//console.log("tp.0:", Date.now() - t0);
@@ -355,7 +356,12 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 };
 
 
-const makeScoreV3 = async (source: string, lilyParser: GrammarParser, {midi, logger, unfoldRepeats = false}: {midi?: MIDI.MidiData, logger?: LogRecorder, unfoldRepeats?: boolean} = {}): Promise<ScoreJSON | IncompleteScoreJSON> => {
+const makeScoreV3 = async (source: string, lilyParser: GrammarParser, {midi, logger, unfoldRepeats = false, includeFolders}: {
+	midi?: MIDI.MidiData,
+	logger?: LogRecorder,
+	unfoldRepeats?: boolean,
+	includeFolders?: string[],
+} = {}): Promise<ScoreJSON | IncompleteScoreJSON> => {
 	const t0 = Date.now();
 
 	let lilyDocument = null;
@@ -373,7 +379,7 @@ const makeScoreV3 = async (source: string, lilyParser: GrammarParser, {midi, log
 		}
 	}
 
-	const foldData = await makeSheetNotation(source, lilyParser, {logger, lilyDocument, withNotation: !midi && !unfoldSource});
+	const foldData = await makeSheetNotation(source, lilyParser, {logger, lilyDocument, withNotation: !midi && !unfoldSource, includeFolders});
 	const {meta, doc, hashTable} = foldData;
 
 	lilyDocument = lilyDocument || foldData.lilyDocument;
@@ -384,7 +390,7 @@ const makeScoreV3 = async (source: string, lilyParser: GrammarParser, {midi, log
 		midiNotation = MusicNotation.Notation.parseMidi(midi);
 
 	if (unfoldSource) {
-		const unfoldData = await makeSheetNotation(unfoldSource, lilyParser, {logger, lilyDocument, withNotation: !midi});
+		const unfoldData = await makeSheetNotation(unfoldSource, lilyParser, {logger, lilyDocument, withNotation: !midi, includeFolders});
 
 		midi = midi || unfoldData.midi;
 		midiNotation = unfoldData.midiNotation;
@@ -453,7 +459,7 @@ void makeScoreV2;
 const makeScore = makeScoreV3;
 
 
-const makeMIDI = async (source: string, lilyParser: GrammarParser, {unfoldRepeats = true, fixNestedRepeat = false} = {}): Promise<MIDI.MidiData> => {
+const makeMIDI = async (source: string, lilyParser: GrammarParser, {unfoldRepeats = true, fixNestedRepeat = false, includeFolders = undefined} = {}): Promise<MIDI.MidiData> => {
 	const lilyDocument = new LilyDocument(lilyParser.parse(source));
 
 	if (fixNestedRepeat)
@@ -477,6 +483,7 @@ const makeMIDI = async (source: string, lilyParser: GrammarParser, {unfoldRepeat
 	//console.log("markupSource:", markupSource);
 
 	return new Promise((resolve, reject) => engraveSvg(markupSource, {
+		includeFolders,
 		onMidiRead: resolve,
 	}).catch(reject));
 };

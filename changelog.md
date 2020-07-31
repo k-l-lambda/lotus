@@ -25,6 +25,8 @@
 
 *	2020.7.31
 
+	+	scoreMaker.ts: added option of includeFolders. 
+
 	+	pianoRhythm.ts: number track added.
 
 
