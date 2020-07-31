@@ -25,6 +25,8 @@
 
 *	2020.7.31
 
+	+	lilyInterpreter.ts: inherit name in sliceMeasures.
+
 	+	staffSvg: added text color attribute.
 
 	+	scoreMaker.ts: added option of includeFolders. 

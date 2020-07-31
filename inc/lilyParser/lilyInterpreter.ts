@@ -35,6 +35,9 @@ export class MusicTrack {
 		track.block = block;
 		track.anchorPitch = anchorPitch;
 
+		const context = new StaffContext(track);
+		context.execute(track.music);
+
 		return track;
 	}
 
@@ -550,7 +553,12 @@ export default class LilyInterpreter {
 
 
 	sliceMeasures (start: number, count: number) {
-		this.musicTracks = this.musicTracks.map(track => track.sliceMeasures(start, count));
+		this.musicTracks = this.musicTracks.map(track => {
+			const newTrack = track.sliceMeasures(start, count);
+			newTrack.name = track.name;	// inherit name
+
+			return newTrack;
+		});
 	}
 
 
