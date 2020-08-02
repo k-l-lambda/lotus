@@ -7,7 +7,21 @@ import {CM_TO_PX} from "../constants";
 declare class StaffToken {
 	row?: number;
 	measure?: number;
+
+	x: number;
+	y: number;
+	rx: number;
+	ry: number;
 	endX?: number;
+	scale?: number;
+
+	hash: string;
+	href?: string;
+	source: string;
+	symbol: string;
+	symbols?: Set<string>;
+
+	on?: boolean;
 };
 
 

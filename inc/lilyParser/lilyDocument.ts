@@ -3,15 +3,14 @@ import _ from "lodash";
 
 import TextSource from "../textSource";
 import {LILY_STAFF_SIZE_DEFAULT} from "../constants";
-import {romanize} from "../romanNumeral";
 import {
 	parseRaw,
 	BaseTerm, Assignment, LiteralString, Command, Variable, MarkupCommand, Grace, Include, Version, Block, InlineBlock,
-	Scheme, Chord, BriefChord, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive,
+	Scheme, Chord, BriefChord, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive, MusicEvent,
 } from "./lilyTerms";
 
 // eslint-disable-next-line
-import {Root, Relative} from "./lilyTerms";
+import {Root} from "./lilyTerms";
 
 
 
@@ -201,6 +200,7 @@ export default class LilyDocument {
 	}*/
 
 
+	// deprecated
 	getMusicTracks ({expand = false} = {}): MusicBlock[] {
 		const score = this.root.getBlock("score");
 		if (!score)
@@ -221,9 +221,21 @@ export default class LilyDocument {
 	}
 
 
-	static normalTrackName (index: number): string {
+	/*static normalTrackName (index: number): string {
 		return `Voice_${romanize(index + 1)}`;
-	};
+	};*/
+
+
+	getLocationTickTable (): {[key: string]: number} {
+		const events = this.root.findAll(MusicEvent);
+
+		return events.reduce((table, event) => {
+			if (event._location && Number.isFinite(event._tick))
+				table[`${event._location.lines[0]}:${event._location.columns[0]}`] = event._tick;
+
+			return table;
+		}, {});
+	}
 
 
 	appendIncludeFile (filename: string) {

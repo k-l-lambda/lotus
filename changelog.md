@@ -5,10 +5,7 @@
 	lyrics in music normalization
 	lyrics hilighting
 		match chord with voice in the same staff
-	measures clipping, playground.sliceSource
 	measure notes in Notation parsing
-	music duration parsing
-		parse measure ticks from ly
 	staffSvg
 		try fix notes' time by lily interpreter
 		fix partial measures
@@ -21,6 +18,11 @@
 	source editor
 		cursor position column
 
+
+
+*	2020.8.2
+
+	+	lilyDocument.ts: getLocationTickTable added.
 
 
 *	2020.7.31

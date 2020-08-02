@@ -43,7 +43,7 @@
 
 	const chord = (pitches, duration, {locations, post_events, ...options} = {}) => ({proto: "Chord", pitches, duration, post_events, _location: location(...locations), options: {...options, proto: "_PLAIN"}});
 
-	const rest = ({name, duration, post_events = null}) => ({proto: "Rest", name, duration, post_events});
+	const rest = ({name, duration, post_events = null, locations}) => ({proto: "Rest", name, duration, post_events, _location: location(...locations)});
 
 	const chordElem = (pitch, {locations, ...options}) => ({proto: "ChordElement", pitch, _location: location(...locations), options: {...options, proto: "_PLAIN"}});
 
@@ -1767,7 +1767,7 @@ event_chord
 	| tempo_event
 		{$$ = $1;}
 	| simple_element post_events
-		{$$ = rest({...$1, post_events: $2});}
+		{$$ = rest({...$1, post_events: $2, locations: [@1, @2]});}
 	//| CHORD_REPETITION optional_notemode_duration post_events
 	//| MULTI_MEASURE_REST optional_notemode_duration post_events
 	;
