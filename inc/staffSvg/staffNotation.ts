@@ -625,6 +625,8 @@ const matchNotations = async (midiNotation, svgNotation) => {
 	console.assert(midiNotation, "midiNotation is null.");
 	console.assert(svgNotation, "svgNotation is null.");
 
+	const TIME_FACTOR = 4;
+
 	// map svgNotation without duplicated ones
 	const noteMap = {};
 	const notePMap = {};
@@ -643,7 +645,7 @@ const matchNotations = async (midiNotation, svgNotation) => {
 				noteMap[index].ids.push(note.id);
 			}
 			else {
-				const sn = {start: note.time, pitch: note.pitch, id: note.id, track: note.track, contextIndex: note.contextIndex};
+				const sn = {start: note.time * TIME_FACTOR, pitch: note.pitch, id: note.id, track: note.track, contextIndex: note.contextIndex};
 				noteMap[index] = sn;
 				notePMap[sn.pitch] = sn;
 				notes.push(sn);
@@ -665,7 +667,7 @@ const matchNotations = async (midiNotation, svgNotation) => {
 	}, []);
 
 	const sample = {
-		notes: midiNotation.notes.map(({startTick, pitch}, index) => ({index, start: startTick * 16, pitch})),
+		notes: midiNotation.notes.map(({startTick, pitch}, index) => ({index, start: startTick * TIME_FACTOR, pitch})),
 	};
 
 	Matcher.genNotationContext(criterion);

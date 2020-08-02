@@ -5,10 +5,10 @@ import {parseRaw, getDurationSubdivider} from "./lilyTerms";
 
 import {
 	// eslint-disable-next-line
-	BaseTerm, ChordElement,
+	BaseTerm,
 	LiteralString, Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, AfterGrace, Clef, Scheme, Include, Rest,
 	KeySignature, OctaveShift, Duration, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version,
-	ChordMode, LyricMode,
+	ChordMode, LyricMode, ChordElement,
 } from "./lilyTerms";
 // eslint-disable-next-line
 import LilyDocument from "./lilyDocument";
@@ -262,6 +262,22 @@ class StaffContext {
 	}
 
 
+	processGrace (music: BaseTerm, factor = 1 / 4) {
+		// pull back grace notes' ticks
+		let events = [music];
+		if (!(music instanceof MusicEvent))
+			events = music.findAll(MusicEvent);
+
+		let tick = this.tick;
+		events.reverse().forEach(event => {
+			tick -= event.durationMagnitude * factor;
+			event._tick = tick;
+
+			event.findAll(ChordElement).forEach(note => note._tick = tick);
+		});
+	}
+
+
 	execute (term: BaseTerm) {
 		if (!term) {
 			console.warn("null term:", term);
@@ -366,6 +382,8 @@ class StaffContext {
 			this.push({factor: {value: 0}});
 			this.execute(term.music);
 			this.pop();
+
+			this.processGrace(term.music);
 		}
 		else if (term instanceof AfterGrace) {
 			this.execute(term.body);
@@ -373,6 +391,8 @@ class StaffContext {
 			this.push({factor: {value: 0}});
 			this.execute(term.grace);
 			this.pop();
+
+			this.processGrace(term.grace);
 		}
 		else if (term instanceof Clef)
 			this.clef = term;

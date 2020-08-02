@@ -564,6 +564,14 @@
 				}
 
 				this.engraving = true;
+				await this.$nextTick();
+				await animationDelay();
+
+				this.updateLilyDocument();
+				if (this.lilyDocument) {
+					const interperter = new LilyInterpreter();
+					interperter.interpretDocument(this.lilyDocument);
+				}
 
 				const body = new FormData();
 				body.append("source", this.lilySource);
@@ -571,12 +579,6 @@
 					body.append("log", this.engraveWithLogs);
 				if (this.tokenizeStaff)
 					body.append("tokenize", this.tokenizeStaff);
-
-				this.updateLilyDocument();
-				if (this.lilyDocument) {
-					const interperter = new LilyInterpreter();
-					interperter.interpretDocument(this.lilyDocument);
-				}
 
 				const response = await fetch("/engrave", {
 					method: "POST",
