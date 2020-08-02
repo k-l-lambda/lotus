@@ -6,7 +6,7 @@ import {LILY_STAFF_SIZE_DEFAULT} from "../constants";
 import {
 	parseRaw,
 	BaseTerm, Assignment, LiteralString, Command, Variable, MarkupCommand, Grace, Include, Version, Block, InlineBlock,
-	Scheme, Chord, BriefChord, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive, MusicEvent,
+	Scheme, Chord, BriefChord, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive, ChordElement,
 } from "./lilyTerms";
 
 // eslint-disable-next-line
@@ -227,11 +227,11 @@ export default class LilyDocument {
 
 
 	getLocationTickTable (): {[key: string]: number} {
-		const events = this.root.findAll(MusicEvent);
+		const notes = this.root.findAll(ChordElement);
 
-		return events.reduce((table, event) => {
-			if (event._location && Number.isFinite(event._tick))
-				table[`${event._location.lines[0]}:${event._location.columns[0]}`] = event._tick;
+		return notes.reduce((table, note) => {
+			if (note._location && Number.isFinite(note._tick))
+				table[`${note._location.lines[0]}:${note._location.columns[0]}`] = note._tick;
 
 			return table;
 		}, {});

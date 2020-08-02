@@ -549,6 +549,19 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 };
 
 
+const assignTickByLocationTable = (notation: SheetNotation, locationTickTable: {[key: string]: number}) => {
+	notation.notes.forEach((note: any) => {
+		const location = note.id && note.id.match(/^\d+:\d+/)[0];
+		if (locationTickTable[location] === undefined) {
+			console.warn("[assignTickByLocationTable]	location not found in table:", location);
+			return;
+		}
+
+		note.time = locationTickTable[location];
+	});
+};
+
+
 const xClusterize = x => Math.tanh((x / 1.2) ** 12);
 
 const CLUSTERIZE_WIDTH_FACTORS = [1, 1, .5, .5];
@@ -712,6 +725,7 @@ const createPitchContextGroup = (contextGroup: PitchContext[][], midiNotation): 
 
 export {
 	parseNotationFromSheetDocument,
+	assignTickByLocationTable,
 	matchNotations,
 	assignNotationEventsIds,
 	assignIds,

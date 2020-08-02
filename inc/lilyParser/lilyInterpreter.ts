@@ -277,6 +277,8 @@ class StaffContext {
 			if (term instanceof Chord) {
 				this.setPitch(term.absolutePitch);
 
+				term.pitches.forEach(pitch => this.execute(pitch));
+
 				// update tied for ChordElement
 				if (this.tying && this.event && this.event instanceof Chord) {
 					const pitches = new Set(this.event.pitches.map(pitch => pitch.absolutePitch.pitch));
@@ -298,6 +300,9 @@ class StaffContext {
 			const wave = term.post_events && term.post_events.find(e => e.arg === "~");
 			if (wave)
 				this.tying = true;
+		}
+		else if (term instanceof ChordElement) {
+			// ignore
 		}
 		else if (term instanceof MusicBlock) {
 			if (!this.track.block)

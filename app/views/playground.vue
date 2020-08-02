@@ -572,6 +572,12 @@
 				if (this.tokenizeStaff)
 					body.append("tokenize", this.tokenizeStaff);
 
+				this.updateLilyDocument();
+				if (this.lilyDocument) {
+					const interperter = new LilyInterpreter();
+					interperter.interpretDocument(this.lilyDocument);
+				}
+
 				const response = await fetch("/engrave", {
 					method: "POST",
 					body,
@@ -678,6 +684,13 @@
 				if (this.sheetDocument) {
 					const logger = new LogRecorder({enabled: true});
 					this.sheetNotation = StaffNotation.parseNotationFromSheetDocument(this.sheetDocument, {logger});
+
+					if (this.lilyDocument) {
+						const tickTable = this.lilyDocument.getLocationTickTable();
+						StaffNotation.assignTickByLocationTable(this.sheetNotation, tickTable);
+					}
+					else
+						console.warn("lilyDocument is null, assignTickByLocationTable skipped.");
 
 					console.log("sheet notation parsed:", logger.toJSON());
 				}

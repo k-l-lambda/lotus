@@ -1651,8 +1651,10 @@ export class Chord extends MusicEvent {
 
 
 	shiftAnchor (newAnchor: ChordElement) {
+		const _location = this.basePitch._location;
 		const shift = phonetDifferToShift(this.basePitch.phonetStep - newAnchor.phonetStep);
 		const relativeOctave = this.basePitch.absoluteOctave(this.anchorPitch) - newAnchor.octave - shift;
+		//console.log("_location:", _location);
 
 		this.pitches[0] = ChordElement.from({
 			phonet: this.basePitch.phonet,
@@ -1660,6 +1662,7 @@ export class Chord extends MusicEvent {
 			octave: relativeOctave,
 		});
 
+		this.pitches[0]._location = _location;
 		this.pitches[0]._parent = this;
 	}
 };

@@ -22,6 +22,8 @@
 
 *	2020.8.2
 
+	+	staffNotation.ts: assignTickByLocationTable added.
+
 	+	lilyInterpreter.ts: fixed splitLongRests for default duration.
 
 	+	lilyDocument.ts: getLocationTickTable added.
