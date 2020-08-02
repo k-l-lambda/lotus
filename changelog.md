@@ -1,5 +1,7 @@
 
 ## TODO
+	staffNotation
+		remove note time from staff document
 	lilyInterpreter
 		execute parallelMusic
 	lyrics in music normalization
@@ -7,6 +9,7 @@
 		match chord with voice in the same staff
 	measure notes in Notation parsing
 	staffSvg
+		try craete MIDI file pure by LilyParser
 		try fix notes' time by lily interpreter
 		fix partial measures
 			add partial on standalone block
@@ -21,6 +24,8 @@
 
 
 *	2020.8.2
+
+	+	scoreMaker.ts: correct notation time by location-tick table from lily document.
 
 	+	lilyInterpreter.ts: processGrace added.
 

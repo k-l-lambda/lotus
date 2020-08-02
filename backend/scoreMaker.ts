@@ -344,6 +344,10 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 
 	const sheetNotation = staffSvg.StaffNotation.parseNotationFromSheetDocument(doc, {logger});
 
+	// correct notation time by location-tick table from lily document
+	const tickTable = lilyDocument.getLocationTickTable();
+	staffSvg.StaffNotation.assignTickByLocationTable(sheetNotation, tickTable);
+
 	return {
 		midi,
 		midiNotation,
