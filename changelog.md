@@ -22,6 +22,8 @@
 
 *	2020.8.2
 
+	+	lilyInterpreter.ts: fixed splitLongRests for default duration.
+
 	+	lilyDocument.ts: getLocationTickTable added.
 
 
