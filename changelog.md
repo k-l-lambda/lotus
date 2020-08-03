@@ -25,6 +25,8 @@
 
 *	2020.8.3
 
+	+	organizeTokens.ts: adjusted page tile range in tokensRowsSplit.
+
 	+	lilyDocument.ts: LilyDocument.interpret added.
 
 	+	lilyTerms.ts: Chord.pitchElements added.

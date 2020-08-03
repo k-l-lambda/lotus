@@ -173,7 +173,7 @@ const tokensRowsSplit = (tokens, logger) => {
 	}
 	else {
 		connections.forEach((connection, i) => {
-			const start = Math.round(connection.y) - 2;
+			const start = Math.round(connection.y) - 1;
 			const end = Math.round(connection.y + connection.height) + 1;
 
 			let index = i - crossedCount;
@@ -234,6 +234,7 @@ const tokensRowsSplit = (tokens, logger) => {
 	const rows = Array(rowBoundaries.length).fill(null).map(() => ({tokens: [], stacks: []}));
 
 	validLineStacks.forEach(stack => rows[stack.systemIndex] && rows[stack.systemIndex].stacks.push(stack));
+	//logger.append("tokensRowsSplit.validLineStacks", {rows, validLineStacks});
 
 	tokens.forEach(token => {
 		for (const stack of validLineStacks) {
