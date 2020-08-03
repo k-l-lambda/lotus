@@ -297,8 +297,8 @@ class StaffContext {
 
 				// update tied for ChordElement
 				if (this.tying && this.event && this.event instanceof Chord) {
-					const pitches = new Set(this.event.pitches.map(pitch => pitch.absolutePitch.pitch));
-					term.pitches.forEach(pitch => {
+					const pitches = new Set(this.event.pitchElements.map(pitch => pitch.absolutePitch.pitch));
+					term.pitchElements.forEach(pitch => {
 						if (pitches.has(pitch.absolutePitch.pitch))
 							pitch._tied = true;
 						//else

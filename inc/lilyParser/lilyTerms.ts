@@ -1550,7 +1550,7 @@ export class MusicEvent extends BaseTerm {
 
 
 export class Chord extends MusicEvent {
-	pitches: ChordElement[];
+	pitches: (ChordElement | Command)[];
 	options: {
 		exclamations?: string[],
 		questions?: string[],
@@ -1562,13 +1562,13 @@ export class Chord extends MusicEvent {
 	constructor (data) {
 		super(data);
 
-		this.pitches[0]._parent = this;
-		for (let i = 1; i < this.pitches.length; ++i)
-			this.pitches[i]._previous = this.pitches[i - 1];
+		this.basePitch._parent = this;
+		for (let i = 1; i < this.pitchElements.length; ++i)
+			this.pitchElements[i]._previous = this.pitchElements[i - 1];
 	}
 
 
-	get single () {
+	get single (): boolean {
 		return this.pitches.length === 1;
 	}
 
@@ -1601,18 +1601,23 @@ export class Chord extends MusicEvent {
 	}
 
 
-	get isMusic () {
+	get isMusic (): boolean {
 		return true;
 	}
 
 
-	get pitchNames () {
-		return this.pitches.map(elem => elem.pitch.replace(/'|,/g, ""));
+	get pitchElements (): ChordElement[] {
+		return this.pitches.filter(pitch => pitch instanceof ChordElement) as ChordElement[];
 	}
 
 
-	get basePitch () {
-		return this.pitches[0];
+	get pitchNames (): string[] {
+		return this.pitchElements.map((elem: ChordElement) => elem.pitch.replace(/'|,/g, ""));
+	}
+
+
+	get basePitch (): ChordElement {
+		return this.pitchElements[0];
 	}
 
 
@@ -1646,7 +1651,7 @@ export class Chord extends MusicEvent {
 
 
 	get completeTied (): boolean {
-		return this.pitches.filter(pitch => !pitch._tied).length === 0;
+		return this.pitchElements.filter(pitch => !pitch._tied).length === 0;
 	}
 
 

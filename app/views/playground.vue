@@ -568,10 +568,12 @@
 				await animationDelay();
 				await animationDelay();
 
-				this.updateLilyDocument();
-				if (this.lilyDocument) {
-					const interperter = new LilyInterpreter();
-					interperter.interpretDocument(this.lilyDocument);
+				if (this.tokenizeStaff) {
+					this.updateLilyDocument();
+					if (this.lilyDocument) {
+						const interperter = new LilyInterpreter();
+						interperter.interpretDocument(this.lilyDocument);
+					}
 				}
 
 				const body = new FormData();
