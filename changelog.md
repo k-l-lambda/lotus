@@ -25,6 +25,8 @@
 
 *	2020.8.3
 
+	+	lilyDocument.ts: added comment on MIDI output block in excludeChordTracksFromMIDI.
+
 	+	staffNotation.ts: trace back column when location missed.
 
 

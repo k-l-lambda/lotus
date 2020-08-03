@@ -7,6 +7,7 @@ import {
 	parseRaw,
 	BaseTerm, Assignment, LiteralString, Command, Variable, MarkupCommand, Grace, Include, Version, Block, InlineBlock,
 	Scheme, Chord, BriefChord, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive, ChordElement, MusicEvent,
+	Comment,
 } from "./lilyTerms";
 
 // eslint-disable-next-line
@@ -525,6 +526,7 @@ export default class LilyDocument {
 				contains = true;
 			}
 		});
+		newScore._headComment = Comment.createSingle(" midi output");
 
 		if (contains) {
 			const trimmedBody = score.body.filter(term => !isBlock("\\midi", term));
@@ -655,12 +657,4 @@ export default class LilyDocument {
 			block.unfoldDurationMultipliers();
 		});
 	}
-
-
-	/*// require normalization
-	sliceMeasures (start: number, count: number) {
-		const tracks = this.normalMusicTracks;
-
-		tracks.forEach(track => (track._parent._parent as Assignment).value = track.sliceMeasures(start, count));
-	}*/
 };

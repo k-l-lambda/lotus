@@ -2020,6 +2020,18 @@ export class Comment extends BaseTerm {
 			"\n",
 		];
 	}
+
+
+	static createSingle (text): Comment {
+		return new Comment({text: "%" + text});
+	}
+
+
+	static createScoped (text): Comment {
+		console.assert(!/%\}/.test(text), "invalid scoped comment text:", text);
+
+		return new Comment({text: `%{${text}%}`, scoped: true});
+	}
 };
 
 

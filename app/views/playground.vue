@@ -566,6 +566,7 @@
 				this.engraving = true;
 				await this.$nextTick();
 				await animationDelay();
+				await animationDelay();
 
 				this.updateLilyDocument();
 				if (this.lilyDocument) {
