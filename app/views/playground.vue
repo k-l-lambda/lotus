@@ -200,7 +200,7 @@
 	import LogRecorder from "../../inc/logRecorder.ts";
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import loadLilyParser from "../loadLilyParser.js";
-	import {LilyDocument, LilyInterpreter, replaceSourceToken, createPianoRhythm} from "../../inc/lilyParser";
+	import {LilyDocument, replaceSourceToken, createPianoRhythm} from "../../inc/lilyParser";
 	import {CM_TO_PX} from "../../inc/constants.ts";
 	import TextSource from "../../inc/textSource.ts";
 	import * as SheetBaker from "../sheetBaker.ts";
@@ -570,10 +570,8 @@
 
 				if (this.tokenizeStaff) {
 					this.updateLilyDocument();
-					if (this.lilyDocument) {
-						const interperter = new LilyInterpreter();
-						interperter.interpretDocument(this.lilyDocument);
-					}
+					if (this.lilyDocument)
+						this.lilyDocument.interpret();
 				}
 
 				const body = new FormData();
@@ -935,8 +933,7 @@
 				//this.updateLilyDocument();
 				//measures.assignMeasures(this.lilyDocument, locations);
 				//console.log("lilyDocument:", this.lilyDocument);
-				const interperter = new LilyInterpreter();
-				interperter.interpretDocument(this.lilyDocument);
+				const interperter = this.lilyDocument.interpret();
 				this.lilyDocument = interperter.toDocument();
 				this.lilySource = this.lilyDocument.toString();
 
@@ -947,8 +944,7 @@
 			async sliceMeasures (start, count) {
 				this.updateLilyDocument();
 
-				const interperter = new LilyInterpreter();
-				interperter.interpretDocument(this.lilyDocument);
+				const interperter = this.lilyDocument.interpret();
 				interperter.sliceMeasures(start, count);
 				this.lilyDocument = interperter.toDocument();
 				this.lilySource = this.lilyDocument.toString();
@@ -961,8 +957,7 @@
 			createPianoRhythm (options) {
 				this.updateLilyDocument();
 
-				const interperter = new LilyInterpreter();
-				interperter.interpretDocument(this.lilyDocument);
+				const interperter = this.lilyDocument.interpret();
 				createPianoRhythm(interperter, options);
 
 				this.lilyDocument = interperter.toDocument();
@@ -975,8 +970,7 @@
 			testInterperter () {
 				this.updateLilyDocument();
 
-				const interperter = new LilyInterpreter();
-				interperter.interpretDocument(this.lilyDocument);
+				const interperter = this.lilyDocument.interpret();
 
 				interperter.musicTracks.forEach(track => track.flatten({spreadRepeats: true}));
 				const newDoc = interperter.toDocument();

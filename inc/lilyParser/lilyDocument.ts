@@ -9,6 +9,7 @@ import {
 	Scheme, Chord, BriefChord, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive, ChordElement, MusicEvent,
 	Comment,
 } from "./lilyTerms";
+import LilyInterpreter from "./lilyInterpreter";
 
 // eslint-disable-next-line
 import {Root} from "./lilyTerms";
@@ -45,6 +46,14 @@ export default class LilyDocument {
 	toString () {
 		return this.root.join();
 		//return this.root.serialize();
+	}
+
+
+	interpret (): LilyInterpreter {
+		const interperter = new LilyInterpreter();
+		interperter.interpretDocument(this);
+
+		return interperter;
 	}
 
 

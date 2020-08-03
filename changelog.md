@@ -25,6 +25,8 @@
 
 *	2020.8.3
 
+	+	lilyDocument.ts: LilyDocument.interpret added.
+
 	+	lilyTerms.ts: Chord.pitchElements added.
 
 	+	lilyDocument.ts: added comment on MIDI output block in excludeChordTracksFromMIDI.

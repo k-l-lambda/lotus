@@ -6,7 +6,7 @@ import {MusicNotation} from "@k-l-lambda/web-widgets";
 import {MIDI} from "@k-l-lambda/web-widgets";
 
 import {xml2ly, engraveSvg} from "./lilyCommands";
-import {LilyDocument, LilyInterpreter, replaceSourceToken, LilyTerms} from "../inc/lilyParser";
+import {LilyDocument, replaceSourceToken, LilyTerms} from "../inc/lilyParser";
 import * as staffSvg from "../inc/staffSvg";
 import {SingleLock} from "../inc/mutex";
 //import TextSource from "../inc/textSource";
@@ -299,7 +299,7 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 			//console.log("tp.0:", Date.now() - t0);
 			if (!lilyDocument) {
 				lilyDocument = new LilyDocument(lilyParser.parse(source));
-				new LilyInterpreter().interpretDocument(lilyDocument);
+				lilyDocument.interpret();
 			}
 
 			const attributes = lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
@@ -373,7 +373,7 @@ const makeScoreV3 = async (source: string, lilyParser: GrammarParser, {midi, log
 
 	if (unfoldRepeats) {
 		lilyDocument = new LilyDocument(lilyParser.parse(source));
-		new LilyInterpreter().interpretDocument(lilyDocument);
+		lilyDocument.interpret();
 		if (lilyDocument.containsRepeat()) {
 			lilyDocument.unfoldRepeats();
 			unfoldSource = lilyDocument.toString();
