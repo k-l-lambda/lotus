@@ -23,6 +23,11 @@
 
 
 
+*	2020.8.3
+
+	+	staffNotation.ts: trace back column when location missed.
+
+
 *	2020.8.2
 
 	+	scoreMaker.ts: correct notation time by location-tick table from lily document.

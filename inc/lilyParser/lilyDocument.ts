@@ -6,7 +6,7 @@ import {LILY_STAFF_SIZE_DEFAULT} from "../constants";
 import {
 	parseRaw,
 	BaseTerm, Assignment, LiteralString, Command, Variable, MarkupCommand, Grace, Include, Version, Block, InlineBlock,
-	Scheme, Chord, BriefChord, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive, ChordElement,
+	Scheme, Chord, BriefChord, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive, ChordElement, MusicEvent,
 } from "./lilyTerms";
 
 // eslint-disable-next-line
@@ -195,11 +195,6 @@ export default class LilyDocument {
 	}
 
 
-	/*updateChordChains () {
-		this.root.forEachTopTerm(MusicBlock, block => block.updateChordChains());
-	}*/
-
-
 	// deprecated
 	getMusicTracks ({expand = false} = {}): MusicBlock[] {
 		const score = this.root.getBlock("score");
@@ -221,13 +216,8 @@ export default class LilyDocument {
 	}
 
 
-	/*static normalTrackName (index: number): string {
-		return `Voice_${romanize(index + 1)}`;
-	};*/
-
-
 	getLocationTickTable (): {[key: string]: number} {
-		const notes = this.root.findAll(ChordElement);
+		const notes = this.root.findAll(term => (term instanceof ChordElement) || (term instanceof MusicEvent));
 
 		return notes.reduce((table, note) => {
 			if (note._location && Number.isFinite(note._tick))

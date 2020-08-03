@@ -553,6 +553,15 @@ const assignTickByLocationTable = (notation: SheetNotation, locationTickTable: {
 	notation.notes.forEach((note: any) => {
 		const location = note.id && note.id.match(/^\d+:\d+/)[0];
 		if (locationTickTable[location] === undefined) {
+			const [line, column] = note.id.match(/\d+/g).map(Number);
+			for (let c = column - 1; c >= 0; --c) {
+				const loc = `${line}:${c}`;
+				if (locationTickTable[loc]) {
+					note.time = locationTickTable[loc];
+					return;
+				}
+			}
+
 			console.warn("[assignTickByLocationTable]	location not found in table:", location);
 			return;
 		}
