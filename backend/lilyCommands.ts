@@ -127,9 +127,10 @@ const preprocessXml = (xml, {
 	escapedWordsDoubleQuotation = true,
 	removeTrivialRests = true,
 	removeBadMetronome = true,
+	removeInvalidHarmonies = true,
 } = {}): string => {
 	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup && !fixBackSlashes && !roundTempo
-		&& !escapedWordsDoubleQuotation && !removeTrivialRests && !removeBadMetronome)
+		&& !escapedWordsDoubleQuotation && !removeTrivialRests && !removeBadMetronome && !removeInvalidHarmonies)
 		return xml;
 
 	const dom = new DOMParser().parseFromString(xml, "text/xml");
@@ -141,7 +142,7 @@ const preprocessXml = (xml, {
 	}
 
 	const needTraverse = removeMeasureImplicit || removeNullDynamics || fixHeadMarkup || fixBackSlashes || roundTempo
-		|| escapedWordsDoubleQuotation || removeTrivialRests || removeBadMetronome;
+		|| escapedWordsDoubleQuotation || removeTrivialRests || removeBadMetronome || removeInvalidHarmonies;
 	if (needTraverse) {
 		domUtils.traverse(dom, node => {
 			if (removeMeasureImplicit) {
@@ -209,6 +210,20 @@ const preprocessXml = (xml, {
 					if (!domUtils.childrenWithTag(node, "per-minute").length) {
 						console.warn("metronome without 'per-minute' removed:", node.toString());
 						node.parentNode.removeChild(node);
+					}
+				}
+			}
+
+			if (removeInvalidHarmonies) {
+				if (node.tagName === "harmony") {
+					let next = node.nextSibling;
+					while (next && !next.tagName)
+						next = next.nextSibling;
+
+					//console.log("sibling:", next);
+					if (!next || next.tagName !== "note") {
+						node.parentNode.removeChild(node);
+						console.debug("invalid harmony removed:", next && next.tagName);
 					}
 				}
 			}

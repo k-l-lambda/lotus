@@ -25,6 +25,8 @@
 
 *	2020.8.3
 
+	+	lilyCommands.ts: XML preprocessing option of removeInvalidHarmonies added.
+
 	+	organizeTokens.ts: adjusted page tile range in tokensRowsSplit.
 
 	+	lilyDocument.ts: LilyDocument.interpret added.
