@@ -1,5 +1,6 @@
 <template>
 	<div>
+		<meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5">
 		<header class="controls">
 			<StoreInput v-if="!disableStore" v-show="false" v-model="sourceText" sessionKey="lotus-profilerSourceText" />
 			<input type="file" @change="onScoreChange" />
@@ -85,9 +86,9 @@
 				this.disableStore = true;
 				this.loadScoreFromURL(hash.query.score);
 			}
-			if (hash.query.nobake) {
+			if (hash.query.nobake) 
 				this.bakingSheet = false;
-			}
+			
 		},
 
 
