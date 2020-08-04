@@ -520,6 +520,7 @@
 				this.midiPlayer = null;
 				this.matcherNotations = null;
 				this.bakingImages = null;
+				this.engraverLogs = null;
 			},
 
 
