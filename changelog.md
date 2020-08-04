@@ -26,6 +26,8 @@
 
 *	2020.8.4
 
+	+	profiler.vue: load score from URL added.
+
 	+	playground.vue: packed baking images into score bundle.
 
 	+	playground.vue: export score bundle in zip package.

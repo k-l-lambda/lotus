@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<header class="controls">
-			<StoreInput v-show="false" v-model="sourceText" sessionKey="lotus-profilerSourceText" />
+			<StoreInput v-if="!disableStore" v-show="false" v-model="sourceText" sessionKey="lotus-profilerSourceText" />
 			<input type="file" @change="onScoreChange" />
 			<button @click="homePlayer">&#x23ee;</button>
 			<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
@@ -29,6 +29,8 @@
 </template>
 
 <script>
+	import url from "url";
+
 	import "../utils.js";
 	import {animationDelay} from "../delay.js";
 	import ScoreBundle from "../scoreBundle.ts";
@@ -66,6 +68,7 @@
 				bakingImages: null,
 				sourceBakingImages: null,
 				fps: null,
+				disableStore: false,
 			};
 		},
 
@@ -76,6 +79,12 @@
 			window.$main = this;
 
 			this.watchFps();
+
+			const hash = url.parse(location.hash.substr(1), true);
+			if (hash.query.score) {
+				this.disableStore = true;
+				this.loadScoreFromURL(hash.query.score);
+			}
 		},
 
 
@@ -85,13 +94,19 @@
 			},
 
 
-			async onScoreChange (event) {
+			onScoreChange (event) {
 				//console.log("onScoreChange:", event);
 				const file = event.target.files[0];
 				if (!file)
 					return;
 
-				this.logTime("score loading begin.");
+				return this.loadScoreFile(file);
+			},
+
+
+			async loadScoreFile (file) {
+				this.logTime("file loading begin");
+
 				switch (file.type) {
 				case "application/json":
 					this.sourceText = await file.readAs("Text");
@@ -125,6 +140,22 @@
 				default:
 					console.log("unsupported type:", file.type);
 				}
+			},
+
+
+			async loadScoreFromURL (url) {
+				this.logTime("URL fetching begin");
+
+				const response = await fetch(url);
+				if (!response.ok) {
+					console.warn("URL load failed:", await response.text());
+					return;
+				}
+				this.logTime("network responsed");
+
+				const blob = await response.blob();
+
+				return this.loadScoreFile(blob);
 			},
 
 

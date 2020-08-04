@@ -39,7 +39,7 @@
 
 		methods: {
 			onHashChange () {
-				this.view = location.hash.substr(1) || "playground";
+				this.view = (location.hash.substr(1) || "playground").replace(/\?.*/, "");
 			},
 		},
 	};
