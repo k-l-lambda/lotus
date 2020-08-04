@@ -174,7 +174,7 @@ const preprocessXml = (xml: string, {
 			}
 
 			if (fixRepeatBarline) {
-				if (node.tagName === "barline" && domUtils.hasChildrenWithTag(node, "repeat") && domUtils.findNextSibling(node, "backup")) {
+				if (node.tagName === "barline" && node.getAttribute("location") === "right" && domUtils.findNextSibling(node, "backup")) {
 					//console.log("invalid repeat:", node);
 
 					// move the barline to the end of this measure
