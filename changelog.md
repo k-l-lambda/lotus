@@ -24,6 +24,11 @@
 
 
 
+*	2020.8.4
+
+	+	xmlTool.ts: separated preprocessXml from lilyCommands.ts.
+
+
 *	2020.8.3
 
 	+	lilyCommands.ts: XML preprocessing option of removeInvalidHarmonies added.
