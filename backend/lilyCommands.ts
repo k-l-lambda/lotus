@@ -128,9 +128,10 @@ const preprocessXml = (xml, {
 	removeTrivialRests = true,
 	removeBadMetronome = true,
 	removeInvalidHarmonies = true,
+	removeAllHarmonies = false,
 } = {}): string => {
 	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup && !fixBackSlashes && !roundTempo
-		&& !escapedWordsDoubleQuotation && !removeTrivialRests && !removeBadMetronome && !removeInvalidHarmonies)
+		&& !escapedWordsDoubleQuotation && !removeTrivialRests && !removeBadMetronome && !removeInvalidHarmonies && !removeAllHarmonies)
 		return xml;
 
 	const dom = new DOMParser().parseFromString(xml, "text/xml");
@@ -142,7 +143,7 @@ const preprocessXml = (xml, {
 	}
 
 	const needTraverse = removeMeasureImplicit || removeNullDynamics || fixHeadMarkup || fixBackSlashes || roundTempo
-		|| escapedWordsDoubleQuotation || removeTrivialRests || removeBadMetronome || removeInvalidHarmonies;
+		|| escapedWordsDoubleQuotation || removeTrivialRests || removeBadMetronome || removeInvalidHarmonies || removeAllHarmonies;
 	if (needTraverse) {
 		domUtils.traverse(dom, node => {
 			if (removeMeasureImplicit) {
@@ -214,16 +215,20 @@ const preprocessXml = (xml, {
 				}
 			}
 
-			if (removeInvalidHarmonies) {
+			if (removeInvalidHarmonies || removeAllHarmonies) {
 				if (node.tagName === "harmony") {
-					let next = node.nextSibling;
-					while (next && !next.tagName)
-						next = next.nextSibling;
-
-					//console.log("sibling:", next);
-					if (!next || next.tagName !== "note") {
+					if (removeAllHarmonies)
 						node.parentNode.removeChild(node);
-						console.debug("invalid harmony removed:", next && next.tagName);
+					else {
+						let next = node.nextSibling;
+						while (next && !next.tagName)
+							next = next.nextSibling;
+	
+						//console.log("sibling:", next);
+						if (!next || next.tagName !== "note") {
+							node.parentNode.removeChild(node);
+							console.debug("invalid harmony removed:", next && next.tagName);
+						}
 					}
 				}
 			}

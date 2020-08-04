@@ -307,7 +307,7 @@
 				chosenLilyMarkupMethod: null,
 				operating: false,
 				loadingLilyParser: false,
-				enabledPointer: true,
+				enabledPointer: false,
 				pointerData: null,
 			};
 		},
