@@ -63,6 +63,8 @@ interface LilyProcessOptions {
 	escapedWordsDoubleQuotation?: boolean;
 	removeTrivialRests?: boolean;
 	removeBadMetronome?: boolean;
+	removeInvalidHarmonies?: boolean;
+	removeAllHarmonies?: boolean;
 
 	// lilypond
 	pointClick?: boolean;

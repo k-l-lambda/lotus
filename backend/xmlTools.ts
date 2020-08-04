@@ -9,7 +9,7 @@ const isWordDirection = direction => {
 	const directionTypes = domUtils.childrenWithTag(direction, "direction-type");
 
 	for (const dt of directionTypes) {
-		if (domUtils.childrenWithTag(dt, "words").length > 0)
+		if (domUtils.hasChildrenWithTag(dt, "words"))
 			return true;
 	}
 
@@ -58,9 +58,11 @@ const preprocessXml = (xml: string, {
 	removeBadMetronome = true,
 	removeInvalidHarmonies = true,
 	removeAllHarmonies = false,
+	fixChordVoice = true,
 } = {}): string => {
 	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup && !fixBackSlashes && !roundTempo
-		&& !escapedWordsDoubleQuotation && !removeTrivialRests && !removeBadMetronome && !removeInvalidHarmonies && !removeAllHarmonies)
+		&& !escapedWordsDoubleQuotation && !removeTrivialRests && !removeBadMetronome && !removeInvalidHarmonies && !removeAllHarmonies
+		&& !fixChordVoice)
 		return xml;
 
 	const dom = new DOMParser().parseFromString(xml, "text/xml");
@@ -72,7 +74,8 @@ const preprocessXml = (xml: string, {
 	}
 
 	const needTraverse = removeMeasureImplicit || removeNullDynamics || fixHeadMarkup || fixBackSlashes || roundTempo
-		|| escapedWordsDoubleQuotation || removeTrivialRests || removeBadMetronome || removeInvalidHarmonies || removeAllHarmonies;
+		|| escapedWordsDoubleQuotation || removeTrivialRests || removeBadMetronome || removeInvalidHarmonies || removeAllHarmonies
+		|| fixChordVoice;
 	if (needTraverse) {
 		domUtils.traverse(dom, node => {
 			if (removeMeasureImplicit) {
@@ -121,13 +124,7 @@ const preprocessXml = (xml: string, {
 
 			if (removeTrivialRests) {
 				if (node.tagName === "note") {
-					if (domUtils.childrenWithTag(node, "rest").length && !domUtils.childrenWithTag(node, "type").length) {
-						/*const duration: any = domUtils.childrenWithTag(node, "duration")[0];
-						const durationNumber = Number(duration ? duration.textContent : NaN);
-						if (durationNumber % 6 !== 0) {
-							console.log("invalid rest duration without type:", durationNumber);
-							node.parentNode.removeChild(node);
-						}*/
+					if (domUtils.hasChildrenWithTag(node, "rest") && !domUtils.hasChildrenWithTag(node, "type")) {
 						// append an empty tag: <type></type>
 						const type = dom.createElement("type");
 						node.appendChild(type);
@@ -137,7 +134,7 @@ const preprocessXml = (xml: string, {
 
 			if (removeBadMetronome) {
 				if (node.tagName === "metronome") {
-					if (!domUtils.childrenWithTag(node, "per-minute").length) {
+					if (!domUtils.hasChildrenWithTag(node, "per-minute")) {
 						console.warn("metronome without 'per-minute' removed:", node.toString());
 						node.parentNode.removeChild(node);
 					}
@@ -158,6 +155,19 @@ const preprocessXml = (xml: string, {
 							node.parentNode.removeChild(node);
 							console.debug("invalid harmony removed:", next && next.tagName);
 						}
+					}
+				}
+			}
+
+			if (fixChordVoice) {
+				if (node.tagName === "note" && domUtils.hasChildrenWithTag(node, "chord") && !domUtils.hasChildrenWithTag(node, "voice")) {
+					//console.log("bad note:", node);
+					const previousNote = domUtils.findPreviousSibling(node, "note");
+					if (previousNote) {
+						const voice = domUtils.childrenWithTag(previousNote, "voice")[0];
+						//console.log("chord voice:", node, voice);
+						if (voice)
+							node.appendChild(voice.cloneNode(true));
 					}
 				}
 			}

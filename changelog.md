@@ -26,7 +26,9 @@
 
 *	2020.8.4
 
-	+	xmlTool.ts: separated preprocessXml from lilyCommands.ts.
+	+	xmlTools.ts: added option of fixChordVoice.
+
+	+	xmlTools.ts: separated preprocessXml from lilyCommands.ts.
 
 
 *	2020.8.3
