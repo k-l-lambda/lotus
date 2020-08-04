@@ -85,6 +85,9 @@
 				this.disableStore = true;
 				this.loadScoreFromURL(hash.query.score);
 			}
+			if (hash.query.nobake) {
+				this.bakingSheet = false;
+			}
 		},
 
 
@@ -193,6 +196,9 @@
 
 						this.logTime("baking finished");
 					}
+
+					await this.$nextTick();
+					this.logTime("rendering finished");
 				}
 			},
 
