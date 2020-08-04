@@ -65,6 +65,9 @@ interface LilyProcessOptions {
 	removeBadMetronome?: boolean;
 	removeInvalidHarmonies?: boolean;
 	removeAllHarmonies?: boolean;
+	fixChordVoice?: boolean;
+	fixBarlines?: boolean;
+	removeInvalidClef?: boolean;
 
 	// lilypond
 	pointClick?: boolean;

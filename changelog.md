@@ -26,6 +26,8 @@
 
 *	2020.8.4
 
+	+	xmlTools.ts: added option of removeInvalidClef.
+
 	+	xmlTools.ts: added option of fixRepeatBarline.
 
 	+	xmlTools.ts: added option of fixChordVoice.

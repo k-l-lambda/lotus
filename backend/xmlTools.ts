@@ -59,11 +59,12 @@ const preprocessXml = (xml: string, {
 	removeInvalidHarmonies = true,
 	removeAllHarmonies = false,
 	fixChordVoice = true,
-	fixRepeatBarline = true,
+	fixBarlines = true,
+	removeInvalidClef = true,
 } = {}): string => {
 	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup && !fixBackSlashes && !roundTempo
 		&& !escapedWordsDoubleQuotation && !removeTrivialRests && !removeBadMetronome && !removeInvalidHarmonies && !removeAllHarmonies
-		&& !fixChordVoice && !fixRepeatBarline)
+		&& !fixChordVoice && !fixBarlines)
 		return xml;
 
 	const dom = new DOMParser().parseFromString(xml, "text/xml");
@@ -76,7 +77,7 @@ const preprocessXml = (xml: string, {
 
 	const needTraverse = removeMeasureImplicit || removeNullDynamics || fixHeadMarkup || fixBackSlashes || roundTempo
 		|| escapedWordsDoubleQuotation || removeTrivialRests || removeBadMetronome || removeInvalidHarmonies || removeAllHarmonies
-		|| fixChordVoice || fixRepeatBarline;
+		|| fixChordVoice || fixBarlines;
 	if (needTraverse) {
 		domUtils.traverse(dom, node => {
 			if (removeMeasureImplicit) {
@@ -102,7 +103,7 @@ const preprocessXml = (xml: string, {
 			if (fixBackSlashes) {
 				if (["words", "credit-words", "text"].includes(node.tagName)) {
 					if (/^\\+/.test(node.textContent) || /\\+$/.test(node.textContent)) {
-						console.warn("replaced invalid text:", node.textContent);
+						console.debug("replaced invalid text:", node.textContent);
 						node.textContent = node.textContent.replace(/^\\+/, "").replace(/\\+$/, "");
 					}
 				}
@@ -136,7 +137,7 @@ const preprocessXml = (xml: string, {
 			if (removeBadMetronome) {
 				if (node.tagName === "metronome") {
 					if (!domUtils.hasChildrenWithTag(node, "per-minute")) {
-						console.warn("metronome without 'per-minute' removed:", node.toString());
+						console.debug("metronome without 'per-minute' removed:", node.toString());
 						node.parentNode.removeChild(node);
 					}
 				}
@@ -173,13 +174,27 @@ const preprocessXml = (xml: string, {
 				}
 			}
 
-			if (fixRepeatBarline) {
-				if (node.tagName === "barline" && node.getAttribute("location") === "right" && domUtils.findNextSibling(node, "backup")) {
-					//console.log("invalid repeat:", node);
+			if (fixBarlines) {
+				if (node.tagName === "barline") {
+					if ((node.getAttribute("location") === "right" || domUtils.hasChildrenWithTag(node, "bar-style"))
+						&& domUtils.findNextSibling(node, "backup")) {
+						// move the barline to the end of this measure
+						node.parentNode.removeChild(node);
+						node.parentNode.appendChild(node);
+					}
+				}
+			}
 
-					// move the barline to the end of this measure
-					node.parentNode.removeChild(node);
-					node.parentNode.appendChild(node);
+			if(removeInvalidClef) {
+				if (node.tagName === "attributes") {
+					const clef = domUtils.childrenWithTag(node, "clef")[0];
+					if (clef) {
+						const n = Number(clef.getAttribute("number"));
+						if (!domUtils.findPreviousSibling(node, "backup") && n > 1) {
+							node.parentNode.removeChild(node);
+							console.debug("invalid clef removed:", n);
+						}
+					}
 				}
 			}
 		});
