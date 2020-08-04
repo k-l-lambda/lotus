@@ -22,7 +22,7 @@
 				</span>
 				<span class="dirty-badge" :class="{dirty: engraverDirty}"></span>
 				<button @click="engrave" :class="{working: engraving}" style="zoom: 160%" title="engrave (F8)">&#x1f3bc;</button>
-				<button :disabled="!sheetDocument" @click="exportScore">json</button>
+				<button :disabled="!sheetDocument" @click="exportScore">&#x1f4e6;</button>
 			</fieldset>
 			<fieldset>
 				<BoolStoreInput v-show="false" v-model="tokenizeStaff" sessionKey="lotus-tokenizeStaff" />
@@ -721,7 +721,7 @@
 			},
 
 
-			exportScore () {
+			async exportScore () {
 				console.assert(this.sheetDocument, "sheetDocument is null.");
 				console.assert(this.pitchContextGroup, "pitchContextGroup is null.");
 				console.assert(this.midiNotation, "midiNotation is null.");
@@ -747,9 +747,14 @@
 					noteLinkings,
 					pitchContextGroup: this.pitchContextGroup,
 				};
-				const blob = new Blob([JSON.stringify(data)]);
+				const score = new Blob([JSON.stringify(data)], {type: "application/json"});
 
-				downloadUrl(URL.createObjectURL(blob), `${this.title || ""}.score.json`);
+				const {default: JSZip} = await import("jszip");
+				const pack = new JSZip();
+				pack.file("score.json", score);
+
+				const blob = await pack.generateAsync({type: "blob"});
+				downloadUrl(URL.createObjectURL(blob), `${this.title || ""}.zip`);
 			},
 
 

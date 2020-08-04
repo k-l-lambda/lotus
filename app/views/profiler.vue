@@ -95,6 +95,15 @@
 					this.sourceText = await file.readAs("Text");
 
 					break;
+				case "application/zip": {
+						const {default: JSZip} = await import("jszip");
+						const pack = await JSZip.loadAsync(file);
+						this.sourceText = await pack.file("score.json").async("text");
+					}
+
+					break;
+				default:
+					console.log("unsupported type:", file.type);
 				}
 			},
 

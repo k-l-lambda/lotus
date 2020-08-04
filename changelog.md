@@ -26,6 +26,8 @@
 
 *	2020.8.4
 
+	+	playground.vue: export score bundle in zip package.
+
 	+	xmlTools.ts: added option of removeInvalidClef.
 
 	+	xmlTools.ts: added option of fixRepeatBarline.
