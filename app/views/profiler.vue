@@ -112,7 +112,8 @@
 					this.sourceText = await file.readAs("Text");
 
 					break;
-				case "application/zip": {
+				case "application/zip":
+				case "application/x-zip-compressed": {
 						const {default: JSZip} = await import("jszip");
 						const pack = await JSZip.loadAsync(file);
 
@@ -183,7 +184,7 @@
 						this.bakingImages = this.sourceBakingImages;
 						this.sourceBakingImages = null;
 					}
-					else {
+					else if (this.bakingSheet) {
 						this.bakingImages = [];
 						const baker = scoreBundle.bakeSheet(this.$refs.canvas);
 						this.logTime("baker loaded");
