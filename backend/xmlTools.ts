@@ -59,10 +59,11 @@ const preprocessXml = (xml: string, {
 	removeInvalidHarmonies = true,
 	removeAllHarmonies = false,
 	fixChordVoice = true,
+	fixRepeatBarline = true,
 } = {}): string => {
 	if (!removeMeasureImplicit && !replaceEncoding && !removeNullDynamics && !fixHeadMarkup && !fixBackSlashes && !roundTempo
 		&& !escapedWordsDoubleQuotation && !removeTrivialRests && !removeBadMetronome && !removeInvalidHarmonies && !removeAllHarmonies
-		&& !fixChordVoice)
+		&& !fixChordVoice && !fixRepeatBarline)
 		return xml;
 
 	const dom = new DOMParser().parseFromString(xml, "text/xml");
@@ -75,7 +76,7 @@ const preprocessXml = (xml: string, {
 
 	const needTraverse = removeMeasureImplicit || removeNullDynamics || fixHeadMarkup || fixBackSlashes || roundTempo
 		|| escapedWordsDoubleQuotation || removeTrivialRests || removeBadMetronome || removeInvalidHarmonies || removeAllHarmonies
-		|| fixChordVoice;
+		|| fixChordVoice || fixRepeatBarline;
 	if (needTraverse) {
 		domUtils.traverse(dom, node => {
 			if (removeMeasureImplicit) {
@@ -169,6 +170,16 @@ const preprocessXml = (xml: string, {
 						if (voice)
 							node.appendChild(voice.cloneNode(true));
 					}
+				}
+			}
+
+			if (fixRepeatBarline) {
+				if (node.tagName === "barline" && domUtils.hasChildrenWithTag(node, "repeat") && domUtils.findNextSibling(node, "backup")) {
+					//console.log("invalid repeat:", node);
+
+					// move the barline to the end of this measure
+					node.parentNode.removeChild(node);
+					node.parentNode.appendChild(node);
 				}
 			}
 		});
