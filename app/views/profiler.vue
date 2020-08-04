@@ -64,6 +64,7 @@
 				noteHighlight: true,
 				bakingSheet: true,
 				bakingImages: null,
+				sourceBakingImages: null,
 				fps: null,
 			};
 		},
@@ -90,6 +91,7 @@
 				if (!file)
 					return;
 
+				this.logTime("score loading begin.");
 				switch (file.type) {
 				case "application/json":
 					this.sourceText = await file.readAs("Text");
@@ -98,7 +100,25 @@
 				case "application/zip": {
 						const {default: JSZip} = await import("jszip");
 						const pack = await JSZip.loadAsync(file);
+
+						this.sourceBakingImages = null;
+						for (let i = 0; true; ++i) {
+							const file = pack.file(`baking${i}.png`);
+							if (!file)
+								break;
+
+							const blob = await file.async("blob");
+							const url = URL.createObjectURL(blob);
+
+							this.sourceBakingImages = this.sourceBakingImages || [];
+							this.sourceBakingImages.push(url);
+						}
+
+						if(this.sourceBakingImages)
+							this.logTime(`baking images loaded [${this.sourceBakingImages.length}]`);
+
 						this.sourceText = await pack.file("score.json").async("text");
+						this.logTime("sourceText loaded.");
 					}
 
 					break;
@@ -128,13 +148,19 @@
 
 					this.logTime("rendering initialized");
 
-					this.bakingImages = [];
-					const baker = scoreBundle.bakeSheet(this.$refs.canvas);
-					this.logTime("baker loaded");
-					for await (const url of baker)
-						this.bakingImages.push(url);
+					if (this.sourceBakingImages) {
+						this.bakingImages = this.sourceBakingImages;
+						this.sourceBakingImages = null;
+					}
+					else {
+						this.bakingImages = [];
+						const baker = scoreBundle.bakeSheet(this.$refs.canvas);
+						this.logTime("baker loaded");
+						for await (const url of baker)
+							this.bakingImages.push(url);
 
-					this.logTime("baking finished");
+						this.logTime("baking finished");
+					}
 				}
 			},
 

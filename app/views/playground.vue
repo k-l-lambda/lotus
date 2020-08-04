@@ -753,6 +753,14 @@
 				const pack = new JSZip();
 				pack.file("score.json", score);
 
+				if (this.bakingSheet && this.bakingImages) {
+					await Promise.all(this.bakingImages.map(async (url, index) => {
+						const img = await (await fetch(url)).blob();
+						pack.file(`baking${index}.png`, img);
+						console.log("img:", img);
+					}));
+				}
+
 				const blob = await pack.generateAsync({type: "blob"});
 				downloadUrl(URL.createObjectURL(blob), `${this.title || ""}.zip`);
 			},
