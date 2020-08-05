@@ -743,7 +743,7 @@
 					meta,
 					doc: this.sheetDocument,
 					midi: this.midi,
-					hashTable: this.svgHashTable,
+					hashTable: this.bakingSheet ? null : this.svgHashTable,
 					noteLinkings,
 					pitchContextGroup: this.pitchContextGroup,
 				};
