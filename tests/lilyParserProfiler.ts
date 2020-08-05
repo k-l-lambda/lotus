@@ -2,7 +2,7 @@
 import fs from "fs";
 import child_process from "child-process-promise";
 
-import * as lilyParser from "../inc/lilyParser";
+import {Parser} from "../inc/jisonWrapper";
 import asyncCall from "../inc/asyncCall";
 
 
@@ -13,15 +13,13 @@ const testParserLoading = async (revision, times = 3) => {
 
 	const grammar = (await asyncCall(fs.readFile, "./inc/lilyParser/lilypond.jison")).toString();
 
-	lilyParser.hookJisonPrint();
-
 	const costs = [];
 
 	try {
 		for (let i = 0; i < times; ++i) {
 			const t0 = Date.now();
 
-			lilyParser.createParser(grammar);
+			new Parser(grammar);
 	
 			const cost = Date.now() - t0;
 			costs.push(cost);
