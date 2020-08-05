@@ -3,24 +3,18 @@ import sha1 from "sha1";
 import fs from "fs";
 
 import * as lilyParser from "../inc/lilyParser";
+import loadLilyParser from "../backend/loadLilyParserNode";
 
 
 
-const parse = (grammar, source) => {
-	const parser = lilyParser.createParser(grammar);
-
-	return new lilyParser.LilyDocument(parser.parse(source));
-};
-
-
-const validate = (grammar, sourceFile) => {
+const validate = (parser, sourceFile) => {
 	const source = fs.readFileSync(sourceFile).toString();
-	const doc0 = parse(grammar, source);
+	const doc0 = new lilyParser.LilyDocument(parser.parse(source));
 	const json0 = JSON.stringify(doc0);
 	const hash0 = sha1(json0);
 
 	const source1 = doc0.toString();
-	const doc1 = parse(grammar, source1);
+	const doc1 = new lilyParser.LilyDocument(parser.parse(source1));
 	const json1 = JSON.stringify(doc1);
 	const hash1 = sha1(json1);
 
@@ -41,10 +35,11 @@ const validate = (grammar, sourceFile) => {
 };
 
 
-const main = sourceFile => {
-	const grammar = fs.readFileSync("./inc/lilyParser/lilypond.jison").toString();
+const main = async (sourceFile) => {
+	const parser = await loadLilyParser();
+	console.debug("parser loaded.");
 
-	const result = validate(grammar, sourceFile);
+	const result = validate(parser, sourceFile);
 	console.log("result:", result);
 };
 

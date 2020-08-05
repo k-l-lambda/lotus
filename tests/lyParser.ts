@@ -2,7 +2,6 @@
 import fs from "fs";
 import path from "path";
 
-//import * as lilyParser from "../inc/lilyParser";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import walkDir from "../backend/walkDir";
 
@@ -10,8 +9,6 @@ import walkDir from "../backend/walkDir";
 
 const parse = (parser, sourceFile) => {
 	const source = fs.readFileSync(sourceFile).toString();
-
-	//const parser = lilyParser.createParser(grammar);
 
 	return parser.parse(source);
 };
