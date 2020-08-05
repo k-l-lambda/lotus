@@ -413,7 +413,7 @@
 
 						this.clearSheet();
 
-						this.updateLilyDocument();
+						await this.updateLilyDocument();
 
 						this.engrave();
 
@@ -430,7 +430,7 @@
 
 						this.clearSheet();
 
-						this.updateLilyDocument();
+						await this.updateLilyDocument();
 
 						if (this.lilySource)
 							this.engrave();
@@ -570,7 +570,7 @@
 				await animationDelay();
 
 				if (this.tokenizeStaff) {
-					this.updateLilyDocument();
+					await this.updateLilyDocument();
 					if (this.lilyDocument)
 						this.lilyDocument.interpret();
 				}
@@ -726,7 +726,7 @@
 				console.assert(this.pitchContextGroup, "pitchContextGroup is null.");
 				console.assert(this.midiNotation, "midiNotation is null.");
 
-				this.updateLilyDocument();
+				await this.updateLilyDocument();
 				const attributes = this.lilyDocument.globalAttributes({readonly: true});
 
 				const meta = {
@@ -766,9 +766,10 @@
 			},
 
 
-			updateLilyDocument () {
+			async updateLilyDocument () {
 				if ((!this.lilyDocument || this.lilyDocumentDirty) && this.lilyParser) {
-					this.lilyDocument = new LilyDocument(this.lilyParser.parse(this.lilySource));
+					const raw = await this.lilyParser.parse(this.lilySource);
+					this.lilyDocument = new LilyDocument(raw);
 
 					const titleExp = this.lilyDocument.globalAttributes({readonly: true}).title;
 					this.title = titleExp && titleExp.toString();
@@ -804,7 +805,7 @@
 
 
 			async markupSource () {
-				this.updateLilyDocument();
+				await this.updateLilyDocument();
 
 				console.assert(this.lilyDocument, "lilyDocument is null.");
 
@@ -828,7 +829,7 @@
 
 
 			async removeTrillSpans () {
-				this.updateLilyDocument();
+				await this.updateLilyDocument();
 
 				this.lilyDocument.removeTrillSpans();
 
@@ -857,8 +858,8 @@
 			},
 
 
-			inspectLily () {
-				this.updateLilyDocument();
+			async inspectLily () {
+				await this.updateLilyDocument();
 				this.lilyTextSource = new TextSource(this.lilySource);
 				console.log(this.lilyDocument);
 			},
@@ -869,8 +870,8 @@
 			},
 
 
-			executeMarkup (func) {
-				this.updateLilyDocument();
+			async executeMarkup (func) {
+				await this.updateLilyDocument();
 				if (!this.lilyDocument)
 					console.log("lilyDocument parsing failed.");
 
@@ -881,7 +882,8 @@
 
 				this.lilySource = this.lilyDocument.toString();
 
-				this.$nextTick(() => this.lilyDocumentDirty = false);
+				await this.$nextTick();
+				this.lilyDocumentDirty = false;
 			},
 
 
@@ -889,7 +891,7 @@
 				this.operating = true;
 
 				try {
-					this.updateLilyDocument();
+					await this.updateLilyDocument();
 
 					if (!this.lilyDocument)
 						throw new Error("lilyDocument is null.");
@@ -956,7 +958,7 @@
 
 
 			async sliceMeasures (start, count) {
-				this.updateLilyDocument();
+				await this.updateLilyDocument();
 
 				const interperter = this.lilyDocument.interpret();
 				interperter.sliceMeasures(start, count);
@@ -968,8 +970,8 @@
 			},
 
 
-			createPianoRhythm (options) {
-				this.updateLilyDocument();
+			async createPianoRhythm (options) {
+				await this.updateLilyDocument();
 
 				const interperter = this.lilyDocument.interpret();
 				createPianoRhythm(interperter, options);
@@ -977,12 +979,13 @@
 				this.lilyDocument = interperter.toDocument();
 				this.lilySource = this.lilyDocument.toString();
 
-				this.$nextTick(() => this.lilyDocumentDirty = false);
+				await this.$nextTick();
+				this.lilyDocumentDirty = false;
 			},
 
 
-			testInterperter () {
-				this.updateLilyDocument();
+			async testInterperter () {
+				await this.updateLilyDocument();
 
 				const interperter = this.lilyDocument.interpret();
 

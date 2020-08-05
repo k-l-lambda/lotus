@@ -26,6 +26,8 @@
 
 *	2020.8.5
 
+	+	loadLilyParser.js: refined by worker.
+
 	+	batchScoreMaker.ts: option of skipNonExist added.
 
 
