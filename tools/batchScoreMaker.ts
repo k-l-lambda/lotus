@@ -156,6 +156,13 @@ const main = async () => {
 				}
 			}
 
+			if (argv.skipNonExist) {
+				if (!fs.existsSync(scorePath)) {
+					++counting.skip;
+					continue;
+				}
+			}
+
 			try {
 				const logger = new LogRecorder({enabled: true});
 

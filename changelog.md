@@ -24,6 +24,11 @@
 
 
 
+*	2020.8.5
+
+	+	batchScoreMaker.ts: option of skipNonExist added.
+
+
 *	2020.8.4
 
 	+	profiler.vue: load score from URL added.
