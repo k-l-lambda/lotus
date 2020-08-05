@@ -17,16 +17,6 @@ export default async function load () {
 
 		const t1 = performance.now();
 
-		/*// mute jison logs during grammar loading
-		lilyParser.hookJisonPrint();
-
-		parser = lilyParser.createParser(grammar);
-		if (!parser)
-			console.error("lily parser create failed.");
-
-		lilyParser.hookJisonPrint((...args) => console.log("[JISON]", ...args));*/
-		//const lilyParser = lilyParserWorker();
-		//console.log("lilyParser:", lilyParser);
 		const jisonWrapper = new jisonWrapperWorker();
 
 		parser = await new jisonWrapper.Parser(grammar);

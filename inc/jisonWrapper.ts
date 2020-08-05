@@ -9,9 +9,14 @@ export class Parser {
 
 	constructor (grammar) {
 		// mute jison logs during grammar loading
-		jison.print = () => {};
+		const logs = [];
+		jison.print = log => logs.push(log);
 
 		this.parser = jison.Parser(grammar);
+		if (!this.parser) {
+			console.warn("jison logs:", logs);
+			throw new Error("jison parser loading failed");
+		}
 
 		jison.print = (...args) => console.log("[JISON]", ...args);
 	}

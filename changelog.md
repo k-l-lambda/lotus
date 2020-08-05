@@ -26,6 +26,8 @@
 
 *	2020.8.5
 
+	+	lilyParser: removed jison wrapper methods.
+
 	+	loadLilyParser.js: refined by worker.
 
 	+	batchScoreMaker.ts: option of skipNonExist added.

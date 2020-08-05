@@ -1,7 +1,7 @@
 
 import fs from "fs";
 
-import * as lilyParser from "../inc/lilyParser";
+import {Parser} from "../inc/jisonWrapper";
 import asyncCall from "../inc/asyncCall";
 
 
@@ -16,14 +16,7 @@ export default async function load () {
 
 		//console.log("grammar:", grammar);
 
-		// mute jison logs during grammar loading
-		lilyParser.hookJisonPrint();
-
-		parser = lilyParser.createParser(grammar);
-		if (!parser)
-			console.error("lily parser create failed.");
-
-		lilyParser.hookJisonPrint((...args) => console.log("[JISON]", ...args));
+		parser = new Parser(grammar);
 	}
 
 	return parser;
