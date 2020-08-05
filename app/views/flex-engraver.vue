@@ -265,7 +265,7 @@
 				const PAPER_WIDTH = 10000;
 				const PAPER_WIDTH_NARROW = 2;
 
-				const lilyDocument = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
+				const lilyDocument = new LilyDocument(await this.lilyParser.parse(this.currentSourceContent));
 				//console.log("lilyDocument:", lilyDocument);
 
 				const globalAttributes = lilyDocument.globalAttributes();
@@ -303,7 +303,7 @@
 					const systemSpacing = Math.max(row.bottom - row.top, ...heights) * sizeFactor - naturalHeight;
 					//console.log("systemSpacing:", systemSpacing);
 
-					const newLiy = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
+					const newLiy = new LilyDocument(await this.lilyParser.parse(this.currentSourceContent));
 					//console.log("newLiy:", newLiy);
 
 					newLiy.root.appendAssignment("naturalWidth", naturalWidth);
@@ -338,11 +338,11 @@
 			},
 
 
-			fitContainer () {
+			async fitContainer () {
 				if (!this.lilyParser || !this.currentSourceContent)
 					return null;
 
-				const lilyDocument = new LilyDocument(this.lilyParser.parse(this.currentSourceContent));
+				const lilyDocument = new LilyDocument(await this.lilyParser.parse(this.currentSourceContent));
 
 				const naturalWidth = lilyDocument.root.getField("naturalWidth");
 				const naturalHeight = lilyDocument.root.getField("naturalHeight");
@@ -451,7 +451,7 @@
 
 
 			async renderSheet () {
-				const adjustedSource = this.fitContainer();
+				const adjustedSource = await this.fitContainer();
 				if (!adjustedSource)
 					return;
 
@@ -468,7 +468,7 @@
 
 
 			async exportScore () {
-				const adjustedSource = this.fitContainer();
+				const adjustedSource = await this.fitContainer();
 				if (!adjustedSource) {
 					console.warn("no source.");
 					return;
@@ -486,8 +486,8 @@
 			},
 
 
-			copySource () {
-				const adjustedSource = this.fitContainer();
+			async copySource () {
+				const adjustedSource = await this.fitContainer();
 				navigator.clipboard.writeText(adjustedSource);
 
 				console.log("Source copyed.");

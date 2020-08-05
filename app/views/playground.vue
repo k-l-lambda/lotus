@@ -818,8 +818,8 @@
 			},
 
 
-			postProcessSource (source) {
-				const lilyDocument = new LilyDocument(this.lilyParser.parse(source));
+			async postProcessSource (source) {
+				const lilyDocument = new LilyDocument(await this.lilyParser.parse(source));
 
 				if (this.xml2lyOptions.removeStaffGroup)
 					lilyDocument.removeStaffGroup();
@@ -840,8 +840,8 @@
 			},
 
 
-			exportMarkupLily () {
-				const lilyDocument = new LilyDocument(this.lilyParser.parse("\\version \"2.20.0\""));
+			async exportMarkupLily () {
+				const lilyDocument = new LilyDocument(await this.lilyParser.parse("\\version \"2.20.0\""));
 				this.markupLilyDocument(lilyDocument);
 
 				const blob = new Blob([lilyDocument.toString()]);
