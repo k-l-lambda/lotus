@@ -631,6 +631,74 @@ const assignNotationEventsIds = midiNotation => {
 };
 
 
+interface Note {
+	index: number;
+	pitch: number;
+	softIndex: number;
+	baseCsi?: number;
+};
+
+
+const notePitchDistance = (n1: Note, n2: Note): number => {
+	const sub = n1.pitch - n2.pitch;
+	return sub === 12 ? 0.5 : sub;
+};
+
+
+const fuzzyMatchNotes = (path: number[], cnotes: Note[], snotes: Note[], pitchTolerance: number, offsetTolerance = 2): [number, number][] => {
+	const fixed = [];
+
+	snotes.forEach(snote => {
+		const candidates = cnotes.filter(cnote => notePitchDistance(cnote, snote) <= pitchTolerance
+			&& Math.abs(snote.baseCsi - cnote.softIndex) < offsetTolerance)
+			.sort((n1, n2) => Math.abs(snote.baseCsi - n1.softIndex) - Math.abs(snote.baseCsi - n2.softIndex));
+
+		if (candidates.length) {
+			path[snote.index] = candidates[0].index;
+			//console.debug("fuzzy match:", snote.index, candidates[0].index);
+			fixed.push([snote.index, candidates[0].index]);
+		}
+	});
+
+	return fixed;
+};
+
+
+const fuzzyMatchNotations = (path: number[], criterion: MusicNotation.NotationData, sample: MusicNotation.NotationData) => {
+	// assign base offset on sample notes
+	let offset = null;
+	for (let i = 0; i < sample.notes.length; ++i) {
+		const note = sample.notes[i];
+		const ci = path[i];
+
+		if (ci < 0)
+			(note as any).baseOffset = offset;
+		else
+			offset = note.softIndex - criterion.notes[ci].softIndex;
+	}
+	for (let i = sample.notes.length - 1; i >= 0; --i) {
+		const note = sample.notes[i];
+		const ci = path[i];
+
+		if (ci < 0) {
+			const lastOffset = (note as any).baseOffset;
+			(note as any).baseOffset = Number.isFinite(lastOffset) ? (lastOffset + offset) / 2 : offset;
+		}
+		else
+			offset = note.softIndex - criterion.notes[ci].softIndex;
+	}
+
+	const cnotes = criterion.notes.filter(note => !path.some(ci => ci === note.index)).map(note => ({index: note.index, pitch: note.pitch, softIndex: note.softIndex}));
+	const snotes = sample.notes.filter(note => path[note.index] < 0 && Number.isFinite((note as any).baseOffset))
+		.map(note => ({index: note.index, pitch: note.pitch, softIndex: note.softIndex, baseCsi: note.softIndex - (note as any).baseOffset}));
+
+	const fixed = fuzzyMatchNotes(path, cnotes, snotes, 0);
+	console.debug("fuzzyMatch:", fixed);
+
+	// TODO
+};
+
+
 const matchNotations = async (midiNotation, svgNotation) => {
 	console.assert(midiNotation, "midiNotation is null.");
 	console.assert(svgNotation, "svgNotation is null.");
@@ -694,6 +762,8 @@ const matchNotations = async (midiNotation, svgNotation) => {
 
 	const path = navigator.path();
 	//const path = navigator.sample.notes.map(note => note.matches[0] ? note.matches[0].ci : -1);
+
+	fuzzyMatchNotations(path, criterion, sample);
 
 	//console.log("path:", path);
 	//console.log("after.path:", performance.now());
