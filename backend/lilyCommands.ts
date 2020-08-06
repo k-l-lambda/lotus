@@ -233,7 +233,7 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 		case "svg": {
 			// eslint-disable-next-line
 			const captures = filename.match(/(\d+)\.svg$/);
-			const index = captures ? Number(captures[1]) : 0;
+			const index = captures ? Number(captures[1]) - 1 : 0;
 
 			const buffer = await asyncCall(fs.readFile, filePath);
 			if (!buffer.length)
