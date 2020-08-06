@@ -26,6 +26,7 @@
 
 *	2020.8.6
 
+	+	staffNotation.ts: fuzzyMatchNotations implemented.
 	+	staffNotation.ts: fuzzyMatchNotations added.
 
 	+	staffSvg: refined alter token parsing.

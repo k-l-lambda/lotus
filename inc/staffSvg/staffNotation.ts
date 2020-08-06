@@ -645,26 +645,56 @@ const notePitchDistance = (n1: Note, n2: Note): number => {
 };
 
 
-const fuzzyMatchNotes = (path: number[], cnotes: Note[], snotes: Note[], pitchTolerance: number, offsetTolerance = 2): [number, number][] => {
-	const fixed = [];
+const fuzzyMatchNotes = (path: number[], cnotes: Note[], snotes: Note[], pitchTolerance: number, offsetTolerance = 2): {fixed: number, matched: number} => {
+	const candidates: {[key: number]: {si: number, distance: number}} = {};
 
-	snotes.forEach(snote => {
-		const candidates = cnotes.filter(cnote => notePitchDistance(cnote, snote) <= pitchTolerance
+	const matched = snotes.reduce((count, snote) => {
+		const pcan = cnotes.filter(cnote => notePitchDistance(cnote, snote) <= pitchTolerance
 			&& Math.abs(snote.baseCsi - cnote.softIndex) < offsetTolerance)
 			.sort((n1, n2) => Math.abs(snote.baseCsi - n1.softIndex) - Math.abs(snote.baseCsi - n2.softIndex));
 
-		if (candidates.length) {
-			path[snote.index] = candidates[0].index;
-			//console.debug("fuzzy match:", snote.index, candidates[0].index);
-			fixed.push([snote.index, candidates[0].index]);
-		}
-	});
+		if (pcan.length) {
+			const bestDistance = notePitchDistance(pcan[0], snote);
+			const last = candidates[pcan[0].index];
+			if (!last || bestDistance < last.distance)
+				candidates[pcan[0].index] = {si: snote.index, distance: bestDistance};
 
-	return fixed;
+			++count;
+		}
+
+		return count;
+	}, 0);
+
+	const fixed = Object.entries(candidates).map(([ci, {si}]) => {
+		path[si] = Number(ci);
+
+		return [si, Number(ci)];
+	});
+	console.debug("fuzzyMatch.fixed:", fixed);
+
+	return {fixed: fixed.length, matched};
 };
 
 
 const fuzzyMatchNotations = (path: number[], criterion: MusicNotation.NotationData, sample: MusicNotation.NotationData) => {
+	// unmatch overlapped indices
+	const overlapped = new Set();
+	path.reduce((set, ci) => {
+		if (ci >= 0) {
+			if (set.has(ci))
+				overlapped.add(ci);
+			else
+				set.add(ci);
+		}
+
+		return set;
+	}, new Set());
+	//console.debug("overlapped:", overlapped, [...path]);
+	path.forEach((ci, si) => {
+		if (overlapped.has(ci))
+			path[si] = -1;
+	});
+
 	// assign base offset on sample notes
 	let offset = null;
 	for (let i = 0; i < sample.notes.length; ++i) {
@@ -688,14 +718,24 @@ const fuzzyMatchNotations = (path: number[], criterion: MusicNotation.NotationDa
 			offset = note.softIndex - criterion.notes[ci].softIndex;
 	}
 
-	const cnotes = criterion.notes.filter(note => !path.some(ci => ci === note.index)).map(note => ({index: note.index, pitch: note.pitch, softIndex: note.softIndex}));
-	const snotes = sample.notes.filter(note => path[note.index] < 0 && Number.isFinite((note as any).baseOffset))
-		.map(note => ({index: note.index, pitch: note.pitch, softIndex: note.softIndex, baseCsi: note.softIndex - (note as any).baseOffset}));
+	let pitchTolerance = 0;
+	while (true) {
+		const cnotes = criterion.notes.filter(note => !path.some(ci => ci === note.index)).map(note => ({index: note.index, pitch: note.pitch, softIndex: note.softIndex}));
+		const snotes = sample.notes.filter(note => path[note.index] < 0 && Number.isFinite((note as any).baseOffset))
+			.map(note => ({index: note.index, pitch: note.pitch, softIndex: note.softIndex, baseCsi: note.softIndex - (note as any).baseOffset}));
 
-	const fixed = fuzzyMatchNotes(path, cnotes, snotes, 0);
-	console.debug("fuzzyMatch:", fixed);
+		console.debug("fuzzyMatch.notes:", cnotes.map(note => note.index), snotes.map(note => note.index));
 
-	// TODO
+		if (!cnotes.length || !snotes.length || pitchTolerance > 12)
+			break;
+
+		const {fixed, matched} = fuzzyMatchNotes(path, cnotes, snotes, pitchTolerance);
+		console.debug("fuzzyMatch.pass:", pitchTolerance, fixed, matched);
+
+		if (fixed >= matched)
+			++pitchTolerance;
+	}
+	console.debug("fuzzyMatch.path:", path);
 };
 
 
