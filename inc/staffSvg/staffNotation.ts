@@ -415,7 +415,8 @@ const parseNotationInMeasure = (context: StaffContext, measure) => {
 					}
 					context.setKeyAlter(token.ry, token.alterValue);
 				}
-				else
+				// alter with href may be chordmode element
+				else if (!token.href)
 					context.setAlter(token.ry, token.alterValue);
 			}
 		}

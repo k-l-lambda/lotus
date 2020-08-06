@@ -529,6 +529,14 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 
 	// mark key alters
 	for (const alter of alters) {
+		// far distance alter may be chordmode element
+		if (alter.y > 3 || alter.y < -3) {
+			if (alter.logicX < headX)
+				alter.removeSymbol("ALTER");
+
+			continue;
+		}
+
 		if ((alter.source && alter.source.substr(0, 4) === "\\key"))
 			lastAlter = alter;
 		// break key chain at large gap

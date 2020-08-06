@@ -24,6 +24,11 @@
 
 
 
+*	2020.8.6
+
+	+	staffSvg: refined alter token parsing.
+
+
 *	2020.8.5
 
 	+	lilyParser: removed jison wrapper methods.
