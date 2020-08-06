@@ -26,6 +26,8 @@
 
 *	2020.8.6
 
+	+	batchScoreMaker.ts: added time string in log file name.
+
 	+	playground.vue: added engraver option of enabledFuzzyMatcher.
 
 	+	staffNotation.ts: fuzzyMatchNotations implemented.

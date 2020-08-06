@@ -20,7 +20,9 @@ const main = async () => {
 
 	const t0 = Date.now();
 
-	const logStream = fs.createWriteStream("batchScoreMaker.log");
+	const timeStr = new Date(Date.now() - new Date().getTimezoneOffset() * 60e+3).toISOString()
+		.replace(/:[\w.]+$/, "").replace(/[-:]/g, "");
+	const logStream = fs.createWriteStream(`batchScoreMaker-${timeStr}.log`);
 	const log = (...messages) => {
 		console.log(...messages);
 		logStream.write(messages.join(" ") + "\n", "utf-8");
