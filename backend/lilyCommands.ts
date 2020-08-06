@@ -184,7 +184,7 @@ const LILYPOND_PATH = filePathResolve(env.LILYPOND_DIR, "lilypond");
 const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, includeFolders = []}: {
 	onProcStart?: () => void|Promise<void>,
 	onMidiRead?: (content: MIDI.MidiData) => void|Promise<void>,
-	onSvgRead?: (content: string) => void|Promise<void>,
+	onSvgRead?: (index: number, content: string) => void|Promise<void>,
 	includeFolders?: string[],	// include folder path should be relative to TEMP_DIR
 } = {}) => {
 	const hash = genHashString();
@@ -223,15 +223,18 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 
 			break;
 		case "svg": {
+			let [_, index] = filename.match(/(\d+)\.svg$/);
+			index = Number(index) - 1;
+
 			const buffer = await asyncCall(fs.readFile, filePath);
 			if (!buffer.length)
 				console.warn("empty SVG buffer:", filename);
 
 			const svg = postProcessSvg(buffer.toString());
-			svgs.push(svg);
+			svgs[index] = svg;
 
 			console.log("svg load:", filePath);
-			await onSvgRead && onSvgRead(svg);
+			await onSvgRead && onSvgRead(index, svg);
 		}
 
 			break;
@@ -276,9 +279,13 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 
 	//console.log("svgs:", svgs.length);
 
+	const validCount = svgs.filter(svg => svg).length;
+	if (validCount < svgs.length)
+		console.warn("svg loading incompleted: ", validCount, svgs.length);
+
 	return {
 		logs: result.stderr,
-		svgs: svgs,
+		svgs,
 		midi,
 	};
 };

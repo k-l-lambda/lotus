@@ -318,11 +318,11 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 			midiNotation = midi && MusicNotation.Notation.parseMidi(midi);
 			//console.log("tm.1:", Date.now() - t0);
 		}),
-		onSvgRead: async svg => {
+		onSvgRead: async (index, svg) => {
 			//console.log("ts.0:", Date.now() - t0);
 			const args = await argsGen.wait();
 			const page = staffSvg.parseSvgPage(svg, source, {DOMParser, logger, ...args});
-			pages.push(page.structure);
+			pages[index] = page.structure;
 			Object.assign(hashTable, page.hashTable);
 			//console.log("ts.1:", Date.now() - t0);
 		},

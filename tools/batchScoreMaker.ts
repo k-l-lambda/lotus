@@ -182,6 +182,9 @@ const main = async () => {
 
 				const score = await ScoreMaker.makeScore(ly, lilyParser, {midi, logger});
 
+				//console.log("logger.records:", logger.records);
+				//debugger;
+
 				const matchStat = logger.records.reverse().find(record => record.desc === "makeScore.match");
 				if (!matchStat)
 					throw new Error("No matchStat in logger");

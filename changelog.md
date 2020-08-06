@@ -26,6 +26,8 @@
 
 *	2020.8.6
 
+	+	lilyCommands.ts: fixed svg loading index order error.
+
 	+	lilyCommands.ts: fixed multiple log lines issue in engraveSvg.
 
 	+	batchScoreMaker.ts: added time string in log file name.
