@@ -204,16 +204,21 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 		// wait for file writing finished
 		//await new Promise(resolve => setTimeout(resolve, 100));
 
-		//const [_, filename] = line.match(FILE_BORN_OUPUT_PATTERN);
-		const [__, ext] = filename.match(/\.(\w+)$/);
+		const captures = filename.match(/\.(\w+)$/);
+		if (!captures) {
+			console.warn("invalid filename:", filename);
+			return;
+		}
+		const [_, ext] = captures;
 
 		const filePath = path.resolve(env.TEMP_DIR, filename);
 		//console.log("file output:", filePath, ext);
 
 		switch (ext) {
 		case env.MIDI_FILE_EXTEND: {
-			// wait an extra line for MIDI file
-			await fileReady.lock();
+			// wait extra time for MIDI file
+			//await fileReady.lock();
+			await new Promise(resolve => setTimeout(resolve, 100));
 
 			const buffer = await asyncCall(fs.readFile, filePath);
 			if (!buffer.length)
