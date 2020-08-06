@@ -182,9 +182,9 @@ const LILYPOND_PATH = filePathResolve(env.LILYPOND_DIR, "lilypond");
 
 
 const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, includeFolders = []}: {
-	onProcStart?: () => void,
-	onMidiRead?: (content: MIDI.MidiData) => void,
-	onSvgRead?: (content: string) => void,
+	onProcStart?: () => void|Promise<void>,
+	onMidiRead?: (content: MIDI.MidiData) => void|Promise<void>,
+	onSvgRead?: (content: string) => void|Promise<void>,
 	includeFolders?: string[],	// include folder path should be relative to TEMP_DIR
 } = {}) => {
 	const hash = genHashString();
@@ -198,13 +198,13 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 
 	const fileReady = new SingleLock<string>();
 
-	const loadFile = async line => {
-		// skip error messages in command line output
-		let newLine = await fileReady.lock();
-		while (/error|warning/.test(newLine))
-			newLine = await fileReady.lock();
+	const loadFile = async filename => {
+		//console.log("loadFile:", filename);
 
-		const [_, filename] = line.match(FILE_BORN_OUPUT_PATTERN);
+		// wait for file writing finished
+		//await new Promise(resolve => setTimeout(resolve, 100));
+
+		//const [_, filename] = line.match(FILE_BORN_OUPUT_PATTERN);
 		const [__, ext] = filename.match(/\.(\w+)$/);
 
 		const filePath = path.resolve(env.TEMP_DIR, filename);
@@ -212,28 +212,26 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 
 		switch (ext) {
 		case env.MIDI_FILE_EXTEND: {
-			while (/continuing|error/.test(newLine))
-				newLine = await fileReady.lock();
-
 			const buffer = await asyncCall(fs.readFile, filePath);
 			if (!buffer.length)
-				console.warn("empty MIDI buffer, command message:", newLine);
+				console.warn("empty MIDI buffer:", filename);
 
 			midi = MIDI.parseMidiData(buffer);
 
-			onMidiRead && onMidiRead(midi);
+			await onMidiRead && onMidiRead(midi);
 		}
 
 			break;
 		case "svg": {
 			const buffer = await asyncCall(fs.readFile, filePath);
 			if (!buffer.length)
-				console.warn("empty SVG buffer, command message:", newLine);
+				console.warn("empty SVG buffer:", filename);
 
 			const svg = postProcessSvg(buffer.toString());
 			svgs.push(svg);
 
-			onSvgRead && onSvgRead(svg);
+			console.log("svg load:", filePath);
+			await onSvgRead && onSvgRead(svg);
 		}
 
 			break;
@@ -242,11 +240,20 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 
 	const loadProcs: Promise<void>[] = [];
 
-	const checkFile = line => {
+	const checkFile = async (line: string) => {
 		fileReady.release(line);
 
-		if (FILE_BORN_OUPUT_PATTERN.test(line))
-			loadProcs.push(loadFile(line));
+		// skip error messages in command line output
+		if (FILE_BORN_OUPUT_PATTERN.test(line)) {
+			let newLine = await fileReady.lock();
+			while (/error|warning/.test(newLine))
+				newLine = await fileReady.lock();
+
+			let captures;
+			const exp = new RegExp(FILE_BORN_OUPUT_PATTERN.source, "g");
+			while (captures = exp.exec(line))
+				loadProcs.push(loadFile(captures[1]));
+		}
 	};
 
 	const includeParameters = includeFolders.map(folder => `--include=${folder}`).join(" ");
@@ -257,7 +264,9 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 	proc.childProcess.stdout.on("data", checkFile);
 	proc.childProcess.stderr.on("data", checkFile);
 
-	onProcStart && onProcStart();
+	const startPromise = onProcStart && onProcStart();
+	if (startPromise)
+		loadProcs.push(startPromise);
 
 	const result = await proc;
 

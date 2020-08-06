@@ -26,6 +26,8 @@
 
 *	2020.8.6
 
+	+	lilyCommands.ts: fixed multiple log lines issue in engraveSvg.
+
 	+	batchScoreMaker.ts: added time string in log file name.
 
 	+	playground.vue: added engraver option of enabledFuzzyMatcher.
