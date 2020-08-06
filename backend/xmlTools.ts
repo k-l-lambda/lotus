@@ -67,6 +67,7 @@ const preprocessXml = (xml: string, {
 		&& !fixChordVoice && !fixBarlines)
 		return xml;
 
+	// @ts-ignore
 	const dom = new DOMParser().parseFromString(xml, "text/xml");
 
 	if (replaceEncoding) {
@@ -202,6 +203,7 @@ const preprocessXml = (xml: string, {
 
 	//console.log("dom:", dom);
 
+	// @ts-ignore
 	return new XMLSerializer().serializeToString(dom);
 };
 
