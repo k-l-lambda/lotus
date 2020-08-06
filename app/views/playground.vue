@@ -411,6 +411,7 @@
 						this.lilySource = await file.readAs("Text");
 						//console.log("content:", content);
 
+						this.engraverLogs = null;
 						this.clearSheet();
 
 						await this.updateLilyDocument();
@@ -423,6 +424,7 @@
 							const xml = await file.readAs("Text");
 							//console.log("xml:", xml);
 							this.lilySource = await this.musicxml2ly(xml);
+							this.engraverLogs = null;
 						}
 						catch (err) {
 							console.warn("musicxml2ly failed:", err);
@@ -520,7 +522,6 @@
 				this.midiPlayer = null;
 				this.matcherNotations = null;
 				this.bakingImages = null;
-				this.engraverLogs = null;
 			},
 
 
@@ -815,6 +816,7 @@
 
 				await this.$nextTick();
 				this.lilyDocumentDirty = false;
+				this.engraverLogs = null;
 			},
 
 
