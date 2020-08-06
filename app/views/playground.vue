@@ -124,6 +124,14 @@
 						<td><BoolStoreInput v-model="xml2lyOptions.removeStaffGroup" localKey="lotus-xml2lyOptions.removeStaffGroup" /></td>
 					</tr>
 					<tr>
+						<td>Merge Continuous Graces</td>
+						<td><BoolStoreInput v-model="xml2lyOptions.mergeContinuousGraces" localKey="lotus-xml2lyOptions.mergeContinuousGraces" /></td>
+					</tr>
+					<tr>
+						<td>Exclude Chord Tracks from MIDI</td>
+						<td><BoolStoreInput v-model="xml2lyOptions.excludeChordTracksFromMIDI" localKey="lotus-xml2lyOptions.excludeChordTracksFromMIDI" /></td>
+					</tr>
+					<tr>
 						<td>Remove Trill Spans</td>
 						<td><button @click="removeTrillSpans">remove</button></td>
 					</tr>
@@ -287,6 +295,8 @@
 				xml2lyOptions: {
 					removeBreaks: true,
 					removeStaffGroup: true,
+					mergeContinuousGraces: true,
+					excludeChordTracksFromMIDI: true,
 				},
 				engraveWithLogs: false,
 				lilyMarkups: {
@@ -825,6 +835,12 @@
 
 				if (this.xml2lyOptions.removeStaffGroup)
 					lilyDocument.removeStaffGroup();
+
+				if (this.xml2lyOptions.mergeContinuousGraces)
+					lilyDocument.mergeContinuousGraces();
+
+				if (this.xml2lyOptions.excludeChordTracksFromMIDI)
+					lilyDocument.excludeChordTracksFromMIDI();
 
 				return lilyDocument.toString();
 			},
