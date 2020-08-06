@@ -223,6 +223,7 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 
 			break;
 		case "svg": {
+			// eslint-disable-next-line
 			let [_, index] = filename.match(/(\d+)\.svg$/);
 			index = Number(index) - 1;
 
@@ -233,7 +234,7 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 			const svg = postProcessSvg(buffer.toString());
 			svgs[index] = svg;
 
-			console.log("svg load:", filePath);
+			//console.log("svg load:", filePath);
 			await onSvgRead && onSvgRead(index, svg);
 		}
 

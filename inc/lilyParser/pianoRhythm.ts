@@ -64,6 +64,7 @@ const createPianoNumberTrack = ({durationMagnitude, subdivider, measureTicks, tr
 	const words = [];
 	let number = 1;
 	for (let tick = 0; tick < durationMagnitude; tick += granularity) {
+		// eslint-disable-next-line
 		if (measureTicks.some(([_, t]) => t === tick))
 			number = 1;
 
