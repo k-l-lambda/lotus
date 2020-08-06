@@ -640,8 +640,11 @@ interface Note {
 
 
 const notePitchDistance = (n1: Note, n2: Note): number => {
-	const sub = n1.pitch - n2.pitch;
-	return sub === 12 ? 0.5 : sub;
+	let differ = Math.abs(n1.pitch - n2.pitch);
+	if (differ > 7)
+		differ -= 11.5;
+
+	return differ * 2;
 };
 
 
@@ -726,11 +729,12 @@ const fuzzyMatchNotations = (path: number[], criterion: MusicNotation.NotationDa
 
 		//console.debug("fuzzyMatch.notes:", cnotes.map(note => note.index), snotes.map(note => note.index));
 
-		if (!cnotes.length || !snotes.length || pitchTolerance > 12)
+		if (!cnotes.length || !snotes.length || pitchTolerance > 4)
 			break;
 
 		const {fixed, matched} = fuzzyMatchNotes(path, cnotes, snotes, pitchTolerance);
-		console.debug("fuzzyMatch.pass:", `c:${cnotes.length}, s:${snotes.length},`, pitchTolerance, `${fixed}/${matched}`);
+		if (matched)
+			console.debug("fuzzyMatch.pass:", `c:${cnotes.length}, s:${snotes.length},`, pitchTolerance, `${fixed}/${matched}`);
 
 		if (fixed >= matched)
 			++pitchTolerance;
