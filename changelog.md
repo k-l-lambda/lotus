@@ -26,6 +26,8 @@
 
 *	2020.8.6
 
+	+	playground.vue: added engraver option of enabledFuzzyMatcher.
+
 	+	staffNotation.ts: fuzzyMatchNotations implemented.
 	+	staffNotation.ts: fuzzyMatchNotations added.
 

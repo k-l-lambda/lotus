@@ -144,6 +144,10 @@
 						<td><BoolStoreInput v-model="engraveWithLogs" localKey="lotus-engraveWithLogs" /></td>
 					</tr>
 					<tr>
+						<td>Fuzzy Notation Matcher</td>
+						<td><BoolStoreInput v-model="enabledFuzzyMatcher" localKey="lotus-enabledFuzzyMatcher" /></td>
+					</tr>
+					<tr>
 						<th>Lilypond Markups</th>
 						<td><hr /></td>
 					</tr>
@@ -299,6 +303,7 @@
 					excludeChordTracksFromMIDI: true,
 				},
 				engraveWithLogs: false,
+				enabledFuzzyMatcher: true,
 				lilyMarkups: {
 					enabled: false,
 					staffSize: null,
@@ -716,7 +721,7 @@
 				console.assert(midiNotation, "midiNotation is null.");
 				console.assert(this.sheetNotation, "sheetNotation is null.");
 
-				this.matcherNotations = await StaffNotation.matchNotations(midiNotation, this.sheetNotation);
+				this.matcherNotations = await StaffNotation.matchNotations(midiNotation, this.sheetNotation, {enableFuzzy: this.enabledFuzzyMatcher});
 
 				this.matchedIds = new Set();
 				midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => this.matchedIds.add(id)));

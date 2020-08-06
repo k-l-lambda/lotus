@@ -670,7 +670,7 @@ const fuzzyMatchNotes = (path: number[], cnotes: Note[], snotes: Note[], pitchTo
 
 		return [si, Number(ci)];
 	});
-	console.debug("fuzzyMatch.fixed:", fixed);
+	//console.debug("fuzzyMatch.fixed:", fixed.map(pair => pair.join()));
 
 	return {fixed: fixed.length, matched};
 };
@@ -724,22 +724,22 @@ const fuzzyMatchNotations = (path: number[], criterion: MusicNotation.NotationDa
 		const snotes = sample.notes.filter(note => path[note.index] < 0 && Number.isFinite((note as any).baseOffset))
 			.map(note => ({index: note.index, pitch: note.pitch, softIndex: note.softIndex, baseCsi: note.softIndex - (note as any).baseOffset}));
 
-		console.debug("fuzzyMatch.notes:", cnotes.map(note => note.index), snotes.map(note => note.index));
+		//console.debug("fuzzyMatch.notes:", cnotes.map(note => note.index), snotes.map(note => note.index));
 
 		if (!cnotes.length || !snotes.length || pitchTolerance > 12)
 			break;
 
 		const {fixed, matched} = fuzzyMatchNotes(path, cnotes, snotes, pitchTolerance);
-		console.debug("fuzzyMatch.pass:", pitchTolerance, fixed, matched);
+		console.debug("fuzzyMatch.pass:", `c:${cnotes.length}, s:${snotes.length},`, pitchTolerance, `${fixed}/${matched}`);
 
 		if (fixed >= matched)
 			++pitchTolerance;
 	}
-	console.debug("fuzzyMatch.path:", path);
+	//console.debug("fuzzyMatch.path:", path);
 };
 
 
-const matchNotations = async (midiNotation, svgNotation) => {
+const matchNotations = async (midiNotation, svgNotation, {enableFuzzy = true} = {}) => {
 	console.assert(midiNotation, "midiNotation is null.");
 	console.assert(svgNotation, "svgNotation is null.");
 
@@ -803,7 +803,8 @@ const matchNotations = async (midiNotation, svgNotation) => {
 	const path = navigator.path();
 	//const path = navigator.sample.notes.map(note => note.matches[0] ? note.matches[0].ci : -1);
 
-	fuzzyMatchNotations(path, criterion, sample);
+	if (enableFuzzy)
+		fuzzyMatchNotations(path, criterion, sample);
 
 	//console.log("path:", path);
 	//console.log("after.path:", performance.now());
