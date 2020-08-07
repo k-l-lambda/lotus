@@ -1,6 +1,5 @@
 
 ## TODO
-	try enhance MIDI matching in svg notation
 	staffNotation
 		remove note time from staff document
 	lilyInterpreter
