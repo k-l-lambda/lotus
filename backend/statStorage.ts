@@ -18,7 +18,7 @@ const appendData = async (filePath: string, data: object) => {
 	let stat = {};
 	if (await exists(statPath)) {
 		const buffer = await asyncCall(fs.readFile, statPath);
-		stat = YAML.parse(buffer.toString());
+		stat = YAML.parse(buffer.toString()) || stat;
 	}
 
 	stat[filename] = stat[filename] || {};
