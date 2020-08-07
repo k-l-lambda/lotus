@@ -24,6 +24,11 @@
 
 
 
+*	2020.8.7
+
+	+	lilyDocument.ts: markup method of useMidiInstrumentChannelMapping added.
+
+
 *	2020.8.6
 
 	+	lilyCommands.ts: fixed svg loading index order error.

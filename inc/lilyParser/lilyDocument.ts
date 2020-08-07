@@ -8,6 +8,7 @@ import {
 	BaseTerm, Assignment, LiteralString, Command, Variable, MarkupCommand, Grace, Include, Version, Block, InlineBlock,
 	Scheme, Chord, BriefChord, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive, ChordElement, MusicEvent,
 	Comment,
+	SchemePointer,
 } from "./lilyTerms";
 import LilyInterpreter from "./lilyInterpreter";
 
@@ -665,5 +666,29 @@ export default class LilyDocument {
 		this.root.forEachTerm(MusicBlock, block => {
 			block.unfoldDurationMultipliers();
 		});
+	}
+
+
+	useMidiInstrumentChannelMapping () {
+		const midiBlock = this.root.findFirst(term => term instanceof Block && term.head === "\\midi") as Block;
+		if (!midiBlock) {
+			console.warn("no MIDI block found.");
+			return;
+		}
+
+		const channelMapping = midiBlock.findFirst(term => term instanceof Assignment && term.key === "midiChannelMapping") as Assignment;
+		if (channelMapping)
+			channelMapping.value = new Scheme({exp: new SchemePointer({value: "instrument"})});
+		else {
+			midiBlock.body.push(parseRaw({
+				proto: "Block",
+				block: "context",
+				head: "\\context",
+				body: [
+					{proto: "Command",cmd: "Score",args: []},
+					{proto: "Assignment", key: "midiChannelMapping", value: {proto: "Scheme", exp: {proto: "SchemePointer", value: "instrument"}}},
+				],
+			}));
+		}
 	}
 };
