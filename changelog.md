@@ -23,6 +23,8 @@
 
 *	2020.8.8
 
+	+	playground.vue: added xml post processing option of midiChannelMapping.
+
 	+	playground.vue: midi2ly by file dropping added.
 
 	+	lilyTerms.ts: added measure comments after divide in MusicBlock.redivide.

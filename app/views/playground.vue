@@ -136,6 +136,10 @@
 						<td><BoolStoreInput v-model="xml2lyOptions.excludeChordTracksFromMIDI" localKey="lotus-xml2lyOptions.excludeChordTracksFromMIDI" /></td>
 					</tr>
 					<tr>
+						<td>Use MIDI Instrument as Channel Mapping</td>
+						<td><BoolStoreInput v-model="xml2lyOptions.midiChannelMapping" localKey="lotus-xml2lyOptions.midiChannelMapping" /></td>
+					</tr>
+					<tr>
 						<td>Remove Trill Spans</td>
 						<td><button @click="removeTrillSpans">remove</button></td>
 					</tr>
@@ -306,6 +310,7 @@
 					removeStaffGroup: true,
 					mergeContinuousGraces: true,
 					excludeChordTracksFromMIDI: true,
+					midiChannelMapping: false,
 				},
 				engraveWithLogs: false,
 				enabledFuzzyMatcher: true,
@@ -889,6 +894,9 @@
 
 				if (this.xml2lyOptions.excludeChordTracksFromMIDI)
 					lilyDocument.excludeChordTracksFromMIDI();
+
+				if (this.xml2lyOptions.midiChannelMapping)
+					lilyDocument.useMidiInstrumentChannelMapping();
 
 				return lilyDocument.toString();
 			},
