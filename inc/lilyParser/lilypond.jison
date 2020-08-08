@@ -1446,7 +1446,7 @@ lyricmode_music_identifier
 		{$$ = command($1, $2);}
 	| CMD_MARK full_markup
 		{$$ = command($1, $2);}
-	| CMD_SKIP unsigned_number
+	| CMD_SKIP duration
 		{$$ = command($1, $2);}
 	| CMD_UNFOLDREPEATS lyricmode_music
 		{$$ = command($1, $2);}
@@ -1887,7 +1887,7 @@ music_identifier
 	// TODO:
 	| CMD_INCLUDE string
 		{$$ = command($1, $2);}
-	| CMD_SKIP unsigned_number
+	| CMD_SKIP duration
 		{$$ = command($1, $2);}
 	//| CMD_PARENTHESIZE property_path
 	//	{$$ = command($1, $2);}
