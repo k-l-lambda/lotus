@@ -57,7 +57,11 @@
 			</fieldset>
 		</header>
 		<main>
-			<div class="source-container" :class="{loading: converting}">
+			<div class="source-container" :class="{loading: converting, 'drag-hover': sourceDragHover}"
+				@dragover.prevent="sourceDragHover = true"
+				@dragleave="sourceDragHover = null"
+				@drop.prevent.stop="onDropFile($event, {source: true})"
+			>
 				<SourceEditor :source.sync="lilySource" :disabled="converting" />
 				<span class="corner">
 					<button class="inspect" @click="inspectLily">&#x1f4d5;</button>
@@ -274,6 +278,7 @@
 					height: 100,
 				},
 				dragHover: null,
+				sourceDragHover: false,
 				lilySource: "",
 				converting: false,
 				engraving: false,
@@ -414,9 +419,10 @@
 			},
 
 
-			async onDropFile (event) {
+			async onDropFile (event, {source} = {}) {
 				this.dragHover = null;
-				//console.log("onDropFile:", event.dataTransfer.items[0]);
+				this.sourceDragHover = false;
+				//console.log("onDropFile:", event.dataTransfer.items[0], source);
 
 				const file = event.dataTransfer.files[0];
 				if (file) {
@@ -435,6 +441,8 @@
 
 						break;
 					case "text/xml":
+						this.converting = true;
+
 						try {
 							const xml = await file.readAs("Text");
 							//console.log("xml:", xml);
@@ -444,6 +452,7 @@
 						catch (err) {
 							console.warn("musicxml2ly failed:", err);
 						}
+						this.converting = false;
 
 						this.clearSheet();
 
@@ -455,8 +464,29 @@
 						break;
 					case "audio/midi":
 					case "audio/mid":
-						const buffer = await file.readAs("ArrayBuffer");
-						this.midi = MIDI.parseMidiData(buffer);
+						if (source) {
+							this.converting = true;
+
+							try {
+								this.lilySource = await this.midi2ly(file);
+								this.engraverLogs = null;
+							}
+							catch (err) {
+								console.warn("musicxml2ly failed:", err);
+							}
+							this.converting = false;
+
+							this.clearSheet();
+
+							await this.updateLilyDocument();
+
+							if (this.lilySource)
+								this.engrave();
+						}
+						else {
+							const buffer = await file.readAs("ArrayBuffer");
+							this.midi = MIDI.parseMidiData(buffer);
+						}
 
 						break;
 					default:
@@ -541,8 +571,6 @@
 
 
 			async musicxml2ly (xml) {
-				this.converting = true;
-
 				const body = new FormData();
 				body.append("xml", xml);
 				body.append("options", JSON.stringify({
@@ -557,7 +585,6 @@
 				if (!response.ok) {
 					const reason = await response.text();
 					console.warn("musicxml2ly failed:", reason);
-					this.converting = false;
 
 					throw new Error(reason);
 				}
@@ -565,12 +592,27 @@
 					const result = await response.text();
 					console.debug("musicxml2ly accomplished.");
 
-					this.converting = false;
-
 					return this.postProcessSource(result);
 				}
+			},
 
-				this.converting = false;
+
+			async midi2ly (midi) {
+				const body = new FormData();
+				body.append("midi", midi);
+				body.append("options", JSON.stringify({removeInstrumentName: true, tupletReplace: true}));
+
+				const response = await fetch("/midi2ly", {
+					method: "POST",
+					body,
+				});
+				if (!response.ok) {
+					console.warn("MIDI to ly failed:", await response.text());
+
+					return;
+				}
+
+				return response.text();
 			},
 
 
@@ -678,8 +720,7 @@
 				const partMidi = MidiUtils.sliceMidi(this.midi, startTick, endTick);
 				console.log("partMidi:", partMidi);
 
-				const body = new FormData();
-				const midi = new Blob([MIDI.encodeMidiFile(partMidi)], {type: "audio/midi"});
+				/*const body = new FormData();
 				body.append("midi", midi);
 				body.append("options", JSON.stringify({removeInstrumentName: true, tupletReplace: true}));
 
@@ -693,6 +734,9 @@
 				}
 
 				const ly = await response.text();
+				console.log("ly:", ly);*/
+				const midi = new Blob([MIDI.encodeMidiFile(partMidi)], {type: "audio/midi"});
+				const ly = this.midi2ly(midi);
 				console.log("ly:", ly);
 			},
 
@@ -1053,11 +1097,6 @@
 	
 	.drag-hover
 	{
-		.source-container
-		{
-			outline: 4px #4f4 dashed;
-		}
-
 		&[data-hover-type="text/x-lilypond"], &[data-hover-type="text/lilypond-source"]
 		{
 			background-color: #cfc;
@@ -1066,6 +1105,11 @@
 		&[data-hover-type="text/xml"]
 		{
 			background-color: #ffc;
+		}
+
+		&[data-hover-type="audio/midi"], &[data-hover-type="audio/mid"]
+		{
+			background-color: #cff;
 		}
 	}
 
@@ -1125,6 +1169,11 @@
 				& > div
 				{
 					height: 100%;
+				}
+
+				&.drag-hover
+				{
+					outline: 4px #4f4 dashed;
 				}
 
 				.corner

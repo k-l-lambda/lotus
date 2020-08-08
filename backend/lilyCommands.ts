@@ -157,7 +157,14 @@ const midi2ly = async (midi, options: LilyProcessOptions): Promise<string> => {
 
 	const lyFileName = `${env.TEMP_DIR}midi2ly-${hash}-midi.ly`;
 
-	const result = await child_process.exec(`${MIDI2LY_PATH} ${midi.path} -o ${lyFileName}`);
+	let result;
+	if (env.MUSICXML2LY_BY_PYTHON) {
+		result = await child_process.spawn(path.resolve(env.LILYPOND_DIR, "python"),
+			[path.resolve(env.LILYPOND_DIR, "midi2ly.py"), midi.path, "-o", lyFileName],
+			{maxBuffer: 0x80000});
+	}
+	else
+		result = await child_process.exec(`${MIDI2LY_PATH} ${midi.path} -o ${lyFileName}`);
 	console.log("midi2ly:", result.stdout, result.stderr);
 
 	const ly = await asyncCall(fs.readFile, lyFileName);
