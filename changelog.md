@@ -9,18 +9,21 @@
 		match chord with voice in the same staff
 	measure notes in Notation parsing
 	staffSvg
-		try craete MIDI file pure by LilyParser
-		try fix notes' time by lily interpreter
+		try create MIDI file pure by LilyParser
 		fix partial measures
 			add partial on standalone block
 				parse duration in \times
 		treble_8
 		system splitting, chord mode symbol affiliation
-		staffNotation.ts: clusterize factor issue
 		remove empty track	(6.1 落叶.ly)
 	source editor
 		cursor position column
 
+
+
+*	2020.8.8
+
+	+	lilyTerms.ts: added measure comments after divide in MusicBlock.redivide.
 
 
 *	2020.8.7

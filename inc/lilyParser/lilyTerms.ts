@@ -1122,79 +1122,6 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
-	/*// allocate measure number according to duration
-	allocateMeasures (context: DurationContext = new DurationContext()) {
-		this.unfoldDurationMultipliers();
-
-		const elpaseMusic = (music: BaseTerm) => {
-			if (music instanceof MusicEvent) {
-				music._measure = context.measureIndex;
-				music._tick = context.tick;
-				context.elapse(music.durationMagnitude);
-			}
-			else if (music instanceof MusicBlock)
-				music.allocateMeasures(context);
-			else
-				console.warn("unexpected music term:", music);
-		};
-
-		for (const term of this.body) {
-			if (!term)
-				console.warn("null term:", term, this);
-			else if (term instanceof MusicEvent)
-				elpaseMusic(term);
-			else if (term instanceof MusicBlock)
-				term.allocateMeasures(context);
-			else if (term instanceof TimeSignature) {
-				term._measure = context.measureIndex;
-				context.measureLength = term.value.value * WHOLE_DURATION_MAGNITUDE;
-			}
-			else if (term instanceof Repeat) {
-				term.bodyBlock.allocateMeasures(context);
-
-				if (term.alternativeBlocks) {
-					for (const block of term.alternativeBlocks)
-						block.allocateMeasures(context);
-				}
-			}
-			else if (term instanceof Relative) 
-				elpaseMusic(term.music);
-			
-			else if (term instanceof Times) {
-				term._measure = context.measureIndex;
-				term._tick = context.tick;
-
-				context.push({factor: term.factor});
-				elpaseMusic(term.music);
-				context.pop();
-			}
-			else if (term instanceof Tuplet) {
-				term._measure = context.measureIndex;
-				term._tick = context.tick;
-
-				context.push({factor: term.divider.reciprocal});
-				elpaseMusic(term.music);
-				context.pop();
-			}
-			else if (term instanceof Grace) {
-				term._measure = context.measureIndex;
-				term._tick = context.tick;
-
-				context.push({factor: {value: 0}});
-				elpaseMusic(term.music);
-				context.pop();
-			}
-			else {
-				if (term.isMusic)
-					console.warn("unexpected music term:", term);
-
-				term._measure = context.measureIndex;
-				term._tick = context.tick;
-			}
-		}
-	}*/
-
-
 	// with side effects
 	redivide ({recursive = true} = {}) {
 		if (recursive)
@@ -1222,8 +1149,10 @@ export class MusicBlock extends BaseTerm {
 			if (term instanceof BaseTerm) {
 				const newMeasures = term.measures.filter(m => !measures.has(m));
 				if (newMeasures.length) {
+					const comment = " " + newMeasures[0] + (newMeasures.length > 1 ? "-" + Math.max(...newMeasures) : "");
+
 					if (body.length)
-						body.push(new Divide({}));
+						body.push(new Divide({_tailComment: Comment.createSingle(comment)}));
 
 					newMeasures.forEach(m => measures.add(m));
 				}
@@ -1234,32 +1163,6 @@ export class MusicBlock extends BaseTerm {
 
 		this.body = body.reverse();
 	}
-
-
-	/*// pure
-	sliceMeasures (start: number, count: number): Relative {
-		const flatten = this.flatten({spreadRepeats: true});
-		const block = flatten.music as MusicBlock;
-		block.updateChordChains();
-		block.allocateMeasures();
-
-		const context = new StaffContext({anchorPitch: block.anchorPitch});
-		for (const term of block.body) {
-			if (Number.isInteger(term._measure)) {
-				if (term._measure < start)
-					context.append(term);
-				else
-					break;
-			}
-		}
-
-		const terms = context.declarations.concat(block.body.filter(term => term._measure >= start && term._measure < start + count));
-		const anchor = context.pitch;
-
-		const newBlock = new MusicBlock({body: terms.map(term => term.clone())});
-
-		return new Relative({cmd: "relative", args: [anchor, newBlock].filter(term => term)});
-	}*/
 };
 
 

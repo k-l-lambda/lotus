@@ -830,7 +830,6 @@
 				this.lilySource = this.lilyDocument.toString();
 
 				await this.$nextTick();
-				this.lilyDocumentDirty = false;
 				this.engraverLogs = null;
 			},
 
@@ -851,15 +850,8 @@
 			},
 
 
-			async removeTrillSpans () {
-				await this.updateLilyDocument();
-
-				this.lilyDocument.removeTrillSpans();
-
-				this.lilySource = this.lilyDocument.toString();
-
-				await this.$nextTick();
-				this.lilyDocumentDirty = false;
+			removeTrillSpans () {
+				return this.executeMarkup("removeTrillSpans");
 			},
 
 
@@ -904,9 +896,6 @@
 				this.lilyDocument[func]();
 
 				this.lilySource = this.lilyDocument.toString();
-
-				await this.$nextTick();
-				this.lilyDocumentDirty = false;
 			},
 
 
@@ -987,9 +976,6 @@
 				interperter.sliceMeasures(start, count);
 				this.lilyDocument = interperter.toDocument();
 				this.lilySource = this.lilyDocument.toString();
-
-				await this.$nextTick();
-				this.lilyDocumentDirty = false;
 			},
 
 
