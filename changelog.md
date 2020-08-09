@@ -8,6 +8,7 @@
 	lyrics hilighting
 		match chord with voice in the same staff
 	measure notes in Notation parsing
+	try articulate.ly in MIDI output
 	staffSvg
 		try create MIDI file pure by LilyParser
 		fix partial measures

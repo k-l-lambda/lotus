@@ -311,6 +311,8 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\cadenzaOn"						return 'CMD_CADENZAON';
 "\\cadenzaOff"						return 'CMD_CADENZAOFF';
 "\\cresc"							return 'CMD_CRESC';
+"\\crescTextCresc"					return 'CMD_CRESCTEXTCRESC';
+"\\crescHairpin"					return 'CMD_CRESCHAIRPIN';
 "\\dim"(?=[\W])						return 'CMD_DIM';
 "\\dimTextDim"						return 'CMD_DIMTEXTDIM';
 "\\dynamicUp"						return 'CMD_DYNAMICUP';
@@ -331,6 +333,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\tupletUp"						return 'CMD_TUPLETUP';
 "\\tupletDown"						return 'CMD_TUPLETDOWN';
 "\\shiftOn"							return 'CMD_SHIFTON';
+"\\repeatTie"						return 'CMD_REPEATTIE';
 
 "\\mp"(?=[\W])						return 'CMD_DYNAMIC_MARKINGS';
 "\\mf"(?=[\W])						return 'CMD_DYNAMIC_MARKINGS';
@@ -2075,6 +2078,10 @@ zero_command
 		{$$ = command($1);}
 	| CMD_CRESC
 		{$$ = command($1);}
+	| CMD_CRESCTEXTCRESC
+		{$$ = command($1);}
+	| CMD_CRESCHAIRPIN
+		{$$ = command($1);}
 	| CMD_DIM
 		{$$ = command($1);}
 	| CMD_DIMTEXTDIM
@@ -2116,6 +2123,8 @@ zero_command
 	| CMD_TUPLETDOWN
 		{$$ = command($1);}
 	| CMD_SHIFTON
+		{$$ = command($1);}
+	| CMD_REPEATTIE
 		{$$ = command($1);}
 	;
 
