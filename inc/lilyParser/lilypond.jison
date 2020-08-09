@@ -388,7 +388,6 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\circle"							return 'CMD_CIRCLE';
 "\\pad-markup"						return 'CMD_PAD_MARKUP';
 "\\smaller"							return 'CMD_SMALLER';
-"\\medium"							return 'CMD_MEDIUM';
 
 "\\huge"							return 'CMD_HUGE';
 "\\large"							return 'CMD_LARGE';
@@ -396,6 +395,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\small"							return 'CMD_SMALL';
 "\\tiny"							return 'CMD_TINY';
 "\\teeny"							return 'CMD_TEENY';
+"\\medium"							return 'CMD_MEDIUM';
 
 // syntax commands		
 "\\header"							return 'HEADER';
@@ -831,6 +831,8 @@ markup_font_size
 		{$$ = $1;}
 	| CMD_TEENY
 		{$$ = $1;}
+	| CMD_MEDIUM
+		{$$ = $1;}
 	;
 
 markup_uncomposed_list
@@ -1055,8 +1057,11 @@ simple_markup_noword
 	| CMD_FINGER string
 		{$$ = command($1, $2);}
 	// extra formula
-	| CMD_FONTSIZE scm_identifier
-		{$$ = command($1, $2);}
+	| CMD_FONTSIZE scm_identifier markup
+		{$$ = command($1, $2, $3);}
+	// extra formula
+	| CMD_FONTSIZE scm_identifier markup_list
+		{$$ = command($1, $2, $3);}
 	// extra formula
 	| CMD_RAISE scm_identifier
 		{$$ = command($1, $2);}
@@ -1074,9 +1079,6 @@ simple_markup_noword
 		{$$ = command($1, $2);}
 	// extra formula
 	| CMD_SMALLER markup
-		{$$ = command($1, $2);}
-	// extra formula
-	| CMD_MEDIUM markup
 		{$$ = command($1, $2);}
 	;
 

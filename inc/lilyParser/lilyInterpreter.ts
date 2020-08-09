@@ -1,7 +1,7 @@
 
 import {romanize} from "../romanNumeral";
 import {WHOLE_DURATION_MAGNITUDE, lcmMulti, lcm} from "./utils";
-import {parseRaw, getDurationSubdivider, BaseTerm, BaseTerm} from "./lilyTerms";
+import {parseRaw, getDurationSubdivider} from "./lilyTerms";
 
 import {
 	// eslint-disable-next-line
