@@ -1,6 +1,6 @@
 <template>
 	<div class="sheet live">
-		<svg v-for="(page, i) of doc.pages" :key="i"
+		<svg v-for="(page, i) of shownPages" :key="i"
 			class="page"
 			xmlns="http://www.w3.org/2000/svg"
 			:width="page.width"
@@ -111,6 +111,7 @@
 	import {MidiPlayer} from "@k-l-lambda/web-widgets";
 
 	import SheetScheduler from "../../inc/staffSvg/scheduler.ts";
+	import {animationDelay} from "../delay.js";
 
 	import SheetToken from "./sheet-token.vue";
 
@@ -159,6 +160,10 @@
 				type: Boolean,
 				default: false,
 			},
+			showPagesProgressively: {
+				type: Boolean,
+				default: false,
+			},
 		},
 
 
@@ -167,6 +172,7 @@
 				midiPlayer: null,
 				scheduler: null,
 				statusMap: new Map(),
+				shownPages: [],
 			};
 		},
 
@@ -232,6 +238,8 @@
 
 		created () {
 			this.preparePlayer();
+
+			this.showPages();
 		},
 
 
@@ -398,9 +406,30 @@
 			},
 
 
+			async showPages () {
+				this.shownPages = [];
+
+				if (!this.doc)
+					return;
+
+				if (this.showPagesProgressively) {
+					for (let i = 0; i < this.doc.pages.length; ++i) {
+						this.shownPages.push(this.doc.pages[i]);
+
+						await this.$nextTick();
+						await animationDelay();
+					}
+				}
+				else
+					this.shownPages = this.doc.pages;
+			},
+
+
 			onDocChanged () {
 				this.clearNoteStatus();
 				this.clearMarkings();
+
+				this.showPages();
 			},
 
 

@@ -22,6 +22,7 @@
 				:noteHighlight="noteHighlight"
 				:bakingMode="bakingSheet"
 				:backgroundImages="bakingSheet ? bakingImages : null"
+				:showPagesProgressively="true"
 				@midi="onMidi"
 			/>
 		</main>

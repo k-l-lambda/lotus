@@ -22,6 +22,11 @@
 
 
 
+*	2020.8.9
+
+	+	sheet-live.vue: property of showPagesProgressively added.
+
+
 *	2020.8.8
 
 	+	playground.vue: added xml post processing option of midiChannelMapping.
