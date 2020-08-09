@@ -1444,6 +1444,8 @@ lyricmode_music_identifier
 		{$$ = command($1, $2);}
 	| CMD_BARNUMBERCHECK scm_identifier
 		{$$ = command($1, $2);}
+	| CMD_BARNUMBERCHECK unsigned_number
+		{$$ = command($1, $2);}
 	| CMD_MARK full_markup
 		{$$ = command($1, $2);}
 	| CMD_SKIP duration
@@ -1881,6 +1883,8 @@ music_identifier
 	| CMD_OTTAVA property_path
 		{$$ = command($1, $2);}
 	| CMD_BARNUMBERCHECK scm_identifier
+		{$$ = command($1, $2);}
+	| CMD_BARNUMBERCHECK unsigned_number
 		{$$ = command($1, $2);}
 	| CMD_MARK full_markup
 		{$$ = command($1, $2);}
