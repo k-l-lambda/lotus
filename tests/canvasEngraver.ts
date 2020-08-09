@@ -3,9 +3,11 @@ import fs from "fs";
 import {loadImage, createCanvas} from "canvas";
 // eslint-disable-next-line
 import {PNGStream} from "canvas";
+import JSZip from "jszip";
 
 import "../env.js";
 import {engraveSvg} from "../backend/lilyCommands";
+import {setTimeout} from "timers";
 
 
 
@@ -28,12 +30,12 @@ const svgToPng = async (source): Promise<PNGStream> => {
 };
 
 
-const writeSvgAsPng = async (svg: string, filename: string) => {
+/*const writeSvgAsPng = async (svg: string, filename: string) => {
 	const stream = await svgToPng(svg);
 
 	const out = fs.createWriteStream(filename);
 	stream.pipe(out);
-};
+};*/
 
 
 const main = async input => {
@@ -44,12 +46,25 @@ const main = async input => {
 	out.on("finish", () =>  console.log("Done."));*/
 
 	// avoid to conflict with temp cache cleanup
-	await new Promise(resolve => setImmediate(resolve));
+	await new Promise(resolve => setTimeout(resolve, 100));
+
+	const pack = new JSZip();
 
 	const source = fs.readFileSync(input);
 	await engraveSvg(source.toString(), {
-		onSvgRead: (index, _, {filePath}) => writeSvgAsPng(filePath, `./${index}.png`),
+		onSvgRead: async (index, _, {filePath}) => {
+			//writeSvgAsPng(filePath, `./${index}.png`);
+			const stream = await svgToPng(filePath);
+			pack.file(`page-${index}.png`, stream);
+		},
 	});
+
+	pack
+		.generateNodeStream({streamFiles:true})
+		.pipe(fs.createWriteStream("./canvasScore.zip"))
+		.on("finish", function () {
+			console.log("Done.");
+		});
 };
 
 
