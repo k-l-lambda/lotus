@@ -261,6 +261,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\compoundMeter"					return 'CMD_COMPOUNDMETER';
 "\\transposition"					return 'CMD_TRANSPOSITION';
 "\\absolute"						return 'CMD_ABSOLUTE';
+"\\hide"							return 'CMD_HIDE';
 
 // zero commands
 "\\tempoLegend"						return 'CMD_TEMPOLEGEND';
@@ -1942,6 +1943,8 @@ music_identifier
 	| CMD_TRANSPOSITION PITCH
 		{$$ = command($1, $2);}
 	| CMD_ABSOLUTE music
+		{$$ = command($1, $2);}
+	| CMD_HIDE symbol
 		{$$ = command($1, $2);}
 	| markup_font_size music
 		{$$ = command($1, $2);}
