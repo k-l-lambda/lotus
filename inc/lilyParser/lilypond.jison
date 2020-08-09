@@ -262,6 +262,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\transposition"					return 'CMD_TRANSPOSITION';
 "\\absolute"						return 'CMD_ABSOLUTE';
 "\\hide"							return 'CMD_HIDE';
+"\\crossStaff"						return 'CMD_CROSSSTAFF';
 
 // zero commands
 "\\tempoLegend"						return 'CMD_TEMPOLEGEND';
@@ -323,6 +324,8 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\tieDown"							return 'CMD_TIEDOWN';
 "\\tieNeutral"						return 'CMD_TIENEUTRAL';
 "\\tieUp"							return 'CMD_TIEUP';
+"\\tupletUp"						return 'CMD_TUPLETUP';
+"\\shiftOn"							return 'CMD_SHIFTON';
 
 "\\mp"(?=[\W])						return 'CMD_DYNAMIC_MARKINGS';
 "\\mf"(?=[\W])						return 'CMD_DYNAMIC_MARKINGS';
@@ -1946,6 +1949,8 @@ music_identifier
 		{$$ = command($1, $2);}
 	| CMD_HIDE symbol
 		{$$ = command($1, $2);}
+	| CMD_CROSSSTAFF composite_music
+		{$$ = command($1, $2);}
 	| markup_font_size music
 		{$$ = command($1, $2);}
 	| pitch_mode_music
@@ -2080,6 +2085,10 @@ zero_command
 		{$$ = command($1);}
 	| CMD_PARENTHESIZE
 		{$$ = command($1);}
+	| CMD_TUPLETUP
+		{$$ = command($1);}
+	| CMD_SHIFTON
+		{$$ = command($1);}
 	;
 
 // extra syntax
@@ -2092,7 +2101,7 @@ expressive_mark
 		{$$ = $1;}
 	| CMD_FERMATA
 		{$$ = $1;}
-	| CMD_TWEAK property_path scm_identifier
+	| CMD_TWEAK property_path scalar
 		{$$ = command($1, $2, $3);}
 	| CMD_BENDAFTER scm_identifier
 		{$$ = command($1, $2);}
