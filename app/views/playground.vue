@@ -633,9 +633,14 @@
 				await animationDelay();
 
 				if (this.tokenizeStaff) {
-					await this.updateLilyDocument();
-					if (this.lilyDocument)
-						this.lilyDocument.interpret();
+					try {
+						await this.updateLilyDocument();
+						if (this.lilyDocument)
+							this.lilyDocument.interpret();
+					}
+					catch (err) {
+						console.warn("lilydocument parsing failed:", err);
+					}
 				}
 
 				const body = new FormData();
