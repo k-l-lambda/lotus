@@ -1465,7 +1465,8 @@ export class Chord extends MusicEvent {
 	constructor (data) {
 		super(data);
 
-		this.basePitch._parent = this;
+		if (this.basePitch)
+			this.basePitch._parent = this;
 		for (let i = 1; i < this.pitchElements.length; ++i)
 			this.pitchElements[i]._previous = this.pitchElements[i - 1];
 	}

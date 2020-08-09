@@ -229,6 +229,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\afterGrace"						return 'CMD_AFTERGRACE';
 "\\parallelMusic"					return 'CMD_PARALLELMUSIC';
 "\\shape"							return 'CMD_SHAPE';
+"\\tag"								return 'CMD_TAG';
 
 // unitary commands
 "\\clef"							return 'CMD_CLEF';
@@ -263,6 +264,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\absolute"						return 'CMD_ABSOLUTE';
 "\\hide"							return 'CMD_HIDE';
 "\\crossStaff"						return 'CMD_CROSSSTAFF';
+"\\keepWithTag"						return 'CMD_KEEPWITHTAG';
 
 // zero commands
 "\\tempoLegend"						return 'CMD_TEMPOLEGEND';
@@ -1951,6 +1953,10 @@ music_identifier
 		{$$ = command($1, $2);}
 	| CMD_CROSSSTAFF composite_music
 		{$$ = command($1, $2);}
+	| CMD_KEEPWITHTAG scm_identifier
+		{$$ = command($1, $2);}
+	| CMD_TAG scm_identifier composite_music
+		{$$ = command($1, $2, $3);}
 	| markup_font_size music
 		{$$ = command($1, $2);}
 	| pitch_mode_music
