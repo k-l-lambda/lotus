@@ -24,6 +24,8 @@
 
 *	2020.8.9
 
+	+	tests\canvasEngraver.ts created.
+
 	+	sheet-live.vue: property of showPagesProgressively added.
 
 
