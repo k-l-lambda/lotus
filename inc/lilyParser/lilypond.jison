@@ -230,6 +230,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\parallelMusic"					return 'CMD_PARALLELMUSIC';
 "\\shape"							return 'CMD_SHAPE';
 "\\tag"								return 'CMD_TAG';
+"\\scaleDurations"					return 'CMD_SCALEDURATIONS';
 
 // unitary commands
 "\\clef"							return 'CMD_CLEF';
@@ -327,6 +328,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\tieNeutral"						return 'CMD_TIENEUTRAL';
 "\\tieUp"							return 'CMD_TIEUP';
 "\\tupletUp"						return 'CMD_TUPLETUP';
+"\\tupletDown"						return 'CMD_TUPLETDOWN';
 "\\shiftOn"							return 'CMD_SHIFTON';
 
 "\\mp"(?=[\W])						return 'CMD_DYNAMIC_MARKINGS';
@@ -1953,9 +1955,11 @@ music_identifier
 		{$$ = command($1, $2);}
 	| CMD_CROSSSTAFF composite_music
 		{$$ = command($1, $2);}
-	| CMD_KEEPWITHTAG scm_identifier
+	| CMD_KEEPWITHTAG symbol
 		{$$ = command($1, $2);}
-	| CMD_TAG scm_identifier composite_music
+	| CMD_TAG symbol composite_music
+		{$$ = command($1, $2, $3);}
+	| CMD_SCALEDURATIONS FRACTION composite_music
 		{$$ = command($1, $2, $3);}
 	| markup_font_size music
 		{$$ = command($1, $2);}
@@ -2092,6 +2096,8 @@ zero_command
 	| CMD_PARENTHESIZE
 		{$$ = command($1);}
 	| CMD_TUPLETUP
+		{$$ = command($1);}
+	| CMD_TUPLETDOWN
 		{$$ = command($1);}
 	| CMD_SHIFTON
 		{$$ = command($1);}
