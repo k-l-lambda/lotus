@@ -247,6 +247,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\include"							return 'CMD_INCLUDE';
 "\\tupletSpan"						return 'CMD_TUPLETSPAN';
 "\\tuplet"							return 'CMD_TUPLET';
+"\\tupletNeutral"					return 'CMD_TUPLETNEUTRAL';
 "\\skip"							return 'CMD_SKIP';
 "\\skip"(?=\d)						return 'CMD_SKIP';
 "\\parenthesize"					return 'CMD_PARENTHESIZE';
@@ -388,6 +389,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\circle"							return 'CMD_CIRCLE';
 "\\pad-markup"						return 'CMD_PAD_MARKUP';
 "\\smaller"							return 'CMD_SMALLER';
+"\\normal-text"						return 'CMD_NORMAL_TEXT';
 
 "\\huge"							return 'CMD_HUGE';
 "\\large"							return 'CMD_LARGE';
@@ -1079,6 +1081,9 @@ simple_markup_noword
 		{$$ = command($1, $2);}
 	// extra formula
 	| CMD_SMALLER markup
+		{$$ = command($1, $2);}
+	// extra formula
+	| CMD_NORMAL_TEXT markup
 		{$$ = command($1, $2);}
 	;
 
@@ -1970,6 +1975,8 @@ music_identifier
 		{$$ = command($1, $2, $3);}
 	| CMD_SCALEDURATIONS FRACTION composite_music
 		{$$ = command($1, $2, $3);}
+	| CMD_TUPLETNEUTRAL music
+		{$$ = command($1, $2);}
 	| markup_font_size music
 		{$$ = command($1, $2);}
 	| pitch_mode_music
