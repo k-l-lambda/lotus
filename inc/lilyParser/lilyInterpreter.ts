@@ -1,7 +1,7 @@
 
 import {romanize} from "../romanNumeral";
 import {WHOLE_DURATION_MAGNITUDE, lcmMulti, lcm} from "./utils";
-import {parseRaw, getDurationSubdivider} from "./lilyTerms";
+import {parseRaw, getDurationSubdivider, BaseTerm, BaseTerm} from "./lilyTerms";
 
 import {
 	// eslint-disable-next-line
@@ -283,6 +283,9 @@ class StaffContext {
 			console.warn("null term:", term);
 			return;
 		}
+
+		if (!(term instanceof BaseTerm))
+			return;
 
 		term._measure = this.measureIndex;
 		term._tick = this.tick;
