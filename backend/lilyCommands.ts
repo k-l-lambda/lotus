@@ -190,8 +190,8 @@ const LILYPOND_PATH = filePathResolve(env.LILYPOND_DIR, "lilypond");
 
 const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, includeFolders = []}: {
 	onProcStart?: () => void|Promise<void>,
-	onMidiRead?: (content: MIDI.MidiData) => void|Promise<void>,
-	onSvgRead?: (index: number, content: string) => void|Promise<void>,
+	onMidiRead?: (content: MIDI.MidiData, {filePath: string}) => void|Promise<void>,
+	onSvgRead?: (index: number, content: string, {filePath: string}) => void|Promise<void>,
 	includeFolders?: string[],	// include folder path should be relative to TEMP_DIR
 } = {}) => {
 	const hash = genHashString();
@@ -233,7 +233,7 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 
 			midi = MIDI.parseMidiData(buffer);
 
-			await onMidiRead && onMidiRead(midi);
+			await onMidiRead && onMidiRead(midi, {filePath});
 		}
 
 			break;
@@ -250,7 +250,7 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 			svgs[index] = svg;
 
 			//console.log("svg load:", filePath);
-			await onSvgRead && onSvgRead(index, svg);
+			await onSvgRead && onSvgRead(index, svg, {filePath});
 		}
 
 			break;
