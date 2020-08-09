@@ -388,6 +388,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\circle"							return 'CMD_CIRCLE';
 "\\pad-markup"						return 'CMD_PAD_MARKUP';
 "\\smaller"							return 'CMD_SMALLER';
+"\\medium"							return 'CMD_MEDIUM';
 
 "\\huge"							return 'CMD_HUGE';
 "\\large"							return 'CMD_LARGE';
@@ -469,6 +470,8 @@ m(?=[\W\d])							return 'CHORD_MODIFIER_WORD';
 [d][i][m](?=[\W\d])					return 'CHORD_MODIFIER_WORD';
 [s][u][s](?=[\W\d])					return 'CHORD_MODIFIER_WORD';
 
+"inf.0"								return yytext;
+
 {SYMBOL}							return 'SYMBOL';
 
 "#f"								return 'SCM_FALSE';
@@ -494,6 +497,7 @@ m(?=[\W\d])							return 'CHORD_MODIFIER_WORD';
 
 "#"									return yytext;
 "~"									return yytext;
+"`"									return yytext;
 
 .									return 'UNKNOWN_CHAR';
 
@@ -1070,6 +1074,9 @@ simple_markup_noword
 		{$$ = command($1, $2);}
 	// extra formula
 	| CMD_SMALLER markup
+		{$$ = command($1, $2);}
+	// extra formula
+	| CMD_MEDIUM markup
 		{$$ = command($1, $2);}
 	;
 
@@ -2737,6 +2744,10 @@ scheme_expression
 		{$$ = $1;}
 	| "(" ")"
 		{$$ = null;}
+	| "+" "inf.0"
+		{$$ = $1 + $2;}
+	| "-" "inf.0"
+		{$$ = $1 + $2;}
 	| "(" scheme_expression "." scheme_expression ")"
 		{$$ = schemePair($2, $4);}
 	| "(" scheme_expression scheme_args ")"
@@ -2746,6 +2757,8 @@ scheme_expression
 	| scheme_token "?"
 		{$$ = $1 + $2;}
 	| "'" scheme_expression
+		{$$ = schemePointer($2);}
+	| "`" scheme_expression
 		{$$ = schemePointer($2);}
 	| "#" "{" lilypond "#" "}"
 		{$$ = schemeEmbed($3);}
