@@ -1610,6 +1610,9 @@ export class ChordElement extends BaseTerm {
 	_previous?: ChordElement;
 	_tied?: boolean;
 
+	// cache for property of absolutePitch
+	_absolutePitch?: ChordElement;
+
 
 	static from ({phonet, alters, octave, options = {}}): ChordElement {
 		const octaveString = octave ? Array(Math.abs(octave)).fill(octave > 0 ? "'" : ",").join("") : "";
@@ -1687,13 +1690,21 @@ export class ChordElement extends BaseTerm {
 	}
 
 
-	get absolutePitch (): ChordElement {
+	getAbsolutePitch (): ChordElement {
 		if (this.phonet === "q")
 			return this.anchorPitch;
 
 		const octave = this.absoluteOctave(this.anchorPitch);
 
 		return ChordElement.from({phonet: this.phonet, alters: this.alters, octave});
+	}
+
+
+	get absolutePitch (): ChordElement {
+		if (!this._absolutePitch)
+			this._absolutePitch = this.getAbsolutePitch();
+
+		return this._absolutePitch;
 	}
 
 

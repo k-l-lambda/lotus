@@ -24,6 +24,8 @@
 
 *	2020.8.10
 
+	+	lilyTerms.ts: added cache for ChordElement.absolutePitch to avoid call stack overflow.
+
 	+	jisonWrapper.ts: added method of generate.
 
 
