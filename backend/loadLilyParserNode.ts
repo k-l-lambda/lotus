@@ -10,7 +10,7 @@ let parser = null;
 
 
 
-export default async function load () {
+export default async function load (): Promise<Parser> {
 	if (!parser) {
 		const grammar = (await asyncCall(fs.readFile, "./inc/lilyParser/lilypond.jison")).toString();
 

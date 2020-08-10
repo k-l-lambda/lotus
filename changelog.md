@@ -22,6 +22,11 @@
 
 
 
+*	2020.8.10
+
+	+	jisonWrapper.ts: added method of generate.
+
+
 *	2020.8.9
 
 	+	canvasEngraver.ts: packing images added.
