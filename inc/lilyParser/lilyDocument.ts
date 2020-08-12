@@ -194,6 +194,7 @@ export default class LilyDocument {
 			raggedLast: paperPropertySchemeToken("ragged-last"),
 			raggedBottom: paperPropertySchemeToken("ragged-bottom"),
 			raggedLastBottom: paperPropertySchemeToken("ragged-last-bottom"),
+			printPageNumber: paperPropertySchemeToken("print-page-number"),
 		};
 
 		if (readonly)
