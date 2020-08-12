@@ -233,6 +233,14 @@
 			},
 
 
+			cursorRowIndex () {
+				if (!this.cursorPosition || !this.doc)
+					return null;
+
+				return this.cursorPosition.row;
+			},
+
+
 			svgScale () {
 				const page = this.doc && this.doc.pages[0];
 				if (page)
@@ -520,6 +528,11 @@
 
 			cursorPageIndex (value) {
 				this.$emit("cursorPageShift", value);
+			},
+
+
+			cursorRowIndex (value) {
+				this.$emit("cursorRowShift", value);
 			},
 		},
 	};

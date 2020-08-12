@@ -24,6 +24,8 @@
 
 *	2020.8.12
 
+	+	sheet-live.vue: event of cursorRowShift added.
+
 	+	sheetDocument.ts: added verticalCrop option on fitPageViewbox method.
 
 	+	lilyDocument.ts: added new global attributes of printPageNumber.
