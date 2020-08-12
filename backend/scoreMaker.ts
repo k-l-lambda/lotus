@@ -37,7 +37,7 @@ const markupLily = (source: string, markup: string, lilyParser: GrammarParser): 
 	[
 		"staffSize", "paperWidth", "paperHeight",
 		"topMargin", "bottomMargin", "leftMargin", "rightMargin",
-		"systemSpacing", "topMarkupSpacing", "raggedLast",
+		"systemSpacing", "topMarkupSpacing", "raggedLast", "raggedBottom", "raggedLastBottom",
 	].forEach(field => {
 		if (attrM[field] !== undefined) {
 			if (typeof attrS[field].value === "object" && attrS[field].value && (attrS[field].value as any).set)
