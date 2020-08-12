@@ -93,6 +93,8 @@ interface SheetPage {
 
 	rows: SheetRows[];
 	tokens: StaffToken[];
+
+	hidden?: boolean;
 };
 
 

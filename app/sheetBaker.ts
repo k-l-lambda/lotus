@@ -129,6 +129,7 @@ const bakeLiveSheetGen = async function* ({sheetDocument, signs, hashTable, matc
 	const sheet = new SheetLiveComponent({
 		propsData: {
 			doc: sheetDocument,
+			partialVisible: false,
 		},
 	}).$mount(document.createElement("div"));
 

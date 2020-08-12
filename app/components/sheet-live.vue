@@ -1,6 +1,6 @@
 <template>
 	<div class="sheet live">
-		<svg v-for="(page, i) of shownPages" :key="i"
+		<svg v-for="(page, i) of shownPages" :key="i" ref="pages"
 			class="page"
 			xmlns="http://www.w3.org/2000/svg"
 			:width="page.width"
@@ -8,95 +8,97 @@
 			:viewBox="`${page.viewBox.x} ${page.viewBox.y} ${page.viewBox.width} ${page.viewBox.height}`"
 			:style="{['background-image']: backgroundImages && backgroundImages[i] && `url(${backgroundImages[i]})`}"
 		>
-			<g v-if="showMark" class="mark">
-				<g class="row" v-for="(row, ii) of page.rows" :key="ii"
-					:transform="`translate(${row.x}, ${row.y})`"
-					@mousemove="enablePointer && onMousemovePad(row, $event)"
-					@mouseleave="enablePointer && onMouseleavePad(row, $event)"
-					@click="onClickPad(row, $event)"
-				>
-					<rect :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top" />
-					<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
-						:transform="`translate(${staff.x}, ${staff.y})`"
+			<g v-if="!partialVisible || !page.hidden">
+				<g v-if="showMark" class="mark">
+					<g class="row" v-for="(row, ii) of page.rows" :key="ii"
+						:transform="`translate(${row.x}, ${row.y})`"
+						@mousemove="enablePointer && onMousemovePad(row, $event)"
+						@mouseleave="enablePointer && onMouseleavePad(row, $event)"
+						@click="onClickPad(row, $event)"
 					>
-						<rect class="head" :x="0" :y="-2" :width="staff.headWidth" :height="4" />
-						<circle />
-						<line v-if="Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
-						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4" :class="measure.class">
-							<rect :x="measure.lineX" :y="-2" :width="measure.noteRange.end - measure.lineX" :height="4"/>
-							<text :x="measure.headX">'{{measure.index}}</text>
+						<rect :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top" />
+						<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
+							:transform="`translate(${staff.x}, ${staff.y})`"
+						>
+							<rect class="head" :x="0" :y="-2" :width="staff.headWidth" :height="4" />
+							<circle />
+							<line v-if="Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
+							<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4" :class="measure.class">
+								<rect :x="measure.lineX" :y="-2" :width="measure.noteRange.end - measure.lineX" :height="4"/>
+								<text :x="measure.headX">'{{measure.index}}</text>
+							</g>
 						</g>
 					</g>
 				</g>
-			</g>
-			<g v-if="!bakingMode">
-				<g class="page-tokens">
-					<SheetToken v-for="(token, ii) of page.tokens" :key="ii" :token="token" />
-				</g>
-				<g class="row" v-for="(row, ii) of page.rows" :key="ii"
-					:transform="`translate(${row.x}, ${row.y})`"
-				>
-					<rect class="cursor" v-if="showCursor && cursorPosition && cursorPosition.row === row.index"
-						:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
-					/>
-					<g>
-						<SheetToken v-for="(token, i5) of row.tokens" :key="i5" :token="token" />
+				<g v-if="!bakingMode">
+					<g class="page-tokens">
+						<SheetToken v-for="(token, ii) of page.tokens" :key="ii" :token="token" />
 					</g>
-					<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
-						:transform="`translate(${staff.x}, ${staff.y})`"
+					<g class="row" v-for="(row, ii) of page.rows" :key="ii"
+						:transform="`translate(${row.x}, ${row.y})`"
 					>
+						<rect class="cursor" v-if="showCursor && cursorPosition && cursorPosition.row === row.index"
+							:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
+						/>
 						<g>
-							<SheetToken v-for="(token, i5) of staff.tokens" :key="i5" :token="token" />
+							<SheetToken v-for="(token, i5) of row.tokens" :key="i5" :token="token" />
 						</g>
-						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
-							<SheetToken v-for="(token, i5) of measure.tokens" :key="i5"
-								:token="token"
-								:classes="{
-									matched: statusMap.has(token.href),
-									mismatched: token.is('NOTEHEAD') && !statusMap.has(token.href),
-									tied: token.tied,
-									attached: Number.isFinite(token.stemX),
-								}"
-								:showTitle="showMark"
-							/>
-						</g>
-						<g class="markings">
-							<g v-for="marking of staff.markings" :key="marking.index"
-								:transform="`translate(${marking.x}, ${marking.y + staff.yRoundOffset})`"
-								:class="marking.cls"
-							>
-								<text>{{marking.text}}</text>
-								<text class="alter" v-if="marking.alterText" x="-0.2" y="0">{{marking.alterText}}</text>
+						<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
+							:transform="`translate(${staff.x}, ${staff.y})`"
+						>
+							<g>
+								<SheetToken v-for="(token, i5) of staff.tokens" :key="i5" :token="token" />
+							</g>
+							<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
+								<SheetToken v-for="(token, i5) of measure.tokens" :key="i5"
+									:token="token"
+									:classes="{
+										matched: statusMap.has(token.href),
+										mismatched: token.is('NOTEHEAD') && !statusMap.has(token.href),
+										tied: token.tied,
+										attached: Number.isFinite(token.stemX),
+									}"
+									:showTitle="showMark"
+								/>
+							</g>
+							<g class="markings">
+								<g v-for="marking of staff.markings" :key="marking.index"
+									:transform="`translate(${marking.x}, ${marking.y + staff.yRoundOffset})`"
+									:class="marking.cls"
+								>
+									<text>{{marking.text}}</text>
+									<text class="alter" v-if="marking.alterText" x="-0.2" y="0">{{marking.alterText}}</text>
+								</g>
 							</g>
 						</g>
 					</g>
 				</g>
-			</g>
-			<g v-if="bakingMode" class="bake">
-				<g class="row" v-for="(row, ii) of page.rows" :key="ii"
-					:transform="`translate(${row.x}, ${row.y})`"
-				>
-					<rect class="cursor" v-if="showCursor && cursorPosition && cursorPosition.row === row.index"
-						:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
-					/>
-					<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
-						:transform="`translate(${staff.x}, ${staff.y})`"
+				<g v-if="bakingMode" class="bake">
+					<g class="row" v-for="(row, ii) of page.rows" :key="ii"
+						:transform="`translate(${row.x}, ${row.y})`"
 					>
-						<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
-							<g v-for="(token, i5) of measure.matchedTokens" :key="i5"
-								:transform="`translate(${token.x + token.musicFontNoteOffset}, ${token.y})` + (token.scale && token.scale !== 1 ? ` scale(${token.scale})` : '')"
-								class="token matched"
-							>
-								<text :data-href="token.href">{{token.fontChar}}</text>
+						<rect class="cursor" v-if="showCursor && cursorPosition && cursorPosition.row === row.index"
+							:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
+						/>
+						<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
+							:transform="`translate(${staff.x}, ${staff.y})`"
+						>
+							<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
+								<g v-for="(token, i5) of measure.matchedTokens" :key="i5"
+									:transform="`translate(${token.x + token.musicFontNoteOffset}, ${token.y})` + (token.scale && token.scale !== 1 ? ` scale(${token.scale})` : '')"
+									class="token matched"
+								>
+									<text :data-href="token.href">{{token.fontChar}}</text>
+								</g>
 							</g>
-						</g>
-						<g class="markings">
-							<g v-for="marking of staff.markings" :key="marking.index"
-								:transform="`translate(${marking.x}, ${marking.y + staff.yRoundOffset})`"
-								:class="marking.cls"
-							>
-								<text>{{marking.text}}</text>
-								<text class="alter" v-if="marking.alterText" x="-0.2" y="0">{{marking.alterText}}</text>
+							<g class="markings">
+								<g v-for="marking of staff.markings" :key="marking.index"
+									:transform="`translate(${marking.x}, ${marking.y + staff.yRoundOffset})`"
+									:class="marking.cls"
+								>
+									<text>{{marking.text}}</text>
+									<text class="alter" v-if="marking.alterText" x="-0.2" y="0">{{marking.alterText}}</text>
+								</g>
 							</g>
 						</g>
 					</g>
@@ -112,6 +114,7 @@
 
 	import SheetScheduler from "../../inc/staffSvg/scheduler.ts";
 	import {animationDelay} from "../delay.js";
+	import {SingleLock} from "../../inc/mutex.ts";
 
 	import SheetToken from "./sheet-token.vue";
 
@@ -163,6 +166,10 @@
 			showPagesProgressively: {
 				type: Boolean,
 				default: false,
+			},
+			partialVisible: {
+				type: Boolean,
+				default: true,
 			},
 		},
 
@@ -237,6 +244,8 @@
 
 
 		created () {
+			this.pageLoadingLock = new SingleLock();
+
 			this.preparePlayer();
 
 			this.showPages();
@@ -324,6 +333,7 @@
 
 					// wait DOM update
 					await this.$nextTick();
+					await this.pageLoadingLock.wait();
 
 					this.updateStatusMap();
 
@@ -413,12 +423,16 @@
 					return;
 
 				if (this.showPagesProgressively) {
+					this.pageLoadingLock.lock();
+
 					for (let i = 0; i < this.doc.pages.length; ++i) {
 						this.shownPages.push(this.doc.pages[i]);
 
 						await this.$nextTick();
 						await animationDelay();
 					}
+
+					this.pageLoadingLock.release();
 				}
 				else
 					this.shownPages = this.doc.pages;
@@ -466,6 +480,20 @@
 			onClickPad (row, event) {
 				this.$emit("pointerClick", this.eventToPointer(row, event));
 			},
+
+
+			updatePageVisibility () {
+				//console.log("pages:", this.$refs.pages);
+				this.$refs.pages.forEach((pageElem, i) => {
+					const rect = pageElem.getBoundingClientRect();
+
+					const page = this.shownPages[i];
+					Vue.set(page, "hidden", rect.top > window.innerHeight || rect.bottom < 0 || rect.left > window.innerWidth || rect.right < 0);
+					//console.log("page:", i, rect, window.innerWidth, window.innerHeight, page.hidden);
+				});
+
+				this.$nextTick(() => this.updateStatusMap());
+			},
 		},
 
 
@@ -480,6 +508,7 @@
 
 			async bakingMode () {
 				await this.$nextTick();
+				await this.pageLoadingLock.wait();
 
 				this.updateStatusMap();
 				this.updateTokenStatus();

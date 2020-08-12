@@ -11,7 +11,7 @@
 			<CheckButton content="&#x1f35e;" v-model="bakingSheet" />
 			<span v-if="fps" class="fps"><em>{{fps.toFixed(1)}}</em>fps</span>
 		</header>
-		<main>
+		<main @scroll="onScroll">
 			<SheetSigns v-if="!bakingSheet && svgHashTable" v-show="false" :hashTable="svgHashTable" />
 			<SheetLive v-if="sheetDocument" ref="sheet"
 				:doc="sheetDocument"
@@ -32,6 +32,7 @@
 
 <script>
 	import url from "url";
+	import debounce from "lodash/debounce";
 
 	import "../utils.js";
 	import {animationDelay} from "../delay.js";
@@ -87,9 +88,8 @@
 				this.disableStore = true;
 				this.loadScoreFromURL(hash.query.score);
 			}
-			if (hash.query.nobake) 
+			if (hash.query.nobake)
 				this.bakingSheet = false;
-			
 		},
 
 
@@ -107,6 +107,12 @@
 
 				return this.loadScoreFile(file);
 			},
+
+
+			onScroll: debounce(function () {
+				//console.log("onScroll", this);
+				this.$refs.sheet.updatePageVisibility();
+			}, 60, {leading: true}),
 
 
 			async loadScoreFile (file) {
@@ -201,6 +207,8 @@
 
 					await this.$nextTick();
 					this.logTime("rendering finished");
+
+					this.$refs.sheet.updatePageVisibility();
 				}
 			},
 

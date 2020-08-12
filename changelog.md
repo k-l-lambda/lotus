@@ -24,6 +24,8 @@
 
 *	2020.8.12
 
+	+	sheet-live.vue: partial visible implemented.
+
 	+	lilyDocument.ts: added new global attributes of raggedBottom, raggedLastBottom.
 
 
