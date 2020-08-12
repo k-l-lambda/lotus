@@ -24,6 +24,8 @@
 
 *	2020.8.12
 
+	+	sheetDocument.ts: added verticalCrop option on fitPageViewbox method.
+
 	+	lilyDocument.ts: added new global attributes of printPageNumber.
 
 	+	sheet-live.vue: partial visible implemented.

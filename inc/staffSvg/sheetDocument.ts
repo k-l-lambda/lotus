@@ -319,30 +319,33 @@ class SheetDocument {
 	}
 
 
-	fitPageViewbox ({margin = 5} = {}) {
+	fitPageViewbox ({margin = 5, verticalCrop = false} = {}) {
 		if (!this.pages || !this.pages.length)
 			return;
 
 		const svgScale = this.pageSize.width / this.pages[0].viewBox.width;
 
-		for (const page of this.pages) {
+		this.pages.forEach((page, i) => {
 			const rects = page.rows.map(row => [row.x, row.x + row.width, row.y + row.top, row.y + row.bottom ]);
+
+			if (!rects.length)
+				return;
 
 			const left = Math.min(...rects.map(rect => rect[0]));
 			const right = Math.max(...rects.map(rect => rect[1]));
 			const top = Math.min(...rects.map(rect => rect[2]));
 			const bottom = Math.max(...rects.map(rect => rect[3]));
 
-			page.viewBox = {
-				x: left - margin,
-				y: top - margin,
-				width: right - left + margin * 2,
-				height: bottom - top + margin * 2,
-			};
+			const x = verticalCrop ? page.viewBox.x : left - margin;
+			const y = (verticalCrop && i === 0) ? page.viewBox.y : top - margin;
+			const width = verticalCrop ? page.viewBox.width : right - left + margin * 2;
+			const height = (verticalCrop && i === 0) ? bottom + margin - y : bottom - top + margin * 2;
+
+			page.viewBox = {x, y, width, height};
 
 			page.width = (page.viewBox.width * svgScale).toString();
 			page.height = (page.viewBox.height * svgScale).toString();
-		}
+		});
 	}
 };
 
