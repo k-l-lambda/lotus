@@ -192,6 +192,8 @@ export default class LilyDocument {
 			systemSpacing: paperPropertySchemeToken("system-system-spacing.basic-distance"),
 			topMarkupSpacing: paperPropertySchemeToken("top-markup-spacing.basic-distance"),
 			raggedLast: paperPropertySchemeToken("ragged-last"),
+			raggedBottom: paperPropertySchemeToken("ragged-bottom"),
+			raggedLastBottom: paperPropertySchemeToken("ragged-last-bottom"),
 		};
 
 		if (readonly)

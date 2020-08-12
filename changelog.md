@@ -22,6 +22,11 @@
 
 
 
+*	2020.8.12
+
+	+	lilyDocument.ts: added new global attributes of raggedBottom, raggedLastBottom.
+
+
 *	2020.8.10
 
 	+	lilyTerms.ts: added cache for ChordElement.absolutePitch to avoid call stack overflow.
