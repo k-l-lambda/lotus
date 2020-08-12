@@ -488,7 +488,9 @@
 					const rect = pageElem.getBoundingClientRect();
 
 					const page = this.shownPages[i];
-					Vue.set(page, "hidden", rect.top > window.innerHeight || rect.bottom < 0 || rect.left > window.innerWidth || rect.right < 0);
+					const hidden = rect.top > window.innerHeight || rect.bottom < 0 || rect.left > window.innerWidth || rect.right < 0;
+					if (!!page.hidden !== hidden)
+						Vue.set(page, "hidden", hidden);
 					//console.log("page:", i, rect, window.innerWidth, window.innerHeight, page.hidden);
 				});
 
