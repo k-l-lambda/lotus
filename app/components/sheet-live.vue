@@ -7,6 +7,7 @@
 			:height="page.height"
 			:viewBox="`${page.viewBox.x} ${page.viewBox.y} ${page.viewBox.width} ${page.viewBox.height}`"
 			:style="{['background-image']: backgroundImages && backgroundImages[i] && `url(${backgroundImages[i]})`}"
+			@DOMNodeInserted="onPageChanged"
 		>
 			<g v-if="!partialVisible || !page.hidden">
 				<g v-if="showMark" class="mark">
@@ -364,8 +365,12 @@
 
 
 			updateStatusMap () {
-				if (this.midiNotation)
-					this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => this.statusMap.set(id, elemById(id, this.$el).classList)));
+				if (this.midiNotation) {
+					this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => {
+						if (!this.statusMap.get(id))
+							this.statusMap.set(id, elemById(id, this.$el).classList);
+					}));
+				}
 			},
 
 
@@ -515,7 +520,14 @@
 					//console.log("page:", i, rect, window.innerWidth, window.innerHeight, page.hidden);
 				});
 
-				this.$nextTick(() => dirtyPages.forEach(page => this.updateStatusMapInPage(page)));
+				//this.$nextTick(() => dirtyPages.forEach(page => this.updateStatusMapInPage(page)));
+			},
+
+
+			onPageChanged (event) {
+				//console.log("onPageChanged:", event);
+				if (event.target && event.target.nodeName === "g")
+					this.updateStatusMapInPage(event.target);
 			},
 		},
 
