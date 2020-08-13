@@ -128,7 +128,7 @@
 		classList: new PlaceholderTokenList(),
 	});
 
-	const elemById = id => document.querySelector(`.token *[data-href='${id}']`) || placeholderElement();
+	const elemById = (id, parent = document) => parent.querySelector(`.token *[data-href='${id}']`) || placeholderElement();
 
 
 
@@ -365,7 +365,16 @@
 
 			updateStatusMap () {
 				if (this.midiNotation)
-					this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => this.statusMap.set(id, elemById(id).classList)));
+					this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => this.statusMap.set(id, elemById(id, this.$el).classList)));
+			},
+
+
+			updateStatusMapInPage (page) {
+				const tokens = page.querySelectorAll(".token[data-href]");
+				tokens.forEach(token => {
+					const id = token.dataset.href;
+					this.statusMap.set(id, token.classList);
+				});
 			},
 
 
@@ -492,15 +501,21 @@
 
 			updatePageVisibility () {
 				//console.log("pages:", this.$refs.pages);
+				const dirtyPages = [];
 				this.$refs.pages.forEach((pageElem, i) => {
 					const rect = pageElem.getBoundingClientRect();
 
 					const page = this.shownPages[i];
-					Vue.set(page, "hidden", rect.top > window.innerHeight || rect.bottom < 0 || rect.left > window.innerWidth || rect.right < 0);
+					const hidden = rect.top > window.innerHeight || rect.bottom < 0 || rect.left > window.innerWidth || rect.right < 0;
+					if (!!page.hidden !== hidden) {
+						Vue.set(page, "hidden", hidden);
+						if (!hidden)
+							dirtyPages.push(pageElem);
+					}
 					//console.log("page:", i, rect, window.innerWidth, window.innerHeight, page.hidden);
 				});
 
-				this.$nextTick(() => this.updateStatusMap());
+				this.$nextTick(() => dirtyPages.forEach(page => this.updateStatusMapInPage(page)));
 			},
 		},
 
