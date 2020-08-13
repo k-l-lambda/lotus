@@ -22,6 +22,11 @@
 
 
 
+*	2020.8.14
+
+	+	batchScoreMaker.ts: added argv of scorePostfix.
+
+
 *	2020.8.12
 
 	+	sheet-live.vue: refined status map updating in updatePageVisibility.

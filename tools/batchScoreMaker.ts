@@ -146,10 +146,12 @@ const main = async () => {
 
 		log(`${lilyFiles.size} lilypond files.`);
 
+		const scorePostfix = argv.scorePostfix || ".score";
+
 		for (const lyPath of lilyFiles) {
 			//console.log("lyPath:", lyPath);
 
-			const scorePath = lyPath.replace(/\.\w+$/, ".score.json");
+			const scorePath = lyPath.replace(/\.\w+$/, `${scorePostfix}.json`);
 
 			if (argv.skipExist) {
 				if (fs.existsSync(scorePath)) {
