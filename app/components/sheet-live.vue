@@ -370,7 +370,7 @@
 
 
 			updateStatusMapInPage (page) {
-				const tokens = page.querySelectorAll(".token[data-href]");
+				const tokens = page.querySelectorAll(".token *[data-href]");
 				tokens.forEach(token => {
 					const id = token.dataset.href;
 					this.statusMap.set(id, token.classList);
