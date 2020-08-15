@@ -464,8 +464,8 @@ const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 		staffTokens[index].push(token);
 	};
 
-	const localTokens = tokens.map(token => token.translate({x: rowX, y: rowY}));
-	stacks.forEach(stack => stack.translate({x: -rowX, y: -rowY}));
+	const localTokens = tokens.map(token => token.translate({x: -rowX, y: -rowY}));
+	stacks.forEach(stack => stack.translate({x: rowX, y: rowY}));
 	//logger.append("parseTokenRow.stacks", stacks);
 
 	parseChordsByStems(localTokens, logger);
