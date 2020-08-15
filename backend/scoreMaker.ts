@@ -60,6 +60,10 @@ const markupLily = (source: string, markup: string, lilyParser: GrammarParser): 
 		}
 	}
 
+	// copy LotusOption assignments
+	const assignments = docMarkup.root.entries.filter(term => term instanceof LilyTerms.Assignment && /^LotusOption\..+/.test(term.key.toString()));
+	assignments.forEach(assignment => docSource.root.sections.push(assignment.clone()));
+
 	return docSource.toString();
 };
 
@@ -333,6 +337,8 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 	logger.append("lilypond.log", engraving.logs);
 
 	const doc = new staffSvg.SheetDocument({pages});
+
+	staffSvg.postProcessSheetDocument(doc, lilyDocument);
 
 	const {attributes} = await argsGen.wait();
 	const meta = {

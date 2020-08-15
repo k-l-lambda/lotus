@@ -328,7 +328,7 @@ class SheetDocument {
 	}
 
 
-	fitPageViewbox ({margin = 5, verticalCrop = false} = {}) {
+	fitPageViewbox ({margin = 5, verticalCrop = false, pageTokens = false} = {}) {
 		if (!this.pages || !this.pages.length)
 			return;
 
@@ -337,7 +337,7 @@ class SheetDocument {
 		this.pages.forEach((page, i) => {
 			const rects = page.rows.map(row => [row.x, row.x + row.width, row.y + row.top, row.y + row.bottom ]);
 
-			const tokens = this.tokensInPage(i) || [];
+			const tokens = this.tokensInPage(i, {withPageTokens: pageTokens}) || [];
 			const tokenXs = tokens.map(token => token.x);
 			const tokenYs = tokens.map(token => token.y);
 			//console.debug("tokens:", i, tokens, tokenXs, tokenYs);

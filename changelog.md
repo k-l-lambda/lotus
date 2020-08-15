@@ -25,6 +25,8 @@
 
 *	2020.8.15
 
+	+	scoreMaker.ts: added postProcessSheetDocument in makeSheetNotation.
+
 	+	staffSvg: postProcessSheetDocument added.
 
 	+	lilyDocument.ts: append assignment table on globalAttributes.
