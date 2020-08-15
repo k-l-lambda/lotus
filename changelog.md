@@ -25,6 +25,8 @@
 
 *	2020.8.15
 
+	+	staffSvg: postProcessSheetDocument added.
+
 	+	lilyDocument.ts: append assignment table on globalAttributes.
 
 	+	sheetDocument.ts: refined fitPageViewbox by token coordinates.

@@ -1273,6 +1273,14 @@ export class Scheme extends BaseTerm {
 		if (this.exp instanceof SchemeFunction)
 			return this.exp.query(key);
 	}
+
+
+	get entries () {
+		if (this.exp instanceof BaseTerm)
+			return [this.exp];
+
+		return [];
+	}
 };
 
 
@@ -1314,6 +1322,11 @@ export class SchemeFunction extends BaseTerm {
 	get asList (): (boolean | string | BaseTerm)[] {
 		return [this.func, ...this.args];
 	}
+
+
+	get entries () {
+		return this.asList.filter(term => term instanceof BaseTerm) as BaseTerm[];
+	}
 };
 
 
@@ -1342,6 +1355,14 @@ export class SchemePointer extends BaseTerm {
 		return [
 			"'", "\b", ...content,
 		];
+	}
+
+
+	get entries () {
+		if (this.value instanceof BaseTerm)
+			return [this.value];
+
+		return [];
 	}
 };
 

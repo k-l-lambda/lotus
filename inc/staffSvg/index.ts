@@ -11,6 +11,8 @@ import TextSource from "../textSource";
 import LilyDocument from "../lilyParser/lilyDocument";
 // eslint-disable-next-line
 import {LilyDocumentAttributeReadOnly} from "../lilyParser/lilyDocument";
+// eslint-disable-next-line
+import {Scheme, SchemePair} from "../lilyParser/lilyTerms";
 
 
 
@@ -84,10 +86,30 @@ const createSheetDocumentFromSvgs = (svgs: string[], ly: string, lilyDocument: L
 	});
 	const hashTable = pages.reduce((sum, page) => ({...sum, ...page.hashTable}), {});
 
+	postProcessSheetDocument(doc, lilyDocument);
+
 	return {
 		doc,
 		hashTable,
 	};
+};
+
+
+const postProcessSheetDocument = (sheet: SheetDocument, lilyDocument: LilyDocument) => {
+	const attributes = lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
+
+	const schemeOption = scm => scm.findAll(SchemePair).reduce((table, item) => (table[item.left] = item.right, table), {});
+
+	const verticalCrop = attributes["LotusOption.verticalCrop"] as Scheme;
+	if (verticalCrop && verticalCrop.exp){
+		const options = schemeOption(verticalCrop);
+		//console.debug("options:", options);
+		sheet.fitPageViewbox({verticalCrop: true, ...options});
+	}
+
+	const fitPageViewbox = attributes["LotusOption.fitPageViewbox"] as Scheme;
+	if (fitPageViewbox && fitPageViewbox.exp)
+		sheet.fitPageViewbox(schemeOption(fitPageViewbox));
 };
 
 
@@ -97,6 +119,7 @@ export {
 	tokenizeElements,
 	organizeTokens,
 	parseSvgPage,
+	postProcessSheetDocument,
 	createSheetDocumentFromSvgs,
 	StaffToken,
 	SheetDocument,
