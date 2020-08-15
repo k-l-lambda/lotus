@@ -598,8 +598,8 @@ const clusterizeNotes = notes => {
 
 const assignNotationEventsIds = midiNotation => {
 	const events = midiNotation.notes.reduce((events, note) => {
-		events.push({ticks: note.startTick, subtype: "noteOn", pitch: note.pitch, ids: note.ids});
-		events.push({ticks: note.endTick, subtype: "noteOff", pitch: note.pitch, ids: note.ids});
+		events.push({ticks: note.startTick, subtype: "noteOn", channel: note.channel, pitch: note.pitch, ids: note.ids});
+		events.push({ticks: note.endTick, subtype: "noteOff", channel: note.channel, pitch: note.pitch, ids: note.ids});
 
 		return events;
 	}, []).sort((e1, e2) => e1.ticks - e2.ticks);
@@ -623,7 +623,7 @@ const assignNotationEventsIds = midiNotation => {
 			if (ne.ticks > ticks)
 				break;
 			else {
-				if (event.data.subtype === ne.subtype && event.data.noteNumber === ne.pitch) {
+				if (event.data.subtype === ne.subtype && event.data.channel === ne.channel && event.data.noteNumber === ne.pitch) {
 					event.data.ids = ne.ids;
 					break;
 				}

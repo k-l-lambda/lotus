@@ -25,6 +25,8 @@
 
 *	2020.8.15
 
+	+	staffNotation.ts: fixed channel matching in assignNotationEventsIds.
+
 	+	scoreMaker.ts: added postProcessSheetDocument in makeSheetNotation.
 
 	+	staffSvg: postProcessSheetDocument added.
