@@ -178,6 +178,9 @@ export default class LilyDocument {
 			},
 		};
 
+		const assignments = this.root.entries.filter(term => term instanceof Assignment) as Assignment[];
+		const assignmentTable = assignments.reduce((table, assign) => ((table[assign.key.toString()] = assign.query(assign.key)), table), {});
+
 		const attributes = {
 			staffSize,
 			midiTempo,
@@ -195,6 +198,7 @@ export default class LilyDocument {
 			raggedBottom: paperPropertySchemeToken("ragged-bottom"),
 			raggedLastBottom: paperPropertySchemeToken("ragged-last-bottom"),
 			printPageNumber: paperPropertySchemeToken("print-page-number"),
+			...assignmentTable,
 		};
 
 		if (readonly)

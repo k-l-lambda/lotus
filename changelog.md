@@ -1,6 +1,7 @@
 
 ## TODO
 	implicit notes matching with sheet document
+		try articulate.ly in MIDI output
 	staffNotation
 		remove note time from staff document
 	lilyInterpreter
@@ -9,7 +10,6 @@
 	lyrics hilighting
 		match chord with voice in the same staff
 	measure notes in Notation parsing
-	try articulate.ly in MIDI output
 	staffSvg
 		try create MIDI file pure by LilyParser
 		fix partial measures
@@ -24,6 +24,8 @@
 
 
 *	2020.8.15
+
+	+	lilyDocument.ts: append assignment table on globalAttributes.
 
 	+	sheetDocument.ts: refined fitPageViewbox by token coordinates.
 
