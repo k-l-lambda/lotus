@@ -25,6 +25,8 @@
 
 *	2020.8.15
 
+	+	sheet-live.vue: refined note status updating by SchedulePool.
+
 	+	staffNotation.ts: fixed channel matching in assignNotationEventsIds.
 
 	+	scoreMaker.ts: added postProcessSheetDocument in makeSheetNotation.

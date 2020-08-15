@@ -116,6 +116,7 @@
 	import SheetScheduler from "../../inc/staffSvg/scheduler.ts";
 	import {animationDelay} from "../delay.js";
 	import {SingleLock} from "../../inc/mutex.ts";
+	import SchedulePool from "../../inc/schedulePool.ts";
 
 	import SheetToken from "./sheet-token.vue";
 
@@ -249,11 +250,17 @@
 
 				return 1;
 			},
+
+
+			isPlaying () {
+				return this.midiPlayer && this.midiPlayer.isPlaying;
+			},
 		},
 
 
 		created () {
 			this.pageLoadingLock = new SingleLock();
+			this.schedulePool = new SchedulePool(performance);
 
 			this.preparePlayer();
 
@@ -266,7 +273,7 @@
 				this.$emit("midi", data, timestamp);
 
 				if (this.noteHighlight) {
-					const delay = Math.max(timestamp - performance.now(), 0);
+					/*const delay = Math.max(timestamp - performance.now(), 0);
 					setTimeout(() => {
 						//console.log("midi event:", data);
 						if (!this.midiPlayer.isPlaying)
@@ -285,7 +292,25 @@
 								break;
 							}
 						}
-					}, delay);
+					}, delay);*/
+					if (data.ids) {
+						let task = null;
+						const ids = data.ids;
+
+						switch (data.subtype) {
+						case "noteOn":
+							task = () => ids.forEach(id => this.statusMap.get(id).add("on"));
+
+							break;
+						case "noteOff":
+							task = () => ids.forEach(id => this.statusMap.get(id).remove("on"));
+
+							break;
+						}
+
+						if (task)
+							this.schedulePool.appendTask(timestamp, task);
+					}
 				}
 			},
 
@@ -560,6 +585,12 @@
 
 			cursorRowIndex (value) {
 				this.$emit("cursorRowShift", value);
+			},
+
+
+			isPlaying (value) {
+				if (!value)
+					this.schedulePool.clear();
 			},
 		},
 	};
