@@ -979,10 +979,17 @@ export class MusicBlock extends BaseTerm {
 	}*/
 
 
+	clearPitchCache () {
+		this.forEachTerm(ChordElement, pitch => pitch._absolutePitch = null);
+	}
+
+
 	updateChordAnchors () {
 		const chord = this.findFirst(Chord) as Chord;
 		if (chord)
 			chord._anchorPitch = chord._anchorPitch || this.anchorPitch;
+
+		this.clearPitchCache();
 	}
 
 
@@ -1635,11 +1642,16 @@ export class ChordElement extends BaseTerm {
 	_absolutePitch?: ChordElement;
 
 
-	static from ({phonet, alters, octave, options = {}}): ChordElement {
+	static from ({phonet, alters = "", octave, options = {}}): ChordElement {
 		const octaveString = octave ? Array(Math.abs(octave)).fill(octave > 0 ? "'" : ",").join("") : "";
 		const pitch = phonet + (alters || "") + octaveString;
 
 		return new ChordElement({pitch, options: {...options, proto: "_PLAIN"}});
+	}
+
+
+	static get default (): ChordElement {
+		return ChordElement.from({phonet: "c", octave: 0});
 	}
 
 
@@ -1707,7 +1719,7 @@ export class ChordElement extends BaseTerm {
 		if (this._parent)
 			return this._parent.anchorPitch;
 
-		return this;
+		return ChordElement.default;
 	}
 
 

@@ -25,6 +25,8 @@
 
 *	2020.8.15
 
+	+	lilyTerms.ts: fixed absolute cache issue by clear pitch cache in updateChordAnchors.
+
 	+	sheet-live.vue: refined note status updating by SchedulePool.
 
 	+	staffNotation.ts: fixed channel matching in assignNotationEventsIds.
