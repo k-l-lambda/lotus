@@ -20,7 +20,7 @@ export default class SchedulePool {
 
 
 	clear () {
-		Object.values(this.handlers).forEach(handle => clearTimeout(handle as number));
+		Object.values(this.handlers).forEach(handle => clearTimeout(handle as NodeJS.Timeout));
 
 		this.tasks = {};
 		this.handlers = {};
