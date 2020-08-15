@@ -1,28 +1,9 @@
 
 import {CM_TO_PX} from "../constants";
 
-
-
 // eslint-disable-next-line
-declare class StaffToken {
-	row?: number;
-	measure?: number;
+import StaffToken from "./staffToken";
 
-	x: number;
-	y: number;
-	rx: number;
-	ry: number;
-	endX?: number;
-	scale?: number;
-
-	hash: string;
-	href?: string;
-	source: string;
-	symbol: string;
-	symbols?: Set<string>;
-
-	on?: boolean;
-};
 
 
 interface StaffMarking {
@@ -34,7 +15,7 @@ interface StaffMarking {
 };
 
 
-interface SheetMeasures {
+interface SheetMeasure {
 	index: number;
 	tokens: StaffToken[];
 	headX: number;
@@ -50,7 +31,7 @@ interface SheetMeasures {
 
 
 interface SheetStaff {
-	measures: SheetMeasures[];
+	measures: SheetMeasure[];
 	tokens: StaffToken[];
 
 	markings: StaffMarking[];
@@ -66,7 +47,7 @@ interface SheetStaff {
 };
 
 
-interface SheetRows {
+interface SheetSystem {
 	index?: number;
 	pageIndex?: number;
 	measureIndices?: [number, number][];	// [end_x, index]
@@ -91,7 +72,7 @@ interface SheetPage {
 		height: number,
 	};
 
-	rows: SheetRows[];
+	rows: SheetSystem[];
 	tokens: StaffToken[];
 
 	hidden?: boolean;
@@ -319,6 +300,34 @@ class SheetDocument {
 	}
 
 
+	tokensInRow (rowIndex: number): StaffToken[] {
+		const row = this.rows[rowIndex];
+		if (!row)
+			return null;
+
+		return row.staves.reduce((tokens, staff) => {
+			const translate = token => token.translate({x: staff.x, y: staff.y});
+
+			tokens.push(...staff.tokens.map(translate));
+			staff.measures.forEach(measure => tokens.push(...measure.tokens.map(translate)));
+
+			return tokens;
+		}, [...row.tokens]);
+	}
+
+
+	tokensInPage (pageIndex: number, {withPageTokens = false} = {}): StaffToken[] {
+		const page = this.pages[pageIndex];
+		if (!page)
+			return null;
+
+		return page.rows.reduce((tokens, row) => {
+			tokens.push(...this.tokensInRow(row.index).map(token => token.translate({x: row.x, y: row.y})));
+			return tokens;
+		}, withPageTokens ? [...page.tokens] : []);
+	}
+
+
 	fitPageViewbox ({margin = 5, verticalCrop = false} = {}) {
 		if (!this.pages || !this.pages.length)
 			return;
@@ -328,13 +337,18 @@ class SheetDocument {
 		this.pages.forEach((page, i) => {
 			const rects = page.rows.map(row => [row.x, row.x + row.width, row.y + row.top, row.y + row.bottom ]);
 
+			const tokens = this.tokensInPage(i) || [];
+			const tokenXs = tokens.map(token => token.x);
+			const tokenYs = tokens.map(token => token.y);
+			//console.debug("tokens:", i, tokens, tokenXs, tokenYs);
+
 			if (!rects.length)
 				return;
 
-			const left = Math.min(...rects.map(rect => rect[0]));
-			const right = Math.max(...rects.map(rect => rect[1]));
-			const top = Math.min(...rects.map(rect => rect[2]));
-			const bottom = Math.max(...rects.map(rect => rect[3]));
+			const left = Math.min(...rects.map(rect => rect[0]), ...tokenXs);
+			const right = Math.max(...rects.map(rect => rect[1]), ...tokenXs);
+			const top = Math.min(...rects.map(rect => rect[2]), ...tokenYs);
+			const bottom = Math.max(...rects.map(rect => rect[3]), ...tokenYs);
 
 			const x = verticalCrop ? page.viewBox.x : left - margin;
 			const y = (verticalCrop && i === 0) ? page.viewBox.y : top - margin;

@@ -1,5 +1,6 @@
 
 ## TODO
+	implicit notes matching with sheet document
 	staffNotation
 		remove note time from staff document
 	lilyInterpreter
@@ -20,6 +21,11 @@
 	source editor
 		cursor position column
 
+
+
+*	2020.8.15
+
+	+	sheetDocument.ts: refined fitPageViewbox by token coordinates.
 
 
 *	2020.8.14
