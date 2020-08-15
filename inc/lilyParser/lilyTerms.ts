@@ -1719,7 +1719,7 @@ export class ChordElement extends BaseTerm {
 		if (this._parent)
 			return this._parent.anchorPitch;
 
-		return ChordElement.default;
+		return ChordElement.from({phonet: this.phonet, octave: 0});
 	}
 
 
