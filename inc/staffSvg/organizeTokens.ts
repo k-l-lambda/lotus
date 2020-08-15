@@ -465,7 +465,7 @@ const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 	};
 
 	const localTokens = tokens.map(token => token.translate({x: rowX, y: rowY}));
-	stacks.forEach(stack => stack.translate({x: rowX, y: rowY}));
+	stacks.forEach(stack => stack.translate({x: -rowX, y: -rowY}));
 	//logger.append("parseTokenRow.stacks", stacks);
 
 	parseChordsByStems(localTokens, logger);
@@ -518,7 +518,7 @@ const isStaffToken = token => token.is("STAFF_LINE") || token.is("MEASURE_SEPARA
 
 
 const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
-	const localTokens = tokens.map(token => token.translate({y}));
+	const localTokens = tokens.map(token => token.translate({y: -y}));
 	const notes = localTokens.filter(token => token.is("NOTE"));
 	//logger.append("parseTokenStaff.localTokens", localTokens);
 

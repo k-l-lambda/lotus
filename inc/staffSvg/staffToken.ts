@@ -44,7 +44,7 @@ export default class StaffToken {
 	}
 
 
-	is (symbol) {
+	is (symbol): boolean {
 		const queries = symbol.split(" ");
 		for (const query of queries) {
 			if (!this.symbols.has(query))
@@ -67,28 +67,28 @@ export default class StaffToken {
 	}
 
 
-	translate (options) {
+	translate (options: {x?: number, y?: number}): StaffToken {
 		const data : any = {...this};
 		if (options.x) {
-			data.x -= options.x;
-			data.rx -= options.x;
+			data.x += options.x;
+			data.rx += options.x;
 		}
 		if (options.y) {
-			data.y -= options.y;
-			data.ry -= options.y;
+			data.y += options.y;
+			data.ry += options.y;
 		}
 
 		return new StaffToken(data);
 	}
 
 
-	get logicX () {
+	get logicX (): number {
 		return Number.isFinite(this.stemX) ? this.stemX : this.x;
 	}
 
 
 	// to assist staves splitting
-	get logicOffsetY () {
+	get logicOffsetY (): number {
 		if (this.is("OCTAVE A"))
 			return 3;
 
@@ -113,17 +113,17 @@ export default class StaffToken {
 	}
 
 
-	get logicY () {
+	get logicY (): number {
 		return this.y + this.logicOffsetY;
 	}
 
 
-	get classes () {
+	get classes (): string {
 		return Array.from(this.symbols).map((s: string) => s.toLowerCase().replace(/_/g, "-")).join(" ");
 	}
 
 
-	get alterValue () {
+	get alterValue (): number {
 		if (this.is("NATURAL"))
 			return 0;
 
@@ -143,7 +143,7 @@ export default class StaffToken {
 	}
 
 
-	get clefValue () {
+	get clefValue (): number {
 		if (this.is("TREBLE"))
 			return 4;
 
@@ -157,7 +157,7 @@ export default class StaffToken {
 	}
 
 
-	get octaveShiftValue () {
+	get octaveShiftValue (): number {
 		if (this.is("A"))
 			return this.is("_15") ? -2 : -1;
 
@@ -171,7 +171,7 @@ export default class StaffToken {
 	}
 
 
-	get timeSignatureValue () {
+	get timeSignatureValue (): number {
 		if (this.is("CUT_C"))
 			return 2;
 
@@ -210,7 +210,7 @@ export default class StaffToken {
 	}
 
 
-	get fontChar () {
+	get fontChar (): string {
 		if (this.is("NOTEHEAD")) {
 			if (this.is("WHOLE"))
 				return "\u0141";
@@ -226,7 +226,7 @@ export default class StaffToken {
 	}
 
 
-	get noteType () {
+	get noteType (): number {
 		if (this.is("WHOLE"))
 			return 0;
 		else if (this.is("HALF"))
@@ -238,12 +238,12 @@ export default class StaffToken {
 	}
 
 
-	get musicFontNoteOffset () {
+	get musicFontNoteOffset (): number {
 		return constants.MUSIC_FONT_NOTE_OFFSETS[this.noteType];
 	}
 
 
-	stemAttached ({x, y, href}) {
+	stemAttached ({x, y, href}): boolean {
 		if (!this.is("NOTE_STEM"))
 			return null;
 
