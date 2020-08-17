@@ -26,6 +26,8 @@
 
 *	2020.8.17
 
+	+	staffSvg: fixed note tied marking.
+
 	+	organizeTokens.ts: refined parseTokenRow by staff lines.
 
 

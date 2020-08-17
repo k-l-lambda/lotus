@@ -563,7 +563,7 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 	});
 	//logger.append("measureRanges:", {measureRanges, accs});
 
-	// mark tied notes
+	/*// mark tied notes
 	const ties = localTokens.filter(token => token.is("SLUR") && token.source && (token.source[0] === "~" || token.source[1] === "~"));
 	//logger.append("parseTokenStaff.ties", ties);
 
@@ -603,7 +603,7 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 			//logger.append("parseTokenStaff.tiedNote", {nearest, tie});
 		else
 			logger.append("parseTokenStaff.omitTie", {tie});
-	});
+	});*/
 
 	const measures = measureRanges.map((range, i) => {
 		const left = i > 0 ? measureRanges[i - 1].noteRange.end : -Infinity;

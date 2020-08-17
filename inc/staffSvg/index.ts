@@ -58,7 +58,10 @@ const parseSvgPage = (dom, source: string | TextSource, {
 				return tieLocations[`${line}:${start}`];
 			}
 		});
-		tieTokens.forEach(token => token.addSymbol("TIE"));
+		tieTokens.forEach(token => {
+			//token.addSymbol("TIE");
+			token.tied = true;
+		});
 		//logger.append("tieTokens:", tieTokens.map(token => token.href));
 	}
 
