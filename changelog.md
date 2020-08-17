@@ -24,6 +24,11 @@
 
 
 
+*	2020.8.17
+
+	+	organizeTokens.ts: refined parseTokenRow by staff lines.
+
+
 *	2020.8.15
 
 	+	lilyTerms.ts: fixed absolute cache issue by clear pitch cache in updateChordAnchors.

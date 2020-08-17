@@ -357,7 +357,8 @@ const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 	const staffYs = Array.from(separatorYs)
 		.filter(y => staffLines[y] || staffLines[y + POS_PRECISION])
 		.map(y => staffLines[y] ? y : y + POS_PRECISION).map(y => y + 2)
-		.sort((y1, y2) => y1 - y2);
+		.sort((y1, y2) => y1 - y2)
+		.filter(y => staffLines[y - 2] && staffLines[y] && staffLines[y + 2]);
 	//logger.append("parseTokenRow.staffYs", staffYs);
 
 	const additionalLines = tokens.filter(token => token.is("ADDITIONAL_LINE")).sort((l1, l2) => l1.y - l2.y);
@@ -367,10 +368,10 @@ const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 	}, new Set());
 	//logger.append("parseTokenRow.additionalLinesYs", Array.from(additionalLinesYs));
 
-	for (const y of staffYs) {
+	/*for (const y of staffYs) {
 		console.assert(staffLines[y - 2] && staffLines[y] && staffLines[y + 2],
 			"no corresponding staff lines for separator", y - 2, Object.keys(staffLines));
-	}
+	}*/
 
 	const rowY = staffYs[0] - 2;
 	const rowX = staffLines[rowY] && staffLines[rowY].rx;
