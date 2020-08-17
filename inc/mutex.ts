@@ -10,7 +10,7 @@ class SingleLock<T = void> {
 	}
 
 
-	get locked () {
+	get locked (): boolean {
 		return !!this.resolve;
 	}
 
