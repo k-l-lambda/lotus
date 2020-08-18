@@ -361,6 +361,16 @@ class SheetDocument {
 			page.height = (page.viewBox.height * svgScale).toString();
 		});
 	}
+
+
+	getNoteHeads (): StaffToken[] {
+		return this.rows.reduce((tokens, row) => {
+			row.staves.forEach(staff => staff.measures.forEach(measure =>
+				tokens.push(...measure.tokens.filter(token => token.is("NOTEHEAD")))));
+
+			return tokens;
+		}, []);
+	}
 };
 
 

@@ -186,6 +186,7 @@ export class MusicTrack {
 			endTick: chord._tick + chord.durationMagnitude,
 			pitch: pitch.absolutePitchValue,
 			id: pitch.href,
+			tied: pitch._tied,
 		}))));
 	}
 };

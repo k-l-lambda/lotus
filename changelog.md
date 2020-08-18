@@ -26,6 +26,8 @@
 
 *	2020.8.18
 
+	+	sheetDocument.ts: SheetDocument.getNoteHeads added.
+
 	+	lilyInterpreter.ts: LilyInterpreter.getNotation added.
 	+	lilyInterpreter.ts: MusicTrack.getNotationNotes added.
 
