@@ -89,6 +89,8 @@ const main = async (inputDir?: string) => {
 		if (++i % 20 === 0)
 			await emptyCache();
 	}
+
+	console.log("Done.");
 };
 
 
