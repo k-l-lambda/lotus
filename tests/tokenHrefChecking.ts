@@ -41,13 +41,18 @@ const checkFile = async filename => {
 	const missed = [];
 
 	notation.notes.forEach((note: any) => {
-		if (hrefSet.has(note.id))
+		if (hrefSet.has(note.id)) {
 			matched.push(note.id);
+			hrefSet.delete(note.id);
+		}
 		else {
 			const [line, c1] = note.id.match(/\d+/g).map(Number);
 			const loc = hrefLocs.find(loc => loc[0] === line && loc[1] === c1);
-			if (loc)
-				partialMatched.push([note.id, loc.join(":")]);
+			if (loc) {
+				const href = loc.join(":");
+				partialMatched.push([note.id, href]);
+				hrefSet.delete(href);
+			}
 			else {
 				/*const loc = hrefLocs.find(loc => loc[0] === line && loc[1] <= c2 && loc[2] >= c1);
 				if (loc)
@@ -68,6 +73,9 @@ const checkFile = async filename => {
 	//	console.log("crossed:", crossed);
 	if (missed.length)
 		console.warn("missed:", missed);
+
+	if (hrefSet.size)
+		console.warn("omit:", Array.from(hrefSet));
 };
 
 

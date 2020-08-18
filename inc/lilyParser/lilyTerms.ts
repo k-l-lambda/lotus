@@ -944,15 +944,20 @@ export class MusicBlock extends BaseTerm {
 
 
 	get notes (): Chord[] {
-		const notes = this.body.filter(term => term instanceof Chord && !term.completeTied && !term.isRest) as Chord[];
+		const notes = this.body.filter(term => term instanceof Chord && !term.isRest) as Chord[];
 		this.forEachTopTerm(MusicBlock, block => notes.push(...block.notes));
 
 		return notes;
 	}
 
 
+	get sonicNotes (): Chord[] {
+		return this.notes.filter(note => !note.completeTied);
+	}
+
+
 	get noteTicks (): number[] {
-		const ticks = this.notes.map(note => note._tick);
+		const ticks = this.sonicNotes.map(note => note._tick);
 		return Array.from(new Set(ticks)).sort((t1, t2) => t1 - t2);
 	}
 

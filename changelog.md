@@ -27,6 +27,7 @@
 
 *	2020.8.18
 
+	+	tokenHrefChecking.ts: omit href checking added.
 	+	tokenHrefChecking.ts: note collision checking added.
 
 	+	tests/tokenHrefChecking.ts created.
