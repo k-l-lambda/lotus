@@ -12,6 +12,8 @@ import {
 } from "./lilyTerms";
 // eslint-disable-next-line
 import LilyDocument from "./lilyDocument";
+// eslint-disable-next-line
+import {MusicNotation} from "@k-l-lambda/web-widgets";
 
 
 interface DurationContextStackStatus {
@@ -173,6 +175,18 @@ export class MusicTrack {
 		const newBlock = new MusicBlock({body: terms.map(term => term.clone())});
 
 		return MusicTrack.fromBlockAnchor(newBlock, context.pitch);
+	}
+
+
+	getNotationNotes (): MusicNotation.Note[] {
+		new StaffContext(this).execute(this.music);
+
+		return [].concat(...this.block.notes.map(chord => chord.pitchElements.map(pitch => ({
+			startTick: chord._tick,
+			endTick: chord._tick + chord.durationMagnitude,
+			pitch: pitch.absolutePitchValue,
+			id: pitch.href,
+		}))));
 	}
 };
 

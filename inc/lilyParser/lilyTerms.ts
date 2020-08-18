@@ -198,6 +198,14 @@ export class BaseTerm {
 	}
 
 
+	get href (): string {
+		if (this._location)
+			return `${this._location.lines[0]}:${this._location.columns[0]}:${this._location.columns[1]}`;
+
+		return null;
+	}
+
+
 	getField (key): any {
 		console.assert(!!this.entries, "[BaseTerm.getField] term's entries is null:", this);
 
@@ -1754,7 +1762,7 @@ export class ChordElement extends BaseTerm {
 	}
 
 
-	get abolutePitchValue (): number {
+	get absolutePitchValue (): number {
 		return this.absolutePitch.pitchValue;
 	}
 };

@@ -1050,12 +1050,13 @@
 			},
 
 
-			async testInterperter () {
+			async testInterperter ({flatten = false} = {}) {
 				await this.updateLilyDocument();
 
 				const interperter = this.lilyDocument.interpret();
 
-				interperter.musicTracks.forEach(track => track.flatten({spreadRepeats: true}));
+				if (flatten)
+					interperter.musicTracks.forEach(track => track.flatten({spreadRepeats: true}));
 				const newDoc = interperter.toDocument();
 
 				console.log("new doc:", interperter, newDoc);
