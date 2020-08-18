@@ -73,7 +73,7 @@ const main = async (inputDir?: string) => {
 		await checkFile(lyFile);
 
 		if (++i % 20 === 0)
-			emptyCache();
+			await emptyCache();
 	}
 };
 
