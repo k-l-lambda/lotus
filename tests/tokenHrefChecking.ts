@@ -8,6 +8,7 @@ import {engraveSvg} from "../backend/lilyCommands";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import {LilyDocument} from "../inc/lilyParser";
 import * as staffSvg from "../inc/staffSvg";
+import walkDir from "../backend/walkDir";
 // eslint-disable-next-line
 import {LilyDocumentAttributeReadOnly} from "../inc/lilyParser/lilyDocument.js";
 
@@ -64,8 +65,11 @@ const checkFile = async filename => {
 };
 
 
-const main = async (filename?: string) => {
-	await checkFile(filename);
+const main = async (inputDir?: string) => {
+	const lyFiles = walkDir(inputDir, /\.ly$/, {recursive: true});
+
+	for (const lyFile of lyFiles)
+		await checkFile(lyFile);
 };
 
 
