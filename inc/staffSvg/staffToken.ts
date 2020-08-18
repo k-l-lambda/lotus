@@ -212,6 +212,9 @@ export default class StaffToken {
 
 	get fontChar (): string {
 		if (this.is("NOTEHEAD")) {
+			if (this.is("DIAMOND"))
+				return "\u014f";
+
 			if (this.is("WHOLE"))
 				return "\u0141";
 			else if (this.is("HALF"))
@@ -227,6 +230,9 @@ export default class StaffToken {
 
 
 	get noteType (): number {
+		if (this.is("DIAMOND"))
+			return 4;
+
 		if (this.is("WHOLE"))
 			return 0;
 		else if (this.is("HALF"))

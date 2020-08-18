@@ -27,6 +27,8 @@
 
 *	2020.8.18
 
+	+	staffSvg: added note head type of diamond.
+
 	+	tokenHrefChecking.ts: omit href checking added.
 	+	tokenHrefChecking.ts: note collision checking added.
 
