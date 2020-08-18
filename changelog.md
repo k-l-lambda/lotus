@@ -26,6 +26,7 @@
 
 *	2020.8.18
 
+	+	lilyInterpreter.ts: LilyInterpreter.getNotation added.
 	+	lilyInterpreter.ts: MusicTrack.getNotationNotes added.
 
 	+	lilyTerms.ts: pitch value property on ChordElement added.

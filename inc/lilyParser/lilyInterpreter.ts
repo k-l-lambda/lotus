@@ -608,4 +608,14 @@ export default class LilyInterpreter {
 	addIncludeFile (filename: string) {
 		this.includeFiles.add(filename);
 	}
+
+
+	getNotation (): MusicNotation.NotationData {
+		const tracks = this.musicTracks.map((track, i) => track.getNotationNotes().map(note => ({track: i, ...note})));
+		const notes = [].concat(...tracks).sort((n1, n2) => n1.startTick - n2.startTick);
+
+		return {
+			notes,
+		};
+	}
 };
