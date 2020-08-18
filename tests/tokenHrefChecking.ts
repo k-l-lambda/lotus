@@ -36,30 +36,36 @@ const checkFile = async filename => {
 
 	const matched = [];
 	const partialMatched = [];
-	const crossed = [];
+	//const crossed = [];
+	const collided = [];
 	const missed = [];
 
 	notation.notes.forEach((note: any) => {
 		if (hrefSet.has(note.id))
 			matched.push(note.id);
 		else {
-			const [line, c1, c2] = note.id.match(/\d+/g).map(Number);
+			const [line, c1] = note.id.match(/\d+/g).map(Number);
 			const loc = hrefLocs.find(loc => loc[0] === line && loc[1] === c1);
 			if (loc)
 				partialMatched.push([note.id, loc.join(":")]);
 			else {
-				const loc = hrefLocs.find(loc => loc[0] === line && loc[1] <= c2 && loc[2] >= c1);
+				/*const loc = hrefLocs.find(loc => loc[0] === line && loc[1] <= c2 && loc[2] >= c1);
 				if (loc)
 					crossed.push([note.id, loc.join(":")]);
+				else
+					missed.push(note.id);*/
+				const collidedNote = notation.notes.find(n => n !== note && n.startTick === note.startTick && n.pitch === note.pitch);
+				if (collidedNote)
+					collided.push(note.id);
 				else
 					missed.push(note.id);
 			}
 		}
 	});
 
-	console.log(`${filename}:`, `${matched.length} matched`, `${partialMatched.length} partial matched`);
-	if (crossed.length)
-		console.log("crossed:", crossed);
+	console.log(`${filename}:`, `${matched.length} matched`, `${partialMatched.length} partial matched`, `${collided.length} collided.`);
+	//if (crossed.length)
+	//	console.log("crossed:", crossed);
 	if (missed.length)
 		console.warn("missed:", missed);
 };

@@ -27,6 +27,8 @@
 
 *	2020.8.18
 
+	+	tokenHrefChecking.ts: note collision checking added.
+
 	+	tests/tokenHrefChecking.ts created.
 
 	+	sheetDocument.ts: SheetDocument.getNoteHeads added.
