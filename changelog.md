@@ -26,6 +26,8 @@
 
 *	2020.8.18
 
+	+	lilyTerms.ts: pitch value property on ChordElement added.
+
 	+	lilyParser/idioms.ts: created.
 
 

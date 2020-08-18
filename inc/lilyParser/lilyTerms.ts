@@ -1743,6 +1743,20 @@ export class ChordElement extends BaseTerm {
 
 		return anchor.octave + shift + this.octave;
 	}
+
+
+	get pitchValue (): number {
+		const phonetValue = idioms.PHONET_VALUES[this.phonet];
+		console.assert(Number.isInteger(phonetValue), "invalid phonet:", this.phonet);
+		console.assert(!this.alters || idioms.ALTER_VALUES[this.alters], "invalid alters:", this.alters);
+
+		return 48 + this.octave * 12 + phonetValue + (idioms.ALTER_VALUES[this.alters] || 0);
+	}
+
+
+	get abolutePitchValue (): number {
+		return this.absolutePitch.pitchValue;
+	}
 };
 
 

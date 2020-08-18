@@ -6,6 +6,10 @@ const PHONETS_ALIAS = {
 
 const phonetDifferToShift = differ => differ > 3 ? -1 : (differ < -3 ? 1 : 0);
 
+const PHONET_VALUES = {
+	c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11,
+};
+
 
 const SHARP_ALTERS = [
 	"is", "d", "s", "iss", "k", "sharp",
@@ -38,5 +42,6 @@ export {
 	PHONETS,
 	PHONETS_ALIAS,
 	phonetDifferToShift,
+	PHONET_VALUES,
 	ALTER_VALUES,
 };
