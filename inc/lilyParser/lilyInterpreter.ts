@@ -383,6 +383,9 @@ class StaffContext {
 		else if (term instanceof LyricMode) {
 			// ignore lyric mode
 		}
+		else if (term instanceof Command && term.cmd === "lyricsto") {
+			// ignore lyric mode
+		}
 		else if (term instanceof ChordMode) {
 			// ignore chord mode
 		}
