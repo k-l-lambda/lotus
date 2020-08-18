@@ -4,7 +4,7 @@ import {DOMParser} from "xmldom";
 
 import "../env.js";
 
-import {engraveSvg} from "../backend/lilyCommands";
+import {engraveSvg, emptyCache} from "../backend/lilyCommands";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import {LilyDocument} from "../inc/lilyParser";
 import * as staffSvg from "../inc/staffSvg";
@@ -29,7 +29,7 @@ const checkFile = async filename => {
 	const noteheads = doc.getNoteHeads();
 	const hrefs = noteheads.map(nh => nh.href);
 	const hrefSet = new Set(hrefs);
-	const hrefLocs = hrefs.map(href => href.match(/\d+/g));
+	const hrefLocs = hrefs.map(href => href.match(/\d+/g).map(Number));
 
 	const interperter = lilyDocument.interpret();
 	const notation = interperter.getNotation();
@@ -43,7 +43,7 @@ const checkFile = async filename => {
 		if (hrefSet.has(note.id))
 			matched.push(note.id);
 		else {
-			const [line, c1, c2] = note.id.match(/\d+/g);
+			const [line, c1, c2] = note.id.match(/\d+/g).map(Number);
 			const loc = hrefLocs.find(loc => loc[0] === line && loc[1] === c1);
 			if (loc)
 				partialMatched.push([note.id, loc.join(":")]);
@@ -68,8 +68,13 @@ const checkFile = async filename => {
 const main = async (inputDir?: string) => {
 	const lyFiles = walkDir(inputDir, /\.ly$/, {recursive: true});
 
-	for (const lyFile of lyFiles)
+	let i = 0;
+	for (const lyFile of lyFiles) {
 		await checkFile(lyFile);
+
+		if (++i % 20 === 0)
+			emptyCache();
+	}
 };
 
 
