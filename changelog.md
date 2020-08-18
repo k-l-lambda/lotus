@@ -1,5 +1,6 @@
 
 ## TODO
+	Baking score bundle size reduction
 	MIDI notation from LilyDocument, MIDI matching by LilyInterpreter
 	implicit notes matching with sheet document
 		try articulate.ly in MIDI output
@@ -25,6 +26,8 @@
 
 
 *	2020.8.18
+
+	+	tests/tokenHrefChecking.ts created.
 
 	+	sheetDocument.ts: SheetDocument.getNoteHeads added.
 

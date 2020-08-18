@@ -9,7 +9,6 @@ import {xml2ly, engraveSvg} from "./lilyCommands";
 import {LilyDocument, replaceSourceToken, LilyTerms} from "../inc/lilyParser";
 import * as staffSvg from "../inc/staffSvg";
 import {SingleLock} from "../inc/mutex";
-//import TextSource from "../inc/textSource";
 // eslint-disable-next-line
 import LogRecorder from "../inc/logRecorder";
 // eslint-disable-next-line
@@ -309,7 +308,6 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 
 			const attributes = lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
 
-			//const text = new TextSource(source);
 			//const tieLocations = lilyDocument.getTiedNoteLocations(text)
 			const tieLocations = lilyDocument.getTiedNoteLocations2()
 				.reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
