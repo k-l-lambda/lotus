@@ -2,6 +2,7 @@
 import _ from "lodash";
 
 import {WHOLE_DURATION_MAGNITUDE, FractionNumber, lcmMulti} from "./utils";
+import * as idioms from "./idioms";
 
 
 
@@ -50,14 +51,6 @@ const cc = <T>(arrays: T[][]): T[] => [].concat(...arrays);
 
 const isNullItem = item => item === "" || item === undefined || item === null || (Array.isArray(item) && !item.length);
 const compact = items => cc(items.map((item, index) => isNullItem(item) ? [] : [index > 0 ? "\b" : null, item]));
-
-
-const PHONETS = "cdefgab";
-const PHONETS_ALIAS = {
-	h: "b",
-};
-
-const phonetDifferToShift = differ => differ > 3 ? -1 : (differ < -3 ? 1 : 0);
 
 
 export const getDurationSubdivider = (term: BaseTerm): number => {
@@ -1589,7 +1582,7 @@ export class Chord extends MusicEvent {
 
 	shiftAnchor (newAnchor: ChordElement) {
 		const _location = this.basePitch._location;
-		const shift = phonetDifferToShift(this.basePitch.phonetStep - newAnchor.phonetStep);
+		const shift = idioms.phonetDifferToShift(this.basePitch.phonetStep - newAnchor.phonetStep);
 		const relativeOctave = this.basePitch.absoluteOctave(this.anchorPitch) - newAnchor.octave - shift;
 		//console.log("_location:", _location);
 
@@ -1691,12 +1684,12 @@ export class ChordElement extends BaseTerm {
 	get phonet (): string {
 		const ph = this.pitch.substr(0, 1);
 
-		return PHONETS_ALIAS[ph] || ph;
+		return idioms.PHONETS_ALIAS[ph] || ph;
 	}
 
 
 	get phonetStep (): number {
-		return PHONETS.indexOf(this.phonet);
+		return idioms.PHONETS.indexOf(this.phonet);
 	}
 
 
@@ -1746,7 +1739,7 @@ export class ChordElement extends BaseTerm {
 			return anchor.octave;
 
 		const phonetDiffer = this.phonetStep - anchor.phonetStep;
-		const shift = phonetDifferToShift(phonetDiffer);
+		const shift = idioms.phonetDifferToShift(phonetDiffer);
 
 		return anchor.octave + shift + this.octave;
 	}

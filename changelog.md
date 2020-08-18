@@ -24,6 +24,11 @@
 
 
 
+*	2020.8.18
+
+	+	lilyParser/idioms.ts: created.
+
+
 *	2020.8.17
 
 	+	staffSvg: fixed note tied marking.
