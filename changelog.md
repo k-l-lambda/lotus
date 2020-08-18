@@ -27,6 +27,8 @@
 
 *	2020.8.18
 
+	+	lilyDocument.ts: markup method of mergeContinuousEmptyAfterGraces added.
+
 	+	staffSvg: added note head type of diamond.
 
 	+	tokenHrefChecking.ts: omit href checking added.

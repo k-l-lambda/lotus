@@ -5,10 +5,9 @@ import TextSource from "../textSource";
 import {LILY_STAFF_SIZE_DEFAULT} from "../constants";
 import {
 	parseRaw,
-	BaseTerm, Assignment, LiteralString, Command, Variable, MarkupCommand, Grace, Include, Version, Block, InlineBlock,
+	BaseTerm, Assignment, LiteralString, Command, Variable, MarkupCommand, Grace, AfterGrace, Include, Version, Block, InlineBlock,
 	Scheme, Chord, BriefChord, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive, ChordElement, MusicEvent,
-	Comment,
-	SchemePointer,
+	SchemePointer, Comment,
 } from "./lilyTerms";
 import LilyInterpreter from "./lilyInterpreter";
 
@@ -417,6 +416,54 @@ export default class LilyDocument {
 				}
 
 				block.body[startIndex].args[0] = mainBody;
+				block.body.splice(startIndex + 1, group.count - 1);
+
+				offset -= group.count - 1;
+			});
+		});
+	}
+
+
+	mergeContinuousEmptyAfterGraces () {
+		const isEmptyAfterGrace = term => term instanceof AfterGrace && term.args[0] instanceof MusicBlock && term.args[0].body.length === 0;
+		const isGraceInnerTerm = term => isEmptyAfterGrace(term) || term instanceof Divide || term instanceof PostEvent;
+
+		this.root.forEachTerm(MusicBlock, block => {
+			const groups = [];
+			let currentGroup = null;
+
+			block.body.forEach((term, i) => {
+				if (currentGroup) {
+					if (isGraceInnerTerm(term)) {
+						currentGroup.count++;
+
+						if (currentGroup.count === 2)
+							groups.push(currentGroup);
+					}
+					else
+						currentGroup = null;
+				}
+				else {
+					if (isEmptyAfterGrace(term))
+						currentGroup = {start: i, count: 1};
+				}
+			});
+
+			let offset = 0;
+			groups.forEach(group => {
+				const startIndex = group.start + offset;
+				const mainBody = new MusicBlock({body: []});
+
+				for (let i = startIndex; i < startIndex + group.count; ++ i) {
+					const term = block.body[i];
+					const music = isEmptyAfterGrace(term) ? term.args[1] : term;
+					if (music instanceof MusicBlock)
+						mainBody.body.push(...music.body);
+					else
+						mainBody.body.push(music);
+				}
+
+				block.body[startIndex].args[1] = mainBody;
 				block.body.splice(startIndex + 1, group.count - 1);
 
 				offset -= group.count - 1;
