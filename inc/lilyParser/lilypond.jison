@@ -335,6 +335,13 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\tupletDown"						return 'CMD_TUPLETDOWN';
 "\\shiftOn"							return 'CMD_SHIFTON';
 "\\repeatTie"						return 'CMD_REPEATTIE';
+"\\marcato"							return 'CMD_MARCATO';
+"\\stopped"							return 'CMD_STOPPED';
+"\\tenuto"							return 'CMD_TENUTO';
+"\\staccatissimo"					return 'CMD_STACCATISSIMO';
+"\\accent"							return 'CMD_ACCENT';
+"\\staccato"						return 'CMD_STACCATO';
+"\\portato"							return 'CMD_PORTATO';
 
 "\\mp"(?=[\W])						return 'CMD_DYNAMIC_MARKINGS';
 "\\mf"(?=[\W])						return 'CMD_DYNAMIC_MARKINGS';
@@ -2144,6 +2151,20 @@ expressive_mark
 	| CMD_BENDAFTER scm_identifier
 		{$$ = command($1, $2);}
 	| CMD_DYNAMIC_MARKINGS
+		{$$ = command($1);}
+	| CMD_MARCATO
+		{$$ = command($1);}
+	| CMD_STOPPED
+		{$$ = command($1);}
+	| CMD_TENUTO
+		{$$ = command($1);}
+	| CMD_STACCATISSIMO
+		{$$ = command($1);}
+	| CMD_ACCENT
+		{$$ = command($1);}
+	| CMD_STACCATO
+		{$$ = command($1);}
+	| CMD_PORTATO
 		{$$ = command($1);}
 	| "~"
 		{$$ = $1;}
