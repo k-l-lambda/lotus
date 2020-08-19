@@ -27,6 +27,8 @@
 
 *	2020.8.19
 
+	+	lilyCommands.ts: added option of language on xml2ly.
+
 	+	tests/lilyNotationMatch.ts created.
 
 	+	sheetDocument.ts: alignTokensWithNotation added.

@@ -54,6 +54,7 @@ emptyCache();
 
 interface LilyProcessOptions {
 	// xml
+	language?: string;
 	removeMeasureImplicit?: boolean;
 	replaceEncoding?: boolean;
 	removeNullDynamics?: boolean;
@@ -125,7 +126,7 @@ const MUSICXML2LY_PATH = filePathResolve(env.LILYPOND_DIR, "musicxml2ly");
 const MIDI2LY_PATH = filePathResolve(env.LILYPOND_DIR, "midi2ly");
 
 
-const xml2ly = async (xml: string, options: LilyProcessOptions): Promise<string> => {
+const xml2ly = async (xml: string, {language = "english", ...options}: LilyProcessOptions): Promise<string> => {
 	xml = preprocessXml(xml, options);
 	//console.log("xml:", options, xml.substr(0, 100));
 
@@ -136,12 +137,13 @@ const xml2ly = async (xml: string, options: LilyProcessOptions): Promise<string>
 	const lyFileName = `${env.TEMP_DIR}xml2ly-${hash}.ly`;
 
 	if (env.MUSICXML2LY_BY_PYTHON) {
-		await child_process.spawn(path.resolve(env.LILYPOND_DIR, "python"),
-			[path.resolve(env.LILYPOND_DIR, "musicxml2ly.py"), xmlFileName, "-o", lyFileName],
-			{maxBuffer: 0x80000});
+		await child_process.spawn(path.resolve(env.LILYPOND_DIR, "python"), [
+			path.resolve(env.LILYPOND_DIR, "musicxml2ly.py"), xmlFileName, "-o", lyFileName,
+			...(language ? ["-l", language] : []),
+		], {maxBuffer: 0x80000});
 	}
 	else
-		await child_process.exec(`${MUSICXML2LY_PATH} ${xmlFileName} -o ${lyFileName}`, {maxBuffer: 0x80000});
+		await child_process.exec(`${MUSICXML2LY_PATH} ${xmlFileName} -o ${lyFileName} ${language ? "-l " + language : ""}`, {maxBuffer: 0x80000});
 	//console.log("musicxml2ly:", result.stdout, result.stderr);
 
 	const ly = await asyncCall(fs.readFile, lyFileName);
