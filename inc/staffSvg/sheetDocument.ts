@@ -3,6 +3,8 @@ import {CM_TO_PX} from "../constants";
 
 // eslint-disable-next-line
 import StaffToken from "./staffToken";
+// eslint-disable-next-line
+import * as LilyNotation from "../lilyNotation";
 
 
 
@@ -370,6 +372,40 @@ class SheetDocument {
 
 			return tokens;
 		}, []);
+	}
+
+
+	alignTokensWithNotation (notation: LilyNotation.Notation) {
+		const shortId = (href: string): string => href.split(":").slice(0, 2).join(":");
+
+		const noteheads = this.getNoteHeads();
+		const tokenMap = noteheads.reduce((map, token) => {
+			// shift column for command chord element
+			if (/^\\/.test(token.source)) {
+				const spaceCapture = token.source.match(/(?<=\s+)(\S|$)/);
+				if (spaceCapture) {
+					const [line, column] = token.href.match(/\d+/g).map(Number);
+					map.set(`${line}:${column + spaceCapture.index}`, token);
+
+					return map;
+				}
+				else
+					console.warn("unresolved command chord element:", token.source, token);
+			}
+
+			map.set(shortId(token.href), token);
+
+			return map;
+		}, new Map());
+		console.assert(Object.keys(tokenMap).length === noteheads.length);
+
+		notation.notes.forEach(note => {
+			const token = tokenMap.get(shortId(note.id));
+			if (token)
+				token.href = note.id;
+			else
+				note.overlapped = true;
+		});
 	}
 };
 

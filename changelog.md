@@ -25,6 +25,13 @@
 
 
 
+*	2020.8.19
+
+	+	sheetDocument.ts: alignTokensWithNotation added.
+
+	+	inc/lilyNotation.ts created.
+
+
 *	2020.8.18
 
 	+	lilyDocument.ts: markup method of mergeContinuousEmptyAfterGraces added.

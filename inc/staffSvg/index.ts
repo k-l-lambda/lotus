@@ -99,6 +99,11 @@ const createSheetDocumentFromSvgs = (svgs: string[], ly: string, lilyDocument: L
 
 
 const postProcessSheetDocument = (sheet: SheetDocument, lilyDocument: LilyDocument) => {
+	// align token id
+	const interpreter = lilyDocument.interpret();
+	const lilyNotation = interpreter.getNotation();
+	sheet.alignTokensWithNotation(lilyNotation);
+
 	const attributes = lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
 
 	const schemeOption = scm => scm.findAll(SchemePair).reduce((table, item) => (table[item.left] = item.right, table), {});
