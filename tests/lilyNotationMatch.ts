@@ -30,11 +30,17 @@ const checkFile = async filename => {
 		start: note.startTick,
 		pitch: note.pitch,
 		duration: note.endTick - note.startTick,
+		velocity: 127,
 	}));
-	const criterion = new MusicNotation.Notation({meta: {}, tempos: [], channels: [notes]});
+	const criterion = new MusicNotation.Notation({
+		meta: {},
+		tempos: [],
+		channels: [notes],
+		endTime: notes[notes.length - 1].start + notes[notes.length - 1].duration,
+	});
 
 	midiNotation.notes.forEach(note => {
-		note.start = note.startTick * 4 / 3;
+		note.start = note.startTick * 480 / 384;
 	});
 
 	Matcher.genNotationContext(criterion);
