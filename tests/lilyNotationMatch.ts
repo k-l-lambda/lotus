@@ -31,6 +31,7 @@ const checkFile = async filename => {
 		pitch: note.pitch,
 		duration: note.endTick - note.startTick,
 		velocity: 127,
+		id: note.id,
 	}));
 	const noteMap = notes.reduce((map, note) => ((map[`${note.start},${note.pitch}`] = note), map), {});
 	const trimmedNotes = Object.values(noteMap);
@@ -67,9 +68,11 @@ const checkFile = async filename => {
 	if (omitC || omitS) {
 		console.debug("path:", path);
 		if (omitC > 0)
-			console.debug("cis:", cis, Array.from(cis).map(ci => criterion.notes[ci]));
-		if (omitS > 0)
-			console.debug("sis:", path.map((ci, si) => [si, ci]).filter(([_, ci]) => ci < 0).map(([si]) => si));
+			console.debug("cis:", cis, Array.from(cis).map(ci => criterion.notes[ci]).map(note => ({id: note.id, start: note.start, pitch: note.pitch})));
+		if (omitS > 0) {
+			const sis = path.map((ci, si) => [si, ci]).filter(([_, ci]) => ci < 0).map(([si]) => si);
+			console.debug("sis:", sis, sis.map(si => midiNotation.notes[si]).map(note => ({start: note.start, pitch: note.pitch})));
+		}
 	}
 
 	return {
