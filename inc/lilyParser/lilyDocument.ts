@@ -36,6 +36,8 @@ export interface LilyDocumentAttributeReadOnly {
 export default class LilyDocument {
 	root: Root;
 
+	cacheInterperter?: LilyInterpreter;
+
 
 	constructor (data: object) {
 		//console.log("raw data:", data);
@@ -49,11 +51,13 @@ export default class LilyDocument {
 	}
 
 
-	interpret (): LilyInterpreter {
-		const interperter = new LilyInterpreter();
-		interperter.interpretDocument(this);
+	interpret ({useCached = true} = {}): LilyInterpreter {
+		if (!useCached || !this.cacheInterperter) {
+			this.cacheInterperter = new LilyInterpreter();
+			this.cacheInterperter.interpretDocument(this);
+		}
 
-		return interperter;
+		return this.cacheInterperter;
 	}
 
 

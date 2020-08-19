@@ -636,7 +636,7 @@
 					try {
 						await this.updateLilyDocument();
 						if (this.lilyDocument)
-							this.lilyDocument.interpret();
+							this.lilyDocument.interpret({useCached: false});
 					}
 					catch (err) {
 						console.warn("lilydocument parsing failed:", err);
@@ -1018,7 +1018,7 @@
 				//this.updateLilyDocument();
 				//measures.assignMeasures(this.lilyDocument, locations);
 				//console.log("lilyDocument:", this.lilyDocument);
-				const interperter = this.lilyDocument.interpret();
+				const interperter = this.lilyDocument.interpret({useCached: false});
 				this.lilyDocument = interperter.toDocument();
 				this.lilySource = this.lilyDocument.toString();
 
@@ -1029,7 +1029,7 @@
 			async sliceMeasures (start, count) {
 				await this.updateLilyDocument();
 
-				const interperter = this.lilyDocument.interpret();
+				const interperter = this.lilyDocument.interpret({useCached: false});
 				interperter.sliceMeasures(start, count);
 				this.lilyDocument = interperter.toDocument();
 				this.lilySource = this.lilyDocument.toString();
@@ -1039,7 +1039,7 @@
 			async createPianoRhythm (options) {
 				await this.updateLilyDocument();
 
-				const interperter = this.lilyDocument.interpret();
+				const interperter = this.lilyDocument.interpret({useCached: false});
 				createPianoRhythm(interperter, options);
 
 				this.lilyDocument = interperter.toDocument();
@@ -1053,7 +1053,7 @@
 			async testInterperter ({flatten = false} = {}) {
 				await this.updateLilyDocument();
 
-				const interperter = this.lilyDocument.interpret();
+				const interperter = this.lilyDocument.interpret({useCached: false});
 
 				if (flatten)
 					interperter.musicTracks.forEach(track => track.flatten({spreadRepeats: true}));
