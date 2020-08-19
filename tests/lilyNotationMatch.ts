@@ -32,10 +32,13 @@ const checkFile = async filename => {
 		duration: note.endTick - note.startTick,
 		velocity: 127,
 	}));
+	const noteMap = notes.reduce((map, note) => ((map[`${note.start},${note.pitch}`] = note), map), {});
+	const trimmedNotes = Object.values(noteMap);
+
 	const criterion = new MusicNotation.Notation({
 		meta: {},
 		tempos: [],
-		channels: [notes],
+		channels: [trimmedNotes],
 		endTime: notes[notes.length - 1].start + notes[notes.length - 1].duration,
 	});
 
@@ -45,14 +48,14 @@ const checkFile = async filename => {
 
 	Matcher.genNotationContext(criterion);
 	Matcher.genNotationContext(midiNotation);
-	console.debug("notations:", criterion, midiNotation);
+	//console.debug("notations:", criterion, midiNotation);
 
 	for (const note of midiNotation.notes)
 		Matcher.makeMatchNodes(note, criterion);
 
 	const navigator = await Matcher.runNavigation(criterion, midiNotation);
 	const path = navigator.path();
-	console.debug("path:", path);
+	//console.debug("path:", path);
 
 	const cis = new Set(Array(criterion.notes.length).keys());
 	path.forEach(ci => cis.delete(ci));
@@ -61,6 +64,13 @@ const checkFile = async filename => {
 	const omitS = path.filter(ci => ci < 0).length;
 
 	console.log(filename, ":", omitC, omitS);
+	if (omitC || omitS) {
+		console.debug("path:", path);
+		if (omitC > 0)
+			console.debug("cis:", cis, Array.from(cis).map(ci => criterion.notes[ci]));
+		if (omitS > 0)
+			console.debug("sis:", path.map((ci, si) => [si, ci]).filter(([_, ci]) => ci < 0).map(([si]) => si));
+	}
 
 	return {
 		midi,
