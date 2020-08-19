@@ -13,7 +13,7 @@ import {
 // eslint-disable-next-line
 import LilyDocument from "./lilyDocument";
 // eslint-disable-next-line
-import {MusicNotation} from "@k-l-lambda/web-widgets";
+import * as LilyNotation from "../lilyNotation";
 
 
 interface DurationContextStackStatus {
@@ -178,7 +178,7 @@ export class MusicTrack {
 	}
 
 
-	getNotationNotes (): MusicNotation.Note[] {
+	getNotationNotes (): LilyNotation.Note[] {
 		new StaffContext(this).execute(this.music);
 
 		return [].concat(...this.block.notes.map(chord => chord.pitchElements.map(pitch => ({
@@ -614,7 +614,7 @@ export default class LilyInterpreter {
 	}
 
 
-	getNotation (): MusicNotation.NotationData {
+	getNotation (): LilyNotation.Notation {
 		const tracks = this.musicTracks.map((track, i) => track.getNotationNotes().map(note => ({track: i, ...note})));
 		const notes = [].concat(...tracks).sort((n1, n2) => n1.startTick - n2.startTick);
 
