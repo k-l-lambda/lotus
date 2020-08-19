@@ -27,6 +27,8 @@
 
 *	2020.8.19
 
+	+	tests/lilyNotationMatch.ts created.
+
 	+	sheetDocument.ts: alignTokensWithNotation added.
 
 	+	inc/lilyNotation.ts created.
