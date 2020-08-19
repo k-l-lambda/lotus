@@ -8,7 +8,7 @@ import {
 	BaseTerm,
 	LiteralString, Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, AfterGrace, Clef, Scheme, Include, Rest,
 	KeySignature, OctaveShift, Duration, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version,
-	ChordMode, LyricMode, ChordElement, Language,
+	ChordMode, LyricMode, ChordElement, Language, PostEvent,
 } from "./lilyTerms";
 // eslint-disable-next-line
 import LilyDocument from "./lilyDocument";
@@ -215,6 +215,7 @@ class StaffContext {
 
 	event: MusicEvent = null;
 	tying: boolean = false;
+	staccato: boolean = false;
 
 
 	constructor (track = new MusicTrack, {transformer = null}: {transformer?: MusicTransformer} = {}) {
@@ -314,7 +315,7 @@ class StaffContext {
 				term.pitches.forEach(pitch => this.execute(pitch));
 
 				// update tied for ChordElement
-				if (this.tying && this.event && this.event instanceof Chord) {
+				if (this.tying && !this.staccato && this.event && this.event instanceof Chord) {
 					const pitches = new Set(this.event.pitchElements.map(pitch => pitch.absolutePitch.pitch));
 					term.pitchElements.forEach(pitch => {
 						if (pitches.has(pitch.absolutePitch.pitch))
@@ -331,9 +332,12 @@ class StaffContext {
 			this.elapse(term.durationMagnitude);
 
 			this.tying = false;
-			const wave = term.post_events && term.post_events.find(e => e.arg === "~");
-			if (wave)
+			this.staccato = false;
+
+			if (term.isTying)
 				this.tying = true;
+			if (term.isStaccato)
+				this.staccato = true;
 		}
 		else if (term instanceof ChordElement) {
 			// ignore
@@ -424,6 +428,10 @@ class StaffContext {
 		else if (term instanceof Primitive) {
 			if (term.exp === "~")
 				this.tying = true;
+		}
+		else if (term instanceof PostEvent) {
+			if (term.isStaccato)
+				this.staccato = true;
 		}
 		else {
 			if (term.isMusic)

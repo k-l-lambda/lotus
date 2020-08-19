@@ -1490,6 +1490,16 @@ export class MusicEvent extends BaseTerm {
 	get withMultiplier () {
 		return this.duration && this.duration.withMultiplier;
 	}
+
+
+	get isTying (): boolean {
+		return this.post_events && this.post_events.some(event => event.isTying);
+	}
+
+
+	get isStaccato (): boolean {
+		return this.post_events && this.post_events.some(event => event.isStaccato);
+	}
 };
 
 
@@ -1947,6 +1957,22 @@ export class PostEvent extends BaseTerm {
 			return [this.arg];
 
 		return null;
+	}
+
+
+	get isTying (): boolean {
+		return this.arg === "~";
+	}
+
+
+	get isStaccato (): boolean {
+		if (this.arg instanceof Command)
+			return ["staccato", "staccatissimo", "portato"].includes(this.arg.cmd);
+
+		if ([".", "!"].includes(this.arg as string))
+			return true;
+
+		return false;
 	}
 };
 
