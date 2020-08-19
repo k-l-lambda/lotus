@@ -8,7 +8,7 @@ import {
 	BaseTerm,
 	LiteralString, Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, AfterGrace, Clef, Scheme, Include, Rest,
 	KeySignature, OctaveShift, Duration, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version,
-	ChordMode, LyricMode, ChordElement,
+	ChordMode, LyricMode, ChordElement, Language,
 } from "./lilyTerms";
 // eslint-disable-next-line
 import LilyDocument from "./lilyDocument";
@@ -445,6 +445,7 @@ export default class LilyInterpreter {
 	musicTracks: MusicTrack[] = [];
 
 	version: Version = null;
+	language: Language = null;
 	header: Block = null;
 	includeFiles: Set<string> = new Set;
 	statements: BaseTerm[] = [];
@@ -496,6 +497,8 @@ export default class LilyInterpreter {
 				const sec = this.execute(section, {execMusic: true});
 				if (sec instanceof Version)
 					this.version = sec;
+				else if (sec instanceof Language)
+					this.language = sec;
 				else if (sec instanceof Scheme)
 					this.statements.push(sec);
 				else if (sec instanceof Block) {
@@ -579,6 +582,7 @@ export default class LilyInterpreter {
 
 		const root = new Root({sections: [
 			this.version,
+			this.language,
 			this.header,
 			...includes,
 			...this.statements,

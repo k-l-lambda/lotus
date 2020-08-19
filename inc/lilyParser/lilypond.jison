@@ -24,6 +24,7 @@
 		appoggiatura: "Grace",
 		slashedGrace: "Grace",
 		afterGrace: "AfterGrace",
+		language: "Language",
 	};
 
 

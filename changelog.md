@@ -27,6 +27,8 @@
 
 *	2020.8.19
 
+	+	lilyInterpreter.ts: added language term.
+
 	+	lilyCommands.ts: added option of language on xml2ly.
 
 	+	tests/lilyNotationMatch.ts created.

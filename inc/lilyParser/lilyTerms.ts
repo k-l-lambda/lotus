@@ -768,6 +768,13 @@ export class Version extends Command {
 };
 
 
+export class Language extends Command {
+	get language (): string {
+		return this.args[0].toString();
+	}
+};
+
+
 export class LyricMode extends Command {
 	get block (): MusicBlock {
 		return this.args[0];
@@ -2036,6 +2043,7 @@ export const termDictionary = {
 	OctaveShift,
 	Include,
 	Version,
+	Language,
 	LyricMode,
 	ChordMode,
 	Block,
