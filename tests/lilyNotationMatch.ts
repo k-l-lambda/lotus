@@ -24,25 +24,27 @@ const checkFile = async filename => {
 	const interperter = lilyDocument.interpret();
 	const lilyNotation = interperter.getNotation();
 
-	lilyNotation.notes.filter(note => !note.tied && !note.overlapped).forEach(note => {
-		note.start = note.startTick;
-	});
+	const notes = lilyNotation.notes.filter(note => !note.tied && !note.overlapped).map(note => ({
+		start: note.startTick,
+		pitch: note.pitch,
+		duration: note.endTick - note.startTick,
+	}));
+	const criterion = new MusicNotation.Notation({meta: {}, tempos: [], channels: [notes]});
+
 	midiNotation.notes.forEach(note => {
 		note.start = note.startTick * 4 / 3;
 	});
 
-	const criterion = new MusicNotation.Notation({meta: {}, tempos: [], channels: [lilyNotation.notes]});
-
 	Matcher.genNotationContext(criterion);
 	Matcher.genNotationContext(midiNotation);
-	//console.debug("notations:", criterion, midiNotation);
+	console.debug("notations:", criterion, midiNotation);
 
 	for (const note of midiNotation.notes)
 		Matcher.makeMatchNodes(note, criterion);
 
 	const navigator = await Matcher.runNavigation(criterion, midiNotation);
 	const path = navigator.path();
-	//console.debug("path:", path);
+	console.debug("path:", path);
 
 	const cis = new Set(Array(criterion.notes.length).keys());
 	path.forEach(ci => cis.delete(ci));
