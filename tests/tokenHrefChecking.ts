@@ -84,7 +84,12 @@ const main = async (inputDir?: string) => {
 
 	let i = 0;
 	for (const lyFile of lyFiles) {
-		await checkFile(lyFile);
+		try {
+			await checkFile(lyFile);
+		}
+		catch (err) {
+			console.warn("checkFile error:", err);
+		}
 
 		if (++i % 20 === 0)
 			await emptyCache();
