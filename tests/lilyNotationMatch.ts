@@ -1,6 +1,8 @@
 
 import fs from "fs";
-import {MusicNotation, Matcher} from "@k-l-lambda/web-widgets";
+import {argv} from "yargs";
+import JSZip from "jszip";
+import {MusicNotation, Matcher, MIDI, MidiUtils} from "@k-l-lambda/web-widgets";
 
 import "../env.js";
 
@@ -53,16 +55,44 @@ const checkFile = async filename => {
 	const omitS = path.filter(ci => ci < 0).length;
 
 	console.log(filename, ":", omitC, omitS);
+
+	return {
+		midi,
+		midiNotation,
+		lilyNotation,
+		criterion,
+		path,
+		omitC,
+		omitS,
+	};
 };
 
 
-const main = async (inputDir?: string) => {
+const main = async () => {
+	const inputDir = argv._[0];
 	const lyFiles = walkDir(inputDir, /\.ly$/, {recursive: true});
 
 	let i = 0;
 	for (const lyFile of lyFiles) {
 		try {
-			await checkFile(lyFile);
+			const result = await checkFile(lyFile);
+			if (argv.dumpOnError && result.omitC + result.omitS > 0) {
+				const pack = new JSZip();
+
+				const buffer = MidiUtils.encodeToMIDI(result.criterion, {startTime: 0});
+				pack.file("criterion.midi", buffer);
+
+				const buffer2 = MIDI.encodeMidiFile(result.midi);
+				pack.file("sample.midi", buffer2);
+
+				pack
+					.generateNodeStream({streamFiles: true})
+					.pipe(fs.createWriteStream("./lilyNotationMatch-dump.zip"))
+					.on("finish", function () {
+						console.log("dump Done.");
+					});
+				return;
+			}
 		}
 		catch (err) {
 			console.warn("checkFile error:", err);
@@ -77,8 +107,7 @@ const main = async (inputDir?: string) => {
 
 
 
-const argv = JSON.parse(process.env.npm_config_argv);
-main(...argv.original.slice(2));
+main();
 
 
 
