@@ -27,6 +27,8 @@
 
 *	2020.8.20
 
+	+	lilyNotationMatch.ts: log added.
+
 	+	Folder of inc/lilyNotation created.
 
 

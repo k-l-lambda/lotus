@@ -2,6 +2,7 @@
 import fs from "fs";
 import {argv} from "yargs";
 import JSZip from "jszip";
+import YAML from "yaml";
 import {MusicNotation, Matcher, MIDI, MidiUtils} from "@k-l-lambda/web-widgets";
 
 import "../env.js";
@@ -11,6 +12,7 @@ import {emptyCache} from "../backend/lilyCommands";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import {LilyDocument} from "../inc/lilyParser";
 import walkDir from "../backend/walkDir";
+import * as LilyNotation from "../inc/lilyNotation";
 
 
 
@@ -56,6 +58,7 @@ const checkFile = async filename => {
 
 	const navigator = await Matcher.runNavigation(criterion, midiNotation);
 	const path = navigator.path();
+	LilyNotation.fuzzyMatchNotations(path, criterion, midiNotation, {pitchToleranceMax: 0});
 	//console.debug("path:", path);
 
 	const cis = new Set(Array(criterion.notes.length).keys());
@@ -63,6 +66,9 @@ const checkFile = async filename => {
 
 	const omitC = cis.size;
 	const omitS = path.filter(ci => ci < 0).length;
+
+	const coverage = ((criterion.notes.length - omitC) / criterion.notes.length)
+		* ((midiNotation.notes.length - omitS) / midiNotation.notes.length);
 
 	console.log(filename, ":", omitC, omitS);
 	if (omitC || omitS) {
@@ -83,6 +89,7 @@ const checkFile = async filename => {
 		path,
 		omitC,
 		omitS,
+		coverage,
 	};
 };
 
@@ -90,6 +97,23 @@ const checkFile = async filename => {
 const main = async () => {
 	const inputDir = argv._[0];
 	const lyFiles = walkDir(inputDir, /\.ly$/, {recursive: true});
+
+	const timeStr = new Date(Date.now() - new Date().getTimezoneOffset() * 60e+3).toISOString()
+		.replace(/:[\w.]+$/, "").replace(/[-:]/g, "");
+	const logStream = fs.createWriteStream(`lilyNotationMatch-${timeStr}.log`);
+	const log = (...messages) => {
+		console.log(...messages);
+		logStream.write(messages.join(" ") + "\n", "utf-8");
+	};
+
+	log(`[${new Date()}]	start.`);
+
+	const counting = {
+		perfect: 0,
+		success: 0,
+		failure: 0,
+	};
+	const issues = [];
 
 	let i = 0;
 	for (const lyFile of lyFiles) {
@@ -108,20 +132,41 @@ const main = async () => {
 					.generateNodeStream({streamFiles: true})
 					.pipe(fs.createWriteStream("./lilyNotationMatch-dump.zip"))
 					.on("finish", function () {
-						console.log("dump Done.");
+						console.log("dump Done.", counting);
 					});
 				return;
 			}
+
+			if (result.coverage < 1) {
+				issues.push({
+					omitC: result.omitC,
+					omitS: result.omitS,
+					coverage: result.coverage,
+				});
+			}
+			else
+				++counting.perfect;
+
+			++counting.success;
 		}
 		catch (err) {
 			console.warn("checkFile error:", err);
+			++counting.failure;
 		}
 
 		if (++i % 100 === 0)
 			await emptyCache();
 	}
 
-	console.log("Done.");
+	if (issues.length) {
+		issues.sort((i1, i2) => i1.coverage - i2.coverage);
+
+		log("Issues:");
+		log(YAML.stringify(issues));
+	}
+
+	log("Finished, perfect:", counting.perfect, "success:", counting.success, "failure:", counting.failure);
+	log(`[${new Date()}]	done.`);
 };
 
 
