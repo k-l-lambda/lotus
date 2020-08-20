@@ -3,6 +3,7 @@ import {MusicNotation} from "@k-l-lambda/web-widgets";
 
 import {recoverJSON} from "../inc/jsonRecovery";
 import {StaffToken, SheetDocument, StaffNotation} from "../inc/staffSvg";
+import {PitchContext, PitchContextTable} from "../inc/pitchContext";
 import * as SheetBaker from "./sheetBaker";
 import DictArray from "../inc/DictArray";
 // eslint-disable-next-line
@@ -20,8 +21,6 @@ export default class ScoreBundle {
 
 
 	constructor (source, {loadNotation = true, onStatus = ((..._) => _), jsonHandle = json => json} = {}) {
-		const {PitchContext, PitchContextTable} = StaffNotation;
-
 		this.scoreJSON = jsonHandle(recoverJSON(source, {StaffToken, SheetDocument, PitchContext, PitchContextTable, DictArray}));
 		this.onStatus = onStatus;
 
