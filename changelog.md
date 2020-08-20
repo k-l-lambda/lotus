@@ -27,6 +27,8 @@
 
 *	2020.8.20
 
+	+	lilyInterpreter.ts: context dictionary on TrackContext added.
+
 	+	inc/pitchContext.ts: extracted from staffSvg/staffNotation.ts.
 
 	+	lilyNotationMatch.ts: log added.

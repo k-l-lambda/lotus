@@ -1262,6 +1262,16 @@ export class ContextedMusic extends BaseTerm {
 	get durationMagnitude (): number {
 		return this.body.durationMagnitude;
 	}
+
+
+	get contextDict (): {[key: string]: string} {
+		const dict = {};
+
+		if (this.head.args[1] instanceof Assignment)
+			dict[this.head.args[0].toString()] = this.head.args[1].value.toString();
+
+		return dict;
+	}
 };
 
 

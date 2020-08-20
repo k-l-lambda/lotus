@@ -21,7 +21,9 @@ interface DurationContextStackStatus {
 };
 
 
-type MusicTransformer = (music: BaseTerm, context: StaffContext) => BaseTerm[];
+type MusicTransformer = (music: BaseTerm, context: TrackContext) => BaseTerm[];
+
+type ContextDict = {[key: string]: string};
 
 
 export class MusicTrack {
@@ -37,7 +39,7 @@ export class MusicTrack {
 		track.block = block;
 		track.anchorPitch = anchorPitch;
 
-		const context = new StaffContext(track);
+		const context = new TrackContext(track);
 		context.execute(track.music);
 
 		return track;
@@ -65,7 +67,7 @@ export class MusicTrack {
 
 
 	transform (transformer: MusicTransformer) {
-		new StaffContext(this, {transformer}).execute(this.music);
+		new TrackContext(this, {transformer}).execute(this.music);
 	}
 
 
@@ -158,7 +160,7 @@ export class MusicTrack {
 	sliceMeasures (start: number, count: number): MusicTrack {
 		this.flatten({spreadRepeats: true});
 
-		const context = new StaffContext(this);
+		const context = new TrackContext(this);
 		context.pitch = this.anchorPitch;
 		this.block.updateChordAnchors();
 
@@ -179,7 +181,7 @@ export class MusicTrack {
 
 
 	getNotationNotes (): LilyNotation.Note[] {
-		new StaffContext(this).execute(this.music);
+		new TrackContext(this).execute(this.music);
 
 		return [].concat(...this.block.notes.map(chord => chord.pitchElements.map(pitch => ({
 			startTick: chord._tick,
@@ -192,13 +194,15 @@ export class MusicTrack {
 };
 
 
-class StaffContext {
+class TrackContext {
 	track: MusicTrack;
 	transformer?: MusicTransformer;
 
 	stack: DurationContextStackStatus[] = [];
 
 	// declarations
+	staff: string = null;
+	voice: string = null;
 	clef: Clef = null;
 	key: KeySignature = null;
 	time: TimeSignature = null;
@@ -218,9 +222,13 @@ class StaffContext {
 	staccato: boolean = false;
 
 
-	constructor (track = new MusicTrack, {transformer = null}: {transformer?: MusicTransformer} = {}) {
+	constructor (track = new MusicTrack, {transformer = null, contextDict = {}}: {transformer?: MusicTransformer, contextDict?: ContextDict} = {}) {
 		this.track = track;
 		this.transformer = transformer;
+
+		this.staff = contextDict.Staff;
+		this.voice = contextDict.Voice;
+		//console.debug("contextDict:", contextDict);
 	}
 
 
@@ -439,7 +447,7 @@ class StaffContext {
 		}
 		else {
 			if (term.isMusic)
-				console.warn("[StaffContext]	unexpected music term:", term);
+				console.warn("[TrackContext]	unexpected music term:", term);
 		}
 	}
 
@@ -476,9 +484,9 @@ export default class LilyInterpreter {
 	}*/
 
 
-	interpretMusic (music: BaseTerm): Variable {
+	interpretMusic (music: BaseTerm, contextDict: ContextDict): Variable {
 		//console.log("interpretMusic:", music);
-		const context = new StaffContext();
+		const context = new TrackContext(undefined, {contextDict});
 		//context.execute(music.clone());
 		context.execute(music);
 
@@ -500,7 +508,7 @@ export default class LilyInterpreter {
 	}
 
 
-	execute (term: BaseTerm, {execMusic = false} = {}): BaseTerm {
+	execute (term: BaseTerm, {execMusic = false, contextDict = {}}: {execMusic?: boolean, contextDict?: ContextDict} = {}): BaseTerm {
 		if (!term)
 			return term;
 
@@ -561,20 +569,25 @@ export default class LilyInterpreter {
 				body: term.body.map(subterm => this.execute(subterm)).filter(term => term),
 			});
 			if (execMusic) {
-				const variable = this.interpretMusic(result);
+				const variable = this.interpretMusic(result, contextDict);
 				return new MusicBlock({body: [variable]});
 			}
 
 			return result;
 		}
 		else if (term instanceof SimultaneousList)
-			return new SimultaneousList({list: term.list.map(subterm => this.execute(subterm, {execMusic})).filter(term => term)});
-		else if (term instanceof ContextedMusic)
-			return new ContextedMusic({head: this.execute(term.head), lyrics: this.execute(term.lyrics), body: this.execute(term.body, {execMusic})});
+			return new SimultaneousList({list: term.list.map(subterm => this.execute(subterm, {execMusic, contextDict})).filter(term => term)});
+		else if (term instanceof ContextedMusic) {
+			return new ContextedMusic({
+				head: this.execute(term.head),
+				lyrics: this.execute(term.lyrics),
+				body: this.execute(term.body, {execMusic, contextDict: {...contextDict, ...term.contextDict}}),
+			});
+		}
 		else if (term instanceof Include)
 			this.includeFiles.add(term.filename);
 		else if (term instanceof Command)
-			return parseRaw({proto: term.proto, cmd: term.cmd, args: term.args.map(arg => this.execute(arg, {execMusic}))});
+			return parseRaw({proto: term.proto, cmd: term.cmd, args: term.args.map(arg => this.execute(arg, {execMusic, contextDict}))});
 
 		return term;
 	}
