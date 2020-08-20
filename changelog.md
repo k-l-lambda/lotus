@@ -25,6 +25,11 @@
 
 
 
+*	2020.8.20
+
+	+	Folder of inc/lilyNotation created.
+
+
 *	2020.8.19
 
 	+	lilyInterpreter.ts: added staccato on StaffContext.
