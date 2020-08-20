@@ -521,6 +521,17 @@ export class Command extends BaseTerm {
 			return this.args.filter(arg => arg instanceof BaseTerm).reduce((magnitude, term) => magnitude + term.durationMagnitude, 0);
 		}
 	}
+
+
+	getAssignmentPair (): {key: any, value: any} {
+		if (this.args[0] instanceof Assignment)
+			return {key: this.args[0].key, value: this.args[0].value};
+
+		if (this.args[1] instanceof Assignment)
+			return {key: this.args[0], value: this.args[1].value};
+
+		return null;
+	}
 };
 
 
@@ -1274,8 +1285,9 @@ export class ContextedMusic extends BaseTerm {
 	get contextDict (): {[key: string]: string} {
 		const dict = {};
 
-		if (this.head.args[1] instanceof Assignment)
-			dict[this.head.args[0].toString()] = this.head.args[1].value.toString();
+		const pair = this.head.getAssignmentPair();
+		if (pair)
+			dict[pair.key.toString()] = pair.value.toString();
 
 		return dict;
 	}
