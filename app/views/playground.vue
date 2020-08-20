@@ -156,6 +156,10 @@
 						<td><BoolStoreInput v-model="enabledFuzzyMatcher" localKey="lotus-enabledFuzzyMatcher" /></td>
 					</tr>
 					<tr>
+						<td>Use Sheet Notation</td>
+						<td><BoolStoreInput v-model="enabledSheetNotation" localKey="lotus-enabledSheetNot" /></td>
+					</tr>
+					<tr>
 						<th>Lilypond Markups</th>
 						<td><hr /></td>
 					</tr>
@@ -217,6 +221,7 @@
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
 	import StaffToken from "../../inc/staffSvg/staffToken.ts";
 	import SheetDocument from "../../inc/staffSvg/sheetDocument.ts";
+	import * as LilyNotation from "../../inc/lilyNotation";
 	import LogRecorder from "../../inc/logRecorder.ts";
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import loadLilyParser from "../loadLilyParser.js";
@@ -314,6 +319,7 @@
 				},
 				engraveWithLogs: false,
 				enabledFuzzyMatcher: true,
+				enabledSheetNotation: false,
 				lilyMarkups: {
 					enabled: false,
 					staffSize: null,
@@ -675,12 +681,11 @@
 						this.svgHashTable = result.hashTable;
 						this.midi = result.midi;
 
-						this.updateSheetNotation();
+						if (this.enabledSheetNotation)
+							this.updateSheetNotation();
 
-						if (this.midi) {
-							const midiNotation = MusicNotation.Notation.parseMidi(this.midi);
-							this.matchNotations(midiNotation);
-						}
+						if (this.midi)
+							this.matchNotations(this.midi);
 					}
 					else
 						this.clearSheet();
@@ -771,20 +776,31 @@
 			},
 
 
-			async matchNotations (midiNotation) {
-				console.assert(midiNotation, "midiNotation is null.");
-				console.assert(this.sheetNotation, "sheetNotation is null.");
+			async matchNotations (midi) {
+				console.assert(midi, "midi is null.");
+				if (this.enabledSheetNotation) {
+					console.assert(this.sheetNotation, "sheetNotation is null.");
 
-				this.matcherNotations = await StaffNotation.matchNotations(midiNotation, this.sheetNotation, {enableFuzzy: this.enabledFuzzyMatcher});
+					const midiNotation = MusicNotation.Notation.parseMidi(this.midi);
 
-				this.matchedIds = new Set();
-				midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => this.matchedIds.add(id)));
+					this.matcherNotations = await StaffNotation.matchNotations(midiNotation, this.sheetNotation, {enableFuzzy: this.enabledFuzzyMatcher});
 
-				this.sheetDocument.updateMatchedTokens(this.matchedIds);
+					this.matchedIds = new Set();
+					midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => this.matchedIds.add(id)));
 
-				this.midiNotation = midiNotation;
+					this.sheetDocument.updateMatchedTokens(this.matchedIds);
 
-				this.pitchContextGroup = StaffNotation.createPitchContextGroup(this.sheetNotation.pitchContexts, this.midiNotation);
+					this.midiNotation = midiNotation;
+
+					this.pitchContextGroup = StaffNotation.createPitchContextGroup(this.sheetNotation.pitchContexts, this.midiNotation);
+				}
+				else {
+					const lilyNotation = this.lilyDocument.interpret().getNotation();
+					this.matcherNotations = await LilyNotation.matchWithMIDI(lilyNotation, midi);
+
+					this.midiNotation = this.matcherNotations.sample;
+					this.pitchContextGroup = lilyNotation.pitchContextGroup;
+				}
 
 				if (this.bakingSheet)
 					this.bakeSheet();

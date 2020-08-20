@@ -27,6 +27,8 @@
 
 *	2020.8.20
 
+	+	lilyNotation/matcher.ts created.
+
 	+	lilyNotation: extracted assignNotationEventsIds from staffNotation to lilyNotation.
 
 	+	lilyInterpreter.ts: MusicTrack.generateStaffTracks added.
