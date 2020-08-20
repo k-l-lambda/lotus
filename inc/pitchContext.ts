@@ -247,7 +247,7 @@ class StaffContext {
 	}
 
 
-	snapshot () {
+	snapshot (): number {
 		if (this.dirty) {
 			const context = new PitchContext({
 				clef: this.clef,
@@ -390,5 +390,6 @@ class StaffContext {
 export {
 	PitchContext,
 	PitchContextTable,
+	NotationTrack,
 	StaffContext,
 };

@@ -27,6 +27,8 @@
 
 *	2020.8.20
 
+	+	lilyInterpreter.ts: MusicTrack.generateStaffTracks added.
+
 	+	lilyInterpreter.ts: added staff term in TrackContext.declarations.
 
 	+	lilyInterpreter.ts: pitch transposition on TrackContext added.

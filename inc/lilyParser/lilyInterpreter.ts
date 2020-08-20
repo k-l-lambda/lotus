@@ -2,6 +2,8 @@
 import {romanize} from "../romanNumeral";
 import {WHOLE_DURATION_MAGNITUDE, lcmMulti, lcm} from "./utils";
 import {parseRaw, getDurationSubdivider} from "./lilyTerms";
+import LogRecorder from "../logRecorder";
+import {StaffContext} from "../pitchContext";
 
 import {
 	// eslint-disable-next-line
@@ -14,6 +16,9 @@ import {
 import LilyDocument from "./lilyDocument";
 // eslint-disable-next-line
 import * as LilyNotation from "../lilyNotation";
+// eslint-disable-next-line
+import {NotationTrack} from "../pitchContext";
+
 
 
 interface DurationContextStackStatus {
@@ -22,13 +27,19 @@ interface DurationContextStackStatus {
 
 
 type MusicTransformer = (music: BaseTerm, context: TrackContext) => BaseTerm[];
+type MusicListener = (music: BaseTerm, context: TrackContext) => void;
+
 
 type ContextDict = {[key: string]: string};
+
+
+type NotationTrackGroup = {[key: string]: NotationTrack};
 
 
 export class MusicTrack {
 	block: MusicBlock;
 	anchorPitch: ChordElement;
+	contextDict?: ContextDict = null;
 
 	name?: string;
 
@@ -180,23 +191,57 @@ export class MusicTrack {
 	}
 
 
-	getNotationNotes (): LilyNotation.Note[] {
-		new TrackContext(this).execute(this.music);
+	generateStaffTracks ({logger}: {logger?: LogRecorder} = {}): {group: NotationTrackGroup, notes: LilyNotation.Note[]} {
+		const staves = {};
+		const getCurrentStaffContext = (staffName: string): StaffContext => {
+			if (!staves[staffName])
+				staves[staffName] = new StaffContext({logger});
 
-		return [].concat(...this.block.notes.map(chord => chord.pitchElements.map(pitch => ({
-			startTick: chord._tick,
-			endTick: chord._tick + chord.durationMagnitude,
-			pitch: pitch.absolutePitchValue + (pitch._transposition || 0),
-			id: pitch.href,
-			tied: pitch._tied,
-		}))));
+			return staves[staffName];
+		};
+
+		const notes: LilyNotation.Note[] = [];
+
+		const listener = (term: BaseTerm, track: TrackContext) => {
+			const context = getCurrentStaffContext(track.staffName);
+
+			if (term instanceof Chord) {
+				term.pitchElements.forEach(pitch => notes.push({
+					channel: 0,
+					start: term._tick,
+					duration: term.durationMagnitude,
+					startTick: term._tick,
+					endTick: term._tick + term.durationMagnitude,
+					pitch: pitch.absolutePitchValue + (pitch._transposition || 0),
+					id: pitch.href,
+					tied: pitch._tied,
+				}));
+			}
+		};
+		new TrackContext(this, {listener}).execute(this.music);
+
+		return {
+			group: Object.entries(staves).reduce((group, [name, context]) => ({...group, [name]: context}), {}),
+			notes,
+		};
 	}
+
+
+	/*getNotation ({logger}: {logger?: LogRecorder} = {}): NotationTrackGroup {
+		const contextGroup = this.generateStaffTracks({logger});
+
+		return Object.entries(contextGroup).reduce((group, [name, context]) => {
+			group[name] = context.track;
+			return group;
+		}, {});
+	}*/
 };
 
 
 class TrackContext {
 	track: MusicTrack;
 	transformer?: MusicTransformer;
+	listener?: MusicListener;
 
 	stack: DurationContextStackStatus[] = [];
 
@@ -225,12 +270,22 @@ class TrackContext {
 	staccato: boolean = false;
 
 
-	constructor (track = new MusicTrack, {transformer = null, contextDict = {}}: {transformer?: MusicTransformer, contextDict?: ContextDict} = {}) {
+	constructor (track = new MusicTrack, {transformer = null, listener = null, contextDict = null}:
+		{
+			transformer?: MusicTransformer,
+			listener?: MusicListener,
+			contextDict?: ContextDict,
+		} = {}) {
 		this.track = track;
-		this.transformer = transformer;
+		this.track.contextDict = contextDict || this.track.contextDict;
 
-		this.staffName = contextDict.Staff;
-		this.voiceName = contextDict.Voice;
+		this.transformer = transformer;
+		this.listener = listener;
+
+		if (this.track.contextDict) {
+			this.staffName = this.track.contextDict.Staff;
+			this.voiceName = this.track.contextDict.Voice;
+		}
 		//console.debug("contextDict:", contextDict);
 	}
 
@@ -475,6 +530,9 @@ class TrackContext {
 			if (term.isMusic)
 				console.warn("[TrackContext]	unexpected music term:", term);
 		}
+
+		if (this.listener)
+			this.listener(term, this);
 	}
 
 
@@ -498,6 +556,7 @@ export default class LilyInterpreter {
 	paper: Block = null;
 	layout: Block = null;
 	score: Block = null;
+	staffNames: string[] = [];
 
 
 	static trackName (index: number): string {
@@ -604,6 +663,9 @@ export default class LilyInterpreter {
 		else if (term instanceof SimultaneousList)
 			return new SimultaneousList({list: term.list.map(subterm => this.execute(subterm, {execMusic, contextDict})).filter(term => term)});
 		else if (term instanceof ContextedMusic) {
+			if (term.contextDict && term.contextDict.Staff)
+				this.staffNames.push(term.contextDict.Staff);
+
 			return new ContextedMusic({
 				head: this.execute(term.head),
 				lyrics: this.execute(term.lyrics),
@@ -669,8 +731,11 @@ export default class LilyInterpreter {
 	}
 
 
-	getNotation (): LilyNotation.Notation {
-		const tracks = this.musicTracks.map((track, i) => track.getNotationNotes().map(note => ({track: i, ...note})));
+	getNotation ({logger = new LogRecorder()} = {}): LilyNotation.Notation {
+		const tracks = this.musicTracks.map((track, i) => {
+			const {notes} = track.generateStaffTracks({logger});
+			return notes.map(note => ({track: i, ...note}));
+		});
 		const notes = [].concat(...tracks).sort((n1, n2) => n1.startTick - n2.startTick);
 
 		return {
