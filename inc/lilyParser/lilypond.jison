@@ -25,6 +25,7 @@
 		slashedGrace: "Grace",
 		afterGrace: "AfterGrace",
 		language: "Language",
+		transposition: "Transposition",
 	};
 
 
@@ -1972,8 +1973,8 @@ music_identifier
 		{$$ = command($1, $2);}
 	| CMD_COMPOUNDMETER scm_identifier
 		{$$ = command($1, $2);}
-	| CMD_TRANSPOSITION PITCH
-		{$$ = command($1, $2);}
+	| CMD_TRANSPOSITION pitch
+		{$$ = command($1, chordElem($2, {locations: [@2, @2]}));}
 	| CMD_ABSOLUTE music
 		{$$ = command($1, $2);}
 	| CMD_HIDE symbol

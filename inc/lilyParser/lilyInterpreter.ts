@@ -8,7 +8,7 @@ import {
 	BaseTerm,
 	LiteralString, Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, AfterGrace, Clef, Scheme, Include, Rest,
 	KeySignature, OctaveShift, Duration, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version,
-	ChordMode, LyricMode, ChordElement, Language, PostEvent,
+	ChordMode, LyricMode, ChordElement, Language, PostEvent, Transposition,
 } from "./lilyTerms";
 // eslint-disable-next-line
 import LilyDocument from "./lilyDocument";
@@ -186,7 +186,7 @@ export class MusicTrack {
 		return [].concat(...this.block.notes.map(chord => chord.pitchElements.map(pitch => ({
 			startTick: chord._tick,
 			endTick: chord._tick + chord.durationMagnitude,
-			pitch: pitch.absolutePitchValue,
+			pitch: pitch.absolutePitchValue + (pitch._transposition || 0),
 			id: pitch.href,
 			tied: pitch._tied,
 		}))));
@@ -209,6 +209,7 @@ class TrackContext {
 	octave: OctaveShift = null;
 
 	pitch: ChordElement = null;
+	transposition: number = 0;
 
 	// time status
 	tick: number = 0;
@@ -320,7 +321,12 @@ class TrackContext {
 			if (term instanceof Chord) {
 				this.setPitch(term.absolutePitch);
 
-				term.pitches.forEach(pitch => this.execute(pitch));
+				term.pitches.forEach(pitch => {
+					this.execute(pitch);
+
+					if (pitch instanceof ChordElement)
+						pitch._transposition = this.transposition;
+				});
 
 				// update tied for ChordElement
 				// TODO: staccato trigger condition?
@@ -405,6 +411,8 @@ class TrackContext {
 		else if (term instanceof ChordMode) {
 			// ignore chord mode
 		}
+		else if (term instanceof Transposition)
+			this.transposition = term.transposition;
 		else if (term instanceof Times) {
 			this.push({factor: term.factor});
 			this.execute(term.music);

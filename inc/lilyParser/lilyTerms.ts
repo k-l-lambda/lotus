@@ -789,6 +789,13 @@ export class ChordMode extends Command {
 };
 
 
+export class Transposition extends Command {
+	get transposition (): number {
+		return this.args[0].pitchValue - 60;
+	}
+};
+
+
 export class Block extends BaseTerm {
 	block: string;
 	head: (string|string[]);
@@ -1670,6 +1677,7 @@ export class ChordElement extends BaseTerm {
 	_parent?: Chord;
 	_previous?: ChordElement;
 	_tied?: boolean;
+	_transposition?: number;
 
 	// cache for property of absolutePitch
 	_absolutePitch?: ChordElement;
@@ -2082,6 +2090,7 @@ export const termDictionary = {
 	Language,
 	LyricMode,
 	ChordMode,
+	Transposition,
 	Block,
 	InlineBlock,
 	Scheme,
