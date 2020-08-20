@@ -445,6 +445,21 @@ class TrackContext {
 			this.key = term;
 		else if (term instanceof OctaveShift)
 			this.octave = term;
+		else if (term instanceof Command && term.cmd === "change") {
+			const pair = term.getAssignmentPair();
+			if (pair) {
+				switch (pair.key) {
+				case "Staff":
+					this.staff = pair.value.toString();
+
+					break;
+				case "Voice":
+					this.voice = pair.value.toString();
+
+					break;
+				}
+			}
+		}
 		else if (term instanceof Primitive) {
 			if (term.exp === "~")
 				this.tying = true;
