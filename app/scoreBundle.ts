@@ -2,8 +2,9 @@
 import {MusicNotation} from "@k-l-lambda/web-widgets";
 
 import {recoverJSON} from "../inc/jsonRecovery";
-import {StaffToken, SheetDocument, StaffNotation} from "../inc/staffSvg";
+import {StaffToken, SheetDocument} from "../inc/staffSvg";
 import {PitchContext, PitchContextTable} from "../inc/pitchContext";
+import * as LilyNotation from "../inc/lilyNotation";
 import * as SheetBaker from "./sheetBaker";
 import DictArray from "../inc/DictArray";
 // eslint-disable-next-line
@@ -43,7 +44,7 @@ export default class ScoreBundle {
 
 				this.matchedIds = this.scoreJSON.noteLinkings.reduce((ids, note) => (note.ids && note.ids.forEach(id => ids.add(id)), ids), new Set()) as Set<string>;
 
-				StaffNotation.assignNotationEventsIds(midiNotation);
+				LilyNotation.assignNotationEventsIds(midiNotation);
 			}
 
 			this.midiNotation = midiNotation;
