@@ -315,7 +315,8 @@ class StaffContext {
 				term.pitches.forEach(pitch => this.execute(pitch));
 
 				// update tied for ChordElement
-				if (this.tying && !this.staccato && this.event && this.event instanceof Chord) {
+				// TODO: staccato trigger condition?
+				if (this.tying /*&& !this.staccato*/ && this.event && this.event instanceof Chord) {
 					const pitches = new Set(this.event.pitchElements.map(pitch => pitch.absolutePitch.pitch));
 					term.pitchElements.forEach(pitch => {
 						if (pitches.has(pitch.absolutePitch.pitch))
@@ -323,6 +324,9 @@ class StaffContext {
 						//else
 						//	console.log("missed tie:", `${pitch._location.lines[0]}:${pitch._location.columns[0]}`, pitch.absolutePitch.pitch, pitches);
 					});
+
+					if (this.staccato)
+						console.warn("tie on staccato note:", term.href);
 				}
 				//console.log("chord:", term.pitches[0]);
 			}
