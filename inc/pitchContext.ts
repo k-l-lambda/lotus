@@ -30,11 +30,13 @@ const mod12 = x => {
 
 interface NotationNote {
 	track?: number;
-	time: number;
+	time?: number;
+	startTick: number;
 	pitch: number;
-	id: number;
-	tied: boolean;
-	contextIndex: number;
+	id?: string;
+	tied?: boolean;
+	contextIndex?: number;
+	staffTrack?: number;
 };
 
 
@@ -138,12 +140,12 @@ class PitchContextTable {
 	items: PitchContextItem[];
 
 
-	static createFromNotation (contexts: PitchContext[], midiNotation, track: number) {
+	static createFromNotation (contexts: PitchContext[], notes: NotationNote[], track: number) {
 		const items = [];
 
 		let index = -1;
-		const notes = midiNotation.notes.filter(note => note.staffTrack === track);
-		for (const note of notes) {
+		const trackNotes = notes.filter(note => note.staffTrack === track);
+		for (const note of trackNotes) {
 			while (note.contextIndex > index) {
 				++index;
 				const context = contexts[index];

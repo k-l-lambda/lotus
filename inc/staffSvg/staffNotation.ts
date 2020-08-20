@@ -222,7 +222,7 @@ const clusterizeNotes = notes => {
 };
 
 
-const assignNotationEventsIds = midiNotation => {
+const assignNotationEventsIds = (midiNotation: MusicNotation.NotationData) => {
 	const events = midiNotation.notes.reduce((events, note) => {
 		events.push({ticks: note.startTick, subtype: "noteOn", channel: note.channel, pitch: note.pitch, ids: note.ids});
 		events.push({ticks: note.endTick, subtype: "noteOff", channel: note.channel, pitch: note.pitch, ids: note.ids});
@@ -250,7 +250,7 @@ const assignNotationEventsIds = midiNotation => {
 				break;
 			else {
 				if (event.data.subtype === ne.subtype && event.data.channel === ne.channel && event.data.noteNumber === ne.pitch) {
-					event.data.ids = ne.ids;
+					(event.data as any).ids = ne.ids;
 					break;
 				}
 			}
@@ -350,7 +350,7 @@ const matchNotations = async (midiNotation, svgNotation, {enableFuzzy = true} = 
 };
 
 
-const assignIds = (midiNotation, noteIds) => {
+const assignIds = (midiNotation: MusicNotation.NotationData, noteIds: string[][]) => {
 	noteIds.forEach((ids, i) => {
 		const note = midiNotation.notes[i];
 		if (note && ids)
@@ -361,8 +361,8 @@ const assignIds = (midiNotation, noteIds) => {
 };
 
 
-const createPitchContextGroup = (contextGroup: PitchContext[][], midiNotation): PitchContextTable[] =>
-	contextGroup.map((contexts, track) => PitchContextTable.createFromNotation(contexts, midiNotation, track));
+const createPitchContextGroup = (contextGroup: PitchContext[][], midiNotation: MusicNotation.NotationData): PitchContextTable[] =>
+	contextGroup.map((contexts, track) => PitchContextTable.createFromNotation(contexts, midiNotation.notes, track));
 
 
 
