@@ -64,6 +64,8 @@ class PitchContext {
 	octaveShift = 0;
 	alters: DictArray;
 
+	tick?: number;
+
 
 	constructor (data) {
 		//console.assert(data.keyAlters instanceof DictArray, "unexpected keyAlters:", data);
@@ -247,13 +249,14 @@ class StaffContext {
 	}
 
 
-	snapshot (): number {
+	snapshot ({tick}: {tick?: number} = {}): number {
 		if (this.dirty) {
 			const context = new PitchContext({
 				clef: this.clef,
 				keyAlters: this.keyAlters.clone(),
 				octaveShift: this.octaveShift,
 				alters: this.alters.clone(),
+				tick,
 			});
 			if (!this.track.lastPitchContext || context.hash !== this.track.lastPitchContext.hash)
 				this.track.contexts.push(context);
