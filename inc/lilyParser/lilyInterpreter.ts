@@ -219,6 +219,7 @@ export class MusicTrack {
 					id: pitch.href,
 					tied: pitch._tied,
 					ctx,
+					staffName: track.staffName,
 				}));
 			}
 			else if (term instanceof Clef) {
@@ -238,16 +239,6 @@ export class MusicTrack {
 			notes,
 		};
 	}
-
-
-	/*getNotation ({logger}: {logger?: LogRecorder} = {}): NotationTrackGroup {
-		const contextGroup = this.generateStaffTracks({logger});
-
-		return Object.entries(contextGroup).reduce((group, [name, context]) => {
-			group[name] = context.track;
-			return group;
-		}, {});
-	}*/
 };
 
 
@@ -752,7 +743,7 @@ export default class LilyInterpreter {
 
 		const tracks = this.musicTracks.map((track, i) => {
 			const {notes, group} = track.generateStaffTracks({logger});
-			console.log("group:", group);
+			//console.log("group:", group);
 
 			pitchContexts.forEach(({name, items}) => {
 				const track = group[name];
@@ -770,9 +761,23 @@ export default class LilyInterpreter {
 
 		const pitchContextGroup = pitchContexts.map(({items}) => {
 			items.sort((i1, i2) => i1.tick - i2.tick);
-			items.forEach((item, i) => item.endTick = (i + 1 < items.length ? items[i + 1].tick : Infinity));
+			items.forEach((item, i) => {
+				item.endTick = (i + 1 < items.length ? items[i + 1].tick : Infinity);
+				item.context.index = i;
+			});
 
 			return new PitchContextTable({items});
+		});
+
+		const staffNamesIndices = this.staffNames.reduce((indices, name, index) => ({...indices, [name]: index}), {});
+
+		notes.forEach(note => {
+			note.staffTrack = staffNamesIndices[note.staffName];
+			note.contextIndex = note.ctx.index;
+
+			// clear temporary fields
+			delete note.staffName;
+			delete note.ctx;
 		});
 
 		return {
