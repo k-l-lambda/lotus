@@ -139,6 +139,7 @@ const main = async () => {
 
 			if (result.coverage < 1) {
 				issues.push({
+					lyFile,
 					omitC: result.omitC,
 					omitS: result.omitS,
 					coverage: result.coverage,
