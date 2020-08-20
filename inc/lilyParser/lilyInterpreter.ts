@@ -201,14 +201,16 @@ class TrackContext {
 	stack: DurationContextStackStatus[] = [];
 
 	// declarations
-	staff: string = null;
-	voice: string = null;
+	staff: Command = null;
 	clef: Clef = null;
 	key: KeySignature = null;
 	time: TimeSignature = null;
 	octave: OctaveShift = null;
 
 	pitch: ChordElement = null;
+
+	staffName: string = null;
+	voiceName: string = null;
 	transposition: number = 0;
 
 	// time status
@@ -227,8 +229,8 @@ class TrackContext {
 		this.track = track;
 		this.transformer = transformer;
 
-		this.staff = contextDict.Staff;
-		this.voice = contextDict.Voice;
+		this.staffName = contextDict.Staff;
+		this.voiceName = contextDict.Voice;
 		//console.debug("contextDict:", contextDict);
 	}
 
@@ -450,11 +452,12 @@ class TrackContext {
 			if (pair) {
 				switch (pair.key) {
 				case "Staff":
-					this.staff = pair.value.toString();
+					this.staffName = pair.value.toString();
+					this.staff = term;
 
 					break;
 				case "Voice":
-					this.voice = pair.value.toString();
+					this.voiceName = pair.value.toString();
 
 					break;
 				}
@@ -476,7 +479,7 @@ class TrackContext {
 
 
 	get declarations (): BaseTerm[] {
-		return [this.clef, this.key, this.time, this.octave].filter(term => term);
+		return [this.staff, this.clef, this.key, this.time, this.octave].filter(term => term);
 	}
 };
 
