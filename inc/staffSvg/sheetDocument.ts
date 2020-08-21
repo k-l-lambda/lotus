@@ -397,7 +397,7 @@ class SheetDocument {
 
 			return map;
 		}, new Map());
-		console.assert(Object.keys(tokenMap).length === noteheads.length);
+		console.assert(tokenMap.size === noteheads.length, "tokens noteheads count dismatch:", tokenMap.size, noteheads.length);
 
 		notation.notes.forEach(note => {
 			const token = tokenMap.get(shortId(note.id));
