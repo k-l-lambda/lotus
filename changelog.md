@@ -28,6 +28,8 @@
 
 *	2020.8.21
 
+	+	pitchContext.ts: class of PitchConfig added.
+
 	+	lilyNotation/matcher.ts: merge note ids.
 
 	+	lilyNotation: added rest field on note.

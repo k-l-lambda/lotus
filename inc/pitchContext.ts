@@ -58,33 +58,14 @@ const stringifyNumber = x => Number.isFinite(x) ? x : x.toString();
 */
 
 
-class PitchContext {
-	clef = -3;
-	keyAlters: DictArray;
-	octaveShift = 0;
-	alters: DictArray;
-
-	tick?: number;
+class PitchConfig {
+	clef: number = -3;
+	keyAlters: DictArray = new DictArray();
+	octaveShift: number = 0;
+	alters: DictArray = new DictArray();
 
 
-	constructor (data) {
-		//console.assert(data.keyAlters instanceof DictArray, "unexpected keyAlters:", data);
-		Object.assign(this, data);
-	}
-
-
-	toJSON () {
-		return {
-			__prototype: "PitchContext",
-			clef: this.clef,
-			keyAlters: new DictArray(this.keyAlters),
-			octaveShift: this.octaveShift,
-			alters: new DictArray(this.alters),
-		};
-	}
-
-
-	get keySignature () {
+	get keySignature (): number {
 		return this.keyAlters.filter(a => Number.isInteger(a)).reduce((sum, a) => sum + a, 0);
 	}
 
@@ -122,6 +103,70 @@ class PitchContext {
 		const y = this.noteToY(note);
 
 		return {y, alter};
+	}
+
+
+	yToNote (y) {
+		console.assert(Number.isInteger(y * 2), "invalid y:", y);
+		//if (!Number.isInteger(y * 2))
+		//	debugger;
+
+		return (-y - this.octaveShift * 3.5 - this.clef) * 2;
+	}
+
+
+	alterOnNote (note) {
+		if (Number.isInteger(this.alters[note]))
+			return this.alters[note];
+
+		const gn = mod7(note);
+		if (Number.isInteger(this.keyAlters[gn]))
+			return this.keyAlters[gn];
+
+		return 0;
+	}
+
+
+	noteToPitch (note) {
+		const group = Math.floor(note / 7);
+		const gn = mod7(note);
+
+		const pitch = MIDDLE_C + group * 12 + GROUP_N_TO_PITCH[gn] + this.alterOnNote(note);
+		if (!Number.isFinite(pitch)) {
+			console.warn("invalid pitch value:", pitch, note, group, gn);
+			return -1;
+		}
+
+		return pitch;
+	}
+
+
+	yToPitch (y) {
+		return this.noteToPitch(this.yToNote(y));
+	}
+};
+
+
+class PitchContext extends PitchConfig {
+	tick?: number;
+
+
+	constructor (data) {
+		super();
+
+		//console.assert(data.keyAlters instanceof DictArray, "unexpected keyAlters:", data);
+		Object.assign(this, data);
+	}
+
+
+	toJSON () {
+		return {
+			__prototype: "PitchContext",
+			clef: this.clef,
+			keyAlters: new DictArray(this.keyAlters),
+			octaveShift: this.octaveShift,
+			alters: new DictArray(this.alters),
+		};
 	}
 
 
@@ -172,7 +217,7 @@ class PitchContextTable {
 
 
 	// workaround 'Infinity' JSON representation issue.
-	static itemToJSON (item) {
+	static itemToJSON (item: PitchContextItem) {
 		return {
 			...item,
 			endTick: stringifyNumber(item.endTick),
@@ -180,7 +225,7 @@ class PitchContextTable {
 	}
 
 
-	static itemFromJSON (item) {
+	static itemFromJSON (item: PitchContextItem) {
 		return {
 			...item,
 			endTick: Number(item.endTick),
@@ -188,7 +233,7 @@ class PitchContextTable {
 	}
 
 
-	constructor ({items}) {
+	constructor ({items}: {items: PitchContextItem[]}) {
 		this.items = items.map(PitchContextTable.itemFromJSON);
 	}
 
@@ -201,7 +246,7 @@ class PitchContextTable {
 	}
 
 
-	lookup (tick) {
+	lookup (tick: number): PitchContext {
 		return this.items.find(item => tick >= item.tick && tick < item.endTick).context;
 	}
 };
@@ -214,7 +259,7 @@ class NotationTrack {
 	contexts: PitchContext[] = [];
 
 
-	get lastPitchContext () {
+	get lastPitchContext (): PitchContext {
 		if (this.contexts.length)
 			return this.contexts[this.contexts.length - 1];
 
@@ -222,7 +267,7 @@ class NotationTrack {
 	}
 
 
-	appendNote (time, data) {
+	appendNote (time: number, data: NotationNote) {
 		this.notes.push({
 			time: this.endTime + time,
 			...data,
@@ -231,20 +276,18 @@ class NotationTrack {
 };
 
 
-class StaffContext {
+class StaffContext extends PitchConfig {
 	logger: LogRecorder;
 
 	beatsPerMeasure = 4;
-	clef = -3;
-	keyAlters = new DictArray();
-	octaveShift = 0;
-	alters = new DictArray();
 	track = new NotationTrack();
 
 	dirty = true;
 
 
 	constructor ({logger}) {
+		super();
+
 		this.logger = logger;
 	}
 
@@ -344,47 +387,6 @@ class StaffContext {
 		this.beatsPerMeasure = value;
 
 		// this won't change pitch context
-	}
-
-
-	yToNote (y) {
-		console.assert(Number.isInteger(y * 2), "invalid y:", y);
-		//if (!Number.isInteger(y * 2))
-		//	debugger;
-
-		return (-y - this.octaveShift * 3.5 - this.clef) * 2;
-	}
-
-
-	alterOnNote (note) {
-		if (Number.isInteger(this.alters[note]))
-			return this.alters[note];
-
-		const gn = mod7(note);
-		if (Number.isInteger(this.keyAlters[gn]))
-			return this.keyAlters[gn];
-
-		return 0;
-	}
-
-
-	noteToPitch (note) {
-		const group = Math.floor(note / 7);
-		const gn = mod7(note);
-
-		const pitch = MIDDLE_C + group * 12 + GROUP_N_TO_PITCH[gn] + this.alterOnNote(note);
-		if (!Number.isFinite(pitch)) {
-			this.logger.append("noteToPitch.invalidPitch", {pitch, note, group, gn});
-			console.warn("invalid pitch value:", pitch, note, group, gn);
-			return -1;
-		}
-
-		return pitch;
-	}
-
-
-	yToPitch (y) {
-		return this.noteToPitch(this.yToNote(y));
 	}
 };
 
