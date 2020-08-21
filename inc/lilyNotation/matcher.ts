@@ -22,15 +22,25 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 	const midiNotation = MusicNotation.Notation.parseMidi(target);
 
 	const notes = lilyNotation.notes.filter(note => !note.rest && !note.tied && !note.overlapped).map(note => ({
-		start: note.startTick,
+		channel: note.channel,
+		start: note.start,
 		pitch: note.pitch,
-		duration: note.endTick - note.startTick,
-		velocity: 127,
-		id: note.id,
-		track: note.staffTrack,
+		duration: note.duration,
+		velocity: note.velocity || 127,
+		ids: [note.id],
+		staffTrack: note.staffTrack,
 		contextIndex: note.contextIndex,
 	}));
-	const noteMap = notes.reduce((map, note) => ((map[`${note.start},${note.pitch}`] = note), map), {});
+	const noteMap = notes.reduce((map, note) => {
+		const key = `${note.channel}|${note.start}|${note.pitch}`;
+		const priorNote = map[key];
+		if (priorNote)
+			priorNote.ids.push(...note.ids);
+		else
+			map[key] = note;
+
+		return map;
+	}, {});
 	const trimmedNotes = Object.values(noteMap);
 
 	const criterion = new MusicNotation.Notation({
@@ -59,7 +69,7 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 
 			const note = midiNotation.notes[si] as any;
 			note.ids = ids;
-			note.staffTrack = cn.track;
+			note.staffTrack = cn.staffTrack;
 			note.contextIndex = cn.contextIndex;
 		}
 	});

@@ -781,6 +781,7 @@ export default class LilyInterpreter {
 			startTick: event._tick,
 			endTick: event._tick + event.durationMagnitude,
 			pitch: pitch.absolutePitchValue + (pitch._transposition || 0),
+			velocity: 127,
 			id: pitch.href,
 			tied: pitch._tied,
 			rest: event.isRest,

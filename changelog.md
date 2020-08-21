@@ -28,6 +28,8 @@
 
 *	2020.8.21
 
+	+	lilyNotation/matcher.ts: merge note ids.
+
 	+	lilyNotation: added rest field on note.
 
 	+	lilyInterpreter.ts: refined LilyInterpreter.getNotation.
