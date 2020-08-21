@@ -25,6 +25,12 @@
 
 
 
+	const copyNotation = notation => ({
+		notes: notation.notes.map(note => _.pick(note, ["softIndex", "duration", "classes", "pitch", "index", "id"])),
+	});
+
+
+
 	export default {
 		name: "notations-matcher",
 
@@ -79,9 +85,7 @@
 				if (!this.criterion)
 					return null;
 
-				const copy = {
-					notes: this.criterion.notes.map(note => _.pick(note, ["softIndex", "duration", "classes", "pitch", "index"])),
-				};
+				const copy = copyNotation(this.criterion);
 				this.satisfyNotation(copy, "c");
 
 				return copy;
@@ -92,9 +96,7 @@
 				if (!this.sample)
 					return null;
 
-				const copy = {
-					notes: this.sample.notes.map(note => _.pick(note, ["softIndex", "duration", "classes", "pitch", "index"])),
-				};
+				const copy = copyNotation(this.sample);
 				this.satisfyNotation(copy, "s");
 
 				return copy;
