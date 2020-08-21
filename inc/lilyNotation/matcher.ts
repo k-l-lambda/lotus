@@ -70,6 +70,7 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 	// assign ids onto MIDI events
 	assignNotationEventsIds(midiNotation);
 
+	// TODO: return original midiNotation
 	return {criterion, sample: midiNotation, path};
 };
 

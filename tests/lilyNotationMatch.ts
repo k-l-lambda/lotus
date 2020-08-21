@@ -153,6 +153,11 @@ const main = async () => {
 		catch (err) {
 			console.warn("checkFile error:", err);
 			++counting.failure;
+
+			issues.push({
+				lyFile,
+				coverage: null,
+			});
 		}
 
 		if (++i % 100 === 0)
