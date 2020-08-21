@@ -783,6 +783,7 @@ export default class LilyInterpreter {
 			pitch: pitch.absolutePitchValue + (pitch._transposition || 0),
 			id: pitch.href,
 			tied: pitch._tied,
+			rest: event.isRest,
 			staffTrack: staffNamesIndices[staffName],
 			contextIndex: ctx.index,
 		})).sort((n1, n2) => n1.startTick - n2.startTick);

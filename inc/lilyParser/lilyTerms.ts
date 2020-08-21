@@ -1675,6 +1675,11 @@ export class Rest extends MusicEvent {
 	get isSpacer () {
 		return this.name === "s";
 	}
+
+
+	get isRest (): boolean {
+		return true;
+	}
 };
 
 

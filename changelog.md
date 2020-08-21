@@ -28,6 +28,8 @@
 
 *	2020.8.21
 
+	+	lilyNotation: added rest field on note.
+
 	+	lilyInterpreter.ts: refined LilyInterpreter.getNotation.
 
 	+	lilyNotation/matcher.ts: use hard matching for first pass.

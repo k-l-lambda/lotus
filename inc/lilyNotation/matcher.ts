@@ -21,7 +21,7 @@ interface MatcherResult {
 const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Promise<MatcherResult> => {
 	const midiNotation = MusicNotation.Notation.parseMidi(target);
 
-	const notes = lilyNotation.notes.filter(note => !note.tied && !note.overlapped).map(note => ({
+	const notes = lilyNotation.notes.filter(note => !note.rest && !note.tied && !note.overlapped).map(note => ({
 		start: note.startTick,
 		pitch: note.pitch,
 		duration: note.endTick - note.startTick,

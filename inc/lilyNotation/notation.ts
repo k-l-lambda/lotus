@@ -9,6 +9,7 @@ import {PitchContextTable} from "../pitchContext";
 export interface Note extends MusicNotation.Note {
 	id: string;
 	endTick: number;
+	rest?: boolean;
 	tied?: boolean;
 	overlapped?: boolean;
 
