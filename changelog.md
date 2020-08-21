@@ -27,6 +27,8 @@
 
 *	2020.8.21
 
+	+	lilyNotation/matcher.ts: use hard matching for first pass.
+
 	+	notations-matcher.vue: cloned notation data inner.
 
 

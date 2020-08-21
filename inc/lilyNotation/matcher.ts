@@ -40,13 +40,10 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 		endTime: notes[notes.length - 1].start + notes[notes.length - 1].duration,
 	});
 
-	// normalize target note time
-	midiNotation.notes.forEach(note => {
-		note.start = note.startTick * (WHOLE_DURATION_MAGNITUDE / 4) / target.header.ticksPerBeat;
-	});
+	const midiTickFactor = (WHOLE_DURATION_MAGNITUDE / 4) / target.header.ticksPerBeat;
 
-	Matcher.genNotationContext(criterion);
-	Matcher.genNotationContext(midiNotation);
+	Matcher.genNotationContext(criterion, {softIndexFactor: 1e3});
+	Matcher.genNotationContext(midiNotation, {softIndexFactor: midiTickFactor * 1e3});
 	//console.debug("notations:", criterion, midiNotation);
 
 	for (const note of midiNotation.notes)
@@ -70,7 +67,6 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 	// assign ids onto MIDI events
 	assignNotationEventsIds(midiNotation);
 
-	// TODO: return original midiNotation
 	return {criterion, sample: midiNotation, path};
 };
 
