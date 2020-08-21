@@ -3,7 +3,7 @@ import fs from "fs";
 import {argv} from "yargs";
 import JSZip from "jszip";
 import YAML from "yaml";
-import {MusicNotation, Matcher, MIDI, MidiUtils} from "@k-l-lambda/web-widgets";
+import {MIDI, MidiUtils} from "@k-l-lambda/web-widgets";
 
 import "../env.js";
 
@@ -22,13 +22,13 @@ const checkFile = async filename => {
 	const lilyParser = await loadLilyParser();
 
 	const midi = await makeMIDI(source, lilyParser, {unfoldRepeats: false});
-	const midiNotation = MusicNotation.Notation.parseMidi(midi);
+	//const midiNotation = MusicNotation.Notation.parseMidi(midi);
 
 	const lilyDocument = new LilyDocument(lilyParser.parse(source));
 	const interperter = lilyDocument.interpret();
 	const lilyNotation = interperter.getNotation();
 
-	const notes = lilyNotation.notes.filter(note => !note.tied && !note.overlapped).map(note => ({
+	/*const notes = lilyNotation.notes.filter(note => !note.tied && !note.overlapped).map(note => ({
 		start: note.startTick,
 		pitch: note.pitch,
 		duration: note.endTick - note.startTick,
@@ -59,7 +59,10 @@ const checkFile = async filename => {
 	const navigator = await Matcher.runNavigation(criterion, midiNotation);
 	const path = navigator.path();
 	LilyNotation.fuzzyMatchNotations(path, criterion, midiNotation, {pitchToleranceMax: 0});
-	//console.debug("path:", path);
+	//console.debug("path:", path);*/
+
+	const {path, criterion, sample: midiNotation} = await LilyNotation.matchWithMIDI(lilyNotation, midi);
+	LilyNotation.fuzzyMatchNotations(path, criterion, midiNotation, {pitchToleranceMax: 0});
 
 	const cis = new Set(Array(criterion.notes.length).keys());
 	path.forEach(ci => cis.delete(ci));
