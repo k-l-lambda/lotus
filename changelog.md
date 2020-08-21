@@ -28,6 +28,8 @@
 
 *	2020.8.21
 
+	+	sheet-list.vue: pitch context marks added.
+
 	+	pitchContext.ts: PitchConfig.yToPitchName added.
 
 	+	pitchContext.ts: class of PitchConfig added.

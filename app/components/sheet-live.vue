@@ -21,12 +21,28 @@
 						<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
 							:transform="`translate(${staff.x}, ${staff.y})`"
 						>
-							<rect class="head" :x="0" :y="-2" :width="staff.headWidth" :height="4" />
-							<circle />
-							<line v-if="Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
-							<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4" :class="measure.class">
-								<rect :x="measure.lineX" :y="-2" :width="measure.noteRange.end - measure.lineX" :height="4"/>
-								<text :x="measure.headX">'{{measure.index}}</text>
+							<g v-if="showMarkLocators" class="locator">
+								<rect class="head" :x="0" :y="-2" :width="staff.headWidth" :height="4" />
+								<circle />
+								<line v-if="Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
+								<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4" :class="measure.class">
+									<rect :x="measure.lineX" :y="-2" :width="measure.noteRange.end - measure.lineX" :height="4"/>
+									<text :x="measure.headX">'{{measure.index}}</text>
+								</g>
+							</g>
+							<g v-if="showMarkPitchContexts && pitchContextMarks[row.index] && pitchContextMarks[row.index][iii]" class="pitch-context">
+								<g v-for="(item, i4) of pitchContextMarks[ii][iii]" :key="i4" :transform="`translate(${item.x}, 0.5)`">
+									<g>
+										<g v-for="(pitch, i5) of item.names[0]" :key="i5" :transform="`translate(0, ${pitch.y})`">
+											<text>{{pitch.name}}</text>
+										</g>
+									</g>
+									<g transform="translate(2,0)">
+										<g v-for="(pitch, i5) of item.names[1]" :key="i5" :transform="`translate(0, ${pitch.y})`">
+											<text>{{pitch.name}}</text>
+										</g>
+									</g>
+								</g>
 							</g>
 						</g>
 					</g>
@@ -148,6 +164,8 @@
 			midiNotation: Object,
 			pitchContextGroup: Array,
 			showMark: Boolean,
+			showMarkLocators: Boolean,
+			showMarkPitchContexts: Boolean,
 			showCursor: {
 				type: Boolean,
 				default: true,
@@ -254,6 +272,35 @@
 
 			isPlaying () {
 				return this.midiPlayer && this.midiPlayer.isPlaying;
+			},
+
+
+			/*
+				[	system
+					[	staff
+						[context]
+					]
+				]
+			*/
+			pitchContextMarks () {
+				if (!this.pitchContextGroup || !this.scheduler)
+					return [];
+
+				return this.pitchContextGroup.map(table => table.items.map(item => {
+					const yToName = y => ({y, name: item.context.yToPitchName(y)});
+
+					const {row, x} = this.scheduler.lookupPosition(item.tick);
+					const names = [
+						[-2, -1, 0, 1, 2].map(yToName),
+						[-1.5, -0.5, 0.5, 1.5].map(yToName),
+					];
+
+					return {row, x, names};
+				})).reduce((result, table, staff) => (table.forEach(({row, ...item}) => {
+					result[row] = result[row] || [];
+					result[row][staff] = result[row][staff] || [];
+					result[row][staff].push(item);
+				}), result), []);
 			},
 		},
 
@@ -610,16 +657,33 @@
 			//visibility: hidden;
 			opacity: 0;
 
-			text
+			.locator
 			{
-				font-size: 2px;
-				text-anchor: start;
-				pointer-events: none;
+				text
+				{
+					font-size: 2px;
+					text-anchor: start;
+					pointer-events: none;
+				}
 			}
 
 			rect
 			{
 				fill: transparent;
+			}
+
+			.pitch-context
+			{
+				text
+				{
+					font-size: 1px;
+
+					&:hover
+					{
+						transform: scale(2);
+						font-weight: bold;
+					}
+				}
 			}
 		}
 

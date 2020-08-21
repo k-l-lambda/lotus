@@ -96,6 +96,8 @@
 						:pitchContextGroup="pitchContextGroup"
 						:midiPlayer.sync="midiPlayer"
 						:showMark="true"
+						:showMarkLocators="chromaticSymbols"
+						:showMarkPitchContexts="chromaticSymbols"
 						:enablePointer="enabledPointer"
 						:showCursor="showCursor"
 						:bakingMode="bakingSheet"
