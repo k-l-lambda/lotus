@@ -33,12 +33,26 @@
 							<g v-if="showMarkPitchContexts && pitchContextMarks[row.index] && pitchContextMarks[row.index][iii]" class="pitch-context">
 								<g v-for="(item, i4) of pitchContextMarks[ii][iii]" :key="i4" :transform="`translate(${item.x}, 0.5)`">
 									<g>
-										<g v-for="(pitch, i5) of item.names[0]" :key="i5" :transform="`translate(0, ${pitch.y})`">
+										<g v-for="(pitch, i5) of item.names[0]" :key="i5" class="pitch"
+											:transform="`translate(0, ${pitch.y})`"
+											:class="{
+												sharp: pitch.alter > 0,
+												flat: pitch.alter < 0,
+											}"
+										>
+											<rect class="bg" />
 											<text>{{pitch.name}}</text>
 										</g>
 									</g>
 									<g transform="translate(2,0)">
-										<g v-for="(pitch, i5) of item.names[1]" :key="i5" :transform="`translate(0, ${pitch.y})`">
+										<g v-for="(pitch, i5) of item.names[1]" :key="i5" class="pitch"
+											:transform="`translate(0, ${pitch.y})`"
+											:class="{
+												sharp: pitch.alter > 0,
+												flat: pitch.alter < 0,
+											}"
+										>
+											<rect class="bg" />
 											<text>{{pitch.name}}</text>
 										</g>
 									</g>
@@ -287,7 +301,8 @@
 					return [];
 
 				return this.pitchContextGroup.map(table => table.items.map(item => {
-					const yToName = y => ({y, name: item.context.yToPitchName(y)});
+					const context = item.context;
+					const yToName = y => ({y, alter: context.alterOnNote(context.yToNote(y)), name: context.yToPitchName(y)});
 
 					const {row, x} = this.scheduler.lookupPosition(item.tick);
 					const names = [
@@ -674,14 +689,45 @@
 
 			.pitch-context
 			{
-				text
+				.pitch
 				{
-					font-size: 1px;
+					text
+					{
+						font-size: 1px;
+					}
 
 					&:hover
 					{
-						transform: scale(2);
-						font-weight: bold;
+						text
+						{
+							transform: scale(2);
+							font-weight: bold;
+						}
+					}
+
+					.bg
+					{
+						x: 0;
+						y: -0.5px;
+						width: 1.6px;
+						height: 1px;
+						fill: #fff2;
+					}
+
+					&.sharp
+					{
+						.bg
+						{
+							fill: orange;
+						}
+					}
+
+					&.flat
+					{
+						.bg
+						{
+							fill: blue;
+						}
 					}
 				}
 			}

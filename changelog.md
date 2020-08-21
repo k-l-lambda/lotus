@@ -1,6 +1,5 @@
 
 ## TODO
-	PitchContextGroup visualization
 	Baking score bundle size reduction
 	MIDI notation from LilyDocument, MIDI matching by LilyInterpreter
 	implicit notes matching with sheet document
@@ -28,6 +27,7 @@
 
 *	2020.8.21
 
+	+	sheet-list.vue: added alter color in pitch context marks.
 	+	sheet-list.vue: pitch context marks added.
 
 	+	pitchContext.ts: PitchConfig.yToPitchName added.
