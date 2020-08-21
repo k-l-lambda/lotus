@@ -31,16 +31,28 @@ const mod12 = x => {
 interface NotationNote {
 	track?: number;
 	time?: number;
-	startTick: number;
+	startTick?: number;
 	pitch: number;
 	id?: string;
 	tied?: boolean;
 	contextIndex?: number;
 	staffTrack?: number;
+	type?: number;
 };
 
 
 const stringifyNumber = x => Number.isFinite(x) ? x : x.toString();
+
+
+const PHONETS = "CDEFGAB";
+
+const ALTER_NAMES = {
+	[-2]: "\u266D\u266D",
+	[-1]: "\u266D",
+	[0]: "\u266E",
+	[1]: "\u266F",
+	[2]: "\uD834\uDD2A",
+};
 
 
 /*
@@ -75,7 +87,7 @@ class PitchConfig {
 	}
 
 
-	pitchToNote (pitch: number, {preferredAlter = null} = {}) {
+	pitchToNote (pitch: number, {preferredAlter = null} = {}): {note: number, alter: number} {
 		if (!preferredAlter)
 			preferredAlter = this.keySignature < 0 ? -1 : 1;
 
@@ -98,7 +110,7 @@ class PitchConfig {
 	}
 
 
-	pitchToY (pitch: number, {preferredAlter = null} = {}) {
+	pitchToY (pitch: number, {preferredAlter = null} = {}): {y: number, alter: number} {
 		const {note, alter} = this.pitchToNote(pitch, {preferredAlter});
 		const y = this.noteToY(note);
 
@@ -106,7 +118,7 @@ class PitchConfig {
 	}
 
 
-	yToNote (y) {
+	yToNote (y: number): number {
 		console.assert(Number.isInteger(y * 2), "invalid y:", y);
 		//if (!Number.isInteger(y * 2))
 		//	debugger;
@@ -115,7 +127,7 @@ class PitchConfig {
 	}
 
 
-	alterOnNote (note) {
+	alterOnNote (note: number): number {
 		if (Number.isInteger(this.alters[note]))
 			return this.alters[note];
 
@@ -127,7 +139,7 @@ class PitchConfig {
 	}
 
 
-	noteToPitch (note) {
+	noteToPitch (note: number): number {
 		const group = Math.floor(note / 7);
 		const gn = mod7(note);
 
@@ -141,8 +153,21 @@ class PitchConfig {
 	}
 
 
-	yToPitch (y) {
+	yToPitch (y: number): number {
 		return this.noteToPitch(this.yToNote(y));
+	}
+
+
+	yToPitchName (y: number): string {
+		const note = this.yToNote(y);
+		const group = Math.floor(note / 7);
+		const gn = mod7(note);
+
+		let alter = this.alterOnNote(note);
+		if (!alter && !Number.isInteger(this.alters[note]))
+			alter = null;
+
+		return `${ALTER_NAMES[alter] ? ALTER_NAMES[alter] : ""}${PHONETS[gn]}${group + 4}`;
 	}
 };
 
