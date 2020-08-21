@@ -28,6 +28,8 @@
 
 *	2020.8.21
 
+	+	lilyInterpreter.ts: refined LilyInterpreter.getNotation.
+
 	+	lilyNotation/matcher.ts: use hard matching for first pass.
 
 	+	notations-matcher.vue: cloned notation data inner.

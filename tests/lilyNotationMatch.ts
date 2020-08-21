@@ -76,7 +76,11 @@ const checkFile = async filename => {
 		if (omitC > 0)
 			console.debug("cis:", cis, Array.from(cis).map(ci => criterion.notes[ci]).map(note => ({id: note.id, start: note.start, pitch: note.pitch})));
 		if (omitS > 0) {
-			const sis = path.map((ci, si) => [si, ci]).filter(([_, ci]) => ci < 0).map(([si]) => si);
+			const sis = path
+				.map((ci, si) => [si, ci])
+				// eslint-disable-next-line
+				.filter(([_, ci]) => ci < 0)
+				.map(([si]) => si);
 			console.debug("sis:", sis, sis.map(si => midiNotation.notes[si]).map(note => ({start: note.start, pitch: note.pitch})));
 		}
 	}

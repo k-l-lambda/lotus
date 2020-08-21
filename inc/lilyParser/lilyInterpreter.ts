@@ -17,7 +17,7 @@ import LilyDocument from "./lilyDocument";
 // eslint-disable-next-line
 import * as LilyNotation from "../lilyNotation";
 // eslint-disable-next-line
-import {NotationTrack} from "../pitchContext";
+import {NotationTrack, PitchContext} from "../pitchContext";
 
 
 
@@ -34,6 +34,15 @@ type ContextDict = {[key: string]: string};
 
 
 type NotationTrackGroup = {[key: string]: NotationTrack};
+
+
+interface NoteRef {
+	track?: number;
+	event: MusicEvent;
+	pitch: ChordElement;
+	ctx: PitchContext;
+	staffName: string;
+};
 
 
 export class MusicTrack {
@@ -191,7 +200,7 @@ export class MusicTrack {
 	}
 
 
-	generateStaffTracks ({logger}: {logger?: LogRecorder} = {}): {group: NotationTrackGroup, notes: LilyNotation.Note[]} {
+	generateStaffTracks ({logger}: {logger?: LogRecorder} = {}): {group: NotationTrackGroup, notes: NoteRef[]} {
 		const staves: {[key: string]: StaffContext} = {};
 		const getCurrentStaffContext = (staffName: string): StaffContext => {
 			if (!staves[staffName])
@@ -200,7 +209,7 @@ export class MusicTrack {
 			return staves[staffName];
 		};
 
-		const notes: any[] = [];
+		const notes: NoteRef[] = [];
 
 		const listener = (term: BaseTerm, track: TrackContext) => {
 			const context = getCurrentStaffContext(track.staffName);
@@ -210,14 +219,8 @@ export class MusicTrack {
 				const ctx = context.track.contexts[index];
 
 				term.pitchElements.forEach(pitch => notes.push({
-					//channel: 0,
-					//start: term._tick,
-					//duration: term.durationMagnitude,
-					startTick: term._tick,
-					endTick: term._tick + term.durationMagnitude,
-					pitch: pitch.absolutePitchValue + (pitch._transposition || 0),
-					id: pitch.href,
-					tied: pitch._tied,
+					event: term,
+					pitch,
 					ctx,
 					staffName: track.staffName,
 				}));
@@ -741,7 +744,7 @@ export default class LilyInterpreter {
 			items: [],
 		}));
 
-		const tracks = this.musicTracks.map((track, i) => {
+		const tracks: NoteRef[][] = this.musicTracks.map((track, i) => {
 			const {notes, group} = track.generateStaffTracks({logger});
 			//console.log("group:", group);
 
@@ -757,7 +760,7 @@ export default class LilyInterpreter {
 
 			return notes.map(note => ({track: i, ...note}));
 		});
-		const notes = [].concat(...tracks).sort((n1, n2) => n1.startTick - n2.startTick);
+		const noteRefs = [].concat(...tracks);
 
 		const pitchContextGroup = pitchContexts.map(({items}) => {
 			items.sort((i1, i2) => i1.tick - i2.tick);
@@ -771,14 +774,18 @@ export default class LilyInterpreter {
 
 		const staffNamesIndices = this.staffNames.reduce((indices, name, index) => ({...indices, [name]: index}), {});
 
-		notes.forEach(note => {
-			note.staffTrack = staffNamesIndices[note.staffName];
-			note.contextIndex = note.ctx.index;
-
-			// clear temporary fields
-			delete note.staffName;
-			delete note.ctx;
-		});
+		const notes = noteRefs.map(({event, pitch, ctx, staffName}) => ({
+			channel: 0,
+			start: event._tick,
+			duration: event.durationMagnitude,
+			startTick: event._tick,
+			endTick: event._tick + event.durationMagnitude,
+			pitch: pitch.absolutePitchValue + (pitch._transposition || 0),
+			id: pitch.href,
+			tied: pitch._tied,
+			staffTrack: staffNamesIndices[staffName],
+			contextIndex: ctx.index,
+		})).sort((n1, n2) => n1.startTick - n2.startTick);
 
 		return {
 			notes,

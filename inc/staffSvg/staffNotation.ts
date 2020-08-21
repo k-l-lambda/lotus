@@ -333,7 +333,6 @@ export {
 	parseNotationFromSheetDocument,
 	assignTickByLocationTable,
 	matchNotations,
-	//assignNotationEventsIds,
 	assignIds,
 	createPitchContextGroup,
 	SheetNotation,
