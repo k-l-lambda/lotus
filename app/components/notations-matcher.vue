@@ -2,10 +2,10 @@
 	<div class="notations-matcher">
 		<svg xmlns="http://www.w3.org/2000/svg" height="480" :viewBox="`-20 -20 ${width + 40} 160`">
 			<g :transform="`translate(${positionC.x}, ${positionC.y})`" class="criterion">
-				<PinaoRoll v-if="criterion" :notations="criterion" :timeScale="timeScale" :pitchScale="1" :tooltips="true" />
+				<PinaoRoll v-if="innerCriterion" :notation="innerCriterion" :timeScale="timeScale" :pitchScale="1" :tooltips="true" />
 			</g>
 			<g :transform="`translate(${positionS.x}, ${positionS.y})`" class="sample">
-				<PinaoRoll v-if="sample" :notations="sample" :timeScale="timeScale" :pitchScale="1" :tooltips="true" />
+				<PinaoRoll v-if="innerSample" :notation="innerSample" :timeScale="timeScale" :pitchScale="1" :tooltips="true" />
 			</g>
 			<g class="links" v-if="links">
 				<line v-for="link of links" :key="link.s.index"
@@ -20,6 +20,7 @@
 </template>
 
 <script>
+	import _ from "lodash";
 	import {SvgPianoRoll} from "@k-l-lambda/web-widgets";
 
 
@@ -52,28 +53,59 @@
 		computed: {
 			links () {
 				return this.path && this.path.map((ci, si) => ({ci, si})).filter(({ci}) => ci >= 0).map(({ci, si}) => ({
-					c: this.criterion.notes[ci],
-					s: this.sample.notes[si],
+					c: this.innerCriterion.notes[ci],
+					s: this.innerSample.notes[si],
 				}));
 			},
 
 
+			linkIndices () {
+				return this.path && this.path.map((c, s) => ({c, s}));
+			},
+
+
 			width () {
-				const lastC = this.criterion && this.criterion.notes[this.criterion.notes.length - 1];
-				const lastS = this.sample && this.sample.notes[this.sample.notes.length - 1];
+				const lastC = this.innerCriterion && this.innerCriterion.notes[this.innerCriterion.notes.length - 1];
+				const lastS = this.innerSample && this.innerSample.notes[this.innerSample.notes.length - 1];
 
 				const cduration = lastC ? (lastC.start + lastC.duration) : 0;
 				const sduration = lastS ? (lastS.start + lastS.duration) : 0;
 
 				return Math.max(cduration, sduration, 1) * this.timeScale;
 			},
+
+
+			innerCriterion () {
+				if (!this.criterion)
+					return null;
+
+				const copy = {
+					notes: this.criterion.notes.map(note => _.pick(note, ["softIndex", "duration", "classes", "pitch", "index"])),
+				};
+				this.satisfyNotation(copy, "c");
+
+				return copy;
+			},
+
+
+			innerSample () {
+				if (!this.sample)
+					return null;
+
+				const copy = {
+					notes: this.sample.notes.map(note => _.pick(note, ["softIndex", "duration", "classes", "pitch", "index"])),
+				};
+				this.satisfyNotation(copy, "s");
+
+				return copy;
+			},
 		},
 
 
-		created () {
+		/*created () {
 			this.satisfyNotation(this.criterion, "c");
 			this.satisfyNotation(this.sample, "s");
-		},
+		},*/
 
 
 		methods: {
@@ -81,10 +113,10 @@
 				if (notation) {
 					notation.notes.forEach(note => {
 						note.start = note.softIndex * 4e+3;
-						note.duration = note.duration || 2000;
+						note.duration = 2000;
 						note.classes = note.classes || {};
 
-						const matched = this.links.find(item => item[type].index === note.index);
+						const matched = this.linkIndices.some(item => item[type] === note.index);
 						note.classes.missed = !matched;
 					});
 				}
@@ -92,7 +124,7 @@
 		},
 
 
-		watch: {
+		/*watch: {
 			criterion () {
 				this.satisfyNotation(this.criterion, "c");
 			},
@@ -101,7 +133,7 @@
 			sample () {
 				this.satisfyNotation(this.sample, "s");
 			},
-		},
+		},*/
 	};
 </script>
 

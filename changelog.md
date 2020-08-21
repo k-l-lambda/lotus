@@ -25,6 +25,11 @@
 
 
 
+*	2020.8.21
+
+	+	notations-matcher.vue: cloned notation data inner.
+
+
 *	2020.8.20
 
 	+	lilyNotation/matcher.ts created.

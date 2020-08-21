@@ -19,7 +19,7 @@
   "author": "K.L.",
   "license": "ISC",
   "dependencies": {
-    "@k-l-lambda/web-widgets": "^0.3.23",
+    "@k-l-lambda/web-widgets": "^0.3.24",
     "jison": "^0.4.18",
     "vue": "^2.6.11",
     "xmldom": "^0.3.0"
