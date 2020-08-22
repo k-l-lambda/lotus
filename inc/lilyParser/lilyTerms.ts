@@ -754,6 +754,9 @@ export class AfterGrace extends Command {
 
 
 export class Clef extends Command {
+	get clefName (): string {
+		return this.args[0].toString();
+	}
 };
 
 

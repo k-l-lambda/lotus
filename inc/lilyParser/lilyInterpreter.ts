@@ -226,7 +226,21 @@ export class MusicTrack {
 				}));
 			}
 			else if (term instanceof Clef) {
-				// TODO:
+				//console.log("clef:", term.clefName);
+				switch (term.clefName) {
+				case "treble":
+					context.setClef(1, 4);	// a treble (G4) on the 2nd staff line
+
+					break;
+				case "bass":
+					context.setClef(-1, -4);	// a bass (F3) on the 4th staff line
+	
+					break;
+				case "tenor":
+					context.setClef(0, 0);	// a tenor (C4) on the 3rd staff line
+		
+					break;
+				}
 			}
 			else if (term instanceof KeySignature) {
 				// TODO:

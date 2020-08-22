@@ -25,6 +25,11 @@
 
 
 
+*	2020.8.22
+
+	+	lilyInterpreter.ts: added clef field on pitch context.
+
+
 *	2020.8.21
 
 	+	sheet-list.vue: added alter color in pitch context marks.
