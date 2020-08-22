@@ -31,7 +31,7 @@
 								</g>
 							</g>
 							<g v-if="showMarkPitchContexts && pitchContextMarks[row.index] && pitchContextMarks[row.index][iii]" class="pitch-context">
-								<g v-for="(item, i4) of pitchContextMarks[ii][iii]" :key="i4" :transform="`translate(${item.x}, 0.5)`">
+								<g v-for="(item, i4) of pitchContextMarks[row.index][iii]" :key="i4" :transform="`translate(${item.x}, 0.5)`">
 									<g>
 										<g v-for="(pitch, i5) of item.names[0]" :key="i5" class="pitch"
 											:transform="`translate(0, ${pitch.y})`"
@@ -44,7 +44,7 @@
 											<text>{{pitch.name}}</text>
 										</g>
 									</g>
-									<g transform="translate(2,0)">
+									<g transform="translate(1.6,0)">
 										<g v-for="(pitch, i5) of item.names[1]" :key="i5" class="pitch"
 											:transform="`translate(0, ${pitch.y})`"
 											:class="{
@@ -335,26 +335,6 @@
 				this.$emit("midi", data, timestamp);
 
 				if (this.noteHighlight) {
-					/*const delay = Math.max(timestamp - performance.now(), 0);
-					setTimeout(() => {
-						//console.log("midi event:", data);
-						if (!this.midiPlayer.isPlaying)
-							return;
-
-						if (data.ids) {
-							switch (data.subtype) {
-							case "noteOn":
-							case "noteOff":
-								const on = data.subtype === "noteOn";
-								if (on)
-									data.ids.forEach(id => this.statusMap.get(id).add("on"));
-								else
-									data.ids.forEach(id => this.statusMap.get(id).remove("on"));
-
-								break;
-							}
-						}
-					}, delay);*/
 					if (data.ids) {
 						let task = null;
 						const ids = data.ids;
@@ -693,14 +673,17 @@
 				{
 					text
 					{
+						fill: #0004;
 						font-size: 1px;
+						pointer-events: none;
 					}
 
 					&:hover
 					{
 						text
 						{
-							transform: scale(2);
+							fill: #000;
+							transform: scale(1.6);
 							font-weight: bold;
 						}
 					}
@@ -708,7 +691,7 @@
 					.bg
 					{
 						x: 0;
-						y: -0.5px;
+						y: -1px;
 						width: 1.6px;
 						height: 1px;
 						fill: #fff2;
@@ -726,7 +709,7 @@
 					{
 						.bg
 						{
-							fill: blue;
+							fill: #aaf;
 						}
 					}
 				}
