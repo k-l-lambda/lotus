@@ -308,13 +308,13 @@ export class MusicTrack {
 		let measureIndex = 0;
 
 		const listener = (term: BaseTerm, track: TrackContext) => {
-			getCurrentTerm(track.staffName).tick = track.tick;
+			getCurrentTerm(track.staffName).tick = term._tick;
 
-			if (track.measureIndex !== measureIndex) {
+			if (term._measure !== measureIndex) {
 				getCurrentTerm(track.staffName).newMeasure = true;
 				commitTerm();
 
-				measureIndex = track.measureIndex;
+				measureIndex = term._measure;
 			}
 
 			if (term instanceof Chord) {
@@ -864,6 +864,8 @@ export default class LilyInterpreter {
 			const context = new LilyStaffContext({logger});
 			context.staffTrack = trackIndex;
 
+			logger.append("staffTerms", staffTerms);
+			//console.debug("staffTerms:", staffTerms);
 			staffTerms.forEach(term => context.executeTerm(term));
 
 			return context;
