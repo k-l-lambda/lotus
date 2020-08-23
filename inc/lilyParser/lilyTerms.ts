@@ -761,10 +761,25 @@ export class Clef extends Command {
 
 
 export class KeySignature extends Command {
+	get keyPitch (): ChordElement {
+		return new ChordElement({pitch: this.args[0], options: {proto: "_PLAIN"}});
+	}
+
+
+	get key (): number {
+		const keyPitch = this.keyPitch;
+		const minor = this.args[1] === "\\minor";
+		const phonetOrder = idioms.FIFTH_PHONETS.indexOf(keyPitch.phonet);
+
+		return phonetOrder + (minor ? -4 : -1) + keyPitch.alterValue * 7;
+	}
 };
 
 
 export class OctaveShift extends Command {
+	get value (): number {
+		return this.args[0].exp;
+	}
 };
 
 
@@ -1819,12 +1834,17 @@ export class ChordElement extends BaseTerm {
 	}
 
 
+	get alterValue (): number {
+		return idioms.ALTER_VALUES[this.alters] || 0;
+	}
+
+
 	get pitchValue (): number {
 		const phonetValue = idioms.PHONET_VALUES[this.phonet];
 		console.assert(Number.isInteger(phonetValue), "invalid phonet:", this.phonet);
 		console.assert(!this.alters || idioms.ALTER_VALUES[this.alters], "invalid alters:", this.alters);
 
-		return 48 + this.octave * 12 + phonetValue + (idioms.ALTER_VALUES[this.alters] || 0);
+		return 48 + this.octave * 12 + phonetValue + this.alterValue;
 	}
 
 

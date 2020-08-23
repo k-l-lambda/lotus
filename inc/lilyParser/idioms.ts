@@ -37,6 +37,9 @@ const ALTER_VALUES = {
 };
 
 
+const FIFTH_PHONETS = "fcgdaeb";
+
+
 
 export {
 	PHONETS,
@@ -44,4 +47,5 @@ export {
 	phonetDifferToShift,
 	PHONET_VALUES,
 	ALTER_VALUES,
+	FIFTH_PHONETS,
 };
