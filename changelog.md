@@ -27,6 +27,8 @@
 
 *	2020.8.23
 
+	+	lilyInterpreter.ts: accidental alters on pitch context added.
+
 	+	lilyInterpreter.ts: pitch context terms of key signature & octave shift added.
 
 	+	lilyNotation/matcher.ts: scaled pitch context group ticks.

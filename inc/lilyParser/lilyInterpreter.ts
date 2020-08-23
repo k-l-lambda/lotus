@@ -84,7 +84,15 @@ class LilyStaffContext extends StaffContext {
 		}
 
 		if (term.pitches) {
-			// TODO: acc
+			// accidental alters
+			term.pitches.forEach(pitch => {
+				const note = pitch.absoluteNotePosition;
+				const alter = this.alterOnNote(note);
+				if (pitch.alterValue !== alter) {
+					this.alters[note] = pitch.alterValue;
+					this.dirty = true;
+				}
+			});
 
 			const event = term.event;
 			const contextIndex = this.snapshot({tick: event._tick});
@@ -288,7 +296,7 @@ export class MusicTrack {
 				currentTerm = null;
 			}
 		};
-		const getCurrentTerm = staffName => {
+		const getCurrentTerm = (staffName: string): PitchContextTerm => {
 			if (!currentTerm)
 				currentTerm = {staffName};
 			else if (currentTerm.staffName !== staffName)
@@ -297,8 +305,17 @@ export class MusicTrack {
 			return currentTerm;
 		};
 
+		let measureIndex = 0;
+
 		const listener = (term: BaseTerm, track: TrackContext) => {
 			getCurrentTerm(track.staffName).tick = track.tick;
+
+			if (track.measureIndex !== measureIndex) {
+				getCurrentTerm(track.staffName).newMeasure = true;
+				commitTerm();
+
+				measureIndex = track.measureIndex;
+			}
 
 			if (term instanceof Chord) {
 				const pcTerm = getCurrentTerm(track.staffName);

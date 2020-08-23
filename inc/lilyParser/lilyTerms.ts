@@ -1851,6 +1851,19 @@ export class ChordElement extends BaseTerm {
 	get absolutePitchValue (): number {
 		return this.absolutePitch.pitchValue;
 	}
+
+
+	// middle C is zero
+	get notePosition (): number {
+		const phonet = idioms.PHONETS.indexOf(this.phonet);
+
+		return (this.octave - 1) * 7 + phonet;
+	}
+
+
+	get absoluteNotePosition (): number {
+		return this.absolutePitch.notePosition;
+	}
 };
 
 
