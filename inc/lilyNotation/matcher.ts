@@ -19,6 +19,14 @@ interface MatcherResult {
 
 
 const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Promise<MatcherResult> => {
+	const midiTickFactor = (WHOLE_DURATION_MAGNITUDE / 4) / target.header.ticksPerBeat;
+
+	// scale pitch context group
+	lilyNotation.pitchContextGroup.forEach(table => table.items.forEach(item => {
+		item.tick /= midiTickFactor;
+		item.endTick /= midiTickFactor;
+	}));
+
 	const midiNotation = MusicNotation.Notation.parseMidi(target);
 
 	const notes = lilyNotation.notes.filter(note => !note.rest && !note.tied && !note.overlapped).map(note => ({
@@ -49,8 +57,6 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 		channels: [trimmedNotes],
 		endTime: notes[notes.length - 1].start + notes[notes.length - 1].duration,
 	});
-
-	const midiTickFactor = (WHOLE_DURATION_MAGNITUDE / 4) / target.header.ticksPerBeat;
 
 	Matcher.genNotationContext(criterion, {softIndexFactor: 1e3});
 	Matcher.genNotationContext(midiNotation, {softIndexFactor: midiTickFactor * 1e3});

@@ -27,6 +27,8 @@
 
 *	2020.8.23
 
+	+	lilyNotation/matcher.ts: scaled pitch context group ticks.
+
 	+	lilyInterpreter.ts: LilyStaffContext added.
 
 
