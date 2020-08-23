@@ -25,6 +25,11 @@
 
 
 
+*	2020.8.23
+
+	+	lilyInterpreter.ts: LilyStaffContext added.
+
+
 *	2020.8.22
 
 	+	lilyInterpreter.ts: added clef field on pitch context.

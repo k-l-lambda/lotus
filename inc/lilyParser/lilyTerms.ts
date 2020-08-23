@@ -1532,6 +1532,12 @@ export class MusicEvent extends BaseTerm {
 	get isStaccato (): boolean {
 		return this.post_events && this.post_events.some(event => event.isStaccato);
 	}
+
+
+	// to be implement in derived classes
+	get isRest (): boolean {
+		return null;
+	}
 };
 
 

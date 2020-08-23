@@ -16,8 +16,6 @@ import {
 import LilyDocument from "./lilyDocument";
 // eslint-disable-next-line
 import * as LilyNotation from "../lilyNotation";
-// eslint-disable-next-line
-import {NotationTrack, PitchContext} from "../pitchContext";
 
 
 
@@ -33,16 +31,95 @@ type MusicListener = (music: BaseTerm, context: TrackContext) => void;
 type ContextDict = {[key: string]: string};
 
 
-type NotationTrackGroup = {[key: string]: NotationTrack};
-
-
-interface NoteRef {
+/*interface NoteRef {
 	track?: number;
 	event: MusicEvent;
 	pitch: ChordElement;
 	ctx: PitchContext;
 	staffName: string;
+};*/
+
+
+interface PitchContextTerm {
+	staffName: string;
+
+	tick?: number;
+	event: MusicEvent;
+
+	clef?: {
+		y: number,
+		value: number,
+	};
+	octaveShift?: number;
+	key?: number;
+	/*acc: {
+		note: number;
+		alter: number;
+	};*/
+	newMeasure?: boolean;
+	pitches?: ChordElement[];
 };
+
+
+class LilyStaffContext extends StaffContext {
+	staffTrack: number;
+	notes: LilyNotation.Note[] = [];
+
+
+	executeTerm (term: PitchContextTerm) {
+		//console.log("executeTerm:", term);
+
+		if (term.newMeasure)
+			this.resetAlters();
+
+		if (term.clef)
+			this.setClef(term.clef.y, term.clef.value);
+
+		if (Number.isFinite(term.octaveShift))
+			this.setOctaveShift(this.octaveShift);
+
+		if (Number.isFinite(term.key)) {
+			// TODO:
+		}
+
+		if (term.pitches) {
+			// TODO: acc
+
+			const event = term.event;
+			const contextIndex = this.snapshot({tick: event._tick});
+
+			this.notes.push(...term.pitches.map(pitch => ({
+				channel: 0,
+				start: event._tick,
+				duration: event.durationMagnitude,
+				startTick: event._tick,
+				endTick: event._tick + event.durationMagnitude,
+				pitch: pitch.absolutePitchValue + (pitch._transposition || 0),
+				velocity: 127,
+				id: pitch.href,
+				tied: pitch._tied,
+				rest: event.isRest,
+				staffTrack: this.staffTrack,
+				contextIndex,
+			})));
+		}
+	}
+
+
+	get pitchContextTable (): PitchContextTable {
+		const items = this.track.contexts.map(context => ({
+			tick: context.tick,
+			endTick: null,
+			context,
+		}));
+		items.forEach((item, i) => {
+			item.endTick = (i + 1 < items.length ? items[i + 1].tick : Infinity);
+		});
+
+		return new PitchContextTable({items});
+	}
+};
+
 
 
 export class MusicTrack {
@@ -200,45 +277,62 @@ export class MusicTrack {
 	}
 
 
-	generateStaffTracks ({logger}: {logger?: LogRecorder} = {}): {group: NotationTrackGroup, notes: NoteRef[]} {
-		const staves: {[key: string]: StaffContext} = {};
-		const getCurrentStaffContext = (staffName: string): StaffContext => {
-			if (!staves[staffName])
-				staves[staffName] = new StaffContext({logger});
+	generateStaffTracks (): PitchContextTerm[] {
+		const pcTerms: PitchContextTerm[] = [];
 
-			return staves[staffName];
+		let currentTerm = null;
+		const commitTerm = () => {
+			if (currentTerm) {
+				pcTerms.push(currentTerm);
+				currentTerm = null;
+			}
+		};
+		const getCurrentTerm = staffName => {
+			if (!currentTerm)
+				currentTerm = {staffName};
+			else if (currentTerm.staffName !== staffName)
+				commitTerm();
+
+			return currentTerm;
 		};
 
-		const notes: NoteRef[] = [];
-
 		const listener = (term: BaseTerm, track: TrackContext) => {
-			const context = getCurrentStaffContext(track.staffName);
+			getCurrentTerm(track.staffName).tick = track.tick;
 
 			if (term instanceof Chord) {
-				const index = context.snapshot({tick: term._tick});
-				const ctx = context.track.contexts[index];
+				/*//const index = context.snapshot({tick: term._tick});
+				//const ctx = context.track.contexts[index];
 
 				term.pitchElements.forEach(pitch => notes.push({
 					event: term,
 					pitch,
-					ctx,
+					//ctx,
 					staffName: track.staffName,
-				}));
+				}));*/
+
+				const pcTerm = getCurrentTerm(track.staffName);
+				pcTerm.event = term;
+				pcTerm.pitches = term.pitchElements;
+
+				commitTerm();
 			}
 			else if (term instanceof Clef) {
 				//console.log("clef:", term.clefName);
 				switch (term.clefName) {
 				case "treble":
-					context.setClef(1, 4);	// a treble (G4) on the 2nd staff line
+					// a treble (G4) on the 2nd staff line
+					getCurrentTerm(track.staffName).clef = {y: 1, value: 4};
 
 					break;
 				case "bass":
-					context.setClef(-1, -4);	// a bass (F3) on the 4th staff line
-	
+					// a bass (F3) on the 4th staff line
+					getCurrentTerm(track.staffName).clef = {y: -1, value: -4};
+
 					break;
 				case "tenor":
-					context.setClef(0, 0);	// a tenor (C4) on the 3rd staff line
-		
+					// a tenor (C4) on the 3rd staff line
+					getCurrentTerm(track.staffName).clef = {y: 0, value: 0};
+
 					break;
 				}
 			}
@@ -251,10 +345,7 @@ export class MusicTrack {
 		};
 		new TrackContext(this, {listener}).execute(this.music);
 
-		return {
-			group: Object.entries(staves).reduce((group, [name, context]) => ({...group, [name]: context.track}), {}),
-			notes,
-		};
+		return pcTerms;
 	}
 };
 
@@ -753,7 +844,7 @@ export default class LilyInterpreter {
 
 
 	getNotation ({logger = new LogRecorder()} = {}): LilyNotation.Notation {
-		const pitchContexts = this.staffNames.map(name => ({
+		/*const pitchContexts = this.staffNames.map(name => ({
 			name,
 			items: [],
 		}));
@@ -788,7 +879,7 @@ export default class LilyInterpreter {
 
 		const staffNamesIndices = this.staffNames.reduce((indices, name, index) => ({...indices, [name]: index}), {});
 
-		const notes = noteRefs.map(({event, pitch, ctx, staffName}) => ({
+		const notes = noteRefs.map(({event, pitch, staffName}) => ({
 			channel: 0,
 			start: event._tick,
 			duration: event.durationMagnitude,
@@ -800,8 +891,38 @@ export default class LilyInterpreter {
 			tied: pitch._tied,
 			rest: event.isRest,
 			staffTrack: staffNamesIndices[staffName],
-			contextIndex: ctx.index,
+			// TODO: snapshot staff context every term tick, bind contextIndex by tick
+			//contextIndex: ctx.index,
 		})).sort((n1, n2) => n1.startTick - n2.startTick);
+
+		return {
+			notes,
+			pitchContextGroup,
+		};*/
+		const pcTerms = [].concat(...this.musicTracks.map((track, i) => track.generateStaffTracks().map(term => ({track: i, ...term}))));
+		//console.log("pcTerms:", pcTerms);
+
+		const staffContexts = this.staffNames.map((name, trackIndex) => {
+			const staffTerms = pcTerms.filter(term => term.staffName === name);
+			staffTerms.forEach(term => {
+				if (term.event)
+					term.tick = term.event._tick;
+			});
+			staffTerms.sort((t1, t2) => t1.tick - t2.tick);
+
+			const context = new LilyStaffContext({logger});
+			context.staffTrack = trackIndex;
+
+			staffTerms.forEach(term => context.executeTerm(term));
+
+			return context;
+		});
+
+		const notes = []
+			.concat(...staffContexts.map(context => context.notes))
+			.sort((n1, n2) => n1.startTick - n2.startTick);
+
+		const pitchContextGroup = staffContexts.map(context => context.pitchContextTable);
 
 		return {
 			notes,
