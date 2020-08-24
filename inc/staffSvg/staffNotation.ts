@@ -7,7 +7,7 @@ import {MusicNotation} from "@k-l-lambda/web-widgets";
 import LogRecorder from "../logRecorder";
 import {roundNumber, constants} from "./utils";
 import {fuzzyMatchNotations, assignNotationEventsIds} from "../lilyNotation";
-import {PitchContextTable, StaffContext} from "../pitchContext";
+import {StaffContext} from "../pitchContext";
 // eslint-disable-next-line
 import {PitchContext} from "../pitchContext";
 
@@ -324,16 +324,11 @@ const assignIds = (midiNotation: MusicNotation.NotationData, noteIds: string[][]
 };
 
 
-const createPitchContextGroup = (contextGroup: PitchContext[][], midiNotation: MusicNotation.NotationData): PitchContextTable[] =>
-	contextGroup.map((contexts, track) => PitchContextTable.createFromNotation(contexts, midiNotation.notes, track));
-
-
 
 export {
 	parseNotationFromSheetDocument,
 	assignTickByLocationTable,
 	matchNotations,
 	assignIds,
-	createPitchContextGroup,
 	SheetNotation,
 };

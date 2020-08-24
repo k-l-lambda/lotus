@@ -1,5 +1,7 @@
 
 import sha1 from "sha1";
+// eslint-disable-next-line
+import {MusicNotation} from "@k-l-lambda/web-widgets";
 
 import DictArray from "./DictArray";
 // eslint-disable-next-line
@@ -238,6 +240,11 @@ class PitchContextTable {
 			items[0].tick = 0;
 
 		return new PitchContextTable({items});
+	}
+
+
+	static createPitchContextGroup (contextGroup: PitchContext[][], midiNotation: MusicNotation.NotationData): PitchContextTable[] {
+		return contextGroup.map((contexts, track) => PitchContextTable.createFromNotation(contexts, midiNotation.notes, track));
 	}
 
 

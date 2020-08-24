@@ -9,6 +9,7 @@ import {xml2ly, engraveSvg} from "./lilyCommands";
 import {LilyDocument, replaceSourceToken, LilyTerms} from "../inc/lilyParser";
 import * as staffSvg from "../inc/staffSvg";
 import {SingleLock} from "../inc/mutex";
+import {PitchContextTable} from "../inc/pitchContext";
 // eslint-disable-next-line
 import LogRecorder from "../inc/logRecorder";
 // eslint-disable-next-line
@@ -129,7 +130,7 @@ const makeScoreV1 = async (source: string, lilyParser: GrammarParser, {midi, log
 
 	doc.updateMatchedTokens(matchedIds);
 
-	const pitchContextGroup = staffSvg.StaffNotation.createPitchContextGroup(sheetNotation.pitchContexts, midiNotation);
+	const pitchContextGroup = PitchContextTable.createPitchContextGroup(sheetNotation.pitchContexts, midiNotation);
 
 	const noteLinkings = midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
 
@@ -263,7 +264,7 @@ const makeScoreV2 = async (source: string, lilyParser: GrammarParser, {midi, log
 
 	//console.log("t9:", Date.now() - t0);
 
-	const pitchContextGroup = staffSvg.StaffNotation.createPitchContextGroup(sheetNotation.pitchContexts, midiNotation);
+	const pitchContextGroup = PitchContextTable.createPitchContextGroup(sheetNotation.pitchContexts, midiNotation);
 
 	//console.log("t10:", Date.now() - t0);
 
@@ -446,7 +447,7 @@ const makeScoreV3 = async (source: string, lilyParser: GrammarParser, {midi, log
 
 	doc.updateMatchedTokens(matchedIds);
 
-	const pitchContextGroup = staffSvg.StaffNotation.createPitchContextGroup(sheetNotation.pitchContexts, midiNotation);
+	const pitchContextGroup = PitchContextTable.createPitchContextGroup(sheetNotation.pitchContexts, midiNotation);
 
 	const noteLinkings = midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
 

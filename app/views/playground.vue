@@ -231,6 +231,7 @@
 	import {CM_TO_PX} from "../../inc/constants.ts";
 	import TextSource from "../../inc/textSource.ts";
 	import * as SheetBaker from "../sheetBaker.ts";
+	import {PitchContextTable} from "../../inc/pitchContext.ts";
 
 	import {MidiRoll} from "@k-l-lambda/web-widgets";
 	import SourceEditor from "../components/source-editor.vue";
@@ -794,7 +795,7 @@
 
 					this.midiNotation = midiNotation;
 
-					this.pitchContextGroup = StaffNotation.createPitchContextGroup(this.sheetNotation.pitchContexts, this.midiNotation);
+					this.pitchContextGroup = PitchContextTable.createPitchContextGroup(this.sheetNotation.pitchContexts, this.midiNotation);
 				}
 				else {
 					const lilyNotation = this.lilyDocument.interpret().getNotation();
