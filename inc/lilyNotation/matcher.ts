@@ -21,11 +21,11 @@ interface MatcherResult {
 const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Promise<MatcherResult> => {
 	const midiTickFactor = (WHOLE_DURATION_MAGNITUDE / 4) / target.header.ticksPerBeat;
 
-	// scale pitch context group
+	/*// scale pitch context group
 	lilyNotation.pitchContextGroup.forEach(table => table.items.forEach(item => {
 		item.tick /= midiTickFactor;
 		item.endTick /= midiTickFactor;
-	}));
+	}));*/
 
 	const midiNotation = MusicNotation.Notation.parseMidi(target);
 

@@ -802,7 +802,8 @@
 					this.matcherNotations = await LilyNotation.matchWithMIDI(lilyNotation, midi);
 
 					this.midiNotation = this.matcherNotations.sample;
-					this.pitchContextGroup = lilyNotation.pitchContextGroup;
+					this.pitchContextGroup = PitchContextTable.createPitchContextGroup(
+						lilyNotation.pitchContextGroup.map(table => table.items.map(item => item.context)), this.midiNotation);
 				}
 
 				if (this.bakingSheet)
