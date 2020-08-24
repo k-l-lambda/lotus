@@ -27,6 +27,8 @@
 
 *	2020.8.24
 
+	+	lilyInterpreter.ts: class of MusicPerformance added.
+
 	+	lilyInterpreter.ts: fixed LilyInterpreter.getNotation for anonymous staff track.
 
 

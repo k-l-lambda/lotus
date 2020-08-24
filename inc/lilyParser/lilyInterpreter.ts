@@ -660,193 +660,9 @@ class TrackContext {
 };
 
 
-
-export default class LilyInterpreter {
-	variableTable: Map<string, BaseTerm> = new Map();
-
-	musicTracks: MusicTrack[] = [];
-
-	version: Version = null;
-	language: Language = null;
-	header: Block = null;
-	includeFiles: Set<string> = new Set;
-	statements: BaseTerm[] = [];
-	paper: Block = null;
-	layout: Block = null;
-	score: Block = null;
+class MusicPerformance {
 	staffNames: string[] = [];
-
-
-	static trackName (index: number): string {
-		return `Voice_${romanize(index)}`;
-	};
-
-
-	/*eval (term: BaseTerm): BaseTerm {
-		return this.execute(term.clone());
-	}*/
-
-
-	interpretMusic (music: BaseTerm, contextDict: ContextDict): Variable {
-		//console.log("interpretMusic:", music);
-		const context = new TrackContext(undefined, {contextDict});
-		//context.execute(music.clone());
-		context.execute(music);
-
-		context.track.spreadRelativeBlocks();
-		this.musicTracks.push(context.track);
-
-		const varName = LilyInterpreter.trackName(this.musicTracks.length);
-
-		context.track.name = varName;
-
-		return new Variable({name: varName});
-	}
-
-
-	interpretDocument (doc: LilyDocument): this {
-		this.execute(doc.root);
-
-		return this;
-	}
-
-
-	execute (term: BaseTerm, {execMusic = false, contextDict = {}}: {execMusic?: boolean, contextDict?: ContextDict} = {}): BaseTerm {
-		if (!term)
-			return term;
-
-		if (term instanceof Root) {
-			for (const section of term.sections) {
-				const sec = this.execute(section, {execMusic: true});
-				if (sec instanceof Version)
-					this.version = sec;
-				else if (sec instanceof Language)
-					this.language = sec;
-				else if (sec instanceof Scheme)
-					this.statements.push(sec);
-				else if (sec instanceof Block) {
-					switch (sec.head) {
-					case "\\header":
-						this.header = sec;
-
-						break;
-					case "\\paper":
-						this.paper = sec;
-
-						break;
-					case "\\layout":
-						this.layout = sec;
-
-						break;
-					case "\\score":
-						this.score = sec;
-
-						break;
-					}
-				}
-			}
-		}
-		else if (term instanceof Assignment) {
-			const value = this.execute(term.value);
-			this.variableTable.set(term.key as string, value);
-		}
-		else if (term instanceof Block) {
-			if (term.head === "\\score") {
-				return new Block({
-					block: term.block,
-					head: term.head,
-					body: term.body.map(subterm => this.execute(subterm, {execMusic: true})),
-				});
-			}
-		}
-		else if (term instanceof Variable) {
-			const result = this.variableTable.get(term.name);
-			if (!result)
-				console.warn("uninitialized variable is referred:", term);
-
-			return result;
-		}
-		else if (term instanceof MusicBlock) {
-			const result = new MusicBlock({
-				_parent: term._parent,
-				body: term.body.map(subterm => this.execute(subterm)).filter(term => term),
-			});
-			if (execMusic) {
-				const variable = this.interpretMusic(result, contextDict);
-				return new MusicBlock({body: [variable]});
-			}
-
-			return result;
-		}
-		else if (term instanceof SimultaneousList)
-			return new SimultaneousList({list: term.list.map(subterm => this.execute(subterm, {execMusic, contextDict})).filter(term => term)});
-		else if (term instanceof ContextedMusic) {
-			if (term.contextDict && term.contextDict.Staff)
-				this.staffNames.push(term.contextDict.Staff);
-
-			return new ContextedMusic({
-				head: this.execute(term.head),
-				lyrics: this.execute(term.lyrics),
-				body: this.execute(term.body, {execMusic, contextDict: {...contextDict, ...term.contextDict}}),
-			});
-		}
-		else if (term instanceof Include)
-			this.includeFiles.add(term.filename);
-		else if (term instanceof Command)
-			return parseRaw({proto: term.proto, cmd: term.cmd, args: term.args.map(arg => this.execute(arg, {execMusic, contextDict}))});
-
-		return term;
-	}
-
-
-	updateTrackAssignments () {
-		this.musicTracks.forEach((track, i) => this.variableTable.set(LilyInterpreter.trackName(i + 1), track.music));
-	}
-
-
-	toDocument (): LilyDocument {
-		this.updateTrackAssignments();
-
-		const variables = [].concat(...[this.paper, this.layout, this.score].filter(block => block).map(block => block.findAll(Variable).map(variable => variable.name)));
-		const assignments = variables.filter(name => this.variableTable.get(name)).map(name => new Assignment({key: name, value: this.variableTable.get(name)}));
-		const includes = Array.from(this.includeFiles).map(filename => new Include({cmd: "include", args: [LiteralString.fromString(filename)]}));
-
-		const root = new Root({sections: [
-			this.version,
-			this.language,
-			this.header,
-			...includes,
-			...this.statements,
-			this.paper,
-			this.layout,
-			...assignments,
-			this.score,
-		].filter(section => section)});
-
-		return new LilyDocument(root);
-	}
-
-
-	getNoteDurationSubdivider (): number {
-		const subdivider = lcmMulti(...this.musicTracks.map(track => track.noteDurationSubdivider));
-
-		return subdivider;
-	}
-
-
-	sliceMeasures (start: number, count: number) {
-		this.musicTracks = this.musicTracks.map(track => {
-			const newTrack = track.sliceMeasures(start, count);
-			newTrack.name = track.name;	// inherit name
-
-			return newTrack;
-		});
-	}
-
-
-	addIncludeFile (filename: string) {
-		this.includeFiles.add(filename);
-	}
+	musicTracks: MusicTrack[] = [];
 
 
 	getNotation ({logger = new LogRecorder()} = {}): LilyNotation.Notation {
@@ -890,5 +706,266 @@ export default class LilyInterpreter {
 			notes,
 			pitchContextGroup,
 		};
+	}
+
+
+	getNoteDurationSubdivider (): number {
+		const subdivider = lcmMulti(...this.musicTracks.map(track => track.noteDurationSubdivider));
+
+		return subdivider;
+	}
+
+
+	sliceMeasures (start: number, count: number) {
+		this.musicTracks = this.musicTracks.map(track => {
+			const newTrack = track.sliceMeasures(start, count);
+			newTrack.name = track.name;	// inherit name
+
+			return newTrack;
+		});
+	}
+};
+
+
+
+export default class LilyInterpreter {
+	variableTable: Map<string, BaseTerm> = new Map();
+
+	// temporary status
+	musicTracks: MusicTrack[] = [];
+	staffNames: string[] = [];
+	musicTrackIndex: number = 0;
+	musicPerformance: MusicPerformance;
+
+	version: Version = null;
+	language: Language = null;
+	header: Block = null;
+	includeFiles: Set<string> = new Set;
+	statements: BaseTerm[] = [];
+	paper: Block = null;
+	layout: Block = null;
+	score: Block = null;
+
+	layoutMusic: MusicPerformance;
+	midiMusic: MusicPerformance;
+
+
+	static trackName (index: number): string {
+		return `Voice_${romanize(index)}`;
+	};
+
+
+	/*eval (term: BaseTerm): BaseTerm {
+		return this.execute(term.clone());
+	}*/
+
+
+	interpretMusic (music: BaseTerm, contextDict: ContextDict): Variable {
+		//console.log("interpretMusic:", music);
+		const context = new TrackContext(undefined, {contextDict});
+		//context.execute(music.clone());
+		context.execute(music);
+
+		context.track.spreadRelativeBlocks();
+		this.musicTracks.push(context.track);
+
+		const varName = LilyInterpreter.trackName(++this.musicTrackIndex);
+
+		context.track.name = varName;
+
+		return new Variable({name: varName});
+	}
+
+
+	interpretDocument (doc: LilyDocument): this {
+		this.execute(doc.root);
+
+		return this;
+	}
+
+
+	createMusicPerformance () {
+		if (this.musicTracks.length) {
+			if (!this.musicPerformance)
+				this.musicPerformance = new MusicPerformance();
+
+			this.staffNames.forEach(name => {
+				if (!this.musicPerformance.staffNames.some(sn => sn === name))
+					this.musicPerformance.staffNames.push(name);
+			});
+			this.musicTracks.forEach(track => this.musicPerformance.musicTracks.push(track));
+
+			this.staffNames = [];
+			this.musicTracks = [];
+		}
+	}
+
+
+	execute (term: BaseTerm, {execMusic = false, contextDict = {}}: {execMusic?: boolean, contextDict?: ContextDict} = {}): BaseTerm {
+		if (!term)
+			return term;
+
+		if (term instanceof Root) {
+			for (const section of term.sections) {
+				const sec = this.execute(section, {execMusic: true});
+				if (sec instanceof Version)
+					this.version = sec;
+				else if (sec instanceof Language)
+					this.language = sec;
+				else if (sec instanceof Scheme)
+					this.statements.push(sec);
+				else if (sec instanceof Block) {
+					switch (sec.head) {
+					case "\\header":
+						this.header = sec;
+
+						break;
+					case "\\paper":
+						this.paper = sec;
+
+						break;
+					case "\\layout":
+						this.layout = sec;
+
+						break;
+					case "\\score":
+						this.score = sec;
+
+						break;
+					}
+				}
+
+				this.createMusicPerformance();
+
+				if (this.musicPerformance) {
+					this.layoutMusic = this.musicPerformance;
+					this.midiMusic = this.musicPerformance;
+
+					this.musicPerformance = null;
+				}
+			}
+		}
+		else if (term instanceof Assignment) {
+			if (term.key) {
+				const value = this.execute(term.value);
+				this.variableTable.set(term.key as string, value);
+			}
+		}
+		else if (term instanceof Block) {
+			switch (term.head) {
+			case "\\score":
+				const body = term.body.map(subterm => this.execute(subterm, {execMusic: true}));
+
+				this.musicPerformance = null;
+
+				return new Block({
+					block: term.block,
+					head: term.head,
+					body,
+				});
+			case "\\layout":
+				this.layoutMusic = this.musicPerformance;
+
+				break;
+			case "\\midi":
+				this.midiMusic = this.musicPerformance;
+
+				break;
+			}
+		}
+		else if (term instanceof Variable) {
+			const result = this.variableTable.get(term.name);
+			if (!result)
+				console.warn("uninitialized variable is referred:", term);
+
+			return result;
+		}
+		else if (term instanceof MusicBlock) {
+			const result = new MusicBlock({
+				_parent: term._parent,
+				body: term.body.map(subterm => this.execute(subterm)).filter(term => term),
+			});
+			if (execMusic) {
+				const variable = this.interpretMusic(result, contextDict);
+				return new MusicBlock({body: [variable]});
+			}
+
+			return result;
+		}
+		else if (term instanceof SimultaneousList) {
+			const list = term.list.map(subterm => this.execute(subterm, {execMusic, contextDict})).filter(term => term);
+			this.createMusicPerformance();
+
+			return new SimultaneousList({list});
+		}
+		else if (term instanceof ContextedMusic) {
+			if (term.contextDict && term.contextDict.Staff)
+				this.staffNames.push(term.contextDict.Staff);
+
+			return new ContextedMusic({
+				head: this.execute(term.head),
+				lyrics: this.execute(term.lyrics),
+				body: this.execute(term.body, {execMusic, contextDict: {...contextDict, ...term.contextDict}}),
+			});
+		}
+		else if (term instanceof Include)
+			this.includeFiles.add(term.filename);
+		else if (term instanceof Command)
+			return parseRaw({proto: term.proto, cmd: term.cmd, args: term.args.map(arg => this.execute(arg, {execMusic, contextDict}))});
+
+		return term;
+	}
+
+
+	updateTrackAssignments () {
+		if (this.layoutMusic)
+			this.layoutMusic.musicTracks.forEach((track, i) => this.variableTable.set(LilyInterpreter.trackName(i + 1), track.music));
+
+		// TODO: process midiMusic
+	}
+
+
+	toDocument (): LilyDocument {
+		this.updateTrackAssignments();
+
+		const variables = [].concat(...[this.paper, this.layout, this.score].filter(block => block).map(block => block.findAll(Variable).map(variable => variable.name)));
+		const assignments = variables.filter(name => this.variableTable.get(name)).map(name => new Assignment({key: name, value: this.variableTable.get(name)}));
+		const includes = Array.from(this.includeFiles).map(filename => new Include({cmd: "include", args: [LiteralString.fromString(filename)]}));
+
+		const root = new Root({sections: [
+			this.version,
+			this.language,
+			this.header,
+			...includes,
+			...this.statements,
+			this.paper,
+			this.layout,
+			...assignments,
+			this.score,
+		].filter(section => section)});
+
+		return new LilyDocument(root);
+	}
+
+
+	sliceMeasures (start: number, count: number) {
+		if (this.layoutMusic)
+			this.layoutMusic.sliceMeasures(start, count);
+
+		if (this.midiMusic && this.midiMusic !== this.layoutMusic)
+			this.midiMusic.sliceMeasures(start, count);
+	}
+
+
+	addIncludeFile (filename: string) {
+		this.includeFiles.add(filename);
+	}
+
+
+	getNotation ({logger = new LogRecorder()} = {}): LilyNotation.Notation {
+		if (this.midiMusic)
+			return this.midiMusic.getNotation({logger});
+
+		return null;
 	}
 };

@@ -1076,7 +1076,7 @@
 				const lilyNotation = interperter.getNotation();
 
 				if (flatten)
-					interperter.musicTracks.forEach(track => track.flatten({spreadRepeats: true}));
+					interperter.layoutMusic.musicTracks.forEach(track => track.flatten({spreadRepeats: true}));
 				const newDoc = interperter.toDocument();
 
 				console.log("new doc:", interperter, newDoc, lilyNotation);

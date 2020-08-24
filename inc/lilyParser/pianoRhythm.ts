@@ -113,15 +113,17 @@ export const createPianoRhythm = (interpreter: LilyInterpreter, {dotTracks = tru
 	interpreter.updateTrackAssignments();
 
 
+	const layoutMusic = interpreter.layoutMusic;
+
 	const trackTicks: Set<number>[] = staves.map(staff => {
 		const variables = staff.findAll(Variable).map(variable => variable.name);
-		const voices = interpreter.musicTracks.filter(track => variables.includes(track.name));
+		const voices = layoutMusic.musicTracks.filter(track => variables.includes(track.name));
 
 		return new Set([].concat(...voices.map(voice => voice.block.noteTicks)));
 	});
 
-	const subdivider = interpreter.getNoteDurationSubdivider();
-	const durationMagnitude = interpreter.musicTracks[0].durationMagnitude;
+	const subdivider = layoutMusic.getNoteDurationSubdivider();
+	const durationMagnitude = layoutMusic.musicTracks[0].durationMagnitude;
 
 	//console.log("staves:", staves);
 	if (dotTracks) {
@@ -139,7 +141,7 @@ export const createPianoRhythm = (interpreter: LilyInterpreter, {dotTracks = tru
 	if (numberTrack) {
 		const pos = upStaffPos + (dotTracks ? 1 : 0);
 
-		const measureTicks = interpreter.musicTracks[0].block.measureTicks;
+		const measureTicks = layoutMusic.musicTracks[0].block.measureTicks;
 
 		const lyric = createPianoNumberTrack({durationMagnitude, subdivider, measureTicks, trackTicks, colored});
 		const music = new ContextedMusic({head: new Command({cmd: "new", args: ["Lyrics"]}), body: lyric});
