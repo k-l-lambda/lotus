@@ -788,11 +788,6 @@
 
 					this.matcherNotations = await StaffNotation.matchNotations(midiNotation, this.sheetNotation, {enableFuzzy: this.enabledFuzzyMatcher});
 
-					this.matchedIds = new Set();
-					midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => this.matchedIds.add(id)));
-
-					this.sheetDocument.updateMatchedTokens(this.matchedIds);
-
 					this.midiNotation = midiNotation;
 
 					this.pitchContextGroup = PitchContextTable.createPitchContextGroup(this.sheetNotation.pitchContexts, this.midiNotation);
@@ -805,6 +800,10 @@
 					this.pitchContextGroup = PitchContextTable.createPitchContextGroup(
 						lilyNotation.pitchContextGroup.map(table => table.items.map(item => item.context)), this.midiNotation);
 				}
+
+				this.matchedIds = new Set();
+				this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => this.matchedIds.add(id)));
+				this.sheetDocument.updateMatchedTokens(this.matchedIds);
 
 				if (this.bakingSheet)
 					this.bakeSheet();

@@ -22,7 +22,7 @@ interface SheetMeasure {
 	tokens: StaffToken[];
 	headX: number;
 	lineX?: number;
-	matchedTokens?: StaffToken[];
+	matchedTokens?: StaffToken[];	// for baking mode
 	noteRange: {
 		begin: number,
 		end: number,
