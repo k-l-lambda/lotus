@@ -10,6 +10,7 @@ import {LilyDocument, replaceSourceToken, LilyTerms} from "../inc/lilyParser";
 import * as staffSvg from "../inc/staffSvg";
 import {SingleLock} from "../inc/mutex";
 import {PitchContextTable} from "../inc/pitchContext";
+import * as LilyNotation from "../inc/lilyNotation";
 // eslint-disable-next-line
 import LogRecorder from "../inc/logRecorder";
 // eslint-disable-next-line
@@ -464,9 +465,110 @@ const makeScoreV3 = async (source: string, lilyParser: GrammarParser, {midi, log
 };
 
 
+const makeScoreV4 = async (source: string, lilyParser: GrammarParser, {midi, logger, unfoldRepeats = false, includeFolders}: {
+	midi?: MIDI.MidiData,
+	logger?: LogRecorder,
+	unfoldRepeats?: boolean,
+	includeFolders?: string[],
+} = {}): Promise<ScoreJSON | IncompleteScoreJSON> => {
+	const t0 = Date.now();
+
+	let lilyDocument = null;
+	let unfoldSource = null;
+
+	if (unfoldRepeats) {
+		lilyDocument = new LilyDocument(lilyParser.parse(source));
+		lilyDocument.interpret();
+		if (lilyDocument.containsRepeat()) {
+			lilyDocument.unfoldRepeats();
+			unfoldSource = lilyDocument.toString();
+
+			// keep 2 version lilypond source note href uniform
+			source = replaceSourceToken(unfoldSource, "\\unfoldRepeats");
+		}
+	}
+
+	const foldData = await makeSheetNotation(source, lilyParser, {logger, lilyDocument, withNotation: !midi && !unfoldSource, includeFolders});
+	const {meta, doc, hashTable} = foldData;
+
+	lilyDocument = lilyDocument || foldData.lilyDocument;
+	//let sheetNotation = foldData.sheetNotation;
+
+	const matchingMidi = midi || foldData.midi;
+
+	if (unfoldSource) {
+		const unfoldData = await makeSheetNotation(unfoldSource, lilyParser, {logger, lilyDocument, withNotation: !midi, includeFolders});
+
+		midi = midi || unfoldData.midi;
+		//sheetNotation = unfoldData.sheetNotation;
+	}
+
+	midi = midi || foldData.midi;
+	const lilyNotation = lilyDocument.interpret().getNotation();
+
+	if (!midi || !lilyNotation) {
+		if (!midi)
+			console.warn("Neither lilypond or external arguments did not offer MIDI data, score maker finished incompletely.");
+
+		if (!lilyNotation)
+			console.warn("sheetNotation parsing failed, score maker finished incompletely.");
+
+		return {
+			meta,
+			doc,
+			midi,
+			hashTable,
+		};
+	}
+
+	const t5 = Date.now();
+
+	const matcher = await LilyNotation.matchWithMIDI(lilyNotation, matchingMidi);
+
+	logger.append("scoreMaker.profile.matching", {cost: Date.now() - t5});
+
+	if (logger && logger.enabled) {
+		const cis = new Set(Array(matcher.criterion.notes.length).keys());
+		matcher.path.forEach(ci => cis.delete(ci));
+
+		const omitC = cis.size;
+		const omitS = matcher.path.filter(ci => ci < 0).length;
+
+		const coverage = ((matcher.criterion.notes.length - omitC) / matcher.criterion.notes.length)
+			* ((matcher.sample.notes.length - omitS) / matcher.sample.notes.length);
+
+		logger.append("makeScore.match", {coverage, omitC, omitS, path: matcher.path});
+	}
+
+	const midiNotation = matcher.sample;
+
+	const matchedIds: Set<string> = new Set();
+	midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));
+
+	doc.updateMatchedTokens(matchedIds);
+
+	const pitchContextGroup = PitchContextTable.createPitchContextGroup(
+		lilyNotation.pitchContextGroup.map(table => table.items.map(item => item.context)), midiNotation);
+
+	const noteLinkings = midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
+
+	logger.append("scoreMaker.profile.full", {cost: Date.now() - t0});
+
+	return {
+		meta,
+		doc,
+		midi,
+		hashTable,
+		noteLinkings,
+		pitchContextGroup,
+	};
+};
+
+
 void makeScoreV1;
 void makeScoreV2;
-const makeScore = makeScoreV3;
+void makeScoreV3;
+const makeScore = makeScoreV4;
 
 
 const makeMIDI = async (source: string, lilyParser: GrammarParser, {unfoldRepeats = true, fixNestedRepeat = false, includeFolders = undefined} = {}): Promise<MIDI.MidiData> => {

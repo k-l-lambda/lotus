@@ -27,6 +27,8 @@
 
 *	2020.8.24
 
+	+	scoreMaker.ts: makeScoreV4, based on LilyNotation, added.
+
 	+	lilyInterpreter.ts: added empty string as staff name for anonymous staff.
 
 	+	lilyInterpreter.ts: multiple scores block supporting added.
