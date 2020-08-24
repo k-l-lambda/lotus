@@ -25,6 +25,11 @@
 
 
 
+*	2020.8.24
+
+	+	lilyInterpreter.ts: fixed LilyInterpreter.getNotation for anonymous staff track.
+
+
 *	2020.8.23
 
 	+	lilyInterpreter.ts: accidental alters on pitch context added.

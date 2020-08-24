@@ -853,8 +853,7 @@ export default class LilyInterpreter {
 		const pcTerms = [].concat(...this.musicTracks.map((track, i) => track.generateStaffTracks().map(term => ({track: i, ...term}))));
 		//console.log("pcTerms:", pcTerms);
 
-		const staffContexts = this.staffNames.map((name, trackIndex) => {
-			const staffTerms = pcTerms.filter(term => term.staffName === name);
+		const termsToContexts = (staffTerms, trackIndex) => {
 			staffTerms.forEach(term => {
 				if (term.event)
 					term.tick = term.event._tick;
@@ -869,7 +868,17 @@ export default class LilyInterpreter {
 			staffTerms.forEach(term => context.executeTerm(term));
 
 			return context;
-		});
+		};
+
+		const staffContexts = [];
+		if (this.staffNames.length) {
+			this.staffNames.forEach((name, trackIndex) => {
+				const staffTerms = pcTerms.filter(term => term.staffName === name);
+				staffContexts.push(termsToContexts(staffTerms, trackIndex));
+			});
+		}
+		else
+			staffContexts.push(termsToContexts(pcTerms, 0));
 
 		const notes = []
 			.concat(...staffContexts.map(context => context.notes))

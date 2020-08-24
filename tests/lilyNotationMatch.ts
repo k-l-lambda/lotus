@@ -27,39 +27,7 @@ const checkFile = async filename => {
 	const lilyDocument = new LilyDocument(lilyParser.parse(source));
 	const interperter = lilyDocument.interpret();
 	const lilyNotation = interperter.getNotation();
-
-	/*const notes = lilyNotation.notes.filter(note => !note.tied && !note.overlapped).map(note => ({
-		start: note.startTick,
-		pitch: note.pitch,
-		duration: note.endTick - note.startTick,
-		velocity: 127,
-		id: note.id,
-	}));
-	const noteMap = notes.reduce((map, note) => ((map[`${note.start},${note.pitch}`] = note), map), {});
-	const trimmedNotes = Object.values(noteMap);
-
-	const criterion = new MusicNotation.Notation({
-		meta: {},
-		tempos: [],
-		channels: [trimmedNotes],
-		endTime: notes[notes.length - 1].start + notes[notes.length - 1].duration,
-	});
-
-	midiNotation.notes.forEach(note => {
-		note.start = note.startTick * 480 / 384;
-	});
-
-	Matcher.genNotationContext(criterion);
-	Matcher.genNotationContext(midiNotation);
-	//console.debug("notations:", criterion, midiNotation);
-
-	for (const note of midiNotation.notes)
-		Matcher.makeMatchNodes(note, criterion);
-
-	const navigator = await Matcher.runNavigation(criterion, midiNotation);
-	const path = navigator.path();
-	LilyNotation.fuzzyMatchNotations(path, criterion, midiNotation, {pitchToleranceMax: 0});
-	//console.debug("path:", path);*/
+	//console.debug("lilyNotation:", lilyNotation);
 
 	const {path, criterion, sample: midiNotation} = await LilyNotation.matchWithMIDI(lilyNotation, midi);
 	LilyNotation.fuzzyMatchNotations(path, criterion, midiNotation, {pitchToleranceMax: 0});
