@@ -93,9 +93,9 @@ interface PianoRhythmOptions {
 
 
 export const createPianoRhythm = (interpreter: LilyInterpreter, {dotTracks = true, numberTrack, colored}: PianoRhythmOptions = {}) => {
-	console.assert(!!interpreter.score, "interpreter.score is null.");
+	console.assert(interpreter.scores.length, "interpreter.scores is empty.");
 
-	const pianoMusic = interpreter.score.findFirst(term => term instanceof ContextedMusic && term.type === "PianoStaff") as ContextedMusic;
+	const pianoMusic = interpreter.scores[0].findFirst(term => term instanceof ContextedMusic && term.type === "PianoStaff") as ContextedMusic;
 	//console.log("pianoMusic:", pianoMusic);
 	if (!pianoMusic) {
 		console.warn("no pianoMusic");

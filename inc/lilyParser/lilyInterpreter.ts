@@ -744,7 +744,7 @@ export default class LilyInterpreter {
 	statements: BaseTerm[] = [];
 	paper: Block = null;
 	layout: Block = null;
-	score: Block = null;
+	scores: Block[] = [];
 
 	layoutMusic: MusicPerformance;
 	midiMusic: MusicPerformance;
@@ -829,7 +829,7 @@ export default class LilyInterpreter {
 
 						break;
 					case "\\score":
-						this.score = sec;
+						this.scores.push(sec);
 
 						break;
 					}
@@ -928,7 +928,7 @@ export default class LilyInterpreter {
 	toDocument (): LilyDocument {
 		this.updateTrackAssignments();
 
-		const variables = [].concat(...[this.paper, this.layout, this.score].filter(block => block).map(block => block.findAll(Variable).map(variable => variable.name)));
+		const variables = [].concat(...[this.paper, this.layout, ...this.scores].filter(block => block).map(block => block.findAll(Variable).map(variable => variable.name)));
 		const assignments = variables.filter(name => this.variableTable.get(name)).map(name => new Assignment({key: name, value: this.variableTable.get(name)}));
 		const includes = Array.from(this.includeFiles).map(filename => new Include({cmd: "include", args: [LiteralString.fromString(filename)]}));
 
@@ -941,7 +941,7 @@ export default class LilyInterpreter {
 			this.paper,
 			this.layout,
 			...assignments,
-			this.score,
+			...this.scores,
 		].filter(section => section)});
 
 		return new LilyDocument(root);
