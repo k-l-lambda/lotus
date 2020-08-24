@@ -900,7 +900,7 @@ export default class LilyInterpreter {
 			return new SimultaneousList({list});
 		}
 		else if (term instanceof ContextedMusic) {
-			if (term.contextDict && term.contextDict.Staff)
+			if (term.contextDict && typeof term.contextDict.Staff === "string")
 				this.staffNames.push(term.contextDict.Staff);
 
 			return new ContextedMusic({

@@ -27,6 +27,8 @@
 
 *	2020.8.24
 
+	+	lilyInterpreter.ts: added empty string as staff name for anonymous staff.
+
 	+	lilyInterpreter.ts: multiple scores block supporting added.
 
 	+	lilyInterpreter.ts: class of MusicPerformance added.

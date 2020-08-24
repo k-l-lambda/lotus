@@ -530,6 +530,9 @@ export class Command extends BaseTerm {
 		if (this.args[1] instanceof Assignment)
 			return {key: this.args[0], value: this.args[1].value};
 
+		if (typeof this.args[0] === "string")
+			return {key: this.args[0], value: ""};
+
 		return null;
 	}
 };
