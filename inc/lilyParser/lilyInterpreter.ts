@@ -763,6 +763,13 @@ export default class LilyInterpreter {
 
 	interpretMusic (music: BaseTerm, contextDict: ContextDict): Variable {
 		//console.log("interpretMusic:", music);
+		if (contextDict) {
+			if (!contextDict.Staff)
+				contextDict.Staff = `anonymous_${this.musicTrackIndex + 1}`;
+
+			this.staffNames.push(contextDict.Staff);
+		}
+
 		const context = new TrackContext(undefined, {contextDict});
 		//context.execute(music.clone());
 		context.execute(music);
@@ -900,9 +907,6 @@ export default class LilyInterpreter {
 			return new SimultaneousList({list});
 		}
 		else if (term instanceof ContextedMusic) {
-			if (term.contextDict && term.contextDict.Staff)
-				this.staffNames.push(term.contextDict.Staff);
-
 			return new ContextedMusic({
 				head: this.execute(term.head),
 				lyrics: this.execute(term.lyrics),
