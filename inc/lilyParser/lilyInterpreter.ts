@@ -297,10 +297,11 @@ export class MusicTrack {
 			}
 		};
 		const getCurrentTerm = (staffName: string): PitchContextTerm => {
+			if (currentTerm && currentTerm.staffName !== staffName)
+				commitTerm();
+
 			if (!currentTerm)
 				currentTerm = {staffName};
-			else if (currentTerm.staffName !== staffName)
-				commitTerm();
 
 			return currentTerm;
 		};
