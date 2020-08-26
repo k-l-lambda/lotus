@@ -1,7 +1,6 @@
 
 ## TODO
 	Baking score bundle size reduction
-	MIDI notation from LilyDocument, MIDI matching by LilyInterpreter
 	implicit notes matching with sheet document
 		try articulate.ly in MIDI output
 	staffNotation
@@ -23,6 +22,11 @@
 	source editor
 		cursor position column
 
+
+
+*	2020.8.25
+
+	+	main.ts: source editor service added.
 
 
 *	2020.8.24
