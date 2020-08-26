@@ -26,6 +26,8 @@
 
 *	2020.8.26
 
+	+	playground.vue: source directory file choose added.
+
 	+	playground.vue: source directory view added.
 
 	+	main.ts: source editor service added.

@@ -112,8 +112,9 @@
 			</div>
 			<div class="source-editor-controls" v-if="sourceEditorEnabled">
 				<button @click="showSourceDir = !showSourceDir">&#x1f5c0;</button>
-				<iframe class="source-dir" v-show="showSourceDir" src="/source-dir/"
+				<iframe class="source-dir" v-show="showSourceDir" src="/source-dir/" ref="sourceDir"
 					@mouseleave="showSourceDir = false"
+					@load="onSourceDirLoad"
 				/>
 			</div>
 		</main>
@@ -1092,6 +1093,20 @@
 				const newDoc = interperter.toDocument();
 
 				console.log("new doc:", interperter, newDoc, lilyNotation);
+			},
+
+
+			onSourceDirLoad () {
+				//console.log("onSourceDirLoad:", this.$refs.sourceDir.contentWindow.location.href);
+				const href = this.$refs.sourceDir.contentWindow.location.href;
+				if (/\.ly$/.test(href)) {
+					this.$refs.sourceDir.contentWindow.history.back();
+
+					this.showSourceDir = false;
+
+					const filePath = decodeURI(href.replace(/^http.*source-dir\//, ""));
+					console.log("chose filePath:", filePath);
+				}
 			},
 		},
 
