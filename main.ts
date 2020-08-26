@@ -54,7 +54,7 @@ if (process.env.SOURCE_EDITOR_DIR) {
 				case "end":
 					return (content) => {
 						//console.log("end with:", content);
-						const html = content.replace(/href="/g, `href="${editorApiPath}`);
+						const html = content && content.replace(/href="/g, `href="${editorApiPath}`);
 
 						res.end(html);
 					};

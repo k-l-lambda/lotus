@@ -110,6 +110,12 @@
 				</div>
 				<Loading v-show="engraving" />
 			</div>
+			<div class="source-editor-controls" v-if="sourceEditorEnabled">
+				<button @click="showSourceDir = !showSourceDir">&#x1f5c0;</button>
+				<iframe class="source-dir" v-show="showSourceDir" src="/source-dir/"
+					@mouseleave="showSourceDir = false"
+				/>
+			</div>
 		</main>
 		<Dialog :visible.sync="settingPanelVisible">
 			<datalist id="lily-markups">
@@ -343,6 +349,8 @@
 				loadingLilyParser: false,
 				enabledPointer: false,
 				pointerData: null,
+				sourceEditorEnabled: false,
+				showSourceDir: false,
 			};
 		},
 
@@ -384,6 +392,9 @@
 
 			if (MidiAudio.WebAudio.empty())
 				MidiAudio.loadPlugin({soundfontUrl: "/soundfont/", api: "webaudio"}).then(() => console.log("Soundfont loaded."));
+
+			// detect source editor
+			fetch("/source-dir/").then(response => this.sourceEditorEnabled = response.ok);
 
 			this.loadingLilyParser = true;
 			this.lilyParser = await loadLilyParser();
@@ -1335,6 +1346,26 @@
 					{
 						fill: goldenrod;
 					}
+				}
+			}
+
+			.source-editor-controls
+			{
+				position: absolute;
+				top: 0;
+				left: 0;
+				height: unset;
+				transform: translate(0, -100%);
+
+				.source-dir
+				{
+					position: absolute;
+					left: 0;
+					top: 100%;
+					height: calc(100vh - 8em);
+					width: 600px;
+					border: 0;
+					box-shadow: 10px 10px 20px #0006;
 				}
 			}
 		}
