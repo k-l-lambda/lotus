@@ -88,7 +88,10 @@
 					:path="matcherNotations && matcherNotations.path"
 				/>
 				<div class="sheet-container" ref="sheetContainer" v-resize="onResize">
-					<SheetSimple v-if="svgDocuments && !tokenizeStaff" :documents="svgDocuments" />
+					<SheetSimple v-if="svgDocuments && !tokenizeStaff"
+						:documents="svgDocuments"
+						@linkClick="onSheetLink"
+					/>
 					<SheetSigns v-if="svgHashTable" v-show="false" :hashTable="svgHashTable" />
 					<SheetLive v-if="tokenizeStaff && sheetDocument" ref="sheet"
 						:doc="sheetDocument"
@@ -360,6 +363,7 @@
 				},
 				lilyParser: null,
 				lilyDocumentDirty: false,
+				lilyTextSourceDirty: false,
 				bakingSheet: false,
 				bakingImages: null,
 				hideBakingImages: false,
@@ -911,6 +915,15 @@
 			},
 
 
+			updateLilyTextSource () {
+				if (this.lilyTextSourceDirty) {
+					this.lilyTextSource = new TextSource(this.lilySource);
+
+					this.lilyTextSourceDirty = false;
+				}
+			},
+
+
 			markupLilyDocument (doc) {
 				const globalAttributes = doc.globalAttributes();
 
@@ -991,7 +1004,8 @@
 
 			async inspectLily () {
 				await this.updateLilyDocument();
-				this.lilyTextSource = new TextSource(this.lilySource);
+				this.updateLilyTextSource();
+
 				console.log(this.lilyDocument);
 			},
 
@@ -1139,6 +1153,36 @@
 					});
 				}
 			},
+
+
+			highlightSourcePosition (position) {
+				this.updateLilyTextSource();
+
+				if (position.length >= 2) {
+					const textarea = this.$el.querySelector(".prism-editor__textarea");
+					if (!textarea) {
+						console.warn(".prism-editor__textarea is not found.");
+						return;
+					}
+
+					const startChars = this.lilyTextSource.positionToChars([position[0], position[1]]);
+					const endChars = position.length >= 3 ? this.lilyTextSource.positionToChars([position[0], position[2]]) : startChars;
+
+					console.log("highlightSourcePosition:", position, textarea, startChars, endChars);
+					textarea.setSelectionRange(startChars, endChars);
+					textarea.focus();
+				}
+			},
+
+
+			onSheetLink (event, href) {
+				event.preventDefault();
+
+				//console.log("onSheetLink:", href);
+				const position = href.match(/\d+/g);
+				if (position)
+					this.highlightSourcePosition(position.map(Number));
+			},
 		},
 
 
@@ -1146,6 +1190,7 @@
 			lilySource () {
 				this.engraverDirty = true;
 				this.lilyDocumentDirty = true;
+				this.lilyTextSourceDirty = true;
 			},
 
 
@@ -1343,7 +1388,7 @@
 
 						.prism-editor-wrapper
 						{
-							background-color: #f2f6f0;
+							background-color: #f0f6f0;
 						}
 					}
 				}

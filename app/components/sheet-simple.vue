@@ -21,6 +21,25 @@
 		props: {
 			documents: Array,
 		},
+
+
+		mounted () {
+			this.bindLinks();
+		},
+
+
+		updated () {
+			this.$nextTick(() => this.bindLinks());
+		},
+
+
+		methods: {
+			bindLinks () {
+				const links = this.$el.querySelectorAll("a");
+				for (const a of links)
+					a.onclick = event => this.$emit("linkClick", event, a.href.baseVal);
+			},
+		},
 	};
 </script>
 
