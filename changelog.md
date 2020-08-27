@@ -26,6 +26,8 @@
 
 *	2020.8.27
 
+	+	app/components/remote-file.vue created.
+
 	+	backend/dirServer.ts created.
 
 

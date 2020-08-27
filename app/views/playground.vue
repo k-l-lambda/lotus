@@ -111,7 +111,15 @@
 				<Loading v-show="engraving" />
 			</div>
 			<div class="source-editor-controls" v-if="sourceEditorEnabled">
-				<button @click="showSourceDir = !showSourceDir">&#x1f5c0;</button>
+				<button class="folder" @click="showSourceDir = !showSourceDir">&#x1f5c0;</button>
+				<StoreInput v-show="false" v-model="sourceEditorHost" localKey="lotus-sourceEditorHost" />
+				<StoreInput v-show="false" v-model="sourceEditorFilePath" sessionKey="lotus-sourceEditorFilePath" />
+				<RemoteFile v-show="sourceEditorFilePath"
+					:host="sourceEditorHost"
+					:filePath="sourceEditorFilePath"
+					:filePathReadOnly="true"
+					:content.sync="lilySource"
+				/>
 				<iframe class="source-dir" v-show="showSourceDir" src="/source-dir/" ref="sourceDir"
 					@mouseleave="showSourceDir = false"
 					@load="onSourceDirLoad"
@@ -251,6 +259,7 @@
 	import CheckButton from "../components/check-button.vue";
 	import NotationsMatcher from "../components/notations-matcher.vue";
 	import Dialog from "../components/dialog.vue";
+	import RemoteFile from "../components/remote-file.vue";
 
 	import QuitClearner from "../mixins/quit-cleaner";
 
@@ -283,6 +292,7 @@
 			MidiRoll,
 			NotationsMatcher,
 			Dialog,
+			RemoteFile,
 		},
 
 
@@ -352,6 +362,8 @@
 				pointerData: null,
 				sourceEditorEnabled: false,
 				showSourceDir: false,
+				sourceEditorHost: `ws://${location.host}`,
+				sourceEditorFilePath: null,
 			};
 		},
 
@@ -1104,8 +1116,7 @@
 
 					this.showSourceDir = false;
 
-					const filePath = decodeURI(href.replace(/^http.*source-dir\//, ""));
-					console.log("chose filePath:", filePath);
+					this.sourceEditorFilePath = decodeURI(href.replace(/^http.*source-dir\//, ""));
 				}
 			},
 		},
@@ -1372,6 +1383,13 @@
 				height: unset;
 				transform: translate(0, -100%);
 
+				.folder
+				{
+					font-size: 140%;
+					width: 2em;
+					margin-right: 1em;
+				}
+
 				.source-dir
 				{
 					position: absolute;
@@ -1381,6 +1399,14 @@
 					width: 600px;
 					border: 0;
 					box-shadow: 10px 10px 20px #0006;
+				}
+
+				.file-path
+				{
+					width: 40em;
+					color: #777;
+					font-style: italic;
+					border: 0;
 				}
 			}
 		}
