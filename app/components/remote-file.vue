@@ -23,6 +23,7 @@
 		data () {
 			return {
 				remoteFile: new RemoteFile(),
+				loading: false,
 			};
 		},
 
@@ -30,8 +31,17 @@
 		created () {
 			this.remoteFile.on("sync", ({timestamp}) => {
 				this.$emit("update:content", this.remoteFile.content);
+				this.$nextTick(() => this.loading = false);
 
 				console.debug("remote file synchronized:", new Date(timestamp));
+			});
+
+
+			this.remoteFile.on("connected", () => this.$emit("update:connected", true));
+			this.remoteFile.on("disconnected", () => {
+				this.loading = false;
+
+				this.$emit("update:connected", false);
 			});
 		},
 
@@ -46,6 +56,7 @@
 
 
 			connect () {
+				this.loading = true;
 				this.remoteFile.connect(this.host, this.filePath);
 			},
 
@@ -61,6 +72,11 @@
 				if (value !== this.remoteFile.content)
 					this.remoteFile.content = value;
 			}, 1e+3),
+
+
+			loading (value) {
+				this.$emit("update:loading", value);
+			},
 		},
 	};
 </script>

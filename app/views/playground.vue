@@ -57,12 +57,12 @@
 			</fieldset>
 		</header>
 		<main>
-			<div class="source-container" :class="{loading: converting, 'drag-hover': sourceDragHover}"
+			<div class="source-container" :class="{loading: sourceIsLoading, 'drag-hover': sourceDragHover, connected: sourceEditorConnected}"
 				@dragover.prevent="sourceDragHover = true"
 				@dragleave="sourceDragHover = null"
 				@drop.prevent.stop="onDropFile($event, {source: true})"
 			>
-				<SourceEditor :source.sync="lilySource" :disabled="converting" />
+				<SourceEditor :source.sync="lilySource" :disabled="sourceIsLoading" />
 				<span class="corner">
 					<button class="inspect" @click="inspectLily">&#x1f4d5;</button>
 					<button class="log" :class="engraverLogStatus" v-show="engraverLogStatus"
@@ -71,7 +71,7 @@
 					></button>
 					<Loading v-show="loadingLilyParser" />
 				</span>
-				<Loading v-show="converting" />
+				<Loading v-show="sourceIsLoading" />
 			</div>
 			<div class="build-container" ref="buildContainer" :class="{
 				loading: engraving, dirty: engraverDirty, chromatic: chromaticSymbols, inspecting: showNotationsMatcher,
@@ -119,11 +119,15 @@
 					:filePath="sourceEditorFilePath"
 					:filePathReadOnly="true"
 					:content.sync="lilySource"
+					:connected.sync="sourceEditorConnected"
+					:loading.sync="sourceEditorLoading"
 				/>
-				<iframe class="source-dir" v-show="showSourceDir" src="/source-dir/" ref="sourceDir"
-					@mouseleave="showSourceDir = false"
-					@load="onSourceDirLoad"
-				/>
+				<div class="source-dir" v-show="showSourceDir">
+					<iframe src="/source-dir/" ref="sourceDir"
+						@mouseleave="showSourceDir = false"
+						@load="onSourceDirLoad"
+					/>
+				</div>
 			</div>
 		</main>
 		<Dialog :visible.sync="settingPanelVisible">
@@ -364,6 +368,8 @@
 				showSourceDir: false,
 				sourceEditorHost: `ws://${location.host}`,
 				sourceEditorFilePath: null,
+				sourceEditorConnected: false,
+				sourceEditorLoading: false,
 			};
 		},
 
@@ -396,6 +402,11 @@
 					return "warning";
 
 				return "info";
+			},
+
+
+			sourceIsLoading () {
+				return this.converting || this.sourceEditorLoading;
 			},
 		},
 
@@ -1318,6 +1329,19 @@
 						}
 					}
 				}
+
+				&.connected
+				{
+					.source-editor 
+					{
+						outline: 2px solid #0006;
+
+						pre
+						{
+							background-color: #f2faf0;
+						}
+					}
+				}
 			}
 
 			.build-container
@@ -1403,6 +1427,13 @@
 					width: 600px;
 					border: 0;
 					box-shadow: 10px 10px 20px #0006;
+					background-color: #fffa;
+
+					iframe
+					{
+						width: 100%;
+						height: 100%;
+					}
 				}
 
 				.file-path

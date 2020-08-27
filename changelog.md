@@ -26,6 +26,8 @@
 
 *	2020.8.27
 
+	+	playground.vue: source loading status added.
+
 	+	app/components/remote-file.vue created.
 
 	+	backend/dirServer.ts created.
