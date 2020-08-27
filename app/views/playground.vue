@@ -62,7 +62,7 @@
 				@dragleave="sourceDragHover = null"
 				@drop.prevent.stop="onDropFile($event, {source: true})"
 			>
-				<SourceEditor :source.sync="lilySource" :disabled="sourceIsLoading" />
+				<SourceEditor ref="sourceEditor" :source.sync="lilySource" :disabled="sourceIsLoading" />
 				<span class="corner">
 					<button class="inspect" @click="inspectLily">&#x1f4d5;</button>
 					<button class="log" :class="engraverLogStatus" v-show="engraverLogStatus"
@@ -1168,9 +1168,15 @@
 					const startChars = this.lilyTextSource.positionToChars([position[0], position[1]]);
 					const endChars = position.length >= 3 ? this.lilyTextSource.positionToChars([position[0], position[2]]) : startChars;
 
-					console.log("highlightSourcePosition:", position, textarea, startChars, endChars);
+					//console.log("highlightSourcePosition:", position, textarea, startChars, endChars);
 					textarea.setSelectionRange(startChars, endChars);
 					textarea.focus();
+
+					const wrapper = this.$el.querySelector(".prism-editor-wrapper");
+
+					//console.log("scroll:", (position[2] || position[1]) * 9.7 - textarea.clientWidth, position[0] * 19 - this.$refs.sourceEditor.$el.clientHeight);
+					wrapper.scrollLeft = Math.max((position[2] || position[1]) * 9.7 - textarea.clientWidth, 0);
+					wrapper.scrollTop = Math.max((position[0] + 2) * 19 - wrapper.clientHeight, 0);
 				}
 			},
 
