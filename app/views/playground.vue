@@ -130,6 +130,7 @@
 					/>
 					<div class="controls">
 						<button @click="$refs.sourceDir.contentWindow.location.href = '/source-dir/'">{{"\ud83c\udfe0"}}</button>
+						<button @click="$refs.sourceDir.contentWindow.history.back()">&#x21e6;</button>
 					</div>
 				</div>
 			</div>
