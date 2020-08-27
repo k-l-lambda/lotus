@@ -26,6 +26,8 @@
 
 *	2020.8.27
 
+	+	source-editor.vue: upgraded prism component.
+
 	+	playground.vue: home button on source dir added.
 
 	+	playground.vue: source loading status added.

@@ -1341,9 +1341,9 @@
 					{
 						outline: 2px solid #0006;
 
-						pre
+						.prism-editor-wrapper
 						{
-							background-color: #f2faf0;
+							background-color: #f2f6f0;
 						}
 					}
 				}

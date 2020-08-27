@@ -1,15 +1,22 @@
 <template>
 	<div class="source-editor">
-		<!--textarea v-model="editText" cols="80" autocorrect="off" spellcheck="false" :disabled="disabled"></textarea-->
-		<PrismEditor v-model="editText" :lineNumbers="true" :readonly="disabled" />
+		<PrismEditor v-model="editText"
+			:lineNumbers="true"
+			:highlight="highlighter"
+			:readonly="disabled"
+			:tabSize="4"
+		/>
 	</div>
 </template>
 
 <script>
-	import "prismjs";
-	import "prismjs/themes/prism.css";
+	import "vue-prism-editor/dist/prismeditor.min.css";
+	import "prismjs/themes/prism-solarizedlight.css";
 
-	import PrismEditor from "vue-prism-editor";
+	import {highlight, languages} from "prismjs";
+	import "prismjs/components/prism-lilypond";
+
+	import {PrismEditor} from "vue-prism-editor";
 
 
 
@@ -35,6 +42,18 @@
 		},
 
 
+		/*created () {
+			console.log("languages:", languages);
+		},*/
+
+
+		methods: {
+			highlighter (code) {
+				return highlight(code, languages.lilypond);
+			},
+		},
+
+
 		watch: {
 			editText (value) {
 				if (this.source !== value)
@@ -49,7 +68,7 @@
 	};
 </script>
 
-<style scoped>
+<style lang="scss"scoped>
 	.source-editor
 	{
 		display: inline-block;
@@ -57,14 +76,19 @@
 
 	.prism-editor-wrapper
 	{
+		background-color: #f4f2f0;
 		resize: horizontal;
+		width: 50em;
 		height: 100%;
-		background-color: transparent;
+		//background-color: transparent;
+		font-family: monospace;
+		font-size: 16px;
+		overflow: auto;
 	}
 </style>
 
 <style>
-	.prism-editor-wrapper code {
+	/*.prism-editor-wrapper code {
 		font-family: inherit;
 		line-height: inherit;
 	}
@@ -115,5 +139,15 @@
 
 	pre.prism-editor__code:focus {
 		outline: none;
+	}*/
+
+	.prism-editor-wrapper pre, .prism-editor-wrapper textarea
+	{
+		white-space: pre !important;
+	}
+
+	.prism-editor-wrapper textarea:focus
+	{
+		outline: 0;
 	}
 </style>
