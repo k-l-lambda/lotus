@@ -111,10 +111,10 @@
 				<Loading v-show="engraving" />
 			</div>
 			<div class="source-editor-controls" v-if="sourceEditorEnabled">
-				<button class="folder" @click="showSourceDir = !showSourceDir">&#x1f5c0;</button>
+				<button class="folder" @click="showSourceDir = !showSourceDir; $refs.sourceDir.contentWindow.location.reload()">&#x1f5c0;</button>
 				<StoreInput v-show="false" v-model="sourceEditorHost" localKey="lotus-sourceEditorHost" />
 				<StoreInput v-show="false" v-model="sourceEditorFilePath" sessionKey="lotus-sourceEditorFilePath" />
-				<RemoteFile v-show="sourceEditorFilePath"
+				<RemoteFile v-show="sourceEditorFilePath" ref="remoteFile"
 					:host="sourceEditorHost"
 					:filePath="sourceEditorFilePath"
 					:filePathReadOnly="true"
@@ -1117,6 +1117,10 @@
 					this.showSourceDir = false;
 
 					this.sourceEditorFilePath = decodeURI(href.replace(/^http.*source-dir\//, ""));
+					this.$nextTick(() => {
+						if (this.$refs.remoteFile)
+							this.$refs.remoteFile.connect();
+					});
 				}
 			},
 		},

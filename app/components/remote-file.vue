@@ -39,9 +39,19 @@
 		methods: {
 			onLink () {
 				if (this.remoteFile.connected)
-					this.remoteFile.close();
+					this.disconnect();
 				else
-					this.remoteFile.connect(this.host, this.filePath);
+					this.connect();
+			},
+
+
+			connect () {
+				this.remoteFile.connect(this.host, this.filePath);
+			},
+
+
+			disconnect () {
+				this.remoteFile.close();
 			},
 		},
 
