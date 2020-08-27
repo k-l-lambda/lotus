@@ -1,12 +1,11 @@
 
-import path from "path";
 import express from "express";
 import http from "http";
 import * as webEditor from "@k-l-lambda/web-editor";
-import serveHandler from "serve-handler";
 
 import "./env.js";
 import {service} from "./backend";
+import * as dirServer from "./backend/dirServer";
 
 
 
@@ -43,33 +42,5 @@ if (process.env.SOURCE_EDITOR_DIR) {
 	webEditor.service.createServer(httpServer, {rootDir: editorDir});
 
 	// source directory list handler
-	app.use(`${editorApiPath}/*`, (req, res) => {
-		req.url = "/" + path.relative(`${editorApiPath}/`, req.baseUrl);
-
-		// modify link URL origin
-		const responseProxy = new Proxy(res, {
-			get (res, prop) {
-				//console.log("proxy.get:", prop);
-				switch (prop) {
-				case "end":
-					return (content) => {
-						//console.log("end with:", content);
-						const html = content && content.replace(/href="/g, `href="${editorApiPath}`);
-
-						res.end(html);
-					};
-				}
-
-				if (typeof res[prop] === "function")
-					return res[prop].bind(res);
-
-				return res[prop];
-			},
-		});
-
-		serveHandler(req, responseProxy, {
-			public: editorDir,
-			//symlinks: true,
-		});
-	});
+	app.use(`${editorApiPath}/*`, dirServer.createHandler(editorDir, editorApiPath));
 }

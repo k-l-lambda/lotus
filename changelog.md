@@ -24,6 +24,11 @@
 
 
 
+*	2020.8.27
+
+	+	backend/dirServer.ts created.
+
+
 *	2020.8.26
 
 	+	playground.vue: source directory file choose added.
