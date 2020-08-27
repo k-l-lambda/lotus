@@ -111,7 +111,7 @@
 				<Loading v-show="engraving" />
 			</div>
 			<div class="source-editor-controls" v-if="sourceEditorEnabled">
-				<button class="folder" @click="showSourceDir = !showSourceDir; $refs.sourceDir.contentWindow.location.reload()">&#x1f5c0;</button>
+				<button class="folder" @click="showSourceDir = !showSourceDir; $refs.sourceDir.contentWindow.location.reload()">{{"\ud83d\udcc1"}}</button>
 				<StoreInput v-show="false" v-model="sourceEditorHost" localKey="lotus-sourceEditorHost" />
 				<StoreInput v-show="false" v-model="sourceEditorFilePath" sessionKey="lotus-sourceEditorFilePath" />
 				<RemoteFile v-show="sourceEditorFilePath" ref="remoteFile"
@@ -122,11 +122,15 @@
 					:connected.sync="sourceEditorConnected"
 					:loading.sync="sourceEditorLoading"
 				/>
-				<div class="source-dir" v-show="showSourceDir">
+				<div class="source-dir" v-show="showSourceDir"
+					@mouseleave="showSourceDir = false"
+				>
 					<iframe src="/source-dir/" ref="sourceDir"
-						@mouseleave="showSourceDir = false"
 						@load="onSourceDirLoad"
 					/>
+					<div class="controls">
+						<button @click="$refs.sourceDir.contentWindow.location.href = '/source-dir/'">{{"\ud83c\udfe0"}}</button>
+					</div>
 				</div>
 			</div>
 		</main>
@@ -1433,6 +1437,13 @@
 					{
 						width: 100%;
 						height: 100%;
+					}
+
+					.controls
+					{
+						position: absolute;
+						left: 0;
+						top: 0;
 					}
 				}
 
