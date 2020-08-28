@@ -9,14 +9,14 @@ import {PitchContextTable} from "./pitchContext";
 
 
 
-interface NoteLinking {
+export interface NoteLinking {
 	ids: string[];
 	staffTrack: number;
 	contextIndex: number;
 }
 
 
-interface ScoreMeta {
+export interface ScoreMeta {
 	title: string;
 	composer: string;
 	pageSize: {

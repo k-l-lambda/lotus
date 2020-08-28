@@ -14,7 +14,7 @@ import * as LilyNotation from "../inc/lilyNotation";
 // eslint-disable-next-line
 import LogRecorder from "../inc/logRecorder";
 // eslint-disable-next-line
-import ScoreJSON from "../inc/scoreJSON";
+import ScoreJSON, {NoteLinking} from "../inc/scoreJSON";
 // eslint-disable-next-line
 import {LilyProcessOptions} from "./lilyCommands";
 // eslint-disable-next-line
@@ -133,7 +133,7 @@ const makeScoreV1 = async (source: string, lilyParser: GrammarParser, {midi, log
 
 	const pitchContextGroup = PitchContextTable.createPitchContextGroup(sheetNotation.pitchContexts, midiNotation);
 
-	const noteLinkings = midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
+	const noteLinkings = midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]) as NoteLinking);
 
 	logger.append("scoreMaker.profile.full", {cost: Date.now() - t0});
 
@@ -153,7 +153,7 @@ interface IncompleteScoreJSON {
 	doc?: any;
 	hashTable?: {[key: string]: any};
 	midi?: MIDI.MidiData;
-	noteLinkings?: any;
+	noteLinkings?: NoteLinking;
 	pitchContextGroup?: any;
 };
 
@@ -450,7 +450,7 @@ const makeScoreV3 = async (source: string, lilyParser: GrammarParser, {midi, log
 
 	const pitchContextGroup = PitchContextTable.createPitchContextGroup(sheetNotation.pitchContexts, midiNotation);
 
-	const noteLinkings = midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
+	const noteLinkings = midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]) as NoteLinking);
 
 	logger.append("scoreMaker.profile.full", {cost: Date.now() - t0});
 
@@ -550,7 +550,7 @@ const makeScoreV4 = async (source: string, lilyParser: GrammarParser, {midi, log
 	const pitchContextGroup = PitchContextTable.createPitchContextGroup(
 		lilyNotation.pitchContextGroup.map(table => table.items.map(item => item.context)), midiNotation);
 
-	const noteLinkings = midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
+	const noteLinkings = midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]) as NoteLinking);
 
 	logger.append("scoreMaker.profile.full", {cost: Date.now() - t0});
 
