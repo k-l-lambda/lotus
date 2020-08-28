@@ -24,6 +24,11 @@
 
 
 
+*	2020.8.28
+
+	+	sheet-live.vue: token click event added.
+
+
 *	2020.8.27
 
 	+	playground.vue: highlightSourcePosition implemented.

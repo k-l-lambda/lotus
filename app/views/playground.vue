@@ -109,6 +109,7 @@
 						@cursorPageShift="onCursorPageShift"
 						@pointerUpdate="onPointerUpdate"
 						@pointerClick="onPointerClick"
+						@click-token="onClickToken"
 					/>
 				</div>
 				<Loading v-show="engraving" />
@@ -1175,7 +1176,7 @@
 					const wrapper = this.$el.querySelector(".prism-editor-wrapper");
 
 					//console.log("scroll:", (position[2] || position[1]) * 9.7 - textarea.clientWidth, position[0] * 19 - this.$refs.sourceEditor.$el.clientHeight);
-					wrapper.scrollLeft = Math.max((position[2] || position[1]) * 9.7 - textarea.clientWidth, 0);
+					wrapper.scrollLeft = Math.max(((position[2] || position[1]) + 2) * 9.7 + 50 - wrapper.clientWidth, 0);
 					wrapper.scrollTop = Math.max((position[0] + 2) * 19 - wrapper.clientHeight, 0);
 				}
 			},
@@ -1188,6 +1189,16 @@
 				const position = href.match(/\d+/g);
 				if (position)
 					this.highlightSourcePosition(position.map(Number));
+			},
+
+
+			onClickToken (token, event) {
+				//console.log("onClickToken:", token, event);
+				if (event.ctrlKey && token.href) {
+					const position = token.href.match(/\d+/g);
+					if (position)
+						this.highlightSourcePosition(position.map(Number));
+				}
 			},
 		},
 

@@ -106,5 +106,6 @@
 	.prism-editor__container
 	{
 		overflow: unset !important;
+		width: 1000% !important;
 	}
 </style>

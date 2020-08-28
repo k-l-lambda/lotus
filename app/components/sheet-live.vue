@@ -90,6 +90,7 @@
 										attached: Number.isFinite(token.stemX),
 									}"
 									:showTitle="showMark"
+									@click="$emit('click-token', token, $event)"
 								/>
 							</g>
 							<g class="markings">
