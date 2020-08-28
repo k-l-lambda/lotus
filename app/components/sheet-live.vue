@@ -568,7 +568,7 @@
 
 
 			onClickPad (row, event) {
-				this.$emit("pointerClick", this.eventToPointer(row, event));
+				this.$emit("pointerClick", this.eventToPointer(row, event), event);
 			},
 
 

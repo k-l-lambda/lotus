@@ -599,8 +599,8 @@
 			},
 
 
-			async onPointerClick (point) {
-				if (Number.isFinite(point.tick)) {
+			async onPointerClick (point, event) {
+				if (!event.ctrlKey && Number.isFinite(point.tick)) {
 					const isPlaying = this.midiPlayer.isPlaying;
 					if (isPlaying) {
 						this.midiPlayer.pause();
@@ -1176,8 +1176,16 @@
 					const wrapper = this.$el.querySelector(".prism-editor-wrapper");
 
 					//console.log("scroll:", (position[2] || position[1]) * 9.7 - textarea.clientWidth, position[0] * 19 - this.$refs.sourceEditor.$el.clientHeight);
-					wrapper.scrollLeft = Math.max(((position[2] || position[1]) + 2) * 9.7 + 50 - wrapper.clientWidth, 0);
-					wrapper.scrollTop = Math.max((position[0] + 2) * 19 - wrapper.clientHeight, 0);
+					const idealPos = {
+						left: position[1] * 9.7,
+						right: ((position[2] || position[1]) + 2) * 9.7,
+						top: (position[0] - 1) * 19,
+						bottom: (position[0] + 2) * 19,
+					};
+					wrapper.scrollLeft = Math.max(idealPos.right + 50 - wrapper.clientWidth, wrapper.scrollLeft);
+					wrapper.scrollLeft = Math.min(idealPos.left, wrapper.scrollLeft);
+					wrapper.scrollTop = Math.max(idealPos.bottom - wrapper.clientHeight, wrapper.scrollTop);
+					wrapper.scrollTop = Math.min(idealPos.top, wrapper.scrollTop);
 				}
 			},
 
