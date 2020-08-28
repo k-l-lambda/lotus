@@ -926,6 +926,8 @@
 
 
 			markupLilyDocument (doc) {
+				doc.formalize();
+
 				const globalAttributes = doc.globalAttributes();
 
 				if (this.lilyMarkups.staffSize)

@@ -24,6 +24,8 @@
 
 *	2020.8.28
 
+	+	lilyTerms.ts: Root.reorder added.
+
 	+	lilyDocument.ts: LilyDocument.formalize implemented.
 
 	+	sheet-live.vue: token click event added.

@@ -404,6 +404,41 @@ export class Root extends BaseTerm {
 	get includeFiles (): string[] {
 		return this.sections.filter(section => section instanceof Include).map((include: Include) => include.filename);
 	}
+
+
+	static priorityForSection (term: BaseTerm): number {
+		if (term instanceof Version)
+			return 0;
+
+		if (term instanceof Language)
+			return 1;
+
+		if (term instanceof Scheme)
+			return 3;
+
+		if (term instanceof Assignment)
+			return 7;
+
+		if (term instanceof Block) {
+			switch (term.head) {
+			case "\\header":
+				return 2;
+	
+			case "\\paper":
+				return 4;
+		
+			case "\\score":
+				return 10;
+			}
+		}
+
+		return Infinity;
+	}
+
+
+	reorderSections () {
+		this.sections.sort((s1, s2) => Root.priorityForSection(s1) - Root.priorityForSection(s2));
+	}
 };
 
 

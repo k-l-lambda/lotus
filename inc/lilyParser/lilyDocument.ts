@@ -69,9 +69,13 @@ export default class LilyDocument {
 		let staffSize = globalStaffSize || layoutStaffSize;
 
 		if (!readonly) {
+			let sectionsDirty = false;
+
 			if (!staffSize) {
 				this.root.sections.push(new Scheme({exp: {proto: "SchemeFunction", func: "set-global-staff-size", args: [LILY_STAFF_SIZE_DEFAULT]}}));
 				staffSize = this.root.getField("set-global-staff-size");
+
+				sectionsDirty = true;
 			}
 
 			// A4 paper size
@@ -93,6 +97,8 @@ export default class LilyDocument {
 					body: [DEFAULT_PAPER_WIDTH, DEFAULT_PAPER_HEIGHT],
 				});
 				this.root.sections.push(paper);
+
+				sectionsDirty = true;
 			}
 
 			if (!paper.getField("paper-width")) 
@@ -100,6 +106,9 @@ export default class LilyDocument {
 
 			if (!paper.getField("paper-height")) 
 				paper.body.push(parseRaw(DEFAULT_PAPER_HEIGHT));
+
+			if (sectionsDirty)
+				this.root.reorderSections();
 		}
 		else
 			staffSize = staffSize || {value: LILY_STAFF_SIZE_DEFAULT};
