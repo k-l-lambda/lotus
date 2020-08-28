@@ -1,5 +1,7 @@
 <template>
-	<div class="source-editor">
+	<div class="source-editor"
+		@click="onClick"
+	>
 		<PrismEditor v-model="editText"
 			:lineNumbers="true"
 			:highlight="highlighter"
@@ -42,14 +44,14 @@
 		},
 
 
-		/*created () {
-			console.log("languages:", languages);
-		},*/
-
-
 		methods: {
 			highlighter (code) {
 				return highlight(code, languages.lilypond);
+			},
+
+			onClick () {
+				if (!document.activeElement || document.activeElement.tagName !== "TEXTAREA")
+					this.$el.querySelector("textarea").focus();
 			},
 		},
 

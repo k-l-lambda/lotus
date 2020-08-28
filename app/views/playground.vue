@@ -1216,6 +1216,9 @@
 				this.engraverDirty = true;
 				this.lilyDocumentDirty = true;
 				this.lilyTextSourceDirty = true;
+
+				if (!this.sourceEditorConnected)
+					this.sourceEditorFilePath = null;
 			},
 
 
