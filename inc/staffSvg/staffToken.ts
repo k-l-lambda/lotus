@@ -35,7 +35,7 @@ export default class StaffToken {
 	}
 
 
-	toJSON () {
+	toJSON (): object {
 		return {
 			__prototype: "StaffToken",
 			..._.pick(this, ["x", "y", "rx", "ry", "sw", "start", "target", "source", "tied",
