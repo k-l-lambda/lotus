@@ -4,6 +4,8 @@ import {DOMParser} from "xmldom";
 import {MusicNotation} from "@k-l-lambda/web-widgets";
 // eslint-disable-next-line
 import {MIDI} from "@k-l-lambda/web-widgets";
+// eslint-disable-next-line
+import {Readable} from "stream";
 
 import {xml2ly, engraveSvg} from "./lilyCommands";
 import {LilyDocument, replaceSourceToken, LilyTerms} from "../inc/lilyParser";
@@ -11,6 +13,7 @@ import * as staffSvg from "../inc/staffSvg";
 import {SingleLock} from "../inc/mutex";
 import {PitchContextTable} from "../inc/pitchContext";
 import * as LilyNotation from "../inc/lilyNotation";
+import {svgToPng} from "./canvas";
 // eslint-disable-next-line
 import LogRecorder from "../inc/logRecorder";
 // eslint-disable-next-line
@@ -162,6 +165,7 @@ interface SheetNotationResult extends IncompleteScoreJSON {
 	midiNotation: MusicNotation.NotationData;
 	sheetNotation: staffSvg.StaffNotation.SheetNotation;
 	lilyDocument: LilyDocument;
+	bakingImages?: Readable[];
 };
 
 
@@ -285,12 +289,19 @@ const makeScoreV2 = async (source: string, lilyParser: GrammarParser, {midi, log
 };
 
 
-const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {withNotation = true, logger, lilyDocument, includeFolders}: {withNotation?: boolean, logger?: LogRecorder, lilyDocument?: LilyDocument, includeFolders?: string[]} = {}): Promise<SheetNotationResult> => {
+const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {withNotation = true, logger, lilyDocument, includeFolders, baking}: {
+	withNotation?: boolean,
+	logger?: LogRecorder,
+	lilyDocument?: LilyDocument,
+	includeFolders?: string[],
+	baking?: boolean,
+} = {}): Promise<SheetNotationResult> => {
 	let midi = null;
 	let midiNotation = null;
 
 	const pages = [];
 	const hashTable = {};
+	const bakingImages = [];
 
 	const t0 = Date.now();
 
@@ -323,13 +334,18 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 			midiNotation = midi && MusicNotation.Notation.parseMidi(midi);
 			//console.log("tm.1:", Date.now() - t0);
 		}),
-		onSvgRead: async (index, svg) => {
+		onSvgRead: async (index, svg, {filePath}) => {
 			//console.log("ts.0:", Date.now() - t0);
 			const args = await argsGen.wait();
 			const page = staffSvg.parseSvgPage(svg, source, {DOMParser, logger, ...args});
 			pages[index] = page.structure;
 			Object.assign(hashTable, page.hashTable);
 			//console.log("ts.1:", Date.now() - t0);
+
+			if (baking) {
+				const stream = await svgToPng(filePath);
+				bakingImages[index] = stream;
+			}
 		},
 	});
 
@@ -357,6 +373,7 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 
 	return {
 		midi,
+		bakingImages: baking ? bakingImages : null,
 		midiNotation,
 		sheetNotation,
 		meta,
@@ -465,12 +482,16 @@ const makeScoreV3 = async (source: string, lilyParser: GrammarParser, {midi, log
 };
 
 
-const makeScoreV4 = async (source: string, lilyParser: GrammarParser, {midi, logger, unfoldRepeats = false, includeFolders}: {
+const makeScoreV4 = async (source: string, lilyParser: GrammarParser, {midi, logger, unfoldRepeats = false, baking = false, includeFolders}: {
 	midi?: MIDI.MidiData,
 	logger?: LogRecorder,
 	unfoldRepeats?: boolean,
 	includeFolders?: string[],
-} = {}): Promise<ScoreJSON | IncompleteScoreJSON> => {
+	baking?: boolean,
+} = {}): Promise<{
+	bakingImages?: Readable[],
+	score: ScoreJSON | IncompleteScoreJSON,
+}> => {
 	const t0 = Date.now();
 
 	let lilyDocument = null;
@@ -488,8 +509,8 @@ const makeScoreV4 = async (source: string, lilyParser: GrammarParser, {midi, log
 		}
 	}
 
-	const foldData = await makeSheetNotation(source, lilyParser, {logger, lilyDocument, withNotation: !midi && !unfoldSource, includeFolders});
-	const {meta, doc, hashTable} = foldData;
+	const foldData = await makeSheetNotation(source, lilyParser, {logger, lilyDocument, withNotation: !midi && !unfoldSource, includeFolders, baking});
+	const {meta, doc, hashTable, bakingImages} = foldData;
 
 	lilyDocument = lilyDocument || foldData.lilyDocument;
 	//let sheetNotation = foldData.sheetNotation;
@@ -514,10 +535,12 @@ const makeScoreV4 = async (source: string, lilyParser: GrammarParser, {midi, log
 			console.warn("sheetNotation parsing failed, score maker finished incompletely.");
 
 		return {
-			meta,
-			doc,
-			midi,
-			hashTable,
+			score: {
+				meta,
+				doc,
+				midi,
+				hashTable,
+			},
 		};
 	}
 
@@ -555,12 +578,15 @@ const makeScoreV4 = async (source: string, lilyParser: GrammarParser, {midi, log
 	logger.append("scoreMaker.profile.full", {cost: Date.now() - t0});
 
 	return {
-		meta,
-		doc,
-		midi,
-		hashTable,
-		noteLinkings,
-		pitchContextGroup,
+		bakingImages,
+		score: {
+			meta,
+			doc,
+			midi,
+			hashTable,
+			noteLinkings,
+			pitchContextGroup,
+		},
 	};
 };
 

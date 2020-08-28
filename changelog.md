@@ -24,6 +24,8 @@
 
 *	2020.8.28
 
+	+	scoreMaker.ts: option of baking added.
+
 	+	lilyTerms.ts: Root.reorder added.
 
 	+	lilyDocument.ts: LilyDocument.formalize implemented.

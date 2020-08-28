@@ -195,7 +195,11 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 	onMidiRead?: (content: MIDI.MidiData, {filePath: string}) => void|Promise<void>,
 	onSvgRead?: (index: number, content: string, {filePath: string}) => void|Promise<void>,
 	includeFolders?: string[],	// include folder path should be relative to TEMP_DIR
-} = {}) => {
+} = {}): Promise<{
+	logs: string,
+	svgs: string[],
+	midi: MIDI.MidiData,
+}> => {
 	const hash = genHashString();
 	const sourceFilename = `${env.TEMP_DIR}engrave-${hash}.ly`;
 
@@ -279,7 +283,7 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 
 	const includeParameters = includeFolders.map(folder => `--include=${folder}`).join(" ");
 
-	const proc = child_process.exec(`${LILYPOND_PATH} -dbackend=svg -o ${env.TEMP_DIR} ${includeParameters} ${sourceFilename}`,
+	const proc: any = child_process.exec(`${LILYPOND_PATH} -dbackend=svg -o ${env.TEMP_DIR} ${includeParameters} ${sourceFilename}`,
 		{maxBuffer: 0x100000});
 	//const proc = child_process.spawn(LILYPOND_PATH, ["-dbackend=svg", `-o ${env.TEMP_DIR}`, sourceFilename], {maxBuffer: 0x100000});
 	proc.childProcess.stdout.on("data", checkFile);
@@ -351,7 +355,7 @@ const engraveSvgWithStream = async (source: string, output: Writable, {includeFo
 
 	const includeParameters = includeFolders.map(folder => `--include=${folder}`).join(" ");
 
-	const proc = child_process.exec(`${LILYPOND_PATH} -dbackend=svg -o ${env.TEMP_DIR} ${includeParameters} ${sourceFilename}`);
+	const proc: any = child_process.exec(`${LILYPOND_PATH} -dbackend=svg -o ${env.TEMP_DIR} ${includeParameters} ${sourceFilename}`);
 	proc.childProcess.stdout.on("data", checkFile);
 	proc.childProcess.stderr.on("data", checkFile);
 

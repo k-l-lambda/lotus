@@ -1,6 +1,7 @@
 
 import fs from "fs";
-import {argv} from "yargs";
+import path from "path";
+import yargs from "yargs";
 import YAML from "yaml";
 import {MIDI} from "@k-l-lambda/web-widgets";
 
@@ -13,6 +14,33 @@ import asyncCall from "../inc/asyncCall";
 import LogRecorder from "../inc/logRecorder";
 import * as statStorage from "../backend/statStorage";
 
+
+
+interface Arguments {
+	//[x: string]: unknown;
+	//_: string[];
+	//$0: string;
+
+	inputLyDir?: string;
+	inputXmlDir?: string;
+	bundleScore?: boolean;
+
+	markup?: string;
+	xmlMarkup?: string;
+	skipExist?: boolean;
+	skipNonExist?: boolean;
+	noWrite?: boolean;
+	noLyWrite?: boolean;
+	pauseOnError?: boolean;
+	midiSameFilename?: boolean;
+	midiExtendName?: string;
+	flushCacheInterval?: number;
+	qualityThreshold?: number;
+	scorePostfix?: string;
+	baking?: boolean;
+};
+
+const argv = yargs.argv as Arguments;
 
 
 const main = async () => {
@@ -141,6 +169,7 @@ const main = async () => {
 		let index = 0;
 
 		const markup = argv.markup ? fs.readFileSync(argv.markup).toString() : null;
+		const baking = !!argv.baking;
 
 		const qualityThreshold = argv.qualityThreshold ? Number(argv.qualityThreshold) : 0;
 
@@ -182,7 +211,7 @@ const main = async () => {
 					console.log("midi loaded:", midiPath);
 				}
 
-				const score = await ScoreMaker.makeScore(ly, lilyParser, {midi, logger});
+				const {score, bakingImages} = await ScoreMaker.makeScore(ly, lilyParser, {midi, logger, baking});
 
 				//console.log("logger.records:", logger.records);
 				//debugger;
@@ -206,8 +235,23 @@ const main = async () => {
 				else
 					++counting.perfect;
 
-				if (!argv.noWrite && matchStat.data.coverage >= qualityThreshold)
+				if (!argv.noWrite && matchStat.data.coverage >= qualityThreshold) {
 					asyncCall(fs.writeFile, scorePath, JSON.stringify(score)).then(() => console.log("wrote:", scorePath));
+
+					if (bakingImages) {
+						const bakingPath = path.resolve(scorePath, "../baking");
+						try {
+							await fs.promises.rmdir(bakingPath);
+						}
+						catch (_) {}
+						await fs.promises.mkdir(bakingPath);
+
+						await Promise.all(bakingImages.map((stream, i) => new Promise(resolve =>
+							stream
+								.pipe(fs.createWriteStream(path.resolve(bakingPath, `${i}.png`))
+									.on("finish", resolve)))));
+					}
+				}
 
 				++counting.success;
 			}
