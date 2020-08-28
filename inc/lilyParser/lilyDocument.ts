@@ -767,6 +767,9 @@ export default class LilyDocument {
 		if (!this.root.findFirst(Language))
 			this.root.sections.splice(1, 0, Language.make("english"));
 
+		if (!this.root.getBlock("header"))
+			this.root.sections.splice(2, 0, new Block({block: "header", head: "\\header", body:[]}));
+
 		if (!this.root.getBlock("score")) {
 			const topMusics = this.root.sections.filter(section => section.isMusic);
 			this.root.sections = this.root.sections.filter(section => !section.isMusic);
