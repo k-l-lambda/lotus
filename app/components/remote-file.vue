@@ -1,5 +1,5 @@
 <template>
-	<span>
+	<span :class="{connected: remoteFile.connected}">
 		<button class="link" :class="{on: remoteFile.connected}" @click="onLink" :disabled="!host || !filePath">&#x1f517;</button>
 		<input class="file-path" type="text" v-model="filePath" :readonly="filePathReadOnly" />
 	</span>

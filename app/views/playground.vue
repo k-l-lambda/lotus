@@ -1525,6 +1525,14 @@
 					font-style: italic;
 					border: 0;
 				}
+
+				.connected
+				{
+					.file-path
+					{
+						font-weight: bold;
+					}
+				}
 			}
 		}
 
