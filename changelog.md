@@ -19,12 +19,12 @@
 		treble_8
 		system splitting, chord mode symbol affiliation
 		remove empty track	(6.1 落叶.ly)
-	source editor
-		cursor position column
 
 
 
 *	2020.8.28
+
+	+	lilyDocument.ts: LilyDocument.formalize implemented.
 
 	+	sheet-live.vue: token click event added.
 

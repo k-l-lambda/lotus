@@ -807,6 +807,11 @@ export class Version extends Command {
 
 
 export class Language extends Command {
+	static make (language: string): Language {
+		return new Language({cmd: "language", args: [LiteralString.fromString(language)]});
+	}
+
+
 	get language (): string {
 		return this.args[0].toString();
 	}

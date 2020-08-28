@@ -7,7 +7,7 @@ import {
 	parseRaw,
 	BaseTerm, Assignment, LiteralString, Command, Variable, MarkupCommand, Grace, AfterGrace, Include, Version, Block, InlineBlock,
 	Scheme, Chord, BriefChord, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive, ChordElement, MusicEvent,
-	SchemePointer, Comment,
+	SchemePointer, Comment, Language,
 } from "./lilyTerms";
 import LilyInterpreter from "./lilyInterpreter";
 
@@ -754,5 +754,21 @@ export default class LilyDocument {
 	formalize () {
 		if (!this.root.findFirst(Version))
 			this.root.sections.unshift(Version.default);
+
+		if (!this.root.findFirst(Language))
+			this.root.sections.splice(1, 0, Language.make("english"));
+
+		if (!this.root.getBlock("score")) {
+			const topMusics = this.root.sections.filter(section => section.isMusic);
+			this.root.sections = this.root.sections.filter(section => !section.isMusic);
+
+			const score = new Block({block: "score", head: "\\score", body: [
+				...topMusics,
+				new Block({block: "score", head: "\\layout", body: []}),
+				new Block({block: "score", head: "\\midi", body: []}),
+			]});
+
+			this.root.sections.push(score);
+		}
 	}
 };
