@@ -69,7 +69,7 @@
 
 		watch: {
 			content: _.debounce(function (value) {
-				if (value !== this.remoteFile.content)
+				if (this.remoteFile.connected && value !== this.remoteFile.content)
 					this.remoteFile.content = value;
 			}, 1e+3),
 
