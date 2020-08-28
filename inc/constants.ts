@@ -1,4 +1,7 @@
 
+const LILYPOND_VERSION = "2.20.0";
+
+
 const CM_TO_PX = 37.794;
 
 const LILY_TOP_MARGIN_DEFAULT = 0.5;
@@ -13,6 +16,8 @@ const STAFF_HEAD_DEDUCTION = 0.06;	// extra width augment when system wrap added
 
 
 export {
+	LILYPOND_VERSION,
+
 	CM_TO_PX,
 
 	LILY_TOP_MARGIN_DEFAULT,

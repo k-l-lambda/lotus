@@ -3,6 +3,7 @@ import _ from "lodash";
 
 import {WHOLE_DURATION_MAGNITUDE, FractionNumber, lcmMulti} from "./utils";
 import * as idioms from "./idioms";
+import {LILYPOND_VERSION} from "../constants";
 
 
 
@@ -794,6 +795,11 @@ export class Include extends Command {
 
 
 export class Version extends Command {
+	static get default (): Version {
+		return new Version({cmd: "version", args: [LiteralString.fromString(LILYPOND_VERSION)]});
+	}
+
+
 	get version (): string {
 		return this.args[0].toString();
 	}

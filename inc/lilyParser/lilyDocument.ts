@@ -749,4 +749,10 @@ export default class LilyDocument {
 			}));
 		}
 	}
+
+
+	formalize () {
+		if (!this.root.findFirst(Version))
+			this.root.sections.unshift(Version.default);
+	}
 };
