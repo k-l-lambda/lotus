@@ -423,10 +423,13 @@ export class Root extends BaseTerm {
 			switch (term.head) {
 			case "\\header":
 				return 2;
-	
+
 			case "\\paper":
 				return 4;
-		
+
+			case "\\layout":
+				return 5;
+
 			case "\\score":
 				return 10;
 			}
