@@ -22,6 +22,11 @@
 
 
 
+*	2020.8.30
+
+	+	lilyNotationMatch.ts: statStorage writing added.
+
+
 *	2020.8.28
 
 	+	scoreMaker.ts: option of baking added.
