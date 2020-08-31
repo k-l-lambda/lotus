@@ -13,6 +13,8 @@ import LilyDocument from "../lilyParser/lilyDocument";
 import {LilyDocumentAttributeReadOnly} from "../lilyParser/lilyDocument";
 // eslint-disable-next-line
 import {Scheme, SchemePair} from "../lilyParser/lilyTerms";
+// eslint-disable-next-line
+import {SheetPage} from "./sheetDocument";
 
 
 
@@ -121,6 +123,15 @@ const postProcessSheetDocument = (sheet: SheetDocument, lilyDocument: LilyDocume
 };
 
 
+const turnRawSvgWithSheetDocument = (svgText: string, page: SheetPage, {DOMParser, XMLSerializer}): string => {
+	const dom = new DOMParser().parseFromString(svgText, "text/xml");
+
+	// TODO:
+
+	return new XMLSerializer().serializeToString(dom);
+};
+
+
 
 export {
 	svgToElements,
@@ -128,6 +139,7 @@ export {
 	organizeTokens,
 	parseSvgPage,
 	postProcessSheetDocument,
+	turnRawSvgWithSheetDocument,
 	createSheetDocumentFromSvgs,
 	StaffToken,
 	SheetDocument,

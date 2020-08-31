@@ -1,6 +1,6 @@
 
 import _ from "lodash";
-import {DOMParser} from "xmldom";
+import {DOMParser, XMLSerializer} from "xmldom";
 import {MusicNotation} from "@k-l-lambda/web-widgets";
 // eslint-disable-next-line
 import {MIDI} from "@k-l-lambda/web-widgets";
@@ -334,18 +334,13 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 			midiNotation = midi && MusicNotation.Notation.parseMidi(midi);
 			//console.log("tm.1:", Date.now() - t0);
 		}),
-		onSvgRead: async (index, svg, {filePath}) => {
+		onSvgRead: async (index, svg) => {
 			//console.log("ts.0:", Date.now() - t0);
 			const args = await argsGen.wait();
 			const page = staffSvg.parseSvgPage(svg, source, {DOMParser, logger, ...args});
 			pages[index] = page.structure;
 			Object.assign(hashTable, page.hashTable);
 			//console.log("ts.1:", Date.now() - t0);
-
-			if (baking) {
-				const stream = await svgToPng(filePath);
-				bakingImages[index] = stream;
-			}
 		},
 	});
 
@@ -355,6 +350,13 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 	const doc = new staffSvg.SheetDocument({pages});
 
 	staffSvg.postProcessSheetDocument(doc, lilyDocument);
+
+	if (baking) {
+		await Promise.all(engraving.svgs.map(async (svg, index) => {
+			const svgText = staffSvg.turnRawSvgWithSheetDocument(svg, pages[index], {DOMParser, XMLSerializer});
+			bakingImages[index] = await svgToPng(Buffer.from(svgText));
+		}));
+	}
 
 	const {attributes} = await argsGen.wait();
 	const meta = {

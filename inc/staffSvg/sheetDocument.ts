@@ -8,7 +8,7 @@ import * as LilyNotation from "../lilyNotation";
 
 
 
-interface StaffMarking {
+export interface StaffMarking {
 	id: string;
 	text: string;
 	cls?: string;
@@ -17,7 +17,7 @@ interface StaffMarking {
 };
 
 
-interface SheetMeasure {
+export interface SheetMeasure {
 	index: number;
 	tokens: StaffToken[];
 	headX: number;
@@ -32,7 +32,7 @@ interface SheetMeasure {
 };
 
 
-interface SheetStaff {
+export interface SheetStaff {
 	measures: SheetMeasure[];
 	tokens: StaffToken[];
 
@@ -49,7 +49,7 @@ interface SheetStaff {
 };
 
 
-interface SheetSystem {
+export interface SheetSystem {
 	index?: number;
 	pageIndex?: number;
 	measureIndices?: [number, number][];	// [end_x, index]
@@ -64,7 +64,7 @@ interface SheetSystem {
 };
 
 
-interface SheetPage {
+export interface SheetPage {
 	width: string;
 	height: string;
 	viewBox: {

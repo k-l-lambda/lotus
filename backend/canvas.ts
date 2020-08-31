@@ -5,7 +5,7 @@ import {PNGStream} from "canvas";
 
 
 
-const svgToPng = async (sourceURL: string): Promise<PNGStream> => {
+const svgToPng = async (sourceURL: string|Buffer): Promise<PNGStream> => {
 	const image = await loadImage(sourceURL);
 
 	const canvas = createCanvas(image.width, image.height);

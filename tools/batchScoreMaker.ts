@@ -241,7 +241,7 @@ const main = async () => {
 					if (bakingImages) {
 						const bakingPath = path.resolve(scorePath, "../baking");
 						try {
-							await fs.promises.rmdir(bakingPath);
+							await fs.promises.rmdir(bakingPath, {recursive: true});
 						}
 						catch (_) {}
 						await fs.promises.mkdir(bakingPath);
