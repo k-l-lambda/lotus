@@ -7,6 +7,7 @@ import StaffToken from "./staffToken";
 import SheetDocument from "./sheetDocument";
 import * as StaffNotation from "./staffNotation";
 import TextSource from "../textSource";
+import * as domUtils from "../domUtils";
 // eslint-disable-next-line
 import LilyDocument from "../lilyParser/lilyDocument";
 // eslint-disable-next-line
@@ -126,7 +127,26 @@ const postProcessSheetDocument = (sheet: SheetDocument, lilyDocument: LilyDocume
 const turnRawSvgWithSheetDocument = (svgText: string, page: SheetPage, {DOMParser, XMLSerializer}): string => {
 	const dom = new DOMParser().parseFromString(svgText, "text/xml");
 
-	// TODO:
+	const svg: any = dom.childNodes[0];
+	svg.setAttribute("width", page.width);
+	svg.setAttribute("height", page.height);
+	svg.setAttribute("viewBox", `${page.viewBox.x} ${page.viewBox.y} ${page.viewBox.width} ${page.viewBox.height}`);
+
+	const ids = page.rows.reduce((ids, row) => {
+		row.staves.forEach(staff => staff.measures.forEach(measure =>
+			ids.push(...measure.tokens.filter(token => token.is("NOTEHEAD")).map(token => token.href.replace(/:\d+$/, "")))));
+
+		return ids;
+	}, []);
+
+	domUtils.traverse(dom, node => {
+		if (node.tagName === "a") {
+			const capture = node.getAttribute("xlink:href").match(/\d+:\d+:\d+$/);
+			const id = capture && capture[0].replace(/:\d+$/, "");
+			if (id && ids.includes(id))
+				node.setAttribute("style", "color:transparent;");
+		}
+	});
 
 	return new XMLSerializer().serializeToString(dom);
 };

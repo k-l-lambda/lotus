@@ -1,7 +1,5 @@
 
 ## TODO
-	canvas engraver crop issue
-		turnRawSvgWithSheetDocument
 	Baking score bundle size reduction
 	implicit notes matching with sheet document
 		try articulate.ly in MIDI output
@@ -25,6 +23,8 @@
 
 
 *	2020.8.31
+
+	+	staffSvg: turnRawSvgWithSheetDocument implemented.
 
 	+	scoreMaker.ts: turnRawSvgWithSheetDocument added.
 

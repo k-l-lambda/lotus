@@ -240,11 +240,14 @@ const main = async () => {
 
 					if (bakingImages) {
 						const bakingPath = path.resolve(scorePath, "../baking");
-						try {
-							await fs.promises.rmdir(bakingPath, {recursive: true});
+						if (fs.existsSync(bakingPath)) {
+							// clear old images
+							const files = await fs.promises.readdir(bakingPath);
+							for (const file of files)
+								await fs.promises.unlink(path.join(bakingPath, file));
 						}
-						catch (_) {}
-						await fs.promises.mkdir(bakingPath);
+						else
+							await fs.promises.mkdir(bakingPath);
 
 						await Promise.all(bakingImages.map((stream, i) => new Promise(resolve =>
 							stream
