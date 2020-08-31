@@ -13,6 +13,7 @@ import loadLilyParser from "../backend/loadLilyParserNode";
 import {LilyDocument} from "../inc/lilyParser";
 import walkDir from "../backend/walkDir";
 import * as LilyNotation from "../inc/lilyNotation";
+import * as statStorage from "../backend/statStorage";
 
 
 
@@ -112,6 +113,8 @@ const main = async () => {
 				return;
 			}
 
+			statStorage.appendData(lyFile, {notationMatch: result.coverage});
+
 			if (result.coverage < 1) {
 				issues.push({
 					lyFile,
@@ -128,6 +131,8 @@ const main = async () => {
 		catch (err) {
 			console.warn("checkFile error:", err);
 			++counting.failure;
+
+			statStorage.appendData(lyFile, {notationMatch: 0});
 
 			issues.push({
 				lyFile,
