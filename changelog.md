@@ -1,5 +1,6 @@
 
 ## TODO
+	canvas engraver crop issue
 	Baking score bundle size reduction
 	implicit notes matching with sheet document
 		try articulate.ly in MIDI output
@@ -20,6 +21,11 @@
 		system splitting, chord mode symbol affiliation
 		remove empty track	(6.1 落叶.ly)
 
+
+
+*	2020.8.31
+
+	+	lilyInterpreter.ts: fixed TrackContext.processGrace duration factor.
 
 
 *	2020.8.30

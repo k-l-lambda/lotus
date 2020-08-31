@@ -471,7 +471,7 @@ class TrackContext {
 
 		let tick = this.tick;
 		events.reverse().forEach(event => {
-			tick -= event.durationMagnitude * factor;
+			tick -= event.durationMagnitude * factor * this.factorValue;
 			event._tick = tick;
 
 			event.findAll(ChordElement).forEach(note => note._tick = tick);
