@@ -1,7 +1,7 @@
 
 import {DOMParser, XMLSerializer} from "xmldom";
 
-import * as domUtils from "./domUtils";
+import * as domUtils from "../inc/domUtils";
 
 
 
