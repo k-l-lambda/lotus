@@ -55,7 +55,7 @@ const matchMIDI = async (criterion: MIDI.MidiData, sample: MIDI.MidiData): Promi
 const main = async () => {
 	const lilyParser = await loadLilyParser();
 
-	const logStream = fs.createWriteStream("midiChecker.log");
+	const logStream = fs.createWriteStream("./logs/midiChecker.log");
 	const log = (...messages) => {
 		console.log(...messages);
 		logStream.write(messages.join(" ") + "\n", "utf-8");

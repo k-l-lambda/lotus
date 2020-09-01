@@ -76,7 +76,7 @@ const main = async () => {
 
 	const timeStr = new Date(Date.now() - new Date().getTimezoneOffset() * 60e+3).toISOString()
 		.replace(/:[\w.]+$/, "").replace(/[-:]/g, "");
-	const logStream = fs.createWriteStream(`lilyNotationMatch-${timeStr}.log`);
+	const logStream = fs.createWriteStream(`./logs/lilyNotationMatch-${timeStr}.log`);
 	const log = (...messages) => {
 		console.log(...messages);
 		logStream.write(messages.join(" ") + "\n", "utf-8");
