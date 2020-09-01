@@ -140,11 +140,20 @@ const turnRawSvgWithSheetDocument = (svgText: string, page: SheetPage, {DOMParse
 	}, []);
 
 	domUtils.traverse(dom, node => {
-		if (node.tagName === "a") {
+		switch (node.tagName) {
+		case "a":
 			const capture = node.getAttribute("xlink:href").match(/\d+:\d+:\d+$/);
 			const id = capture && capture[0].replace(/:\d+$/, "");
 			if (id && ids.includes(id))
 				node.setAttribute("style", "color:transparent;");
+
+			break;
+		case "text":
+			// remove lilypond engraving signature
+			if (/www\.lilypond\.org/.test(node.textContent)) 
+				node.parentNode.removeChild(node);
+
+			break;
 		}
 	});
 
