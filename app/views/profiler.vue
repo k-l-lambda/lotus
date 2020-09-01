@@ -125,6 +125,9 @@
 					break;
 				case "application/zip":
 				case "application/x-zip-compressed": {
+						this.sourceText = null;
+						await this.$nextTick();
+
 						const {default: JSZip} = await import("jszip");
 						const pack = await JSZip.loadAsync(file);
 
@@ -295,6 +298,7 @@
 			{
 				display: inline-block;
 				margin: 1em;
+				background-size: 100%;
 			}
 
 			.cursor
