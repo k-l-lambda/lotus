@@ -44,6 +44,8 @@ export default class ScoreBundle {
 
 				this.matchedIds = this.scoreJSON.noteLinkings.reduce((ids, note) => (note.ids && note.ids.forEach(id => ids.add(id)), ids), new Set()) as Set<string>;
 
+				this.scoreJSON.doc.updateMatchedTokens(this.matchedIds);
+
 				LilyNotation.assignNotationEventsIds(midiNotation);
 			}
 

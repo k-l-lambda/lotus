@@ -24,6 +24,8 @@
 
 *	2020.9.1
 
+	+	scoreBundle.ts: updateMatchedTokens added in loadNotation.
+
 	+	sheetDocument.ts: SheetDocument.pruneForBakingMode added.
 
 
