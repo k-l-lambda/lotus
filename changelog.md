@@ -1,6 +1,5 @@
 
 ## TODO
-	Baking score bundle size reduction
 	implicit notes matching with sheet document
 		try articulate.ly in MIDI output
 	staffNotation
@@ -23,6 +22,8 @@
 
 
 *	2020.9.1
+
+	+	lilyInterpreter.ts: parsed tied chord elements for notation.
 
 	+	scoreBundle.ts: updateMatchedTokens added in loadNotation.
 

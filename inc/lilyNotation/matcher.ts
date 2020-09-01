@@ -35,7 +35,7 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 		pitch: note.pitch,
 		duration: note.duration,
 		velocity: note.velocity || 127,
-		ids: [note.id],
+		ids: note.ids,
 		staffTrack: note.staffTrack,
 		contextIndex: note.contextIndex,
 	}));

@@ -106,11 +106,21 @@ class LilyStaffContext extends StaffContext {
 				pitch: pitch.absolutePitchValue + (pitch._transposition || 0),
 				velocity: 127,
 				id: pitch.href,
-				tied: pitch._tied,
+				ids: [pitch.href],
+				tied: !!pitch._tied,
 				rest: event.isRest,
 				staffTrack: this.staffTrack,
 				contextIndex,
 			})));
+
+			term.pitches.forEach(pitch => {
+				const tiedParent = pitch.tiedParent;
+				if (tiedParent) {
+					const note = this.notes.find(note => note.id === tiedParent.href);
+					if (note)
+						note.ids.push(pitch.href);
+				}
+			});
 		}
 	}
 
@@ -385,7 +395,7 @@ class TrackContext {
 	partialDuration: Duration = null;
 
 	event: MusicEvent = null;
-	tying: boolean = false;
+	tying: MusicEvent = null;
 	staccato: boolean = false;
 
 
@@ -510,7 +520,7 @@ class TrackContext {
 					const pitches = new Set(this.event.pitchElements.map(pitch => pitch.absolutePitch.pitch));
 					term.pitchElements.forEach(pitch => {
 						if (pitches.has(pitch.absolutePitch.pitch))
-							pitch._tied = true;
+							pitch._tied = this.tying;
 						//else
 						//	console.log("missed tie:", `${pitch._location.lines[0]}:${pitch._location.columns[0]}`, pitch.absolutePitch.pitch, pitches);
 					});
@@ -525,11 +535,11 @@ class TrackContext {
 
 			this.elapse(term.durationMagnitude);
 
-			this.tying = false;
+			this.tying = null;
 			this.staccato = false;
 
 			if (term.isTying)
-				this.tying = true;
+				this.tying = term;
 			if (term.isStaccato)
 				this.staccato = true;
 		}
@@ -639,7 +649,7 @@ class TrackContext {
 		}
 		else if (term instanceof Primitive) {
 			if (term.exp === "~")
-				this.tying = true;
+				this.tying = this.event;
 		}
 		else if (term instanceof PostEvent) {
 			if (term.isStaccato)

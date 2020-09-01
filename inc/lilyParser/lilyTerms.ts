@@ -1769,7 +1769,7 @@ export class ChordElement extends BaseTerm {
 
 	_parent?: Chord;
 	_previous?: ChordElement;
-	_tied?: boolean;
+	_tied?: MusicEvent;
 	_transposition?: number;
 
 	// cache for property of absolutePitch
@@ -1915,6 +1915,21 @@ export class ChordElement extends BaseTerm {
 
 	get absoluteNotePosition (): number {
 		return this.absolutePitch.notePosition;
+	}
+
+
+	get tiedParent (): ChordElement {
+		if (!this._tied || !(this._tied instanceof Chord))
+			return null;
+
+		const pitch = this._tied.pitchElements.find(p => p.absolutePitchValue === this.absolutePitchValue);
+		if (!pitch)
+			return null;
+
+		if (pitch._tied)
+			return pitch.tiedParent;
+
+		return pitch;
 	}
 };
 
