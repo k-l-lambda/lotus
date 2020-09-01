@@ -1,7 +1,7 @@
 
 import _ from "lodash";
 
-import {constants} from "./utils";
+import {constants, roundNumber} from "./utils";
 
 
 
@@ -36,9 +36,13 @@ export default class StaffToken {
 
 
 	toJSON (): object {
+		const x = roundNumber(this.x, 1e-4);
+		const y = roundNumber(this.y, 1e-4);
+
 		return {
 			__prototype: "StaffToken",
-			..._.pick(this, ["x", "y", "rx", "ry", "sw", "start", "target", "source", "tied",
+			x, y,
+			..._.pick(this, ["rx", "ry", "sw", "start", "target", "source", "tied",
 				"symbol", "hash", "href", "scale", "width", "height", "text", "stemX", "stemUp"]),
 		};
 	}

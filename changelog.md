@@ -22,6 +22,11 @@
 
 
 
+*	2020.9.1
+
+	+	sheetDocument.ts: SheetDocument.pruneForBakingMode added.
+
+
 *	2020.8.31
 
 	+	staffSvg: turnRawSvgWithSheetDocument implemented.

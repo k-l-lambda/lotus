@@ -1,5 +1,8 @@
 
+import _ from "lodash";
+
 import {CM_TO_PX} from "../constants";
+import {roundNumber} from "./utils";
 
 // eslint-disable-next-line
 import StaffToken from "./staffToken";
@@ -46,6 +49,7 @@ export interface SheetStaff {
 	x: number;
 	y: number;
 	top?: number;
+	headWidth?: number;
 };
 
 
@@ -405,6 +409,41 @@ class SheetDocument {
 				token.href = note.id;
 			else
 				note.overlapped = true;
+		});
+	}
+
+
+	pruneForBakingMode () {
+		const round = x => roundNumber(x, 1e-4);
+
+		this.pages.forEach(page => {
+			page.tokens = [];
+
+			page.rows.forEach(row => {
+				row.tokens = [];
+				row.measureIndices = row.measureIndices && row.measureIndices.map(([x, i]) => [round(x), i]);
+
+				row.staves.forEach(staff => {
+					staff.tokens = [];
+					staff.yRoundOffset = round(staff.yRoundOffset);
+					delete staff.top;
+					delete staff.headWidth;
+
+					staff.measures.forEach(measure => {
+						measure.headX = round(measure.headX);
+						measure.lineX = round(measure.lineX);
+						measure.noteRange = {
+							begin: round(measure.noteRange.begin),
+							end: round(measure.noteRange.end),
+						};
+
+						measure.tokens = measure.matchedTokens.map(token => new StaffToken(_.pick(token, [
+							"x", "y", "symbol", "href", "scale",
+						])));
+						delete measure.matchedTokens;
+					});
+				});
+			});
 		});
 	}
 };

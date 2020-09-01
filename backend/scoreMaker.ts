@@ -572,6 +572,9 @@ const makeScoreV4 = async (source: string, lilyParser: GrammarParser, {midi, log
 
 	doc.updateMatchedTokens(matchedIds);
 
+	if (baking)
+		doc.pruneForBakingMode();
+
 	const pitchContextGroup = PitchContextTable.createPitchContextGroup(
 		lilyNotation.pitchContextGroup.map(table => table.items.map(item => item.context)), midiNotation);
 
@@ -585,7 +588,7 @@ const makeScoreV4 = async (source: string, lilyParser: GrammarParser, {midi, log
 			meta,
 			doc,
 			midi,
-			hashTable,
+			hashTable: !baking ? hashTable : null,
 			noteLinkings,
 			pitchContextGroup,
 		},
