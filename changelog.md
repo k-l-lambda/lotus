@@ -21,6 +21,11 @@
 
 
 
+*	2020.9.2
+
+	+	app/components/dir-browser.vue created.
+
+
 *	2020.9.1
 
 	+	lilyInterpreter.ts: parsed tied chord elements for notation.

@@ -115,7 +115,7 @@
 				<Loading v-show="engraving" />
 			</div>
 			<div class="source-editor-controls" v-if="sourceEditorEnabled">
-				<button class="folder" @click="showSourceDir = !showSourceDir; $refs.sourceDir.contentWindow.location.reload()">{{"\ud83d\udcc1"}}</button>
+				<button class="folder" @click="showSourceDir = !showSourceDir; $refs.sourceDir.reload()">{{"\ud83d\udcc1"}}</button>
 				<StoreInput v-show="false" v-model="sourceEditorHost" localKey="lotus-sourceEditorHost" />
 				<StoreInput v-show="false" v-model="sourceEditorFilePath" sessionKey="lotus-sourceEditorFilePath" />
 				<RemoteFile v-show="sourceEditorFilePath" ref="remoteFile"
@@ -126,7 +126,7 @@
 					:connected.sync="sourceEditorConnected"
 					:loading.sync="sourceEditorLoading"
 				/>
-				<div class="source-dir" v-show="showSourceDir"
+				<!--div class="source-dir" v-show="showSourceDir"
 					@mouseleave="showSourceDir = false"
 				>
 					<iframe src="/source-dir/" ref="sourceDir"
@@ -136,7 +136,13 @@
 						<button @click="$refs.sourceDir.contentWindow.location.href = '/source-dir/'">{{"\ud83c\udfe0"}}</button>
 						<button @click="$refs.sourceDir.contentWindow.history.back()">&#x21e6;</button>
 					</div>
-				</div>
+				</div-->
+				<DirBrowser ref="sourceDir"
+					homeURL="/source-dir/"
+					:shown.sync="showSourceDir"
+					:handlePattern="/\.ly$/"
+					@pickFile="onSourceDirPick"
+				/>
 			</div>
 		</main>
 		<Dialog :visible.sync="settingPanelVisible">
@@ -273,6 +279,7 @@
 	import NotationsMatcher from "../components/notations-matcher.vue";
 	import Dialog from "../components/dialog.vue";
 	import RemoteFile from "../components/remote-file.vue";
+	import DirBrowser from "../components/dir-browser.vue";
 
 	import QuitClearner from "../mixins/quit-cleaner";
 
@@ -306,6 +313,7 @@
 			NotationsMatcher,
 			Dialog,
 			RemoteFile,
+			DirBrowser,
 		},
 
 
@@ -1141,7 +1149,7 @@
 			},
 
 
-			onSourceDirLoad () {
+			/*onSourceDirLoad () {
 				//console.log("onSourceDirLoad:", this.$refs.sourceDir.contentWindow.location.href);
 				const href = this.$refs.sourceDir.contentWindow.location.href;
 				if (/\.ly$/.test(href)) {
@@ -1155,6 +1163,16 @@
 							this.$refs.remoteFile.connect();
 					});
 				}
+			},*/
+
+
+			onSourceDirPick (filePath) {
+				//console.log("onSourceDirPick:", filePath);
+				this.sourceEditorFilePath = filePath;
+				this.$nextTick(() => {
+					if (this.$refs.remoteFile)
+						this.$refs.remoteFile.connect();
+				});
 			},
 
 
@@ -1498,7 +1516,7 @@
 					margin-right: 1em;
 				}
 
-				.source-dir
+				.dir-browser
 				{
 					position: absolute;
 					left: 0;
@@ -1508,19 +1526,6 @@
 					border: 0;
 					box-shadow: 10px 10px 20px #0006;
 					background-color: #fffa;
-
-					iframe
-					{
-						width: 100%;
-						height: 100%;
-					}
-
-					.controls
-					{
-						position: absolute;
-						left: 0;
-						top: 0;
-					}
 				}
 
 				.file-path
