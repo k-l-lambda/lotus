@@ -23,6 +23,8 @@
 
 *	2020.9.3
 
+	+	playground.vue: parse SCM code by liyad.
+
 	+	lilyCommands.ts: engraveScm added.
 
 	+	lilyDocument.ts: markup method of convertStaffToPianoStaff added.

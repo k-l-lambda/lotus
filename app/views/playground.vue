@@ -768,7 +768,9 @@
 				const result = await response.json();
 				this.engraverLogs = result.logs;
 
-				console.log("SCM:", result.scm);
+				const liyad = await import("liyad");
+				const scmObj = liyad.S(result.scm);
+				console.log("SCM:", scmObj);
 			},
 
 
