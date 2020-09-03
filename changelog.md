@@ -23,6 +23,8 @@
 
 *	2020.9.3
 
+	+	playground.vue: protect connected remote file from mutation by dropping.
+
 	+	dir-browser.vue: property of compactFolders added.
 
 

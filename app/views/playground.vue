@@ -482,6 +482,13 @@
 				this.sourceDragHover = false;
 				//console.log("onDropFile:", event.dataTransfer.items[0], source);
 
+				if (this.sourceEditorConnected) {
+					if (window.confirm("Break the edidtor file connection and continue loading?"))
+						this.$refs.remoteFile.disconnect();
+					else
+						return;
+				}
+
 				const file = event.dataTransfer.files[0];
 				if (file) {
 					switch (file.type) {
