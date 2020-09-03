@@ -21,6 +21,11 @@
 
 
 
+*	2020.9.3
+
+	+	dir-browser.vue: property of compactFolders added.
+
+
 *	2020.9.2
 
 	+	app/components/dir-browser.vue created.

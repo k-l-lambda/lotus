@@ -27,6 +27,7 @@
 			shown: Boolean,
 			handlePattern: RegExp,
 			autoHide: Boolean,
+			compactFolders: Boolean,
 		},
 
 
@@ -65,6 +66,15 @@
 					const pos = Math.max(this.href.indexOf(this.homeURL), 0);
 					const filePath = decodeURI(this.href.substr(pos + this.homeURL.length));
 					this.$emit("pickFile", filePath);
+				}
+				else if (this.compactFolders) {
+					const lis = this.$refs.frame.contentDocument.querySelectorAll("#files li");
+					const folders = this.$refs.frame.contentDocument.querySelectorAll("#files .folder");
+					//console.log("lis:", lis, folders);
+					if (lis.length === 2 && folders.length === 1) {
+						const folder = this.$refs.frame.contentDocument.querySelector("#files .folder");
+						folder.click();
+					}
 				}
 			},
 

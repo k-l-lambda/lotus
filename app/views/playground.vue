@@ -131,6 +131,7 @@
 					homeURL="/source-dir/"
 					:shown.sync="showSourceDir"
 					:handlePattern="/\.ly$/"
+					:compactFolders="true"
 					@pickFile="onSourceDirPick"
 				/>
 			</div>
