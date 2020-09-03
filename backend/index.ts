@@ -74,6 +74,15 @@ const service = {
 				});
 			}),
 	},
+
+
+	"/engraveScm": {
+		post: (req, res) => formidableHandle("engraveScm", req, res,
+			async ({source}) => {
+				const result = await lilyCommands.engraveScm(source, {includeFolders: ["../ly"]});
+				return JSON.stringify(result);
+			}),
+	},
 };
 
 

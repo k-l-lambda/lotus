@@ -23,6 +23,8 @@
 
 *	2020.9.3
 
+	+	lilyCommands.ts: engraveScm added.
+
 	+	lilyDocument.ts: markup method of convertStaffToPianoStaff added.
 
 	+	playground.vue: protect connected remote file from mutation by dropping.

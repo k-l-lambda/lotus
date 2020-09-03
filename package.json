@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@k-l-lambda/web-editor": "^0.1.1",
+    "@types/child-process-promise": "^2.2.1",
     "@types/express": "^4.17.3",
     "@types/lodash": "^4.14.160",
     "@types/node": "^14.0.13",

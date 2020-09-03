@@ -752,6 +752,26 @@
 			},
 
 
+			async engraveScm () {
+				const body = new FormData();
+				body.append("source", this.lilySource);
+
+				const response = await fetch("/engraveScm", {
+					method: "POST",
+					body,
+				});
+				if (!response.ok) {
+					console.warn("engraveScm error:", await response.text());
+					return;
+				}
+
+				const result = await response.json();
+				this.engraverLogs = result.logs;
+
+				console.log("SCM:", result.scm);
+			},
+
+
 			saveSource () {
 				const sourceFile = new Blob([this.lilySource], {type: "text/x-lilypond"});
 

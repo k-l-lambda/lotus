@@ -140,7 +140,7 @@ const xml2ly = async (xml: string, {language = "english", ...options}: LilyProce
 		await child_process.spawn(path.resolve(env.LILYPOND_DIR, "python"), [
 			path.resolve(env.LILYPOND_DIR, "musicxml2ly.py"), xmlFileName, "-o", lyFileName,
 			...(language ? ["-l", language] : []),
-		], {maxBuffer: 0x80000});
+		]);
 	}
 	else
 		await child_process.exec(`${MUSICXML2LY_PATH} ${xmlFileName} -o ${lyFileName} ${language ? "-l " + language : ""}`, {maxBuffer: 0x80000});
@@ -162,8 +162,7 @@ const midi2ly = async (midi, options: LilyProcessOptions): Promise<string> => {
 	let result;
 	if (env.MUSICXML2LY_BY_PYTHON) {
 		result = await child_process.spawn(path.resolve(env.LILYPOND_DIR, "python"),
-			[path.resolve(env.LILYPOND_DIR, "midi2ly.py"), midi.path, "-o", lyFileName],
-			{maxBuffer: 0x80000});
+			[path.resolve(env.LILYPOND_DIR, "midi2ly.py"), midi.path, "-o", lyFileName]);
 	}
 	else
 		result = await child_process.exec(`${MIDI2LY_PATH} ${midi.path} -o ${lyFileName}`);
@@ -285,7 +284,7 @@ const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, i
 
 	const proc: any = child_process.exec(`${LILYPOND_PATH} -dbackend=svg -o ${env.TEMP_DIR} ${includeParameters} ${sourceFilename}`,
 		{maxBuffer: 0x100000});
-	//const proc = child_process.spawn(LILYPOND_PATH, ["-dbackend=svg", `-o ${env.TEMP_DIR}`, sourceFilename], {maxBuffer: 0x100000});
+	//const proc = child_process.spawn(LILYPOND_PATH, ["-dbackend=svg", `-o ${env.TEMP_DIR}`, sourceFilename]);
 	proc.childProcess.stdout.on("data", checkFile);
 	proc.childProcess.stderr.on("data", checkFile);
 
@@ -365,12 +364,45 @@ const engraveSvgWithStream = async (source: string, output: Writable, {includeFo
 };
 
 
+const engraveScm = async (source: string, {onProcStart, includeFolders = []}: {
+	onProcStart?: () => void|Promise<void>,
+	includeFolders?: string[],	// include folder path should be relative to TEMP_DIR
+} = {}): Promise<{
+	logs: string,
+	scm: string,
+}> => {
+	const hash = genHashString();
+	const sourceFilename = `${env.TEMP_DIR}engrave-${hash}.ly`;
+	const targetFilename = `${env.TEMP_DIR}engrave-${hash}.scm`;
+
+	await fs.promises.writeFile(sourceFilename, source);
+	//console.log("ly source written:", sourceFilename);
+
+	const includeParameters = includeFolders.map(folder => `--include=${folder}`).join(" ");
+
+	const proc = child_process.exec(`${LILYPOND_PATH} -dbackend=scm -o ${env.TEMP_DIR} ${includeParameters} ${sourceFilename}`,
+		{maxBuffer: 0x100000});
+
+	await onProcStart && onProcStart();
+
+	const result = await proc;
+
+	const scmBuffer = await fs.promises.readFile(targetFilename);
+
+	return {
+		logs: result.stderr,
+		scm: scmBuffer.toString(),
+	};
+};
+
+
 
 export {
 	xml2ly,
 	midi2ly,
 	engraveSvg,
 	engraveSvgWithStream,
+	engraveScm,
 	setEnvironment,
 	emptyCache,
 	LilyProcessOptions,
