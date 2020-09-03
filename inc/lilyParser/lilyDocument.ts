@@ -804,6 +804,8 @@ export default class LilyDocument {
 									music,
 								];
 
+								staff.head.cmd = "new";
+
 								return staff;
 							});
 						}
