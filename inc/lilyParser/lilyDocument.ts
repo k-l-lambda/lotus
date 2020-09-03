@@ -783,4 +783,35 @@ export default class LilyDocument {
 			this.root.sections.push(score);
 		}
 	}
+
+
+	convertStaffToPianoStaff () {
+		const score = this.root.getBlock("score");
+		if (score) {
+			const pstaff = score.findFirst(term => term instanceof ContextedMusic && term.head.cmd === "new" && term.head.args[0] === "Staff") as ContextedMusic;
+			if (pstaff) {
+				pstaff.head.args[0] = "PianoStaff";
+
+				if (pstaff.body instanceof SimultaneousList) {
+					pstaff.body.list = [].concat(...pstaff.body.list.map(term => {
+						if (term instanceof ContextedMusic) {
+							const subMusics = term.list.filter(sub => sub instanceof ContextedMusic);
+
+							return subMusics.map(music => {
+								const staff = term.clone();
+								staff.list = [
+									...term.list.filter(sub => !(sub instanceof ContextedMusic)),
+									music,
+								];
+
+								return staff;
+							});
+						}
+						else
+							return [term];
+					}));
+				}
+			}
+		}
+	}
 };

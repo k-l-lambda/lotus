@@ -1361,6 +1361,20 @@ export class ContextedMusic extends BaseTerm {
 
 		return dict;
 	}
+
+
+	get list (): BaseTerm[] {
+		if (this.body instanceof SimultaneousList)
+			return this.body.list;
+
+		return null;
+	}
+
+
+	set list (value: BaseTerm[]) {
+		if (this.body instanceof SimultaneousList)
+			this.body.list = value;
+	}
 };
 
 
