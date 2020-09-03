@@ -14,6 +14,10 @@
 </template>
 
 <script>
+	import debounce from "lodash/debounce";
+
+
+
 	export default {
 		name: "dir-browser",
 
@@ -22,6 +26,7 @@
 			homeURL: String,
 			shown: Boolean,
 			handlePattern: RegExp,
+			autoHide: Boolean,
 		},
 
 
@@ -60,6 +65,16 @@
 					const pos = Math.max(this.href.indexOf(this.homeURL), 0);
 					const filePath = decodeURI(this.href.substr(pos + this.homeURL.length));
 					this.$emit("pickFile", filePath);
+				}
+			},
+
+
+			hover (value) {
+				if (!value && this.autoHide) {
+					debounce(() => {
+						if (!this.hover)
+							this.hide();
+					}, 1e+3)();
 				}
 			},
 		},

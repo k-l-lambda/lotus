@@ -61,6 +61,7 @@
 				@dragover.prevent="sourceDragHover = true"
 				@dragleave="sourceDragHover = null"
 				@drop.prevent.stop="onDropFile($event, {source: true})"
+				@focusin="showSourceDir = false"
 			>
 				<SourceEditor ref="sourceEditor" :source.sync="lilySource" :disabled="sourceIsLoading" />
 				<span class="corner">
@@ -126,17 +127,6 @@
 					:connected.sync="sourceEditorConnected"
 					:loading.sync="sourceEditorLoading"
 				/>
-				<!--div class="source-dir" v-show="showSourceDir"
-					@mouseleave="showSourceDir = false"
-				>
-					<iframe src="/source-dir/" ref="sourceDir"
-						@load="onSourceDirLoad"
-					/>
-					<div class="controls">
-						<button @click="$refs.sourceDir.contentWindow.location.href = '/source-dir/'">{{"\ud83c\udfe0"}}</button>
-						<button @click="$refs.sourceDir.contentWindow.history.back()">&#x21e6;</button>
-					</div>
-				</div-->
 				<DirBrowser ref="sourceDir"
 					homeURL="/source-dir/"
 					:shown.sync="showSourceDir"
@@ -1147,23 +1137,6 @@
 
 				console.log("new doc:", interperter, newDoc, lilyNotation);
 			},
-
-
-			/*onSourceDirLoad () {
-				//console.log("onSourceDirLoad:", this.$refs.sourceDir.contentWindow.location.href);
-				const href = this.$refs.sourceDir.contentWindow.location.href;
-				if (/\.ly$/.test(href)) {
-					this.$refs.sourceDir.contentWindow.history.back();
-
-					this.showSourceDir = false;
-
-					this.sourceEditorFilePath = decodeURI(href.replace(/^http.*source-dir\//, ""));
-					this.$nextTick(() => {
-						if (this.$refs.remoteFile)
-							this.$refs.remoteFile.connect();
-					});
-				}
-			},*/
 
 
 			onSourceDirPick (filePath) {
