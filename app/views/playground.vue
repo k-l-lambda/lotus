@@ -774,6 +774,27 @@
 			},
 
 
+			async engraveMIDI ({articulate = true} = {}) {
+				const body = new FormData();
+				body.append("source", this.lilySource);
+				if (articulate)
+					body.append("articulate", "1");
+
+				const response = await fetch("/engraveMIDI", {
+					method: "POST",
+					body,
+				});
+				if (!response.ok) {
+					console.warn("engraveMIDI error:", await response.text());
+					return;
+				}
+
+				const buffer = await response.arrayBuffer();
+				this.midi = MIDI.parseMidiData(buffer);
+				this.matchNotations(this.midi);
+			},
+
+
 			saveSource () {
 				const sourceFile = new Blob([this.lilySource], {type: "text/x-lilypond"});
 

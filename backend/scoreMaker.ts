@@ -22,6 +22,8 @@ import ScoreJSON, {NoteLinking} from "../inc/scoreJSON";
 import {LilyProcessOptions} from "./lilyCommands";
 // eslint-disable-next-line
 import {LilyDocumentAttribute, LilyDocumentAttributeReadOnly} from "../inc/lilyParser/lilyDocument";
+// eslint-disable-next-line
+import { Block } from "../inc/lilyParser/lilyTerms";
 
 
 
@@ -632,10 +634,56 @@ const makeMIDI = async (source: string, lilyParser: GrammarParser, {unfoldRepeat
 };
 
 
+const makeArticulatedMIDI = async (source: string, lilyParser: GrammarParser, {ignoreRepeats = true, includeFolders = undefined} = {}): Promise<MIDI.MidiData> => {
+	const lilyDocument = new LilyDocument(lilyParser.parse(source));
+
+	if (ignoreRepeats)
+		lilyDocument.removeRepeats();
+
+	const isScoreWithMidi = term => term instanceof LilyTerms.Block
+		&& term.head === "\\score"
+		&& term.body.find(sub => sub instanceof LilyTerms.Block && sub.head === "\\midi");
+
+	const score = lilyDocument.root.sections.find(isScoreWithMidi) as Block;
+	if (score) {
+		// remove layout block to save time
+		score.body = score.body.filter(term => !(term instanceof LilyTerms.Block && term.head === "\\layout"));
+
+		// insert articulate command
+		score.body = score.body.map(term => {
+			if (term.isMusic) 
+				return new LilyTerms.Command({cmd: "articulate", args: [term]});
+
+			return term;
+		});
+	}
+
+	lilyDocument.root.sections = lilyDocument.root.sections.filter(term => !(term instanceof LilyTerms.Block)
+		|| term.head !== "\\score"
+		|| isScoreWithMidi(term));
+
+	// append include if necessary
+	if (!lilyDocument.root.includeFiles.includes("articulate.ly")) {
+		const scoreIndex = lilyDocument.root.sections.findIndex(isScoreWithMidi);
+		if (scoreIndex >= 0)
+			lilyDocument.root.sections.splice(scoreIndex, 0, LilyTerms.Include.create("articulate.ly"));
+	}
+
+	const markupSource = lilyDocument.toString();
+	//console.log("markupSource:", markupSource);
+
+	return new Promise((resolve, reject) => engraveSvg(markupSource, {
+		includeFolders,
+		onMidiRead: resolve,
+	}).catch(reject));
+};
+
+
 
 export {
 	markupLily,
 	xmlBufferToLy,
 	makeScore,
 	makeMIDI,
+	makeArticulatedMIDI,
 };

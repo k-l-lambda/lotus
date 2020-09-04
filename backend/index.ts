@@ -1,6 +1,7 @@
 
 import formidable from "formidable";
 import {DOMParser} from "xmldom";
+import {MIDI} from "@k-l-lambda/web-widgets";
 
 import * as lilyCommands from "./lilyCommands";
 import * as staffSvg from "../inc/staffSvg";
@@ -82,6 +83,24 @@ const service = {
 			async ({source}) => {
 				const result = await lilyCommands.engraveScm(source, {includeFolders: constants.LY_INCLUDE_FOLDERS});
 				return JSON.stringify(result);
+			}),
+	},
+
+
+	"/engraveMIDI": {
+		post: (req, res) => formidableHandle("engraveScm", req, res,
+			async ({source, articulate = false}) => {
+				const lilyParser = await loadLilyParser();
+				const midi = await (articulate ? ScoreMaker.makeArticulatedMIDI(source, lilyParser, {includeFolders: constants.LY_INCLUDE_FOLDERS})
+					: ScoreMaker.makeMIDI(source, lilyParser, {includeFolders: constants.LY_INCLUDE_FOLDERS}));
+				const buffer = Buffer.from(MIDI.encodeMidiFile(midi));
+
+				return {
+					header: {
+						"Content-Type": "audio/midi",
+					},
+					body: buffer,
+				};
 			}),
 	},
 };

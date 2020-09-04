@@ -826,6 +826,11 @@ export class OctaveShift extends Command {
 
 
 export class Include extends Command {
+	static create (filename: string): Include {
+		return new Include({cmd: "include", args: [LiteralString.fromString(filename)]});
+	}
+
+
 	get filename (): string {
 		return this.args[0].toString();
 	}

@@ -1,7 +1,7 @@
 
 ## TODO
 	implicit notes matching with sheet document
-		match lilyNotation with articulated MIDI (ignored repeats), then unfold repeats, include D.C., D.S.
+		match lilyNotation with articulated MIDI (ignored repeats), then unfold repeats on lilyNotation, include D.C., D.S.
 	staffNotation
 		remove note time from staff document
 	lilyInterpreter
@@ -22,6 +22,8 @@
 
 
 *	2020.9.4
+
+	+	scoreMaker.ts: makeArticulatedMIDI added.
 
 	+	lilyDocument.ts: markup method of removeRepeats added.
 
