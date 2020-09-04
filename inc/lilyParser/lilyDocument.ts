@@ -840,11 +840,6 @@ export default class LilyDocument {
 
 
 	removeRepeats () {
-		this.root.forEachTerm(MusicBlock, block => block.body = block.body.map(term => {
-			if (term instanceof Repeat)
-				return term.bodyBlock;
-
-			return term;
-		}));
+		this.root.forEachTerm(MusicBlock, block => block.spreadRepeatBlocks());
 	}
 };
