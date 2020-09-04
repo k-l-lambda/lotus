@@ -7,7 +7,7 @@ import {
 	parseRaw,
 	BaseTerm, Assignment, LiteralString, Command, Variable, MarkupCommand, Grace, AfterGrace, Include, Version, Block, InlineBlock,
 	Scheme, Chord, BriefChord, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive, ChordElement, MusicEvent,
-	SchemePointer, Comment, Language,
+	SchemePointer, Comment, Language, StemDirection,
 } from "./lilyTerms";
 import LilyInterpreter from "./lilyInterpreter";
 
@@ -815,5 +815,26 @@ export default class LilyDocument {
 				}
 			}
 		}
+	}
+
+
+	pruneStemDirections () {
+		this.root.forEachTerm(MusicBlock, block => {
+			let direction = null;
+			const redundants = [];
+
+			block.body.forEach(term => {
+				if (term instanceof StemDirection) {
+					if (term.direction === direction)
+						redundants.push(term);
+					else
+						direction = term.direction;
+				}
+				else if (term instanceof Command && term.findFirst(MusicBlock))
+					direction = null;
+			});
+
+			block.body = block.body.filter(term => !redundants.includes(term));
+		});
 	}
 };

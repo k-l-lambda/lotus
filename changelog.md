@@ -21,6 +21,11 @@
 
 
 
+*	2020.9.4
+
+	+	lilyDocument.ts: markup method of pruneStemDirections added.
+
+
 *	2020.9.3
 
 	+	playground.vue: parse SCM code by liyad.

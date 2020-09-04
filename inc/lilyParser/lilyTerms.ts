@@ -877,6 +877,13 @@ export class Transposition extends Command {
 };
 
 
+export class StemDirection extends Command {
+	get direction (): string {
+		return this.cmd.substr(4);
+	}
+};
+
+
 export class Block extends BaseTerm {
 	block: string;
 	head: (string|string[]);
@@ -2231,6 +2238,7 @@ export const termDictionary = {
 	LyricMode,
 	ChordMode,
 	Transposition,
+	StemDirection,
 	Block,
 	InlineBlock,
 	Scheme,

@@ -26,6 +26,9 @@
 		afterGrace: "AfterGrace",
 		language: "Language",
 		transposition: "Transposition",
+		stemUp: "StemDirection",
+		stemDown: "StemDirection",
+		stemNeutral: "StemDirection",
 	};
 
 
