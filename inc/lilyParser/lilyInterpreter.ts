@@ -9,7 +9,7 @@ import * as idioms from "./idioms";
 import {
 	// eslint-disable-next-line
 	BaseTerm,
-	LiteralString, Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, AfterGrace, Clef, Scheme, Include, Rest,
+	Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, AfterGrace, Clef, Scheme, Include, Rest,
 	KeySignature, OctaveShift, Duration, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version,
 	ChordMode, LyricMode, ChordElement, Language, PostEvent, Transposition,
 } from "./lilyTerms";

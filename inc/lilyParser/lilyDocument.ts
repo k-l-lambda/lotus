@@ -7,7 +7,7 @@ import {
 	parseRaw,
 	BaseTerm, Assignment, LiteralString, Command, Variable, MarkupCommand, Grace, AfterGrace, Include, Version, Block, InlineBlock,
 	Scheme, Chord, BriefChord, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive, ChordElement, MusicEvent,
-	SchemePointer, Comment, Language, StemDirection, Repeat,
+	SchemePointer, Comment, Language, StemDirection,
 } from "./lilyTerms";
 import LilyInterpreter from "./lilyInterpreter";
 
