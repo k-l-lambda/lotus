@@ -22,6 +22,7 @@ export interface Note extends MusicNotation.Note {
 export interface Notation {
 	notes: Note[];
 	pitchContextGroup: PitchContextTable[];
+	measureHeads: number[];
 };
 
 

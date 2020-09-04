@@ -144,6 +144,7 @@ export class MusicTrack {
 	contextDict?: ContextDict = null;
 
 	name?: string;
+	measureHeads: number[];
 
 
 	static fromBlockAnchor (block: MusicBlock, anchorPitch: ChordElement): MusicTrack {
@@ -390,6 +391,7 @@ class TrackContext {
 	measureSpan: number = WHOLE_DURATION_MAGNITUDE;
 	measureIndex: number = 1;
 	partialDuration: Duration = null;
+	measureHeads: number[] = [0];
 
 	event: MusicEvent = null;
 	tying: MusicEvent = null;
@@ -404,6 +406,7 @@ class TrackContext {
 		} = {}) {
 		this.track = track;
 		this.track.contextDict = contextDict || this.track.contextDict;
+		this.track.measureHeads = this.measureHeads;
 
 		this.transformer = transformer;
 		this.listener = listener;
@@ -452,6 +455,9 @@ class TrackContext {
 
 		this.tickInMeasure += increment;
 		while (Math.round(this.tickInMeasure) >= this.currentMeasureSpan) {
+			console.assert(Number.isFinite(this.measureHeads[this.measureIndex - 1]), "invalid measureHeads at", this.measureIndex - 1, this.measureHeads);
+			this.measureHeads[this.measureIndex] = this.measureHeads[this.measureIndex - 1] + this.currentMeasureSpan;
+
 			++this.measureIndex;
 			this.tickInMeasure -= this.currentMeasureSpan;
 
@@ -711,8 +717,11 @@ class MusicPerformance {
 
 		const pitchContextGroup = staffContexts.map(context => context.pitchContextTable);
 
+		const measureHeads = this.musicTracks[0] && this.musicTracks[0].measureHeads;
+
 		return {
 			notes,
+			measureHeads,
 			pitchContextGroup,
 		};
 	}

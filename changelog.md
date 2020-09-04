@@ -23,7 +23,9 @@
 
 *	2020.9.4
 
-	+	lilyNotation.ts: added field of measure on Note.
+	+	lilyNotation: added measureHeads on Notation.
+
+	+	lilyNotation: added field of measure on Note.
 
 	+	scoreMaker.ts: makeArticulatedMIDI added.
 

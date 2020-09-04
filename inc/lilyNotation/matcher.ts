@@ -68,6 +68,7 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 	const navigator = await Matcher.runNavigation(criterion, midiNotation);
 	const path = navigator.path();
 
+	// copy linking data from criterion to midiNotation
 	path.forEach((ci, si) => {
 		if (ci >= 0) {
 			const cn = criterion.notes[ci] as any;
