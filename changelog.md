@@ -1,7 +1,7 @@
 
 ## TODO
 	implicit notes matching with sheet document
-		try articulate.ly in MIDI output
+		match lilyNotation with articulated MIDI (ignored repeats), then unfold repeats, include D.C., D.S.
 	staffNotation
 		remove note time from staff document
 	lilyInterpreter

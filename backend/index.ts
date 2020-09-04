@@ -8,6 +8,7 @@ import loadLilyParser from "./loadLilyParserNode";
 import {LilyDocument} from "../inc/lilyParser";
 import LogRecorder from "../inc/logRecorder";
 import * as ScoreMaker from "./scoreMaker";
+import * as constants from "./constants";
 
 
 
@@ -51,7 +52,7 @@ const service = {
 	"/engrave": {
 		post: (req, res) => formidableHandle("engrave", req, res,
 			async ({source, tokenize = false, log = false}) => {
-				const result = await lilyCommands.engraveSvg(source, {includeFolders: ["../ly"]});
+				const result = await lilyCommands.engraveSvg(source, {includeFolders: constants.LY_INCLUDE_FOLDERS});
 				if (!tokenize)
 					return JSON.stringify(result);
 
@@ -79,7 +80,7 @@ const service = {
 	"/engraveScm": {
 		post: (req, res) => formidableHandle("engraveScm", req, res,
 			async ({source}) => {
-				const result = await lilyCommands.engraveScm(source, {includeFolders: ["../ly"]});
+				const result = await lilyCommands.engraveScm(source, {includeFolders: constants.LY_INCLUDE_FOLDERS});
 				return JSON.stringify(result);
 			}),
 	},
