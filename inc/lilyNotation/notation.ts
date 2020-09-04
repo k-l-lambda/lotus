@@ -80,15 +80,68 @@ export class Notation implements NotationData {
 	}
 
 
+	static performAbsoluteNotes (abNotes: Note[]): MusicNotation.Note[] {
+		const notes = abNotes.filter(note => !note.rest && !note.tied && !note.overlapped).map(note => ({
+			channel: note.channel,
+			start: note.start,
+			pitch: note.pitch,
+			duration: note.duration,
+			velocity: note.velocity || 127,
+			ids: note.ids,
+			staffTrack: note.staffTrack,
+			contextIndex: note.contextIndex,
+		}));
+
+		const noteMap = notes.reduce((map, note) => {
+			const key = `${note.channel}|${note.start}|${note.pitch}`;
+			const priorNote = map[key];
+			if (priorNote)
+				priorNote.ids.push(...note.ids);
+			else
+				map[key] = note;
+	
+			return map;
+		}, {});
+
+		return Object.values(noteMap);
+	}
+
+
 	constructor (data?: Partial<NotationData>) {
 		if (data)
 			Object.assign(this, data);
 	}
 
 
-	toAbsoluteNotes (): Note[] {
+	get ordinaryMeasureIndices (): number[] {
+		return [...Array(this.measures.length).keys()];
+	}
+
+
+	// TODO:
+	//get fullMeasureIndices (): number[]
+	//get conservativeMeasureIndices (): number[]
+	//get onceMeasureIndices (): number[]
+
+
+	toAbsoluteNotes (measureIndices: number[] = this.ordinaryMeasureIndices): Note[] {
 		// TODO:
+
 		return [];
+	}
+
+
+	toPerformingNotation (measureIndices: number[] = this.ordinaryMeasureIndices): MusicNotation.Notation {
+		const abNotes = this.toAbsoluteNotes(measureIndices);
+		const notes = Notation.performAbsoluteNotes(abNotes);
+		const endTime = notes[notes.length - 1].start + notes[notes.length - 1].duration;
+
+		return new MusicNotation.Notation({
+			meta: {},
+			tempos: [],
+			channels: [notes],
+			endTime,
+		});
 	}
 };
 
