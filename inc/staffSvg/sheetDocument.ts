@@ -403,7 +403,7 @@ class SheetDocument {
 		}, new Map());
 		console.assert(tokenMap.size === noteheads.length, "tokens noteheads count dismatch:", tokenMap.size, noteheads.length);
 
-		notation.notes.forEach(note => {
+		notation.toAbsoluteNotes().forEach(note => {
 			const token = tokenMap.get(shortId(note.id));
 			if (token)
 				token.href = note.id;

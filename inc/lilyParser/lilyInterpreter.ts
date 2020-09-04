@@ -5,6 +5,8 @@ import {parseRaw, getDurationSubdivider} from "./lilyTerms";
 import LogRecorder from "../logRecorder";
 import {StaffContext, PitchContextTable} from "../pitchContext";
 import * as idioms from "./idioms";
+import LilyDocument from "./lilyDocument";
+import * as LilyNotation from "../lilyNotation";
 
 import {
 	// eslint-disable-next-line
@@ -13,10 +15,6 @@ import {
 	KeySignature, OctaveShift, Duration, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version,
 	ChordMode, LyricMode, ChordElement, Language, PostEvent, Transposition,
 } from "./lilyTerms";
-// eslint-disable-next-line
-import LilyDocument from "./lilyDocument";
-// eslint-disable-next-line
-import * as LilyNotation from "../lilyNotation";
 
 
 
@@ -719,11 +717,7 @@ class MusicPerformance {
 
 		const measureHeads = this.musicTracks[0] && this.musicTracks[0].measureHeads;
 
-		return {
-			notes,
-			measureHeads,
-			pitchContextGroup,
-		};
+		return LilyNotation.Notation.fromAbsoluteNotes(notes, measureHeads, {pitchContextGroup});
 	}
 
 

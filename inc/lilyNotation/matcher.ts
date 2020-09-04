@@ -29,7 +29,7 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 
 	const midiNotation = MusicNotation.Notation.parseMidi(target);
 
-	const notes = lilyNotation.notes.filter(note => !note.rest && !note.tied && !note.overlapped).map(note => ({
+	const notes = lilyNotation.toAbsoluteNotes().filter(note => !note.rest && !note.tied && !note.overlapped).map(note => ({
 		channel: note.channel,
 		start: note.start,
 		pitch: note.pitch,

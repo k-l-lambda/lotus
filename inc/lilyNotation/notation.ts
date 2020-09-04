@@ -1,4 +1,6 @@
 
+import _ from "lodash";
+
 // eslint-disable-next-line
 import {MusicNotation} from "@k-l-lambda/web-widgets";
 // eslint-disable-next-line
@@ -19,10 +21,75 @@ export interface Note extends MusicNotation.Note {
 };
 
 
-export interface Notation {
-	notes: Note[];
+interface MeasureNote {
+	tick: number;
+	duration: number;
+
+	id: string;
+	ids: string[];
+	pitch: number;
+	velocity?: number;
+	rest?: boolean;
+	tied?: boolean;
+	overlapped?: boolean;
+
+	contextIndex?: number;
+	staffTrack?: number;
+};
+
+
+interface Measure {
+	tick: number;
+	duration: number;
+	notes: MeasureNote[];
+};
+
+
+interface NotationData {
 	pitchContextGroup: PitchContextTable[];
-	measureHeads: number[];
+	measures: Measure[];
+};
+
+
+export class Notation implements NotationData {
+	pitchContextGroup: PitchContextTable[];
+	measures: Measure[];
+
+
+	static fromAbsoluteNotes (notes: Note[], measureHeads: number[], data?: Partial<NotationData>): Notation {
+		const notation = new Notation(data);
+
+		notation.measures = Array(measureHeads.length - 1).fill(null).map((__, i) => {
+			const tick = measureHeads[i];
+			const duration = measureHeads[i + 1] - tick;
+
+			const mnotes = notes.filter(note => note.measure === i + 1).map(note => ({
+				tick: note.startTick - tick,
+				duration: note.endTick - note.startTick,
+				..._.pick(note, ["id", "ids", "pitch", "velocity", "rest", "tied", "overlapped", "contextIndex", "staffTrack"]),
+			} as MeasureNote));
+
+			return {
+				tick,
+				duration,
+				notes: mnotes,
+			};
+		});
+
+		return notation;
+	}
+
+
+	constructor (data?: Partial<NotationData>) {
+		if (data)
+			Object.assign(this, data);
+	}
+
+
+	toAbsoluteNotes (): Note[] {
+		// TODO:
+		return [];
+	}
 };
 
 
