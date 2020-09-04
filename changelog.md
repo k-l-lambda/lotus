@@ -23,6 +23,8 @@
 
 *	2020.9.4
 
+	+	lilyNotation.ts: added field of measure on Note.
+
 	+	scoreMaker.ts: makeArticulatedMIDI added.
 
 	+	lilyDocument.ts: markup method of removeRepeats added.

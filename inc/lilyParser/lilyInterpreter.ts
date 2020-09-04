@@ -44,10 +44,6 @@ interface PitchContextTerm {
 	};
 	octaveShift?: number;
 	key?: number;
-	/*acc: {
-		note: number;
-		alter: number;
-	};*/
 	newMeasure?: boolean;
 	pitches?: ChordElement[];
 };
@@ -99,6 +95,7 @@ class LilyStaffContext extends StaffContext {
 
 			this.notes.push(...term.pitches.map(pitch => ({
 				channel: 0,
+				measure: event._measure,
 				start: event._tick,
 				duration: event.durationMagnitude,
 				startTick: event._tick,
@@ -677,7 +674,8 @@ class MusicPerformance {
 
 
 	getNotation ({logger = new LogRecorder()} = {}): LilyNotation.Notation {
-		const pcTerms = [].concat(...this.musicTracks.map((track, i) => track.generateStaffTracks().map(term => ({track: i, ...term}))));
+		const pcTerms: PitchContextTerm[] = [].concat(...this.musicTracks.map((track, i) =>
+			track.generateStaffTracks().map(term => ({track: i, ...term}))));
 		//console.log("pcTerms:", pcTerms);
 
 		const termsToContexts = (staffTerms, trackIndex) => {
@@ -697,7 +695,7 @@ class MusicPerformance {
 			return context;
 		};
 
-		const staffContexts = [];
+		const staffContexts: LilyStaffContext[] = [];
 		if (this.staffNames.length) {
 			this.staffNames.forEach((name, trackIndex) => {
 				const staffTerms = pcTerms.filter(term => term.staffName === name);
