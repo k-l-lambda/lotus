@@ -23,6 +23,8 @@
 
 *	2020.9.4
 
+	+	lilyDocument.ts: markup method of removeRepeats added.
+
 	+	lilyDocument.ts: markup method of pruneStemDirections added.
 
 
