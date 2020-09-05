@@ -5,13 +5,12 @@ import {MIDI} from "@k-l-lambda/web-widgets";
 
 import {WHOLE_DURATION_MAGNITUDE} from "../lilyParser/utils";
 
-import {assignNotationEventsIds} from "./notation";
 // eslint-disable-next-line
 import {Notation} from "./notation";
 
 
 
-interface MatcherResult {
+export interface MatcherResult {
 	criterion: MusicNotation.NotationData,
 	sample: MusicNotation.NotationData,
 	path: number[],
@@ -29,7 +28,7 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 
 	const midiNotation = MusicNotation.Notation.parseMidi(target);
 
-	const criterion = lilyNotation.toPerformingNotation();
+	const criterion = lilyNotation.toPerformingNotation({withEvents: false});
 
 	Matcher.genNotationContext(criterion, {softIndexFactor: 1e3});
 	Matcher.genNotationContext(midiNotation, {softIndexFactor: midiTickFactor * 1e3});
@@ -41,7 +40,7 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 	const navigator = await Matcher.runNavigation(criterion, midiNotation);
 	const path = navigator.path();
 
-	// copy linking data from criterion to midiNotation
+	/*// copy linking data from criterion to midiNotation
 	path.forEach((ci, si) => {
 		if (ci >= 0) {
 			const cn = criterion.notes[ci] as any;
@@ -55,9 +54,12 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 	});
 
 	// assign ids onto MIDI events
-	assignNotationEventsIds(midiNotation);
+	assignNotationEventsIds(midiNotation);*/
 
-	return {criterion, sample: midiNotation, path};
+	const matcher = {criterion, sample: midiNotation, path};
+	lilyNotation.replaceMatchedNotes(matcher);
+
+	return matcher;
 };
 
 

@@ -890,7 +890,8 @@
 					const lilyNotation = this.lilyDocument.interpret().getNotation();
 					this.matcherNotations = await LilyNotation.matchWithMIDI(lilyNotation, midi);
 
-					this.midiNotation = this.matcherNotations.sample;
+					//console.log("lilyNotation:", lilyNotation);
+					this.midiNotation = lilyNotation.toPerformingNotation();
 					this.pitchContextGroup = PitchContextTable.createPitchContextGroup(lilyNotation.getContextGroup(), this.midiNotation);
 				}
 
