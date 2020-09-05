@@ -4,7 +4,7 @@ import _ from "lodash";
 // eslint-disable-next-line
 import {MusicNotation} from "@k-l-lambda/web-widgets";
 // eslint-disable-next-line
-import {PitchContextTable} from "../pitchContext";
+import {PitchContextTable, PitchContext} from "../pitchContext";
 
 
 
@@ -163,6 +163,11 @@ export class Notation implements NotationData {
 			channels: [notes],
 			endTime,
 		});
+	}
+
+
+	getContextGroup (): PitchContext[][] {
+		return this.pitchContextGroup.map(table => table.items.map(item => item.context));
 	}
 };
 
