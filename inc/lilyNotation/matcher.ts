@@ -28,7 +28,7 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 
 	const midiNotation = MusicNotation.Notation.parseMidi(target);
 
-	const criterion = lilyNotation.toPerformingNotation({withEvents: false});
+	const criterion = lilyNotation.toPerformingNotation();
 
 	Matcher.genNotationContext(criterion, {softIndexFactor: 1e3});
 	Matcher.genNotationContext(midiNotation, {softIndexFactor: midiTickFactor * 1e3});
@@ -57,7 +57,7 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 	assignNotationEventsIds(midiNotation);*/
 
 	const matcher = {criterion, sample: midiNotation, path};
-	lilyNotation.replaceMatchedNotes(matcher);
+	lilyNotation.assignMatcher(matcher);
 
 	return matcher;
 };

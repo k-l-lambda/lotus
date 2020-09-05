@@ -891,8 +891,11 @@
 					this.matcherNotations = await LilyNotation.matchWithMIDI(lilyNotation, midi);
 
 					//console.log("lilyNotation:", lilyNotation);
-					this.midiNotation = lilyNotation.toPerformingNotation();
-					this.pitchContextGroup = PitchContextTable.createPitchContextGroup(lilyNotation.getContextGroup(), this.midiNotation);
+					const measureIndices = lilyNotation.ordinaryMeasureIndices;	// TODO: use full indices
+
+					this.midiNotation = lilyNotation.toPerformingNotationWithEvents(measureIndices);
+					//console.log("midiNotation:", this.midiNotation);
+					this.pitchContextGroup = lilyNotation.getContextGroup(measureIndices);
 				}
 
 				this.matchedIds = new Set();

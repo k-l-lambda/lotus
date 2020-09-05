@@ -25,6 +25,8 @@
 
 *	2020.9.5
 
+	+	notation.ts: Notation.toPerformingNotationWithEvents implemented.
+
 	+	lilyNotation: Notation.toAbsoluteNotes implemented.
 
 

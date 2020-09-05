@@ -5,8 +5,7 @@ import _ from "lodash";
 import {MusicNotation, MIDI, MidiUtils} from "@k-l-lambda/web-widgets";
 
 import {WHOLE_DURATION_MAGNITUDE} from "../lilyParser";
-// eslint-disable-next-line
-import {PitchContextTable, PitchContext} from "../pitchContext";
+import {PitchContextTable} from "../pitchContext";
 // eslint-disable-next-line
 import {MatcherResult} from "./matcher";
 
@@ -45,12 +44,18 @@ interface MeasureNote {
 };
 
 
+interface MeasureEvent {
+	data: any;
+	ticks?: number;
+};
+
+
 interface Measure {
 	tick: number;
 	duration: number;
 
 	notes: MeasureNote[];
-	events?: MIDI.MidiEvent[];
+	events?: MeasureEvent[];
 };
 
 
@@ -165,10 +170,7 @@ export class Notation implements NotationData {
 	}
 
 
-	toPerformingNotation ({measureIndices = this.ordinaryMeasureIndices, withEvents = true}: {
-		measureIndices?: number[],
-		withEvents?: boolean,
-	} = {}): MusicNotation.Notation {
+	toPerformingNotation (measureIndices: number[] = this.ordinaryMeasureIndices): MusicNotation.Notation {
 		const abNotes = this.toAbsoluteNotes(measureIndices);
 		const notes = Notation.performAbsoluteNotes(abNotes);
 		const endTime = notes[notes.length - 1].start + notes[notes.length - 1].duration;
@@ -181,7 +183,8 @@ export class Notation implements NotationData {
 			endTime,
 		});
 
-		if (withEvents) {
+		/*if (withEvents) {
+			// TODO:
 			const midi = MidiUtils.encodeToMIDIData(notation);
 			const midiNotation = MusicNotation.Notation.parseMidi(midi);
 			notation.events = midiNotation.events;
@@ -191,23 +194,81 @@ export class Notation implements NotationData {
 			notation.endTick = midiNotation.endTick;
 
 			assignNotationEventsIds(notation);
-		}
+		}*/
 
 		return notation;
 	}
 
 
-	getContextGroup (): PitchContext[][] {
-		return this.pitchContextGroup.map(table => table.items.map(item => item.context));
+	toPerformingNotationWithEvents (measureIndices: number[] = this.ordinaryMeasureIndices): MusicNotation.Notation {
+		let measureTick = 0;
+		const measureEvents: MeasureEvent[][] = measureIndices.map(index => {
+			const measure = this.measures[index];
+			console.assert(!!measure, "invalid measure index:", index, this.measures.length);
+
+			const events = measure.events.map(mevent => ({
+				ticks: measureTick + mevent.ticks,
+				data: mevent.data,
+			}));
+
+			measureTick += measure.duration;
+
+			return events;
+		});
+
+		let ticks = 0;
+
+		const track = [].concat(...measureEvents)
+			.sort((e1, e2) => e1.ticks - e2.ticks)
+			.map(e => {
+				e.data.deltaTime = e.ticks - ticks;
+				ticks = e.ticks;
+
+				return e.data;
+			});
+		track.push({deltaTime: 0, type: "meta", subtype: "endOfTrack"});
+
+		const midi = {
+			header: {
+				formatType: 0,
+				ticksPerBeat: TICKS_PER_BEAT,
+			},
+			tracks: [
+				track,
+			],
+		};
+
+		const notation = MusicNotation.Notation.parseMidi(midi);
+		assignNotationNoteDataFromEvents(notation);
+
+		return notation;
 	}
 
 
-	replaceMatchedNotes (matcher: MatcherResult): this {
+	getContextGroup (measureIndices: number[] = this.ordinaryMeasureIndices): PitchContextTable[] {
+		const contextGroup = this.pitchContextGroup.map(table => table.items.map(item => item.context));
+		const midiNotation = this.toPerformingNotation(measureIndices);
+
+		return PitchContextTable.createPitchContextGroup(contextGroup, midiNotation);
+	}
+
+
+	assignMatcher (matcher: MatcherResult): this {
 		const tickFactor = TICKS_PER_BEAT / matcher.sample.ticksPerBeat;
 
-		this.measures.forEach(measure => measure.notes = []);
-
 		matcher.path.forEach((ci, si) => {
+			if (ci >= 0) {
+				const cn = matcher.criterion.notes[ci] as Note;
+				const sn = matcher.sample.notes[si] as Note;
+				sn.ids = cn.ids || [cn.id];
+				sn.measure = cn.measure;
+			}
+		});
+		assignNotationEventsIds(matcher.sample, ["ids", "measure"]);
+
+		this.measures.forEach(measure => measure.events = []);
+
+		/*matcher.path.forEach((ci, si) => {
 			if (ci >= 0) {
 				const cn = matcher.criterion.notes[ci] as Note;
 				const sn = matcher.sample.notes[si];
@@ -225,19 +286,32 @@ export class Notation implements NotationData {
 					..._.pick(cn, EXTRA_NOTE_FIELDS),
 				});
 			}
-		});
+		});*/
 
-		// TODO: copy MIDI events, at least for setTempo
+		//console.log("matcher.sample.events:", matcher.sample.events);
+		(matcher.sample.events as MeasureEvent[]).forEach(event => {
+			if (Number.isInteger(event.data.measure)) {
+				const measure = this.measures[event.data.measure - 1];
+				console.assert(!!measure, "measure index is invalid:", event.data.measure, this.measures.length);
+
+				measure.events.push({
+					data: event.data,
+					ticks: event.ticks * tickFactor - measure.tick,
+				});
+			}
+		});
 
 		return this;
 	}
 };
 
 
-export const assignNotationEventsIds = (midiNotation: MusicNotation.NotationData) => {
+export const assignNotationEventsIds = (midiNotation: MusicNotation.NotationData, fields = ["ids"]) => {
 	const events = midiNotation.notes.reduce((events, note) => {
-		events.push({ticks: note.startTick, subtype: "noteOn", channel: note.channel, pitch: note.pitch, ids: note.ids});
-		events.push({ticks: note.endTick, subtype: "noteOff", channel: note.channel, pitch: note.pitch, ids: note.ids});
+		const dict = _.pick(note, fields);
+		events.push({ticks: note.startTick, subtype: "noteOn", channel: note.channel, pitch: note.pitch, dict});
+		events.push({ticks: note.startTick, subtype: "setTempo", dict});
+		events.push({ticks: note.endTick, subtype: "noteOff", channel: note.channel, pitch: note.pitch, dict});
 
 		return events;
 	}, []).sort((e1, e2) => e1.ticks - e2.ticks);
@@ -262,10 +336,32 @@ export const assignNotationEventsIds = (midiNotation: MusicNotation.NotationData
 				break;
 			else {
 				if (event.data.subtype === ne.subtype && event.data.channel === ne.channel && event.data.noteNumber === ne.pitch) {
-					(event.data as any).ids = ne.ids;
+					Object.assign(event.data, ne.dict);
 					break;
 				}
 			}
 		}
 	}
+};
+
+
+const assignNotationNoteDataFromEvents = (midiNotation: MusicNotation.NotationData, fields = ["ids"]) => {
+	const noteId = (channel: number, pitch: number, tick: number): string => `${channel}|${pitch}|${tick}`;
+
+	const noteMap = midiNotation.notes.reduce((map, note) => {
+		map[noteId(note.channel, note.pitch, note.startTick)] = note;
+
+		return map;
+	}, {});
+
+	midiNotation.events.forEach(event => {
+		if (event.data.subtype === "noteOn") {
+			const id = noteId(event.data.channel, event.data.noteNumber, event.ticks);
+			const note = noteMap[id];
+			console.assert(!!note, "cannot find note of", id);
+
+			if (note)
+				Object.assign(note, _.pick(event.data, fields));
+		}
+	});
 };
