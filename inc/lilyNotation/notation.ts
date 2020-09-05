@@ -51,6 +51,9 @@ interface NotationData {
 };
 
 
+const IDENTITY_NOTE_FIELDS = ["id", "ids", "pitch", "velocity", "rest", "tied", "overlapped", "contextIndex", "staffTrack"];
+
+
 export class Notation implements NotationData {
 	pitchContextGroup: PitchContextTable[];
 	measures: Measure[];
@@ -66,7 +69,7 @@ export class Notation implements NotationData {
 			const mnotes = notes.filter(note => note.measure === i + 1).map(note => ({
 				tick: note.startTick - tick,
 				duration: note.endTick - note.startTick,
-				..._.pick(note, ["id", "ids", "pitch", "velocity", "rest", "tied", "overlapped", "contextIndex", "staffTrack"]),
+				..._.pick(note, IDENTITY_NOTE_FIELDS),
 			} as MeasureNote));
 
 			return {
@@ -125,9 +128,27 @@ export class Notation implements NotationData {
 
 
 	toAbsoluteNotes (measureIndices: number[] = this.ordinaryMeasureIndices): Note[] {
-		// TODO:
+		let measureTick = 0;
+		const measureNotes: Note[][] = measureIndices.map(index => {
+			const measure = this.measures[index];
+			console.assert(!!measure, "invalid measure index:", index, this.measures.length);
 
-		return [];
+			const notes = measure.notes.map(mnote => ({
+				startTick: measureTick + mnote.tick,
+				endTick: measureTick + mnote.tick + mnote.duration,
+				start: measureTick + mnote.tick,
+				duration: mnote.duration,
+				channel: 0,
+				measure: index,
+				..._.pick(mnote, IDENTITY_NOTE_FIELDS),
+			}) as Note);
+
+			measureTick += measure.duration;
+
+			return notes;
+		});
+
+		return [].concat(...measureNotes);
 	}
 
 
@@ -138,7 +159,7 @@ export class Notation implements NotationData {
 
 		return new MusicNotation.Notation({
 			meta: {},
-			tempos: [],
+			tempos: [],	// TODO
 			channels: [notes],
 			endTime,
 		});

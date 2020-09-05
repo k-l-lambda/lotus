@@ -2,7 +2,8 @@
 ## TODO
 	implicit notes matching with sheet document
 		match lilyNotation with articulated MIDI (ignored repeats), then unfold repeats on lilyNotation, include D.C., D.S.
-		parsing repeat mark among measure index
+			assign matched notes into LilyNotation
+			parsing repeat mark among measure index
 	staffNotation
 		remove note time from staff document
 	lilyInterpreter
@@ -20,6 +21,11 @@
 		system splitting, chord mode symbol affiliation
 		remove empty track	(6.1 落叶.ly)
 
+
+
+*	2020.9.5
+
+	+	lilyNotation: Notation.toAbsoluteNotes implemented.
 
 
 *	2020.9.4
