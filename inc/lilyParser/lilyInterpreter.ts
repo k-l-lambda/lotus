@@ -446,21 +446,25 @@ class TrackContext {
 	}
 
 
+	newMeasure (measureSpan) {
+		console.assert(Number.isFinite(this.measureHeads[this.measureIndex - 1]), "invalid measureHeads at", this.measureIndex - 1, this.measureHeads);
+		this.measureHeads[this.measureIndex] = this.measureHeads[this.measureIndex - 1] + measureSpan;
+
+		++this.measureIndex;
+		this.tickInMeasure -= measureSpan;
+
+		this.partialDuration = null;
+	}
+
+
 	elapse (duration: number) {
 		const increment = duration * this.factorValue;
 
 		this.tick += increment;
 
 		this.tickInMeasure += increment;
-		while (Math.round(this.tickInMeasure) >= this.currentMeasureSpan) {
-			console.assert(Number.isFinite(this.measureHeads[this.measureIndex - 1]), "invalid measureHeads at", this.measureIndex - 1, this.measureHeads);
-			this.measureHeads[this.measureIndex] = this.measureHeads[this.measureIndex - 1] + this.currentMeasureSpan;
-
-			++this.measureIndex;
-			this.tickInMeasure -= this.currentMeasureSpan;
-
-			this.partialDuration = null;
-		}
+		while (Math.round(this.tickInMeasure) >= this.currentMeasureSpan)
+			this.newMeasure(this.currentMeasureSpan);
 	}
 
 
@@ -577,6 +581,12 @@ class TrackContext {
 			this.partialDuration = term.duration;
 		else if (term instanceof Repeat) {
 			this.execute(term.bodyBlock);
+
+			// truncate the incomplete measure
+			if (this.tickInMeasure) {
+				console.warn("incomplete measure at tail of repeat body block:", this.tickInMeasure, this.currentMeasureSpan);
+				this.newMeasure(this.tickInMeasure);
+			}
 
 			if (term.alternativeBlocks) {
 				for (const block of term.alternativeBlocks)
