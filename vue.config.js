@@ -2,6 +2,10 @@
 const htmlCommonTemplate = "./app/html/CommonTemplate.html";
 
 
+if (process.env.SOURCE_EDITOR_DIR)
+	process.env.VUE_APP_USE_SOURCE_EDITOR = true;
+
+
 
 module.exports = {
 	publicPath: "./",

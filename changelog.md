@@ -23,6 +23,11 @@
 
 
 
+*	2020.9.6
+
+	+	playground.vue: use env variable to determine sourceEditorEnabled.
+
+
 *	2020.9.5
 
 	+	notation.ts: Notation.toPerformingNotationWithEvents implemented.

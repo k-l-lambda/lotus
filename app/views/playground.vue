@@ -373,7 +373,7 @@
 				loadingLilyParser: false,
 				enabledPointer: false,
 				pointerData: null,
-				sourceEditorEnabled: false,
+				sourceEditorEnabled: !!process.env.VUE_APP_USE_SOURCE_EDITOR,
 				showSourceDir: false,
 				sourceEditorHost: `ws://${location.host}`,
 				sourceEditorFilePath: null,
@@ -425,9 +425,6 @@
 
 			if (MidiAudio.WebAudio.empty())
 				MidiAudio.loadPlugin({soundfontUrl: "/soundfont/", api: "webaudio"}).then(() => console.log("Soundfont loaded."));
-
-			// detect source editor
-			fetch("/source-dir/").then(response => this.sourceEditorEnabled = response.ok);
 
 			this.loadingLilyParser = true;
 			this.lilyParser = await loadLilyParser();
