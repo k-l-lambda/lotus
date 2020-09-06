@@ -24,6 +24,8 @@
 
 *	2020.9.6
 
+	+	measureLayout.ts: VoltaMLayout.serialize implemented.
+
 	+	lilyNotation/measureLayout.ts created.
 
 	+	lilyTerms.ts: fixed measures-crossed MusicEvent measures issue.
