@@ -2,6 +2,7 @@
 ## TODO
 	implicit notes matching with sheet document
 		match lilyNotation with articulated MIDI (ignored repeats), then unfold repeats on lilyNotation, include D.C., D.S.
+		setTempo missing issue in Once measure layout
 	staffNotation
 		remove note time from staff document
 	lilyInterpreter
