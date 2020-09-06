@@ -9,7 +9,6 @@ import LilyDocument from "./lilyDocument";
 import * as LilyNotation from "../lilyNotation";
 
 import {
-	// eslint-disable-next-line
 	BaseTerm,
 	Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, AfterGrace, Clef, Scheme, Include, Rest,
 	KeySignature, OctaveShift, Duration, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version,
@@ -28,6 +27,9 @@ type MusicListener = (music: BaseTerm, context: TrackContext) => void;
 
 
 type ContextDict = {[key: string]: string};
+
+
+const FUNCTIONAL_VARIABLE_NAME_PATTERN = /^lotus/;
 
 
 interface PitchContextTerm {
@@ -774,6 +776,8 @@ export default class LilyInterpreter {
 	layoutMusic: MusicPerformance;
 	midiMusic: MusicPerformance;
 
+	functionalCommand?: Variable;
+
 
 	static trackName (index: number): string {
 		return `Voice_${romanize(index)}`;
@@ -829,6 +833,11 @@ export default class LilyInterpreter {
 	execute (term: BaseTerm, {execMusic = false, contextDict = {}}: {execMusic?: boolean, contextDict?: ContextDict} = {}): BaseTerm {
 		if (!term)
 			return term;
+
+		if (this.functionalCommand && term.isMusic) {
+			term._functional = this.functionalCommand.name;
+			this.functionalCommand = null;
+		}
 
 		if (term instanceof Root) {
 			for (const section of term.sections) {
@@ -900,16 +909,27 @@ export default class LilyInterpreter {
 		}
 		else if (term instanceof Variable) {
 			const result = this.variableTable.get(term.name);
-			if (!result)
-				console.warn("uninitialized variable is referred:", term);
+			if (!result) {
+				if (FUNCTIONAL_VARIABLE_NAME_PATTERN.test(term.name)) {
+					this.functionalCommand = term;
+
+					return term;
+				}
+				else
+					console.warn("uninitialized variable is referred:", term);
+			}
 
 			return result;
 		}
 		else if (term instanceof MusicBlock) {
 			const result = new MusicBlock({
 				_parent: term._parent,
-				body: term.body.map(subterm => this.execute(subterm)).filter(term => term),
+				_functional: term._functional,
+				body: term.body.map(subterm => this.execute(subterm)).filter(Boolean),
 			});
+
+			this.functionalCommand = null;
+
 			if (execMusic) {
 				const variable = this.interpretMusic(result, contextDict);
 				return new MusicBlock({body: [variable]});

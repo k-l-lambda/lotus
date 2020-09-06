@@ -9,6 +9,8 @@ enum LayoutType {
 
 interface MeasureLayout {
 	serialize (type: LayoutType): number[];
+
+	seq: MeasureSeq;
 };
 
 
@@ -29,38 +31,50 @@ class SingleMLayout implements MeasureLayout {
 	serialize (): number[] {
 		return [this.measure];
 	}
+
+
+	get seq (): MeasureSeq {
+		return [this];
+	}
 };
 
 
 class BlockMLayout implements MeasureLayout {
 	seq: MeasureSeq = [];
 
-	constructor (seq?: MeasureSeq) {
-		if (seq) {
-			// spread sub BlockMLayout
-			const seq2 = [];
-			for (const layout of seq) {
-				if (layout instanceof BlockMLayout) {
-					for (const sub of layout.seq)
-						seq2.push(sub);
-				}
-				else
-					seq2.push(layout);
-			}
 
-			// reduce duplicate single measures
-			let measure = null;
-			for (const layout of seq2) {
-				if (layout instanceof SingleMLayout) {
-					if (layout.measure !== measure) {
-						this.seq.push(layout);
-						measure = layout.measure;
-					}
-				}
-				else
-					this.seq.push(layout);
+	static trimSeq (seq: MeasureSeq): MeasureSeq {
+		const seq2 = [];
+		for (const layout of seq) {
+			if (layout instanceof BlockMLayout) {
+				for (const sub of layout.seq)
+					seq2.push(sub);
 			}
+			else
+				seq2.push(layout);
 		}
+
+		// reduce duplicate single measures
+		const seq3 = [];
+		let measure = null;
+		for (const layout of seq2) {
+			if (layout instanceof SingleMLayout) {
+				if (layout.measure !== measure) {
+					seq3.push(layout);
+					measure = layout.measure;
+				}
+			}
+			else
+				seq3.push(layout);
+		}
+
+		return seq3;
+	}
+
+
+	constructor (seq?: MeasureSeq) {
+		if (seq)
+			this.seq = BlockMLayout.trimSeq(seq);
 	}
 
 
@@ -122,6 +136,16 @@ class VoltaMLayout implements MeasureLayout {
 
 		console.warn("the current case not handled:", type, this);
 	}
+
+
+	get seq (): MeasureSeq {
+		const alternates = this.alternates ? this.alternates[this.alternates.length - 1] : [];
+
+		return [
+			...this.body,
+			...alternates,
+		];
+	}
 };
 
 
@@ -131,10 +155,42 @@ class ABAMLayout implements MeasureLayout {
 
 
 	serialize (type: LayoutType): number[] {
-		void type;
+		const seqA = this.main.serialize(type);
+		const seqA_ = spreadMeasureSeq(this.main.seq);
+		const seqB = spreadMeasureSeq(this.rest, type);
 
-		// TODO:
-		return [];
+		switch (type) {
+		case LayoutType.Ordinary:	// A B
+			return [
+				...seqA,
+				...seqB,
+			];
+
+		case LayoutType.Once:	// B A'
+			return [
+				...seqB,
+				...seqA_,
+			];
+
+		case LayoutType.Conservative: // A B A'
+		case LayoutType.Full:	// A B A'
+			return [
+				...seqA,
+				...seqB,
+				...seqA_,
+			];
+
+		default:
+			console.warn("the current case not handled:", type, this);
+		}
+	}
+
+
+	get seq (): MeasureSeq {
+		return [
+			this.main,
+			...this.rest,
+		];
 	}
 };
 

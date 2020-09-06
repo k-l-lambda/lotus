@@ -92,6 +92,9 @@ export class BaseTerm {
 	_headComment: Comment;
 	_tailComment: Comment;
 
+	// lotus extensional function modifier
+	_functional: string;
+
 
 	constructor (data: object) {
 		//Object.assign(this, data);
@@ -1126,8 +1129,18 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
-	get measureLayout (): measureLayout.BlockMLayout {
+	get measureLayout (): measureLayout.MeasureLayout {
 		const seq = this.body.filter(term => term.isMusic).map(term => term.measureLayout).filter(Boolean);
+
+		if (this._functional === "lotusRepeatABA") {
+			const [main, ...rest] = seq;
+
+			const layout = new measureLayout.ABAMLayout();
+			layout.main = main;
+			layout.rest = measureLayout.BlockMLayout.trimSeq(rest);
+
+			return layout;
+		}
 
 		return new measureLayout.BlockMLayout(seq);
 	}
