@@ -135,7 +135,7 @@ export class Notation implements NotationData {
 
 
 	get ordinaryMeasureIndices (): number[] {
-		return [...Array(this.measures.length).keys()];
+		return Array(this.measures.length).fill(null).map((_, i) => i + 1);
 	}
 
 
@@ -148,7 +148,7 @@ export class Notation implements NotationData {
 	toAbsoluteNotes (measureIndices: number[] = this.ordinaryMeasureIndices): Note[] {
 		let measureTick = 0;
 		const measureNotes: Note[][] = measureIndices.map(index => {
-			const measure = this.measures[index];
+			const measure = this.measures[index - 1];
 			console.assert(!!measure, "invalid measure index:", index, this.measures.length);
 
 			const notes = measure.notes.map(mnote => ({
@@ -157,7 +157,7 @@ export class Notation implements NotationData {
 				start: measureTick + mnote.tick,
 				duration: mnote.duration,
 				channel: 0,
-				measure: index + 1,
+				measure: index,
 				..._.pick(mnote, COMMON_NOTE_FIELDS),
 			}) as Note);
 
@@ -203,7 +203,7 @@ export class Notation implements NotationData {
 	toPerformingNotationWithEvents (measureIndices: number[] = this.ordinaryMeasureIndices): MusicNotation.Notation {
 		let measureTick = 0;
 		const measureEvents: MeasureEvent[][] = measureIndices.map(index => {
-			const measure = this.measures[index];
+			const measure = this.measures[index - 1];
 			console.assert(!!measure, "invalid measure index:", index, this.measures.length);
 
 			const events = measure.events.map(mevent => ({

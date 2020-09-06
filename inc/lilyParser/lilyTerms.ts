@@ -1050,6 +1050,19 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	get measures (): number[] {
+		// make a continouse indices list
+		const subIndices = [].concat(...(this.entries || []).map(entry => entry.measures)).filter(index => Number.isInteger(index));
+		if (!subIndices.length)
+			return [];
+
+		const min = Math.min(...subIndices);
+		const max = Math.max(...subIndices);
+
+		return Array(max + 1 - min).fill(null).map((_, i) => i + min);
+	}
+
+
 	get notes (): Chord[] {
 		const notes = this.body.filter(term => term instanceof Chord && !term.isRest) as Chord[];
 		this.forEachTopTerm(MusicBlock, block => notes.push(...block.notes));
