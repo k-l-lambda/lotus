@@ -42,8 +42,21 @@ const checkFile = async filename => {
 	const coverage = ((criterion.notes.length - omitC) / criterion.notes.length)
 		* ((midiNotation.notes.length - omitS) / midiNotation.notes.length);
 
-	console.log(filename, ":", omitC, omitS);
-	if (omitC || omitS) {
+	const tickFactor = 480 / midiNotation.ticksPerBeat;
+
+	const offsetTicks = path.reduce((total, ci, si) => {
+		if (ci < 0)
+			return total;
+
+		const cn = criterion.notes[ci];
+		const sn = midiNotation.notes[si];
+		const offset = cn.startTick - sn.startTick * tickFactor;
+
+		return total + offset;
+	}, 0);
+
+	console.log(filename, ":", omitC, omitS, offsetTicks / midiNotation.notes.length);
+	/*if (omitC || omitS) {
 		console.debug("path:", path);
 		if (omitC > 0)
 			console.debug("cis:", cis, Array.from(cis).map(ci => criterion.notes[ci]).map(note => ({id: note.id, start: note.start, pitch: note.pitch})));
@@ -55,7 +68,7 @@ const checkFile = async filename => {
 				.map(([si]) => si);
 			console.debug("sis:", sis, sis.map(si => midiNotation.notes[si]).map(note => ({start: note.start, pitch: note.pitch})));
 		}
-	}
+	}*/
 
 	return {
 		midi,
