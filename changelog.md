@@ -25,6 +25,8 @@
 
 *	2020.9.6
 
+	+	lilyTerms.ts: fixed measures-crossed MusicEvent measures issue.
+
 	+	lilyTerms.ts: refined MusicBlock.measures.
 
 	+	playground.vue: use env variable to determine sourceEditorEnabled.

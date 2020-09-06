@@ -1052,7 +1052,8 @@ export class MusicBlock extends BaseTerm {
 
 	get measures (): number[] {
 		// make a continouse indices list
-		const subIndices = [].concat(...(this.entries || []).map(entry => entry.measures)).filter(index => Number.isInteger(index));
+		const subterms = this.findAll(term => term.isMusic);
+		const subIndices = [].concat(...subterms.map(term => term.measures)).filter(index => Number.isInteger(index));
 		if (!subIndices.length)
 			return [];
 
@@ -1596,6 +1597,7 @@ export class MusicEvent extends BaseTerm {
 
 	_previous?: MusicEvent;
 	_anchorPitch?: ChordElement;
+	_lastMeasure?: number;
 
 
 	constructor (data: object) {
@@ -1643,6 +1645,14 @@ export class MusicEvent extends BaseTerm {
 	// to be implement in derived classes
 	get isRest (): boolean {
 		return null;
+	}
+
+
+	get measures (): number[] {
+		if (!Number.isFinite(this._measure) || !Number.isFinite(this._lastMeasure))
+			return [];
+
+		return Array(this._lastMeasure + 1 - this._measure).fill(null).map((_, i) => this._measure + i);
 	}
 };
 

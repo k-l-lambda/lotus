@@ -540,6 +540,8 @@ class TrackContext {
 
 			this.elapse(term.durationMagnitude);
 
+			term._lastMeasure = this.tickInMeasure > 0 ? this.measureIndex : this.measureIndex - 1;
+
 			this.tying = null;
 			this.staccato = false;
 
