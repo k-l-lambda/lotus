@@ -2,7 +2,6 @@
 ## TODO
 	implicit notes matching with sheet document
 		match lilyNotation with articulated MIDI (ignored repeats), then unfold repeats on lilyNotation, include D.C., D.S.
-			assign matched notes into LilyNotation
 			parsing repeat mark among measure index
 	staffNotation
 		remove note time from staff document
@@ -24,6 +23,8 @@
 
 
 *	2020.9.6
+
+	+	lilyNotation/measureLayout.ts created.
 
 	+	lilyTerms.ts: fixed measures-crossed MusicEvent measures issue.
 

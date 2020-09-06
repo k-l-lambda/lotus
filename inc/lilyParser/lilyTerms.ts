@@ -4,6 +4,7 @@ import _ from "lodash";
 import {WHOLE_DURATION_MAGNITUDE, FractionNumber, lcmMulti} from "./utils";
 import * as idioms from "./idioms";
 import {LILYPOND_VERSION} from "../constants";
+import * as measureLayout from "../lilyNotation/measureLayout";
 
 
 
@@ -203,6 +204,11 @@ export class BaseTerm {
 		if (this._location)
 			return `${this._location.lines[0]}:${this._location.columns[0]}:${this._location.columns[1]}`;
 
+		return null;
+	}
+
+
+	get measureLayout (): measureLayout.MeasureLayout {
 		return null;
 	}
 
@@ -510,7 +516,7 @@ export class Command extends BaseTerm {
 	}
 
 
-	get isMusic () {
+	get isMusic (): boolean {
 		for (const arg of this.args) {
 			if (arg.isMusic)
 				return true;
@@ -615,6 +621,11 @@ export class MarkupCommand extends Command {
 
 
 export class Repeat extends Command {
+	get type (): string {
+		return this.args[0];
+	}
+
+
 	get times () {
 		return Number(this.args[1]);
 	}
@@ -644,6 +655,24 @@ export class Repeat extends Command {
 		list.push(...this.alternativeBlocks);
 
 		return list;
+	}
+
+
+	get measureLayout (): measureLayout.MeasureLayout {
+		switch (this.type) {
+		case "volta": {
+			const layout = new measureLayout.VoltaMLayout();
+			layout.times = this.times;
+			layout.body = this.bodyBlock.measureLayout.seq;
+			layout.alternates = this.alternativeBlocks && this.alternativeBlocks.map(block => block.measureLayout.seq);
+
+			return layout;
+		}
+		default:
+			console.warn("unsupported repeat type:", this.type);
+		}
+
+		return null;
 	}
 
 
@@ -970,7 +999,7 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
-	get isMusic () {
+	get isMusic (): boolean {
 		return true;
 	}
 
@@ -1097,13 +1126,11 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
-	/*get ticks (): number[] {
-		const ticks = this.body.filter(term => Number.isFinite(term._tick)).map(term => term._tick);
+	get measureLayout (): measureLayout.BlockMLayout {
+		const seq = this.body.filter(term => term.isMusic).map(term => term.measureLayout).filter(Boolean);
 
-		this.forEachTopTerm(MusicBlock, block => ticks.push(...block.ticks));
-
-		return Array.from(new Set(ticks)).sort((t1, t2) => t1 - t2);
-	}*/
+		return new measureLayout.BlockMLayout(seq);
+	}
 
 
 	clearPitchCache () {
@@ -1327,7 +1354,7 @@ export class SimultaneousList extends BaseTerm {
 	}
 
 
-	get isMusic () {
+	get isMusic (): boolean {
 		return true;
 	}
 
@@ -1358,7 +1385,7 @@ export class ContextedMusic extends BaseTerm {
 	}
 
 
-	get isMusic () {
+	get isMusic (): boolean {
 		return true;
 	}
 
@@ -1632,6 +1659,11 @@ export class MusicEvent extends BaseTerm {
 	}
 
 
+	get isMusic (): boolean {
+		return true;
+	}
+
+
 	get isTying (): boolean {
 		return this.post_events && this.post_events.some(event => event.isTying);
 	}
@@ -1653,6 +1685,17 @@ export class MusicEvent extends BaseTerm {
 			return [];
 
 		return Array(this._lastMeasure + 1 - this._measure).fill(null).map((_, i) => this._measure + i);
+	}
+
+
+	get measureLayout (): measureLayout.MeasureLayout {
+		if (this.measures.length > 1)
+			return new measureLayout.BlockMLayout(this.measures.map(measure => new measureLayout.SingleMLayout(measure)));
+
+		if (this.measures.length === 1)
+			return new measureLayout.SingleMLayout(this._measure);
+
+		return null;
 	}
 };
 
@@ -1707,11 +1750,6 @@ export class Chord extends MusicEvent {
 			...pitches,
 			...postfix,
 		];
-	}
-
-
-	get isMusic (): boolean {
-		return true;
 	}
 
 
@@ -2077,7 +2115,7 @@ export class BriefChord extends BaseTerm {
 	}
 
 
-	get isMusic () {
+	get isMusic (): boolean {
 		return true;
 	}
 
