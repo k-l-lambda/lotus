@@ -46,6 +46,7 @@ module.exports = {
 		camelcase: "off",
 		"no-useless-escape": "warn",
 		"no-unused-vars": ["warn", {varsIgnorePattern: "_"}],
+		"@typescript-eslint/no-unused-vars": ["warn", {varsIgnorePattern: "_"}],
 		"quote-props": ["warn", "as-needed"],
 		"prefer-const": "warn",
 		"no-fallthrough": [

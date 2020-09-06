@@ -3,6 +3,7 @@
 	implicit notes matching with sheet document
 		match lilyNotation with articulated MIDI (ignored repeats), then unfold repeats on lilyNotation, include D.C., D.S.
 			parsing repeat mark among measure index
+				MusicBlock.measureLayout: parse ABA measure layout
 	staffNotation
 		remove note time from staff document
 	lilyInterpreter
@@ -23,6 +24,8 @@
 
 
 *	2020.9.6
+
+	+	notation.ts: output option of measure layout type.
 
 	+	measureLayout.ts: VoltaMLayout.serialize implemented.
 

@@ -187,6 +187,18 @@
 						<td><BoolStoreInput v-model="enabledSheetNotation" localKey="lotus-enabledSheetNot" /></td>
 					</tr>
 					<tr>
+						<td>Measure Repeat Type</td>
+						<td>
+							<StoreInput v-show="false" v-model="measureLayout" localKey="lotus-measureLayout" />
+							<select v-model="measureLayout">
+								<option value="ordinary">Ordinary</option>
+								<option value="full">Full</option>
+								<option value="conservative">Conservative</option>
+								<option value="once">Once</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
 						<th>Lilypond Markups</th>
 						<td><hr /></td>
 					</tr>
@@ -379,6 +391,7 @@
 				sourceEditorFilePath: null,
 				sourceEditorConnected: false,
 				sourceEditorLoading: false,
+				measureLayout: "ordinary",
 			};
 		},
 
@@ -888,11 +901,9 @@
 					this.matcherNotations = await LilyNotation.matchWithMIDI(lilyNotation, midi);
 
 					//console.log("lilyNotation:", lilyNotation);
-					const measureIndices = lilyNotation.ordinaryMeasureIndices;	// TODO: use full indices
-
-					this.midiNotation = lilyNotation.toPerformingNotationWithEvents(measureIndices);
+					this.midiNotation = lilyNotation.toPerformingNotationWithEvents(this.measureLayout);
 					//console.log("midiNotation:", this.midiNotation);
-					this.pitchContextGroup = lilyNotation.getContextGroup(measureIndices);
+					this.pitchContextGroup = lilyNotation.getContextGroup(this.measureLayout);
 				}
 
 				this.matchedIds = new Set();

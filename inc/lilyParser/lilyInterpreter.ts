@@ -728,8 +728,9 @@ class MusicPerformance {
 		const pitchContextGroup = staffContexts.map(context => context.pitchContextTable);
 
 		const measureHeads = this.musicTracks[0] && this.musicTracks[0].measureHeads;
+		const measureLayout = this.musicTracks[0] && this.musicTracks[0].block.measureLayout;
 
-		return LilyNotation.Notation.fromAbsoluteNotes(notes, measureHeads, {pitchContextGroup});
+		return LilyNotation.Notation.fromAbsoluteNotes(notes, measureHeads, {pitchContextGroup, measureLayout});
 	}
 
 

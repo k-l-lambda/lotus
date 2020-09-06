@@ -1,13 +1,12 @@
 
 import _ from "lodash";
 
-// eslint-disable-next-line
-import {MusicNotation, MIDI, MidiUtils} from "@k-l-lambda/web-widgets";
+import {MusicNotation} from "@k-l-lambda/web-widgets";
 
 import {WHOLE_DURATION_MAGNITUDE} from "../lilyParser";
 import {PitchContextTable} from "../pitchContext";
-// eslint-disable-next-line
 import {MatcherResult} from "./matcher";
+import {MeasureLayout, LayoutType} from "./measureLayout";
 
 
 
@@ -59,22 +58,23 @@ interface Measure {
 };
 
 
-interface NotationData {
+/*interface NotationData {
 	pitchContextGroup: PitchContextTable[];
 	measures: Measure[];
-};
+};*/
 
 
 const EXTRA_NOTE_FIELDS = ["rest", "tied", "overlapped", "contextIndex", "staffTrack"];
 const COMMON_NOTE_FIELDS = ["id", "ids", "pitch", "velocity", ...EXTRA_NOTE_FIELDS];
 
 
-export class Notation implements NotationData {
+export class Notation {
 	pitchContextGroup: PitchContextTable[];
+	measureLayout: MeasureLayout;
 	measures: Measure[];
 
 
-	static fromAbsoluteNotes (notes: Note[], measureHeads: number[], data?: Partial<NotationData>): Notation {
+	static fromAbsoluteNotes (notes: Note[], measureHeads: number[], data?: Partial<Notation>): Notation {
 		const notation = new Notation(data);
 
 		notation.measures = Array(measureHeads.length - 1).fill(null).map((__, i) => {
@@ -128,13 +128,16 @@ export class Notation implements NotationData {
 	}
 
 
-	constructor (data?: Partial<NotationData>) {
+	constructor (data?: Partial<Notation>) {
 		if (data)
 			Object.assign(this, data);
 	}
 
 
 	get ordinaryMeasureIndices (): number[] {
+		if (this.measureLayout)
+			return this.measureLayout.serialize(LayoutType.Ordinary);
+
 		return Array(this.measures.length).fill(null).map((_, i) => i + 1);
 	}
 
@@ -183,24 +186,13 @@ export class Notation implements NotationData {
 			endTime,
 		});
 
-		/*if (withEvents) {
-			// TODO:
-			const midi = MidiUtils.encodeToMIDIData(notation);
-			const midiNotation = MusicNotation.Notation.parseMidi(midi);
-			notation.events = midiNotation.events;
-			notation.keyRange = midiNotation.keyRange;
-			notation.tempos = midiNotation.tempos;
-			notation.endTime = midiNotation.endTime;
-			notation.endTick = midiNotation.endTick;
-
-			assignNotationEventsIds(notation);
-		}*/
-
 		return notation;
 	}
 
 
-	toPerformingNotationWithEvents (measureIndices: number[] = this.ordinaryMeasureIndices): MusicNotation.Notation {
+	toPerformingNotationWithEvents (type: LayoutType): MusicNotation.Notation {
+		const measureIndices = this.measureLayout.serialize(type);
+
 		let measureTick = 0;
 		const measureEvents: MeasureEvent[][] = measureIndices.map(index => {
 			const measure = this.measures[index - 1];
@@ -245,7 +237,9 @@ export class Notation implements NotationData {
 	}
 
 
-	getContextGroup (measureIndices: number[] = this.ordinaryMeasureIndices): PitchContextTable[] {
+	getContextGroup (type: LayoutType): PitchContextTable[] {
+		const measureIndices = this.measureLayout.serialize(type);
+
 		const contextGroup = this.pitchContextGroup.map(table => table.items.map(item => item.context));
 		const midiNotation = this.toPerformingNotation(measureIndices);
 
