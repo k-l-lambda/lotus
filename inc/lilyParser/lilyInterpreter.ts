@@ -700,6 +700,17 @@ class MusicPerformance {
 	musicTracks: MusicTrack[] = [];
 
 
+	get mainTrack (): MusicTrack {
+		// find the longest track
+		const trackPrior = (track: MusicTrack, index: number): number => -track.block.durationMagnitude + index * 1e-3;
+		const priorTracks = this.musicTracks
+			.map((track, index) => ({track, index}))
+			.sort((t1, t2) => trackPrior(t1.track, t1.index) - trackPrior(t2.track, t2.index));
+
+		return priorTracks[0] ? priorTracks[0].track : null;
+	}
+
+
 	getNotation ({logger = new LogRecorder()} = {}): LilyNotation.Notation {
 		const pcTerms: PitchContextTerm[] = [].concat(...this.musicTracks.map((track, i) =>
 			track.generateStaffTracks().map(term => ({track: i, ...term}))));
@@ -738,8 +749,10 @@ class MusicPerformance {
 
 		const pitchContextGroup = staffContexts.map(context => context.pitchContextTable);
 
-		const measureHeads = this.musicTracks[0] && this.musicTracks[0].measureHeads;
-		const measureLayout = this.musicTracks[0] && this.musicTracks[0].block.measureLayout;
+		const mainTrack = this.mainTrack;
+
+		const measureHeads = mainTrack && mainTrack.measureHeads;
+		const measureLayout = mainTrack && mainTrack.block.measureLayout;
 
 		return LilyNotation.Notation.fromAbsoluteNotes(notes, measureHeads, {pitchContextGroup, measureLayout});
 	}
