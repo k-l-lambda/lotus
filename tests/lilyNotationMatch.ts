@@ -110,6 +110,10 @@ const main = async () => {
 	for (const lyFile of lyFiles) {
 		try {
 			const result = await checkFile(lyFile);
+			if (argv.breakOnLargeOffset && Math.abs(result.averageTickOffset) > 1) {
+				console.warn("Large averageTickOffset!");
+				break;
+			}
 			if (argv.dumpOnError && (result.omitC + result.omitS > 0 || result.averageTickOffset)) {
 				const pack = new JSZip();
 
