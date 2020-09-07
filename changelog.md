@@ -24,6 +24,8 @@
 
 *	2020.9.7
 
+	+	lilyNotation/notation.ts: assign events for independent MIDI events by tick range.
+
 	+	lilyInterpreter.ts: exclude lyric and chordmode track for MusicPerformance.mainTrack.
 
 	+	lilyInterpreter.ts: MusicPerformance.mainTrack added.

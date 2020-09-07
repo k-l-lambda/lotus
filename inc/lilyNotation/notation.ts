@@ -269,6 +269,25 @@ export class Notation {
 					ticks: event.ticks * tickFactor - measure.tick,
 				});
 			}
+			else {
+				switch (event.data.subtype) {
+				case "setTempo":
+				case "timeSignature":
+				case "keySignature": {
+					// find container measure by tick range
+					const tick = event.ticks * tickFactor;
+					const measure = this.measures.find(measure => tick >= measure.tick && tick < measure.tick + measure.duration);
+					if (measure) {
+						measure.events.push({
+							data: event.data,
+							ticks: tick - measure.tick,
+						});
+					}
+				}
+
+					break;
+				}
+			}
 		});
 
 		return this;
