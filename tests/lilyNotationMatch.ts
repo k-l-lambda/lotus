@@ -91,6 +91,7 @@ const checkFile = async filename => {
 		coverage,
 		averageTickOffset,
 		offsetMap,
+		offsetTicks,
 	};
 };
 
