@@ -54,8 +54,9 @@ const checkFile = async filename => {
 
 		return total + offset;
 	}, 0);
+	const averageTickOffset = offsetTicks / midiNotation.notes.length;
 
-	console.log(filename, ":", omitC, omitS, offsetTicks / midiNotation.notes.length);
+	console.log(filename, ":", omitC, omitS, averageTickOffset);
 	/*if (omitC || omitS) {
 		console.debug("path:", path);
 		if (omitC > 0)
@@ -79,6 +80,7 @@ const checkFile = async filename => {
 		omitC,
 		omitS,
 		coverage,
+		averageTickOffset,
 	};
 };
 
@@ -108,7 +110,7 @@ const main = async () => {
 	for (const lyFile of lyFiles) {
 		try {
 			const result = await checkFile(lyFile);
-			if (argv.dumpOnError && result.omitC + result.omitS > 0) {
+			if (argv.dumpOnError && (result.omitC + result.omitS > 0 || result.averageTickOffset)) {
 				const pack = new JSZip();
 
 				const buffer = MidiUtils.encodeToMIDI(result.criterion, {startTime: 0});

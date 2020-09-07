@@ -588,7 +588,7 @@ class TrackContext {
 
 			// truncate the incomplete measure
 			if (this.tickInMeasure) {
-				console.warn("incomplete measure at tail of repeat body block:", this.tickInMeasure, this.currentMeasureSpan);
+				console.warn("incomplete measure at tail of repeat body block:", this.measureIndex, this.tickInMeasure, this.currentMeasureSpan);
 				this.newMeasure(this.tickInMeasure);
 			}
 
