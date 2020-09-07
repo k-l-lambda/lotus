@@ -831,6 +831,14 @@ export class AfterGrace extends Command {
 	get grace (): BaseTerm {
 		return this.args[1];
 	}
+
+
+	get measureLayout (): measureLayout.MeasureLayout {
+		return new measureLayout.BlockMLayout([
+			this.body.measureLayout,
+			this.grace.measureLayout,
+		]);
+	}
 };
 
 
