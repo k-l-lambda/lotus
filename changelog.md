@@ -22,6 +22,11 @@
 
 
 
+*	2020.9.7
+
+	+	lilyNotation/notation.ts: enhanced robustness for ill score.
+
+
 *	2020.9.6
 
 	+	measureLayout.ts: ABAMLayout.serialize implemented.

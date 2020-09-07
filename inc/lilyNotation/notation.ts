@@ -77,9 +77,9 @@ export class Notation {
 	static fromAbsoluteNotes (notes: Note[], measureHeads: number[], data?: Partial<Notation>): Notation {
 		const notation = new Notation(data);
 
-		notation.measures = Array(measureHeads.length - 1).fill(null).map((__, i) => {
+		notation.measures = Array(measureHeads.length).fill(null).map((__, i) => {
 			const tick = measureHeads[i];
-			const duration = measureHeads[i + 1] - tick;
+			const duration = measureHeads[i + 1] ? (measureHeads[i + 1] - tick) : 0;
 
 			const mnotes = notes.filter(note => note.measure === i + 1).map(note => ({
 				tick: note.startTick - tick,
@@ -142,12 +142,6 @@ export class Notation {
 	}
 
 
-	// TODO:
-	//get fullMeasureIndices (): number[]
-	//get conservativeMeasureIndices (): number[]
-	//get onceMeasureIndices (): number[]
-
-
 	toAbsoluteNotes (measureIndices: number[] = this.ordinaryMeasureIndices): Note[] {
 		let measureTick = 0;
 		const measureNotes: Note[][] = measureIndices.map(index => {
@@ -192,6 +186,7 @@ export class Notation {
 
 	toPerformingNotationWithEvents (type: LayoutType): MusicNotation.Notation {
 		const measureIndices = this.measureLayout.serialize(type);
+		//console.log("toPerformingNotationWithEvents:", this, measureIndices);
 
 		let measureTick = 0;
 		const measureEvents: MeasureEvent[][] = measureIndices.map(index => {
@@ -261,26 +256,6 @@ export class Notation {
 		assignNotationEventsIds(matcher.sample, ["ids", "measure"]);
 
 		this.measures.forEach(measure => measure.events = []);
-
-		/*matcher.path.forEach((ci, si) => {
-			if (ci >= 0) {
-				const cn = matcher.criterion.notes[ci] as Note;
-				const sn = matcher.sample.notes[si];
-
-				const measure = this.measures[cn.measure - 1];
-				console.assert(!!measure, "measure index is invalid:", cn.measure, this.measures.length, ci, si);
-
-				measure.notes.push({
-					tick: sn.startTick * tickFactor - measure.tick,
-					duration: (sn.endTick - sn.startTick) * tickFactor,
-					pitch: sn.pitch,
-					velocity: sn.velocity,
-					id: cn.id,
-					ids: cn.ids,
-					..._.pick(cn, EXTRA_NOTE_FIELDS),
-				});
-			}
-		});*/
 
 		//console.log("matcher.sample.events:", matcher.sample.events);
 		(matcher.sample.events as MeasureEvent[]).forEach(event => {
