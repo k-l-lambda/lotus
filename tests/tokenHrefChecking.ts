@@ -31,8 +31,9 @@ const checkFile = async filename => {
 	const hrefSet = new Set(hrefs);
 	const hrefLocs = hrefs.map(href => href.match(/\d+/g).map(Number));
 
-	const interperter = lilyDocument.interpret();
-	const notation = interperter.getNotation();
+	const interpreter = lilyDocument.interpret();
+	const notation = interpreter.getNotation();
+	const notes = notation.toAbsoluteNotes();
 
 	const matched = [];
 	const partialMatched = [];
@@ -40,7 +41,7 @@ const checkFile = async filename => {
 	const collided = [];
 	const missed = [];
 
-	notation.notes.forEach((note: any) => {
+	notes.forEach(note => {
 		if (hrefSet.has(note.id)) {
 			matched.push(note.id);
 			hrefSet.delete(note.id);
@@ -59,7 +60,7 @@ const checkFile = async filename => {
 					crossed.push([note.id, loc.join(":")]);
 				else
 					missed.push(note.id);*/
-				const collidedNote = notation.notes.find(n => n !== note && n.startTick === note.startTick && n.pitch === note.pitch);
+				const collidedNote = notes.find(n => n !== note && n.startTick === note.startTick && n.pitch === note.pitch);
 				if (collidedNote)
 					collided.push(note.id);
 				else

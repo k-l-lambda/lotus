@@ -1163,10 +1163,10 @@
 				//measures.assignMeasures(this.lilyDocument, locations);
 				//console.log("lilyDocument:", this.lilyDocument);
 				await this.updateLilyDocument();
-				const interperter = this.lilyDocument.interpret({useCached: false});
+				const interpreter = this.lilyDocument.interpret({useCached: false});
 
 				if (reconstruct) {
-					this.lilyDocument = interperter.toDocument();
+					this.lilyDocument = interpreter.toDocument();
 					this.lilySource = this.lilyDocument.toString();
 				}
 
@@ -1177,9 +1177,9 @@
 			async sliceMeasures (start, count) {
 				await this.updateLilyDocument();
 
-				const interperter = this.lilyDocument.interpret({useCached: false});
-				interperter.sliceMeasures(start, count);
-				this.lilyDocument = interperter.toDocument();
+				const interpreter = this.lilyDocument.interpret({useCached: false});
+				interpreter.sliceMeasures(start, count);
+				this.lilyDocument = interpreter.toDocument();
 				this.lilySource = this.lilyDocument.toString();
 			},
 
@@ -1187,10 +1187,10 @@
 			async createPianoRhythm (options) {
 				await this.updateLilyDocument();
 
-				const interperter = this.lilyDocument.interpret({useCached: false});
-				createPianoRhythm(interperter, options);
+				const interpreter = this.lilyDocument.interpret({useCached: false});
+				createPianoRhythm(interpreter, options);
 
-				this.lilyDocument = interperter.toDocument();
+				this.lilyDocument = interpreter.toDocument();
 				this.lilySource = this.lilyDocument.toString();
 
 				await this.$nextTick();
@@ -1198,18 +1198,18 @@
 			},
 
 
-			async testInterperter ({flatten = false} = {}) {
+			async testInterpreter ({flatten = false} = {}) {
 				await this.updateLilyDocument();
 
-				const interperter = this.lilyDocument.interpret({useCached: false});
+				const interpreter = this.lilyDocument.interpret({useCached: false});
 
-				const lilyNotation = interperter.getNotation();
+				const lilyNotation = interpreter.getNotation();
 
 				if (flatten)
-					interperter.layoutMusic.musicTracks.forEach(track => track.flatten({spreadRepeats: true}));
-				const newDoc = interperter.toDocument();
+					interpreter.layoutMusic.musicTracks.forEach(track => track.flatten({spreadRepeats: true}));
+				const newDoc = interpreter.toDocument();
 
-				console.log("new doc:", interperter, newDoc, lilyNotation);
+				console.log("new doc:", interpreter, newDoc, lilyNotation);
 			},
 
 

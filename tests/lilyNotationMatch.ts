@@ -26,8 +26,8 @@ const checkFile = async filename => {
 	//const midiNotation = MusicNotation.Notation.parseMidi(midi);
 
 	const lilyDocument = new LilyDocument(lilyParser.parse(source));
-	const interperter = lilyDocument.interpret();
-	const lilyNotation = interperter.getNotation();
+	const interpreter = lilyDocument.interpret();
+	const lilyNotation = interpreter.getNotation();
 	//console.debug("lilyNotation:", lilyNotation);
 
 	const {path, criterion, sample: midiNotation} = await LilyNotation.matchWithMIDI(lilyNotation, midi);
