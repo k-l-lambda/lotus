@@ -171,6 +171,7 @@ export class Notation {
 		const abNotes = this.toAbsoluteNotes(measureIndices);
 		const notes = Notation.performAbsoluteNotes(abNotes);
 		const endTime = notes[notes.length - 1].start + notes[notes.length - 1].duration;
+		//console.debug("toPerformingNotation:", this, measureIndices);
 
 		const notation = new MusicNotation.Notation({
 			ticksPerBeat: TICKS_PER_BEAT,
@@ -279,8 +280,9 @@ export const assignNotationEventsIds = (midiNotation: MusicNotation.NotationData
 	const events = midiNotation.notes.reduce((events, note) => {
 		const dict = _.pick(note, fields);
 		events.push({ticks: note.startTick, subtype: "noteOn", channel: note.channel, pitch: note.pitch, dict});
-		events.push({ticks: note.startTick, subtype: "setTempo", dict});
 		events.push({ticks: note.endTick, subtype: "noteOff", channel: note.channel, pitch: note.pitch, dict});
+
+		["setTempo", "timeSignature", "keySignature"].forEach(subtype => events.push({ticks: note.startTick, subtype, dict}));
 
 		return events;
 	}, []).sort((e1, e2) => e1.ticks - e2.ticks);

@@ -459,6 +459,14 @@ class TrackContext {
 	}
 
 
+	checkIncompleteMeasure () {
+		if (this.tickInMeasure) {
+			console.warn("incomplete measure trunated:", this.measureIndex, `${this.tickInMeasure}/${this.currentMeasureSpan}`);
+			this.newMeasure(this.tickInMeasure);
+		}
+	}
+
+
 	elapse (duration: number) {
 		const increment = duration * this.factorValue;
 
@@ -584,23 +592,17 @@ class TrackContext {
 		else if (term instanceof Partial)
 			this.partialDuration = term.duration;
 		else if (term instanceof Repeat) {
+			this.checkIncompleteMeasure();
+
 			this.execute(term.bodyBlock);
 
-			// truncate the incomplete measure
-			if (this.tickInMeasure) {
-				console.warn("incomplete measure at tail of repeat body block:", this.measureIndex, this.tickInMeasure, this.currentMeasureSpan);
-				this.newMeasure(this.tickInMeasure);
-			}
+			this.checkIncompleteMeasure();
 
 			if (term.alternativeBlocks) {
 				for (const block of term.alternativeBlocks) {
 					this.execute(block);
 
-					// truncate the incomplete measure
-					if (this.tickInMeasure) {
-						console.warn("incomplete measure at tail of repeat body block:", this.measureIndex, this.tickInMeasure, this.currentMeasureSpan);
-						this.newMeasure(this.tickInMeasure);
-					}
+					this.checkIncompleteMeasure();
 				}
 			}
 		}

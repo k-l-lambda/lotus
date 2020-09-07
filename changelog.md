@@ -24,6 +24,8 @@
 
 *	2020.9.7
 
+	+	lilyInterpreter.ts: check incomplete measure at begin of repeat block.
+
 	+	playground.vue: pruneStemDirections & redivide measures setting buttons added.
 
 	+	lilyInterpreter.ts: truncate the incomplete measure at alternative blocks in repeat.
