@@ -121,7 +121,7 @@ const main = async () => {
 
 				pack
 					.generateNodeStream({streamFiles: true})
-					.pipe(fs.createWriteStream("./lilyNotationMatch-dump.zip"))
+					.pipe(fs.createWriteStream("./footages/lilyNotationMatch-dump.zip"))
 					.on("finish", function () {
 						console.log("dump Done.", counting);
 					});
