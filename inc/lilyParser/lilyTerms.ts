@@ -1298,8 +1298,12 @@ export class MusicBlock extends BaseTerm {
 
 	// with side effects
 	redivide ({recursive = true} = {}) {
-		if (recursive)
-			this.forEachTerm(MusicBlock, block => block.redivide());
+		if (recursive) {
+			this.forEachTerm(MusicBlock, block => {
+				if (!block._parent || block._parent.cmd !== "alternative")
+					block.redivide();
+			});
+		}
 
 		const isPostTerm = term => !term
 			|| term instanceof PostEvent
