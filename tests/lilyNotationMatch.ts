@@ -144,12 +144,13 @@ const main = async () => {
 
 			statStorage.appendData(lyFile, {notationMatch: result.coverage});
 
-			if (result.coverage < 1) {
+			if (result.coverage < 1 || Math.abs(result.averageTickOffset) > 16) {
 				issues.push({
 					lyFile,
 					omitC: result.omitC,
 					omitS: result.omitS,
 					coverage: result.coverage,
+					averageTickOffset: result.averageTickOffset,
 				});
 			}
 			else
