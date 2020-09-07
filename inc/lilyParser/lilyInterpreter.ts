@@ -180,6 +180,16 @@ export class MusicTrack {
 	}
 
 
+	get isLyricMode (): boolean {
+		return !!this.block.findFirst(term => term instanceof LyricMode);
+	}
+
+
+	get isChordMode (): boolean {
+		return !!this.block.findFirst(term => term instanceof ChordMode);
+	}
+
+
 	transform (transformer: MusicTransformer) {
 		new TrackContext(this, {transformer}).execute(this.music);
 	}
@@ -704,6 +714,7 @@ class MusicPerformance {
 		// find the longest track
 		const trackPrior = (track: MusicTrack, index: number): number => -track.block.durationMagnitude + index * 1e-3;
 		const priorTracks = this.musicTracks
+			.filter(track => track.block._parent && !track.isChordMode && !track.isLyricMode)
 			.map((track, index) => ({track, index}))
 			.sort((t1, t2) => trackPrior(t1.track, t1.index) - trackPrior(t2.track, t2.index));
 

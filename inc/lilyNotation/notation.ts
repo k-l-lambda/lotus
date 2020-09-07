@@ -168,10 +168,10 @@ export class Notation {
 
 
 	toPerformingNotation (measureIndices: number[] = this.ordinaryMeasureIndices): MusicNotation.Notation {
+		//console.debug("toPerformingNotation:", this, measureIndices);
 		const abNotes = this.toAbsoluteNotes(measureIndices);
 		const notes = Notation.performAbsoluteNotes(abNotes);
 		const endTime = notes[notes.length - 1].start + notes[notes.length - 1].duration;
-		//console.debug("toPerformingNotation:", this, measureIndices);
 
 		const notation = new MusicNotation.Notation({
 			ticksPerBeat: TICKS_PER_BEAT,

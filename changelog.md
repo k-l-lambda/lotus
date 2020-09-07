@@ -24,6 +24,8 @@
 
 *	2020.9.7
 
+	+	lilyInterpreter.ts: exclude lyric and chordmode track for MusicPerformance.mainTrack.
+
 	+	lilyInterpreter.ts: MusicPerformance.mainTrack added.
 
 	+	lilyTerms.ts: AfterGrace.measureLayout added.
