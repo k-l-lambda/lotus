@@ -44,17 +44,26 @@ const checkFile = async filename => {
 
 	const tickFactor = 480 / midiNotation.ticksPerBeat;
 
-	const offsetTicks = path.reduce((total, ci, si) => {
+	const offsetTicks = path.map((ci, si) => {
 		if (ci < 0)
-			return total;
+			return null;
 
 		const cn = criterion.notes[ci];
 		const sn = midiNotation.notes[si];
-		const offset = cn.startTick - sn.startTick * tickFactor;
+		return cn.startTick - sn.startTick * tickFactor;
+	});
+	const offsetMap: {[key: number]: number} = offsetTicks.reduce((map, offset) => {
+		if (Number.isFinite(offset)) {
+			map[offset] = map[offset] || 0;
+			++map[offset];
+		}
 
-		return total + offset;
-	}, 0);
-	const averageTickOffset = offsetTicks / midiNotation.notes.length;
+		return map;
+	}, {});
+	const commonOffset = Number(Object.entries(offsetMap).sort((o1, o2) => o2[1] - o1[1])[0][0]);
+	const totalOffset = offsetTicks.reduce((sum, offset) => sum + (offset - commonOffset), 0);
+	//console.log("commonOffset:", commonOffset, totalOffset, offsetMap);
+	const averageTickOffset = totalOffset / midiNotation.notes.length;
 
 	console.log(filename, ":", omitC, omitS, averageTickOffset);
 	/*if (omitC || omitS) {
