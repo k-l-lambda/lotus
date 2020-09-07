@@ -520,12 +520,7 @@ export class Command extends BaseTerm {
 
 
 	get isMusic (): boolean {
-		for (const arg of this.args) {
-			if (arg.isMusic)
-				return true;
-		}
-
-		return false;
+		return this.args.some(arg => arg.isMusic);
 	}
 
 
@@ -568,6 +563,18 @@ export class Command extends BaseTerm {
 
 			return this.args.filter(arg => arg instanceof BaseTerm).reduce((magnitude, term) => magnitude + term.durationMagnitude, 0);
 		}
+	}
+
+
+	get measureLayout (): measureLayout.MeasureLayout {
+		const args = [...this.args].reverse();
+		for (const arg of args) {
+			const layout = arg instanceof BaseTerm && arg.measureLayout;
+			if (layout)
+				return layout;
+		}
+
+		return null;
 	}
 
 

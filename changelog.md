@@ -24,6 +24,8 @@
 
 *	2020.9.7
 
+	+	lilyTerms.ts: Command.measureLayout added.
+
 	+	lilyInterpreter.ts: check incomplete measure at begin of repeat block.
 
 	+	playground.vue: pruneStemDirections & redivide measures setting buttons added.
