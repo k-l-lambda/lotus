@@ -24,6 +24,8 @@
 
 *	2020.9.7
 
+	+	lilyInterpreter.ts: truncate the incomplete measure at alternative blocks in repeat.
+
 	+	lilyNotation/notation.ts: enhanced robustness for ill score.
 
 

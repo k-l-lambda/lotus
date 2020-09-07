@@ -593,8 +593,15 @@ class TrackContext {
 			}
 
 			if (term.alternativeBlocks) {
-				for (const block of term.alternativeBlocks)
+				for (const block of term.alternativeBlocks) {
 					this.execute(block);
+
+					// truncate the incomplete measure
+					if (this.tickInMeasure) {
+						console.warn("incomplete measure at tail of repeat body block:", this.measureIndex, this.tickInMeasure, this.currentMeasureSpan);
+						this.newMeasure(this.tickInMeasure);
+					}
+				}
 			}
 		}
 		else if (term instanceof Relative) {
