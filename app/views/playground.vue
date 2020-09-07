@@ -171,6 +171,14 @@
 						<td><button @click="removeTrillSpans">remove</button></td>
 					</tr>
 					<tr>
+						<td>Prune Stem Directions</td>
+						<td><button @click="executeMarkup('pruneStemDirections')">prune</button></td>
+					</tr>
+					<tr>
+						<td>Redivide Measures</td>
+						<td><button @click="redivideLilyDocument">redivide</button></td>
+					</tr>
+					<tr>
 						<th>Engrave</th>
 						<td><hr /></td>
 					</tr>
@@ -1148,15 +1156,19 @@
 			},
 
 
-			redivideLilyDocument () {
+			async redivideLilyDocument ({reconstruct = false} = {}) {
 				//const locations = this.sheetDocument.getLocationTable();
 
 				//this.updateLilyDocument();
 				//measures.assignMeasures(this.lilyDocument, locations);
 				//console.log("lilyDocument:", this.lilyDocument);
+				await this.updateLilyDocument();
 				const interperter = this.lilyDocument.interpret({useCached: false});
-				this.lilyDocument = interperter.toDocument();
-				this.lilySource = this.lilyDocument.toString();
+
+				if (reconstruct) {
+					this.lilyDocument = interperter.toDocument();
+					this.lilySource = this.lilyDocument.toString();
+				}
 
 				this.executeMarkup("redivide");
 			},

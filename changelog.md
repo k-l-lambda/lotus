@@ -24,6 +24,8 @@
 
 *	2020.9.7
 
+	+	playground.vue: pruneStemDirections & redivide measures setting buttons added.
+
 	+	lilyInterpreter.ts: truncate the incomplete measure at alternative blocks in repeat.
 
 	+	lilyNotation/notation.ts: enhanced robustness for ill score.
