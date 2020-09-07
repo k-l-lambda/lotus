@@ -96,6 +96,9 @@ const checkFile = async filename => {
 };
 
 
+const TICK_OFFSET_THRESHOLD = 16;
+
+
 const main = async () => {
 	const inputDir = argv._[0];
 	const lyFiles = walkDir(inputDir, /\.ly$/, {recursive: true});
@@ -121,7 +124,7 @@ const main = async () => {
 	for (const lyFile of lyFiles) {
 		try {
 			const result = await checkFile(lyFile);
-			if (argv.breakOnLargeOffset && Math.abs(result.averageTickOffset) > 16) {
+			if (argv.breakOnLargeOffset && Math.abs(result.averageTickOffset) > TICK_OFFSET_THRESHOLD) {
 				console.warn("Large averageTickOffset:", result.offsetMap);
 				break;
 			}
@@ -176,7 +179,7 @@ const main = async () => {
 	}
 
 	if (issues.length) {
-		issues.sort((i1, i2) => i1.coverage - i2.coverage);
+		issues.sort((i1, i2) => (i1.coverage - Math.abs(i1.averageTickOffset) / TICK_OFFSET_THRESHOLD) - (i2.coverage - Math.abs(i2.averageTickOffset) / TICK_OFFSET_THRESHOLD));
 
 		log("Issues:");
 		log(YAML.stringify(issues));
