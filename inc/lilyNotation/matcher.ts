@@ -41,7 +41,40 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 };
 
 
+const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Promise<MatcherResult> => {
+	const midiTickFactor = (WHOLE_DURATION_MAGNITUDE / 4) / target.header.ticksPerBeat;
+
+	const noteKey = note => `${note.channel}|${Math.round(note.startTick)}|${note.pitch}`;
+
+	const snoteMap: {[key: string]: MusicNotation.Note} = {};
+
+	const midiNotation = MusicNotation.Notation.parseMidi(target);
+	midiNotation.notes.forEach(note => {
+		note.startTick *= midiTickFactor;
+		snoteMap[noteKey(note)] = note;
+	});
+
+	const criterion = lilyNotation.toPerformingNotation();
+
+	const path = Array(midiNotation.notes.length).fill(-1);
+
+	criterion.notes.forEach(note => {
+		if (!(note as any).implicitType) {
+			const sn = snoteMap[noteKey(note)];
+			if (sn)
+				path[sn.index] = note.index;
+		}
+	});
+
+	const matcher = {criterion, sample: midiNotation, path};
+	lilyNotation.assignMatcher(matcher);
+
+	return matcher;
+};
+
+
 
 export {
 	matchWithMIDI,
+	matchWithExactMIDI,
 };

@@ -24,6 +24,8 @@
 
 *	2020.9.8
 
+	+	playground.vue: engrave option of articulateMIDI added.
+
 	+	lilyParser.ts: implicit type parsing added.
 
 	+	lilyInterpreter.ts: refined grace duration factor.

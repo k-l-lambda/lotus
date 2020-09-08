@@ -88,7 +88,7 @@ const service = {
 
 
 	"/engraveMIDI": {
-		post: (req, res) => formidableHandle("engraveScm", req, res,
+		post: (req, res) => formidableHandle("engraveMIDI", req, res,
 			async ({source, articulate = false}) => {
 				const lilyParser = await loadLilyParser();
 				const midi = await (articulate ? ScoreMaker.makeArticulatedMIDI(source, lilyParser, {includeFolders: constants.LY_INCLUDE_FOLDERS})

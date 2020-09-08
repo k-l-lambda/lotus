@@ -88,7 +88,6 @@
 					:sample="matcherNotations && matcherNotations.sample"
 					:path="matcherNotations && matcherNotations.path"
 					:softIndexAsX="enabledSheetNotation"
-					:timeFactorC="5/4"
 					@clickCNote="onClickMatcherNote"
 					@clickSNote="onClickMatcherNote"
 				/>
@@ -208,6 +207,12 @@
 								<option value="conservative">Conservative</option>
 								<option value="once">Once</option>
 							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>Articulate MIDI</td>
+						<td>
+							<BoolStoreInput v-model="articulateMIDI" localKey="lotus-articulateMIDI" />
 						</td>
 					</tr>
 					<tr>
@@ -404,6 +409,7 @@
 				sourceEditorConnected: false,
 				sourceEditorLoading: false,
 				measureLayout: "ordinary",
+				articulateMIDI: false,
 			};
 		},
 
@@ -760,6 +766,9 @@
 						if (this.enabledSheetNotation)
 							this.updateSheetNotation();
 
+						if (this.articulateMIDI)
+							this.midi = await this.engraveMIDI();
+
 						if (this.midi)
 							this.matchNotations(this.midi);
 					}
@@ -812,8 +821,7 @@
 				}
 
 				const buffer = await response.arrayBuffer();
-				this.midi = MIDI.parseMidiData(buffer);
-				this.matchNotations(this.midi);
+				return MIDI.parseMidiData(buffer);
 			},
 
 
@@ -910,7 +918,7 @@
 				}
 				else {
 					const lilyNotation = this.lilyDocument.interpret().getNotation();
-					this.matcherNotations = await LilyNotation.matchWithMIDI(lilyNotation, midi);
+					this.matcherNotations = await LilyNotation.matchWithExactMIDI(lilyNotation, midi);
 
 					//console.log("lilyNotation:", lilyNotation);
 					this.midiNotation = lilyNotation.toPerformingNotationWithEvents(this.measureLayout);

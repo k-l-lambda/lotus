@@ -1,7 +1,7 @@
 
 import {Note, Notation, assignNotationEventsIds} from "./notation";
 import {fuzzyMatchNotations} from "./fuzzyMatch";
-import {matchWithMIDI} from "./matcher";
+import {matchWithMIDI, matchWithExactMIDI} from "./matcher";
 
 
 
@@ -11,4 +11,5 @@ export {
 	fuzzyMatchNotations,
 	assignNotationEventsIds,
 	matchWithMIDI,
+	matchWithExactMIDI,
 };
