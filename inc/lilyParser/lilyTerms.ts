@@ -1980,6 +1980,9 @@ export class ChordElement extends BaseTerm {
 		if (this.phonet === "q")
 			return this.anchorPitch;
 
+		if (this.anchorPitch === this)
+			return this;
+
 		const octave = this.absoluteOctave(this.anchorPitch);
 
 		return ChordElement.from({phonet: this.phonet, alters: this.alters, octave});
