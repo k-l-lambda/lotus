@@ -87,6 +87,7 @@
 					:criterion="matcherNotations && matcherNotations.criterion"
 					:sample="matcherNotations && matcherNotations.sample"
 					:path="matcherNotations && matcherNotations.path"
+					@clickCNote="onClickMatcherNote"
 				/>
 				<div class="sheet-container" ref="sheetContainer" v-resize="onResize">
 					<SheetSimple v-if="svgDocuments && !tokenizeStaff"
@@ -1271,6 +1272,16 @@
 				//console.log("onClickToken:", token, event);
 				if (event.ctrlKey && token.href) {
 					const position = token.href.match(/\d+/g);
+					if (position)
+						this.highlightSourcePosition(position.map(Number));
+				}
+			},
+
+
+			onClickMatcherNote (note) {
+				//console.log("onClickMatcherNote:", note);
+				if (note.id) {
+					const position = note.id.match(/\d+/g);
 					if (position)
 						this.highlightSourcePosition(position.map(Number));
 				}

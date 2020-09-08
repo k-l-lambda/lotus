@@ -22,6 +22,11 @@
 
 
 
+*	2020.9.8
+
+	+	playground.vue: highlight source when click matcher note added.
+
+
 *	2020.9.7
 
 	+	lilyNotation/notation.ts: assign events for independent MIDI events by tick range.

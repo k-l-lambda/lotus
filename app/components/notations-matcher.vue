@@ -2,10 +2,22 @@
 	<div class="notations-matcher">
 		<svg xmlns="http://www.w3.org/2000/svg" height="480" :viewBox="`-20 -20 ${width + 40} 160`">
 			<g :transform="`translate(${positionC.x}, ${positionC.y})`" class="criterion">
-				<PinaoRoll v-if="innerCriterion" :notation="innerCriterion" :timeScale="timeScale" :pitchScale="1" :tooltips="true" />
+				<PinaoRoll v-if="innerCriterion"
+					:notation="innerCriterion"
+					:timeScale="timeScale"
+					:pitchScale="1"
+					:tooltips="true"
+					@clickNote="onClickCNote"
+				/>
 			</g>
 			<g :transform="`translate(${positionS.x}, ${positionS.y})`" class="sample">
-				<PinaoRoll v-if="innerSample" :notation="innerSample" :timeScale="timeScale" :pitchScale="1" :tooltips="true" />
+				<PinaoRoll v-if="innerSample"
+					:notation="innerSample"
+					:timeScale="timeScale"
+					:pitchScale="1"
+					:tooltips="true"
+					@clickNote="onClickSNote"
+				/>
 			</g>
 			<g class="links" v-if="links">
 				<line v-for="link of links" :key="link.s.index"
@@ -123,19 +135,19 @@
 					});
 				}
 			},
+
+
+			onClickCNote (note) {
+				const cnote = this.criterion.notes[note.index];
+				this.$emit("clickCNote", cnote);
+			},
+
+
+			onClickSNote (note) {
+				const snote = this.sample.notes[note.index];
+				this.$emit("clickSNote", snote);
+			},
 		},
-
-
-		/*watch: {
-			criterion () {
-				this.satisfyNotation(this.criterion, "c");
-			},
-
-
-			sample () {
-				this.satisfyNotation(this.sample, "s");
-			},
-		},*/
 	};
 </script>
 
