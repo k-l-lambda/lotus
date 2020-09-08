@@ -1,6 +1,6 @@
 
 import {romanize} from "../romanNumeral";
-import {WHOLE_DURATION_MAGNITUDE, lcmMulti, lcm} from "./utils";
+import {WHOLE_DURATION_MAGNITUDE, GRACE_DURATION_FACTOR, lcmMulti, lcm} from "./utils";
 import {parseRaw, getDurationSubdivider} from "./lilyTerms";
 import LogRecorder from "../logRecorder";
 import {StaffContext, PitchContextTable} from "../pitchContext";
@@ -498,7 +498,7 @@ class TrackContext {
 	}
 
 
-	processGrace (music: BaseTerm, factor = 1 / 4) {
+	processGrace (music: BaseTerm, factor = GRACE_DURATION_FACTOR) {
 		// pull back grace notes' ticks
 		let events = [music];
 		if (!(music instanceof MusicEvent))
@@ -506,7 +506,7 @@ class TrackContext {
 
 		let tick = this.tick;
 		events.reverse().forEach(event => {
-			tick -= event.durationMagnitude * factor * this.factorValue;
+			tick -= Math.round(event.durationMagnitude * factor * this.factorValue);
 			event._tick = tick;
 
 			event.findAll(ChordElement).forEach(note => note._tick = tick);
