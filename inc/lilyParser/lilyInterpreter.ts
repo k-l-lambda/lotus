@@ -595,6 +595,8 @@ class TrackContext {
 					this.execute(subterm);
 			}
 		}
+		else if (term instanceof Command && term.cmd === "numericTimeSignature")
+			this.execute(term.args[0]);
 		else if (term instanceof TimeSignature) {
 			this.time = term;
 			this.measureSpan = term.value.value * WHOLE_DURATION_MAGNITUDE;
