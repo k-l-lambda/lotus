@@ -18,11 +18,14 @@
 
 
 \score {
-	\relative g' {
+	\relative c' {
+		c d e f
 		\lotusRepeatABA {
-			{e d c2}
+			{
+				e ^\markup { \musicglyph #"scripts.segno" } d c2 ^\markup {Fine}
+			}
 			\bar "|."
-			d4 e f g
+			d4 e f g ^\markup {D.S. al Fine}
 		}
 
 		\bar "||"

@@ -18,14 +18,13 @@
 
 
 \score {
-	\relative g' {
+	\relative c' {
+	    c d e f
 		\lotusRepeatABA {
-			{e d c2}
-			\bar "|."
-			d4 e f g
+			{e ^\markup { \musicglyph #"scripts.segno" } ^\markup {to Coda \musicglyph #"scripts.coda"} d d2} |
+			d4 ^\markup {D.S. al Coda} e f g \bar "||" |
 		}
-
-		\bar "||"
+		c,1 ^\markup{\musicglyph #"scripts.coda"} \bar "|."
 	}
 	
 	\layout {

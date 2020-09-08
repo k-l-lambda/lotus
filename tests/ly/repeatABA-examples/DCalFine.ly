@@ -20,9 +20,9 @@
 \score {
 	\relative g' {
 		\lotusRepeatABA {
-			{e d c2}
+			{e d c2} ^\markup {Fine}
 			\bar "|."
-			d4 e f g
+			d4 e f g ^\markup {D.C. al Fine}
 		}
 
 		\bar "||"

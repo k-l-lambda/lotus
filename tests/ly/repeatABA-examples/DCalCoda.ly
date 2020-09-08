@@ -20,12 +20,10 @@
 \score {
 	\relative g' {
 		\lotusRepeatABA {
-			{e d c2}
-			\bar "|."
-			d4 e f g
+			{e ^\markup {to Coda \musicglyph #"scripts.coda"} d d2} |
+			d4 ^\markup {D.C. al Coda} e f g \bar "||" |
 		}
-
-		\bar "||"
+		c,1 ^\markup{\musicglyph #"scripts.coda"} \bar "|."
 	}
 	
 	\layout {
