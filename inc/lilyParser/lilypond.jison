@@ -2170,6 +2170,20 @@ expressive_mark
 		{$$ = command($1);}
 	| CMD_PORTATO
 		{$$ = command($1);}
+	| CMD_MORDENT
+		{$$ = command($1);}
+	| CMD_PRALL
+		{$$ = command($1);}
+	| CMD_TURN
+		{$$ = command($1);}
+	| CMD_ARPEGGIO
+		{$$ = command($1);}
+	| CMD_TRILL
+		{$$ = command($1);}
+	| CMD_STARTTRILLSPAN
+		{$$ = command($1);}
+	| CMD_STOPTRILLSPAN
+		{$$ = command($1);}
 	| "~"
 		{$$ = $1;}
 	| "("
@@ -2448,6 +2462,9 @@ post_event_nofinger
 	// extra formula
 	| script_dir expressive_mark
 		{$$ = postEvent($1, $2);}
+	// extra formula
+	| expressive_mark
+		{$$ = postEvent(null, $1);}
 	// extra formula
 	| "["
 		{$$ = $1;}
