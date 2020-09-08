@@ -24,6 +24,8 @@
 
 *	2020.9.8
 
+	+	lilyParser.ts: implicit type parsing added.
+
 	+	lilyInterpreter.ts: refined grace duration factor.
 
 	+	notations-matcher.vue: property of softIndexAsX added.

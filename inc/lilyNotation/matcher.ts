@@ -20,12 +20,6 @@ export interface MatcherResult {
 const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Promise<MatcherResult> => {
 	const midiTickFactor = (WHOLE_DURATION_MAGNITUDE / 4) / target.header.ticksPerBeat;
 
-	/*// scale pitch context group
-	lilyNotation.pitchContextGroup.forEach(table => table.items.forEach(item => {
-		item.tick /= midiTickFactor;
-		item.endTick /= midiTickFactor;
-	}));*/
-
 	const midiNotation = MusicNotation.Notation.parseMidi(target);
 
 	const criterion = lilyNotation.toPerformingNotation();
@@ -39,22 +33,6 @@ const matchWithMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Pro
 
 	const navigator = await Matcher.runNavigation(criterion, midiNotation);
 	const path = navigator.path();
-
-	/*// copy linking data from criterion to midiNotation
-	path.forEach((ci, si) => {
-		if (ci >= 0) {
-			const cn = criterion.notes[ci] as any;
-			const ids = cn.ids || [cn.id];
-
-			const note = midiNotation.notes[si] as any;
-			note.ids = ids;
-			note.staffTrack = cn.staffTrack;
-			note.contextIndex = cn.contextIndex;
-		}
-	});
-
-	// assign ids onto MIDI events
-	assignNotationEventsIds(midiNotation);*/
 
 	const matcher = {criterion, sample: midiNotation, path};
 	lilyNotation.assignMatcher(matcher);

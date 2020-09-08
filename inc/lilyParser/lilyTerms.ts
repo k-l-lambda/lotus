@@ -5,6 +5,7 @@ import {WHOLE_DURATION_MAGNITUDE, FractionNumber, lcmMulti} from "./utils";
 import * as idioms from "./idioms";
 import {LILYPOND_VERSION} from "../constants";
 import * as measureLayout from "../lilyNotation/measureLayout";
+import ImplicitType from "../lilyNotation/implicitType";
 
 
 
@@ -1729,6 +1730,32 @@ export class MusicEvent extends BaseTerm {
 
 		return null;
 	}
+
+
+	get implicitType (): ImplicitType {
+		if (this.post_events) {
+			for (const event of this.post_events) {
+				if (event.arg instanceof Command) {
+					switch (event.arg.cmd) {
+					case "startTrillSpan":
+					case "trill":
+						return ImplicitType.Trill;
+
+					case "turn":
+						return ImplicitType.Turn;
+
+					case "mordent":
+						return ImplicitType.Mordent;
+
+					case "prall":
+						return ImplicitType.Prall;
+					}
+				}
+			}
+		}
+
+		return ImplicitType.None;
+	}
 };
 
 
@@ -1801,13 +1828,6 @@ export class Chord extends MusicEvent {
 
 
 	get absolutePitch (): ChordElement {
-		/*const base = this.basePitch;
-		if (base.phonet === "q")
-			return this.anchorPitch;
-
-		const octave = base.absoluteOctave(this.anchorPitch);
-
-		return ChordElement.from({phonet: base.phonet, alters: base.alters, octave});*/
 		return this.basePitch.absolutePitch;
 	}
 

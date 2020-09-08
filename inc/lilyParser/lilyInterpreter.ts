@@ -106,6 +106,7 @@ class LilyStaffContext extends StaffContext {
 				ids: [pitch.href],
 				tied: !!pitch._tied,
 				rest: event.isRest,
+				implicitType: event.implicitType,
 				staffTrack: this.staffTrack,
 				contextIndex,
 			})));

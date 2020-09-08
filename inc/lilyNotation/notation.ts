@@ -7,26 +7,32 @@ import {WHOLE_DURATION_MAGNITUDE} from "../lilyParser";
 import {PitchContextTable} from "../pitchContext";
 import {MatcherResult} from "./matcher";
 import {MeasureLayout, LayoutType} from "./measureLayout";
+import ImplicitType from "./implicitType";
 
 
 
 const TICKS_PER_BEAT = WHOLE_DURATION_MAGNITUDE / 4;
 
 
-export interface Note extends MusicNotation.Note {
-	id: string;
-	measure: number;
-	endTick: number;
-	rest?: boolean;
-	tied?: boolean;
-	overlapped?: boolean;
+interface StaffNoteProperties {
+	rest: boolean;
+	tied: boolean;
+	overlapped: boolean;
+	implicitType: ImplicitType;
 
-	contextIndex?: number;
-	staffTrack?: number;
+	contextIndex: number;
+	staffTrack: number;
 };
 
 
-interface MeasureNote {
+export interface Note extends MusicNotation.Note, Partial<StaffNoteProperties> {
+	id: string;
+	measure: number;
+	endTick: number;
+};
+
+
+interface MeasureNote extends Partial<StaffNoteProperties> {
 	tick: number;
 	duration: number;
 
@@ -34,12 +40,6 @@ interface MeasureNote {
 	ids: string[];
 	pitch: number;
 	velocity?: number;
-	rest?: boolean;
-	tied?: boolean;
-	overlapped?: boolean;
-
-	contextIndex?: number;
-	staffTrack?: number;
 };
 
 
@@ -64,7 +64,7 @@ interface Measure {
 };*/
 
 
-const EXTRA_NOTE_FIELDS = ["rest", "tied", "overlapped", "contextIndex", "staffTrack"];
+const EXTRA_NOTE_FIELDS = ["rest", "tied", "overlapped", "implicitType", "contextIndex", "staffTrack"];
 const COMMON_NOTE_FIELDS = ["id", "ids", "pitch", "velocity", ...EXTRA_NOTE_FIELDS];
 
 
@@ -111,6 +111,7 @@ export class Notation {
 			ids: note.ids,
 			staffTrack: note.staffTrack,
 			contextIndex: note.contextIndex,
+			implicitType: note.implicitType,
 		}));
 
 		const noteMap = notes.reduce((map, note) => {
