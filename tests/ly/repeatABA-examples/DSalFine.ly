@@ -22,10 +22,10 @@
 		c d e f
 		\lotusRepeatABA {
 			{
-				e ^\markup { \musicglyph #"scripts.segno" } d c2 ^\markup {Fine}
+				\mark \markup { \musicglyph #"scripts.segno" } e d c2 \mark \markup {Fine}
 			}
 			\bar "|."
-			d4 e f g ^\markup {D.S. al Fine}
+			d4 ^\markup {D. S. al Fine} e f g
 		}
 
 		\bar "||"

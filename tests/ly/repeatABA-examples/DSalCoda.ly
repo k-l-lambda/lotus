@@ -21,10 +21,10 @@
 	\relative c' {
 	    c d e f
 		\lotusRepeatABA {
-			{e ^\markup { \musicglyph #"scripts.segno" } ^\markup {to Coda \musicglyph #"scripts.coda"} d d2} |
-			d4 ^\markup {D.S. al Coda} e f g \bar "||" |
+			{\mark \markup { \musicglyph #"scripts.segno" } e d d2  \mark \markup {\musicglyph #"scripts.coda"}} |
+			d4 _\markup {D. S. al Coda} e f g \bar "||" |
 		}
-		c,1 ^\markup{\musicglyph #"scripts.coda"} \bar "|."
+		\mark \markup{\musicglyph #"scripts.coda"} c,1 \bar "|."
 	}
 	
 	\layout {
