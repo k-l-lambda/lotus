@@ -14,7 +14,7 @@
 			<fieldset>
 				<button @click="saveSource" title="save source">&#x1f4be;</button>
 				<button @click="settingPanelVisible = true">&#x2699;</button>
-				<button v-show="lilyMarkups.enabled" @click="markupSource" title="markup lilypond source">{}</button>
+				<button v-show="lilyMarkups.enabled" @click="markupSource" title="markup lilypond source" :disabled="loadingLilyParser">{}</button>
 			</fieldset>
 			<fieldset>
 				<span>
