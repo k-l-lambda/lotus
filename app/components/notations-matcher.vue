@@ -38,7 +38,7 @@
 
 
 	const copyNotation = notation => ({
-		notes: notation.notes.map(note => _.pick(note, ["softIndex", "duration", "classes", "pitch", "index", "id"])),
+		notes: notation.notes.map(note => _.pick(note, ["startTick", "endTick", "softIndex", "duration", "classes", "pitch", "index", "id"])),
 	});
 
 
@@ -51,6 +51,14 @@
 			criterion: Object,
 			sample: Object,
 			path: Array,
+			softIndexAsX: {
+				type: Boolean,
+				default: false,
+			},
+			timeFactorC: {
+				type: Number,
+				default: 1,
+			},
 		},
 
 
@@ -126,8 +134,14 @@
 			satisfyNotation (notation, type) {
 				if (notation) {
 					notation.notes.forEach(note => {
-						note.start = note.softIndex * 4e+3;
-						note.duration = 2000;
+						if (this.softIndexAsX) {
+							note.start = note.softIndex * 4e+3;
+							note.duration = 2000;
+						}
+						else {
+							note.start = note.startTick * 16 * (type === "s" ? this.timeFactorC : 1);
+							note.duration = 2000;
+						}
 						note.classes = note.classes || {};
 
 						const matched = this.linkIndices.some(item => item[type] === note.index);

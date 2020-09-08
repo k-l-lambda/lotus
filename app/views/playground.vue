@@ -87,7 +87,10 @@
 					:criterion="matcherNotations && matcherNotations.criterion"
 					:sample="matcherNotations && matcherNotations.sample"
 					:path="matcherNotations && matcherNotations.path"
+					:softIndexAsX="enabledSheetNotation"
+					:timeFactorC="5/4"
 					@clickCNote="onClickMatcherNote"
+					@clickSNote="onClickMatcherNote"
 				/>
 				<div class="sheet-container" ref="sheetContainer" v-resize="onResize">
 					<SheetSimple v-if="svgDocuments && !tokenizeStaff"
@@ -1279,7 +1282,8 @@
 
 
 			onClickMatcherNote (note) {
-				//console.log("onClickMatcherNote:", note);
+				console.log("matcher note:", {...note});
+
 				if (note.id) {
 					const position = note.id.match(/\d+/g);
 					if (position)

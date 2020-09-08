@@ -24,6 +24,8 @@
 
 *	2020.9.8
 
+	+	notations-matcher.vue: property of softIndexAsX added.
+
 	+	playground.vue: highlight source when click matcher note added.
 
 
