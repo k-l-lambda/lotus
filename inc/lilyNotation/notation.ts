@@ -104,6 +104,7 @@ export class Notation {
 			channel: note.channel,
 			start: note.start,
 			startTick: note.startTick,
+			endTick: note.endTick,
 			pitch: note.pitch,
 			duration: note.duration,
 			velocity: note.velocity || 127,

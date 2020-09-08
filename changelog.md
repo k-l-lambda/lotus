@@ -2,6 +2,8 @@
 ## TODO
 	implicit notes matching with sheet document
 		match lilyNotation with articulated MIDI (ignored repeats), then unfold repeats on lilyNotation, include D.C., D.S.
+		scale setTempo value in matchWithExactMIDI
+		tremolo type note match
 		setTempo missing issue in Once measure layout
 	staffNotation
 		remove note time from staff document
@@ -23,6 +25,8 @@
 
 
 *	2020.9.8
+
+	+	matcher.vue: implicit notes matching added.
 
 	+	playground.vue: engrave option of articulateMIDI added.
 

@@ -922,7 +922,6 @@
 
 					//console.log("lilyNotation:", lilyNotation);
 					this.midiNotation = lilyNotation.toPerformingNotationWithEvents(this.measureLayout);
-					//console.log("midiNotation:", this.midiNotation);
 					this.pitchContextGroup = lilyNotation.getContextGroup(this.measureLayout);
 				}
 
