@@ -50,44 +50,7 @@ const main = async sourceList => {
 
 const argv = JSON.parse(process.env.npm_config_argv);
 
-const sourceList = argv.original.length > 2 ? argv.original.slice(2) : [
-	"test-scm.ly",
-	"test-1.ly",
-	"test-2.ly",
-	"test-3.1.ly",
-	"test-3.2.ly",
-	"test-3.3.ly",
-	"test-3.4.ly",
-	"test-3.5.ly",
-	"test-3.6.ly",
-	"test-3.7.ly",
-	"test-3.8.ly",
-	"test-3.9.ly",
-	"test-3.10.ly",
-	"test-4.1.ly",
-	"test-4.2.ly",
-	"test-4.3.ly",
-	"test-5.ly",
-	"nocturne_in_b-flat_minor.ly",
-	"There will never be another you.ly",
-	"Annabelle.ly",
-	"Fantaisie-impromptu.ly",
-	"property_operation-revert.ly",
-	"ruguodeshi.ly",
-	"taohuashengkai.ly",
-	"tongxi.ly",
-	"nocturne_opus9_no3.ly",
-	"explicit-position.ly",
-	"10-02-i.ly",
-	"chopin_nocturne_op9_n2.ly",
-	"chopin-nocturne-8.ly",
-	"markup-chopin-op28-no1.ly",
-	"markup-chopin-op72-no1.ly",
-	"chopin-op-25-01.ly",
-	"bluebird.ly",
-	"variable-within-lyric.ly",
-	"op-10-12-wfi.ly",
-].map(filename => path.resolve("./tests/ly", filename));
+const sourceList = argv.original.length > 2 ? argv.original.slice(2) : ["./tests/ly/grammar"];
 
 main(sourceList);
 
