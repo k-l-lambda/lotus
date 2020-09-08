@@ -605,18 +605,31 @@ class TrackContext {
 		else if (term instanceof Partial)
 			this.partialDuration = term.duration;
 		else if (term instanceof Repeat) {
-			this.checkIncompleteMeasure();
+			switch (term.type) {
+			case "volta":
+				this.checkIncompleteMeasure();
 
-			this.execute(term.bodyBlock);
+				this.execute(term.bodyBlock);
 
-			this.checkIncompleteMeasure();
+				this.checkIncompleteMeasure();
 
-			if (term.alternativeBlocks) {
-				for (const block of term.alternativeBlocks) {
-					this.execute(block);
+				if (term.alternativeBlocks) {
+					for (const block of term.alternativeBlocks) {
+						this.execute(block);
 
-					this.checkIncompleteMeasure();
+						this.checkIncompleteMeasure();
+					}
 				}
+
+				break;
+			case "tremolo":
+				this.push({factor: {value: term.times}});
+				this.execute(term.bodyBlock);
+				this.pop();
+
+				break;
+			default:
+				console.warn("unsupported repeat type:", term.type);
 			}
 		}
 		else if (term instanceof Relative) {

@@ -679,6 +679,10 @@ export class Repeat extends Command {
 
 			return layout;
 		}
+
+		case "tremolo":
+			return this.bodyBlock.measureLayout;
+
 		default:
 			console.warn("unsupported repeat type:", this.type);
 		}
@@ -1749,6 +1753,10 @@ export class MusicEvent extends BaseTerm {
 
 					case "prall":
 						return ImplicitType.Prall;
+
+					// Arpeggio is not implemented in 'articulate.ly' yet
+					//case "arpeggio":
+					//	return ImplicitType.Arpeggio;
 					}
 				}
 			}

@@ -6,10 +6,9 @@ enum ImplicitType {
 	Mordent = "mordent",
 	Prall = "prall",
 	Turn = "turn",
-	// arpeggio should be an implicit type, but not implemented yet in 'articulate.ly'
-	//Arpeggio = "arpeggio",
 	Trill = "trill",
 	Tremolo = "tremolo",
+	Arpeggio = "arpeggio",
 };
 
 
