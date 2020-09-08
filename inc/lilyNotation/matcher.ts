@@ -52,20 +52,21 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 
 	const noteKey = note => `${note.channel}|${Math.round(note.startTick)}|${note.pitch}`;
 
+	const criterion = lilyNotation.toPerformingNotation();
+	const tickOffset = criterion.notes[0] ? criterion.notes[0].startTick : 0;
+
 	const snoteMap: {[key: string]: MusicNotation.Note} = {};
 
 	const midiNotation = MusicNotation.Notation.parseMidi(target);
 	midiNotation.ticksPerBeat = WHOLE_DURATION_MAGNITUDE / 4;
 	midiNotation.notes.forEach(note => {
-		note.startTick *= midiTickFactor;
-		note.endTick *= midiTickFactor;
+		note.startTick = note.startTick * midiTickFactor + tickOffset;
+		note.endTick = note.endTick * midiTickFactor + tickOffset;
 		snoteMap[noteKey(note)] = note;
 	});
 	midiNotation.events.forEach(event => event.ticks *= midiTickFactor);
 
 	// TODO: scale setTempo in midiNotation
-
-	const criterion = lilyNotation.toPerformingNotation();
 
 	const path = Array(midiNotation.notes.length).fill(-1);
 
