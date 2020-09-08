@@ -1,6 +1,5 @@
 
 import fs from "fs";
-import path from "path";
 
 import loadLilyParser from "../backend/loadLilyParserNode";
 import walkDir from "../backend/walkDir";
