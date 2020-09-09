@@ -761,13 +761,14 @@
 						//console.log("doc:", result.doc, result.hashTable);
 						this.sheetDocument = recoverJSON(result.doc, {StaffToken, SheetDocument});
 						this.svgHashTable = result.hashTable;
-						this.midi = result.midi;
-
-						if (this.enabledSheetNotation)
-							this.updateSheetNotation();
 
 						if (this.articulateMIDI)
 							this.midi = await this.engraveMIDI();
+						else
+							this.midi = result.midi;
+
+						if (this.enabledSheetNotation)
+							this.updateSheetNotation();
 
 						if (this.midi)
 							this.matchNotations(this.midi);
