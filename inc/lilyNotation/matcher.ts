@@ -108,7 +108,7 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 
 				matches.forEach(sn => {
 					path[sn.index] = note.index;
-					delete snoteMap[noteKey(sn)];
+					//delete snoteMap[noteKey(sn)];
 				});
 
 				return;
@@ -120,9 +120,8 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 
 	// 3rd pass: rest fuzzy matching
 	const restCNotes3 = [];
-	const restSNotes2 = Object.values(snoteMap);
 	restCNotes2.forEach(note => {
-		const sn = restSNotes2.find(sn => sn.pitch === note.pitch && Math.abs(sn.startTick - note.startTick) < 4);
+		const sn = restSNotes.find(sn => sn.pitch === note.pitch && Math.abs(sn.startTick - note.startTick) < 4);
 		if (sn) {
 			path[sn.index] = note.index;
 			delete snoteMap[noteKey(sn)];
@@ -133,17 +132,17 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 
 	// 4th pass: nearest matching
 	const restSNotes3 = Object.values(snoteMap);
-	restSNotes3.forEach(note => {
-		const cn = restCNotes3.reduce((best, cn) => {
-			if (cn.pitch === note.pitch) {
-				if (!best || Math.abs(cn.startTick - note.startTick) < Math.abs(best.startTick - note.startTick))
-					return cn;
+	restCNotes3.forEach(note => {
+		const sn = restSNotes3.reduce((best, sn) => {
+			if (sn.pitch === note.pitch) {
+				if (!best || Math.abs(sn.startTick - note.startTick) < Math.abs(best.startTick - note.startTick))
+					return sn;
 			}
 
 			return best;
 		}, null);
-		if (cn)
-			path[note.index] = cn.index;
+		if (sn)
+			path[sn.index] = note.index;
 	});
 
 	const matcher = {criterion, sample: midiNotation, path};
