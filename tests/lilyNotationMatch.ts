@@ -31,7 +31,7 @@ const checkFile = async (filename: string, {articulate = false} = {}) => {
 	//console.debug("lilyNotation:", lilyNotation);
 
 	const {path, criterion, sample: midiNotation} = await LilyNotation.matchWithExactMIDI(lilyNotation, midi);
-	LilyNotation.fuzzyMatchNotations(path, criterion, midiNotation, {pitchToleranceMax: 0});
+	//LilyNotation.fuzzyMatchNotations(path, criterion, midiNotation, {pitchToleranceMax: 0});
 
 	const cis = new Set(Array(criterion.notes.length).keys());
 	path.forEach(ci => cis.delete(ci));
@@ -62,21 +62,25 @@ const checkFile = async (filename: string, {articulate = false} = {}) => {
 	}, {});
 	const commonOffset = Number(Object.entries(offsetMap).sort((o1, o2) => o2[1] - o1[1])[0][0]);
 	const totalOffset = offsetTicks.reduce((sum, offset) => sum + (offset - commonOffset), 0);
-	//console.log("commonOffset:", commonOffset, totalOffset, offsetMap);
+	//console.log("commonOffset:", offsetTicks, commonOffset, totalOffset, offsetMap);
 	const averageTickOffset = totalOffset / midiNotation.notes.length;
 
 	console.log(filename, ":", omitC, omitS, averageTickOffset);
 	/*if (omitC || omitS) {
 		console.debug("path:", path);
-		if (omitC > 0)
-			console.debug("cis:", cis, Array.from(cis).map(ci => criterion.notes[ci]).map(note => ({id: note.id, start: note.start, pitch: note.pitch})));
+		if (omitC > 0) {
+			console.debug("cis:", cis, Array.from(cis).map(ci => criterion.notes[ci]).map(note =>
+				({id: note.id, implicitType: (note as any).implicitType, startTick: note.startTick, endTick: note.endTick, pitch: note.pitch, channel: note.channel})));
+		}
+
 		if (omitS > 0) {
 			const sis = path
 				.map((ci, si) => [si, ci])
 				// eslint-disable-next-line
 				.filter(([_, ci]) => ci < 0)
 				.map(([si]) => si);
-			console.debug("sis:", sis, sis.map(si => midiNotation.notes[si]).map(note => ({start: note.start, pitch: note.pitch})));
+			console.debug("sis:", sis, sis.map(si => midiNotation.notes[si]).map(note =>
+				({startTick: note.startTick, pitch: note.pitch, channel: note.channel})));
 		}
 	}*/
 
@@ -148,7 +152,7 @@ const main = async () => {
 
 			statStorage.appendData(lyFile, {notationMatch: result.coverage});
 
-			if (result.coverage < 1 || Math.abs(result.averageTickOffset) > 16) {
+			if (result.coverage < 1 || (!argv.articulate && Math.abs(result.averageTickOffset) > 16)) {
 				issues.push({
 					lyFile,
 					omitC: result.omitC,
