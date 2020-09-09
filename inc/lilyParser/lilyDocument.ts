@@ -591,8 +591,11 @@ export default class LilyDocument {
 			return block;
 
 		const score = this.root.getBlock("score");
-		const newScore = score.clone() as Block;
+		const newScore = score.clone();
+
 		newScore.body = newScore.body.filter(term => !(term instanceof Block && term.head === "\\layout"));
+		score.body = score.body.filter(term => !(term instanceof Block && term.head === "\\midi"));
+
 		this.root.sections.push(newScore);
 
 		return newScore;
@@ -871,7 +874,7 @@ export default class LilyDocument {
 		}
 
 		midiScore.body = midiScore.body.map(term => {
-			if (term.isMusic)
+			if (term.isMusic && !(term instanceof Command && term.cmd === "articulate"))
 				return new Command({cmd: "articulate", args: [term]});
 
 			return term;

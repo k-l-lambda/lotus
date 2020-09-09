@@ -640,7 +640,7 @@ const makeArticulatedMIDI = async (source: string, lilyParser: GrammarParser, {i
 	if (ignoreRepeats)
 		lilyDocument.removeRepeats();
 
-	const isScoreWithMidi = term => term instanceof LilyTerms.Block
+	/*const isScoreWithMidi = term => term instanceof LilyTerms.Block
 		&& term.head === "\\score"
 		&& term.body.find(sub => sub instanceof LilyTerms.Block && sub.head === "\\midi");
 
@@ -667,10 +667,16 @@ const makeArticulatedMIDI = async (source: string, lilyParser: GrammarParser, {i
 		const scoreIndex = lilyDocument.root.sections.findIndex(isScoreWithMidi);
 		if (scoreIndex >= 0)
 			lilyDocument.root.sections.splice(scoreIndex, 0, LilyTerms.Include.create("articulate.ly"));
-	}
+	}*/
+	lilyDocument.articulateMIDIOutput();
+
+	// remove layout block to save time
+	lilyDocument.root.sections = lilyDocument.root.sections.filter(section => !(section instanceof Block)
+		|| !(section.head === "\\score")
+		|| section.isMIDIDedicated);
 
 	const markupSource = lilyDocument.toString();
-	//console.log("markupSource:", markupSource);
+	console.log("markupSource:", markupSource);
 
 	return new Promise((resolve, reject) => engraveSvg(markupSource, {
 		includeFolders,
