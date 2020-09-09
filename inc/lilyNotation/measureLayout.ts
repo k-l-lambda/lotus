@@ -54,12 +54,12 @@ class BlockMLayout implements MeasureLayout {
 				seq2.push(layout);
 		}
 
-		// reduce duplicate single measures
+		// reduce duplicated or backwards single measures
 		const seq3 = [];
 		let measure = null;
 		for (const layout of seq2) {
 			if (layout instanceof SingleMLayout) {
-				if (layout.measure !== measure) {
+				if (layout.measure > measure) {
 					seq3.push(layout);
 					measure = layout.measure;
 				}

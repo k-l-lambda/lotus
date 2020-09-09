@@ -27,6 +27,8 @@
 
 *	2020.9.9
 
+	+	measureLayout.ts: refined BlockMLayout.trimSeq to avoid backwards sequence.
+
 	+	lilyInterpreter.ts: fixed after grace measure index issue.
 
 	+	matcher.ts: fuzzy matching in matchWithExactMIDI added.
