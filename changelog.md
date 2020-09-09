@@ -24,6 +24,11 @@
 
 
 
+*	2020.9.9
+
+	+	matcher.ts: alignNotationTicks added.
+
+
 *	2020.9.8
 
 	+	matcher.vue: implicit notes matching added.

@@ -47,26 +47,32 @@ const IMPLICIT_PITCH_BIAS = {
 };
 
 
+const alignNotationTicks = (source: MusicNotation.Notation, criterion: MusicNotation.Notation) => {
+	const midiTickFactor = criterion.ticksPerBeat / source.ticksPerBeat;
+
+	source.ticksPerBeat = criterion.ticksPerBeat;
+	source.notes.forEach(note => {
+		note.startTick *= midiTickFactor;
+		note.endTick *= midiTickFactor;
+	});
+	source.events.forEach(event => {
+		event.ticks *= midiTickFactor;
+	});
+};
+
+
 const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Promise<MatcherResult> => {
-	const midiTickFactor = (WHOLE_DURATION_MAGNITUDE / 4) / target.header.ticksPerBeat;
+	const criterion = lilyNotation.toPerformingNotation();
+
+	const midiNotation = MusicNotation.Notation.parseMidi(target);
+	alignNotationTicks(midiNotation, criterion);
 
 	const noteKey = note => `${note.channel}|${Math.round(note.startTick)}|${note.pitch}`;
 
-	const criterion = lilyNotation.toPerformingNotation();
-	const tickOffset = criterion.notes[0] ? criterion.notes[0].startTick : 0;
-
 	const snoteMap: {[key: string]: MusicNotation.Note} = {};
-
-	const midiNotation = MusicNotation.Notation.parseMidi(target);
-	midiNotation.ticksPerBeat = WHOLE_DURATION_MAGNITUDE / 4;
 	midiNotation.notes.forEach(note => {
-		note.startTick = note.startTick * midiTickFactor + tickOffset;
-		note.endTick = note.endTick * midiTickFactor + tickOffset;
 		snoteMap[noteKey(note)] = note;
 	});
-	midiNotation.events.forEach(event => event.ticks *= midiTickFactor);
-
-	// TODO: scale setTempo in midiNotation
 
 	const path = Array(midiNotation.notes.length).fill(-1);
 
