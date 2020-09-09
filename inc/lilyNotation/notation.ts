@@ -258,6 +258,8 @@ export class Notation {
 		});
 		assignNotationEventsIds(matcher.sample, ["ids", "measure"]);
 
+		// TODO: post process MIDI events for afterGrace, arpeggio
+
 		this.measures.forEach(measure => measure.events = []);
 
 		//console.log("matcher.sample.events:", matcher.sample.events);

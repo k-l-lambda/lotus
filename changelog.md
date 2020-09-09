@@ -3,6 +3,7 @@
 	MIDI post processing
 		arpeggio
 		after grace
+		on-off verification
 	implicit notes matching with sheet document
 		tremolo type note match
 		setTempo missing issue in Once measure layout
