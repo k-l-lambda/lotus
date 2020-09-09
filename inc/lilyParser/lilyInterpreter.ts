@@ -19,6 +19,7 @@ import {
 
 interface DurationContextStackStatus {
 	factor?: {value: number};
+	tickBias?: number;
 };
 
 
@@ -441,6 +442,25 @@ class TrackContext {
 	}
 
 
+	get tickBias (): number {
+		for (let i = this.stack.length - 1; i >= 0; i--) {
+			const status = this.stack[i];
+			if (status.tickBias)
+				return status.tickBias;
+		}
+
+		return 0;
+	}
+
+
+	get measureIndexBias (): number {
+		if (this.tickInMeasure + this.tickBias < 0)
+			return -1;
+
+		return 0;
+	}
+
+
 	get factorValue (): number {
 		return this.factor ? this.factor.value : 1;
 	}
@@ -524,7 +544,7 @@ class TrackContext {
 		if (!(term instanceof BaseTerm))
 			return;
 
-		term._measure = this.measureIndex;
+		term._measure = this.measureIndex + this.measureIndexBias;
 		term._tick = this.tick;
 
 		if (term instanceof MusicEvent) {
@@ -669,7 +689,7 @@ class TrackContext {
 		else if (term instanceof AfterGrace) {
 			this.execute(term.body);
 
-			this.push({factor: {value: 0}});
+			this.push({factor: {value: 0}, tickBias: -term.body.durationMagnitude});
 			this.execute(term.grace);
 			this.pop();
 

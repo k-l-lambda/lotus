@@ -26,6 +26,8 @@
 
 *	2020.9.9
 
+	+	lilyInterpreter.ts: fixed after grace measure index issue.
+
 	+	matcher.ts: fuzzy matching in matchWithExactMIDI added.
 
 	+	matcher.ts: alignNotationTicks added.
