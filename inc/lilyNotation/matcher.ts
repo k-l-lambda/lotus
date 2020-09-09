@@ -67,6 +67,7 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 	const midiNotation = MusicNotation.Notation.parseMidi(target);
 	alignNotationTicks(midiNotation, criterion);
 
+	// 1st pass: ordinary notes exact matching
 	const noteKey = note => `${note.channel}|${Math.round(note.startTick)}|${note.pitch}`;
 
 	const snoteMap: {[key: string]: MusicNotation.Note} = {};
@@ -79,10 +80,11 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 	const restCNotes = [];
 	criterion.notes.forEach(note => {
 		if (!(note as any).implicitType) {
-			const sn = snoteMap[noteKey(note)];
+			const key = noteKey(note);
+			const sn = snoteMap[key];
 			if (sn) {
 				path[sn.index] = note.index;
-				delete snoteMap[noteKey(note)];
+				delete snoteMap[key];
 
 				return;
 			}
@@ -91,8 +93,8 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 		restCNotes.push(note);
 	});
 
-	// TODO: fuzzy match rest ordinary notes
-
+	// 2nd pass: implicit notes matching
+	const restCNotes2 = [];
 	const restSNotes = Object.values(snoteMap);
 	restCNotes.forEach(note => {
 		if (note.implicitType) {
@@ -104,11 +106,44 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 					return tick >= note.startTick && tick < note.endTick && pbs.includes(pb);
 				});
 
-				matches.forEach(sn => path[sn.index] = note.index);
+				matches.forEach(sn => {
+					path[sn.index] = note.index;
+					delete snoteMap[noteKey(sn)];
+				});
+
+				return;
 			}
 		}
+
+		restCNotes2.push(note);
+	});
+
+	// 3rd pass: rest fuzzy matching
+	const restCNotes3 = [];
+	const restSNotes2 = Object.values(snoteMap);
+	restCNotes2.forEach(note => {
+		const sn = restSNotes2.find(sn => sn.pitch === note.pitch && Math.abs(sn.startTick - note.startTick) < 4);
+		if (sn) {
+			path[sn.index] = note.index;
+			delete snoteMap[noteKey(sn)];
+		}
 		else
-			console.warn("missed ordinary C note:", note);
+			restCNotes3.push(note);
+	});
+
+	// 4th pass: nearest matching
+	const restSNotes3 = Object.values(snoteMap);
+	restSNotes3.forEach(note => {
+		const cn = restCNotes3.reduce((best, cn) => {
+			if (cn.pitch === note.pitch) {
+				if (!best || Math.abs(cn.startTick - note.startTick) < Math.abs(best.startTick - note.startTick))
+					return cn;
+			}
+
+			return best;
+		}, null);
+		if (cn)
+			path[note.index] = cn.index;
 	});
 
 	const matcher = {criterion, sample: midiNotation, path};
