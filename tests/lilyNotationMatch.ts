@@ -7,7 +7,7 @@ import {MIDI, MidiUtils} from "@k-l-lambda/web-widgets";
 
 import "../env.js";
 
-import {makeMIDI} from "../backend/scoreMaker";
+import {makeMIDI, makeArticulatedMIDI} from "../backend/scoreMaker";
 import {emptyCache} from "../backend/lilyCommands";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import {LilyDocument} from "../inc/lilyParser";
@@ -17,12 +17,12 @@ import * as statStorage from "../backend/statStorage";
 
 
 
-const checkFile = async filename => {
+const checkFile = async (filename: string, {articulate = false} = {}) => {
 	const source = fs.readFileSync(filename).toString();
 
 	const lilyParser = await loadLilyParser();
 
-	const midi = await makeMIDI(source, lilyParser, {unfoldRepeats: false});
+	const midi = await (articulate ? makeArticulatedMIDI(source, lilyParser) : makeMIDI(source, lilyParser, {unfoldRepeats: false}));
 	//const midiNotation = MusicNotation.Notation.parseMidi(midi);
 
 	const lilyDocument = new LilyDocument(lilyParser.parse(source));
@@ -30,7 +30,7 @@ const checkFile = async filename => {
 	const lilyNotation = interpreter.getNotation();
 	//console.debug("lilyNotation:", lilyNotation);
 
-	const {path, criterion, sample: midiNotation} = await LilyNotation.matchWithMIDI(lilyNotation, midi);
+	const {path, criterion, sample: midiNotation} = await LilyNotation.matchWithExactMIDI(lilyNotation, midi);
 	LilyNotation.fuzzyMatchNotations(path, criterion, midiNotation, {pitchToleranceMax: 0});
 
 	const cis = new Set(Array(criterion.notes.length).keys());
@@ -123,7 +123,7 @@ const main = async () => {
 	let i = 0;
 	for (const lyFile of lyFiles) {
 		try {
-			const result = await checkFile(lyFile);
+			const result = await checkFile(lyFile, {articulate: !!argv.articulate});
 			if (argv.breakOnLargeOffset && Math.abs(result.averageTickOffset) > TICK_OFFSET_THRESHOLD) {
 				console.warn("Large averageTickOffset:", result.offsetMap);
 				break;

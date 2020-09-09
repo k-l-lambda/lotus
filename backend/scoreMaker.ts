@@ -604,7 +604,7 @@ void makeScoreV3;
 const makeScore = makeScoreV4;
 
 
-const makeMIDI = async (source: string, lilyParser: GrammarParser, {unfoldRepeats = true, fixNestedRepeat = false, includeFolders = undefined} = {}): Promise<MIDI.MidiData> => {
+const makeMIDI = async (source: string, lilyParser: GrammarParser, {unfoldRepeats = false, fixNestedRepeat = false, includeFolders = undefined} = {}): Promise<MIDI.MidiData> => {
 	const lilyDocument = new LilyDocument(lilyParser.parse(source));
 
 	if (fixNestedRepeat)
@@ -640,34 +640,6 @@ const makeArticulatedMIDI = async (source: string, lilyParser: GrammarParser, {i
 	if (ignoreRepeats)
 		lilyDocument.removeRepeats();
 
-	/*const isScoreWithMidi = term => term instanceof LilyTerms.Block
-		&& term.head === "\\score"
-		&& term.body.find(sub => sub instanceof LilyTerms.Block && sub.head === "\\midi");
-
-	const score = lilyDocument.root.sections.find(isScoreWithMidi) as Block;
-	if (score) {
-		// remove layout block to save time
-		score.body = score.body.filter(term => !(term instanceof LilyTerms.Block && term.head === "\\layout"));
-
-		// insert articulate command
-		score.body = score.body.map(term => {
-			if (term.isMusic) 
-				return new LilyTerms.Command({cmd: "articulate", args: [term]});
-
-			return term;
-		});
-	}
-
-	lilyDocument.root.sections = lilyDocument.root.sections.filter(term => !(term instanceof LilyTerms.Block)
-		|| term.head !== "\\score"
-		|| isScoreWithMidi(term));
-
-	// append include if necessary
-	if (!lilyDocument.root.includeFiles.includes("articulate.ly")) {
-		const scoreIndex = lilyDocument.root.sections.findIndex(isScoreWithMidi);
-		if (scoreIndex >= 0)
-			lilyDocument.root.sections.splice(scoreIndex, 0, LilyTerms.Include.create("articulate.ly"));
-	}*/
 	lilyDocument.articulateMIDIOutput();
 
 	// remove layout block to save time
@@ -676,7 +648,7 @@ const makeArticulatedMIDI = async (source: string, lilyParser: GrammarParser, {i
 		|| section.isMIDIDedicated);
 
 	const markupSource = lilyDocument.toString();
-	console.log("markupSource:", markupSource);
+	//console.log("markupSource:", markupSource);
 
 	return new Promise((resolve, reject) => engraveSvg(markupSource, {
 		includeFolders,

@@ -175,6 +175,9 @@ export class Notation {
 		const notes = Notation.performAbsoluteNotes(abNotes);
 		const endTime = notes[notes.length - 1].start + notes[notes.length - 1].duration;
 
+		// global TICKS_PER_BEAT is NaN in nodejs, why?
+		const TICKS_PER_BEAT = WHOLE_DURATION_MAGNITUDE / 4;
+
 		const notation = new MusicNotation.Notation({
 			ticksPerBeat: TICKS_PER_BEAT,
 			meta: {},
@@ -313,6 +316,8 @@ export const assignNotationEventsIds = (midiNotation: MusicNotation.NotationData
 	let index = -1;
 	let ticks = -Infinity;
 	for (const event of midiNotation.events) {
+		console.assert(Number.isFinite(event.ticks), "invalid event ticks:", event);
+
 		while (event.ticks > ticks && index < events.length) {
 			++index;
 			ticks = events[index] && events[index].ticks;
@@ -326,6 +331,11 @@ export const assignNotationEventsIds = (midiNotation: MusicNotation.NotationData
 
 		for (let i = index; i < events.length; ++i) {
 			const ne = events[i];
+			if (!ne) {
+				console.warn("null event:", i, events.length);
+				break;
+			}
+
 			if (ne.ticks > ticks)
 				break;
 			else {

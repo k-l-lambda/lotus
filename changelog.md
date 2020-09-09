@@ -1,6 +1,7 @@
 
 ## TODO
 	scheduler issue on trill notes
+		Op.823 No.62
 	MIDI post processing
 		arpeggio
 		after grace
@@ -28,6 +29,8 @@
 
 
 *	2020.9.9
+
+	+	lilyNotationMatch.ts: added argv of articulate.
 
 	+	lilyDocument.ts: markup method of articulateMIDIOutput added.
 
