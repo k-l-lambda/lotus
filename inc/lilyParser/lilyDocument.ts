@@ -585,6 +585,20 @@ export default class LilyDocument {
 	}
 
 
+	makeMIDIDedicatedScore (): Block {
+		const block = this.root.findFirst(term => term instanceof Block && term.head === "\\score" && term.isMIDIDedicated) as Block;
+		if (block)
+			return block;
+
+		const score = this.root.getBlock("score");
+		const newScore = score.clone() as Block;
+		newScore.body = newScore.body.filter(term => !(term instanceof Block && term.head === "\\layout"));
+		this.root.sections.push(newScore);
+
+		return newScore;
+	}
+
+
 	excludeChordTracksFromMIDI () {
 		// if there is chord mode music in score, duplicate score block as a dedicated MIDI score which excludes chord mode music.
 		let contains = false;
@@ -841,5 +855,26 @@ export default class LilyDocument {
 
 	removeRepeats () {
 		this.root.forEachTerm(MusicBlock, block => block.spreadRepeatBlocks());
+	}
+
+
+	articulateMIDIOutput () {
+		const ARTICULATE_FILENAME = "articulate.ly";
+
+		const midiScore = this.makeMIDIDedicatedScore();
+
+		if (!this.root.includeFiles.includes(ARTICULATE_FILENAME)) {
+			let pos = this.root.sections.indexOf(midiScore);
+			if (pos < 0)
+				pos = Math.min(this.root.sections.length, 3);
+			this.root.sections.splice(pos, 0, Include.create(ARTICULATE_FILENAME));
+		}
+
+		midiScore.body = midiScore.body.map(term => {
+			if (term.isMusic)
+				return new Command({cmd: "articulate", args: [term]});
+
+			return term;
+		});
 	}
 };

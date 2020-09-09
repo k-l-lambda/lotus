@@ -1,5 +1,6 @@
 
 ## TODO
+	scheduler issue on trill notes
 	MIDI post processing
 		arpeggio
 		after grace
@@ -27,6 +28,8 @@
 
 
 *	2020.9.9
+
+	+	lilyDocument.ts: markup method of articulateMIDIOutput added.
 
 	+	measureLayout.ts: refined BlockMLayout.trimSeq to avoid backwards sequence.
 

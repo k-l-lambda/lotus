@@ -969,6 +969,14 @@ export class Block extends BaseTerm {
 	get entries () {
 		return this.body;
 	}
+
+
+	get isMIDIDedicated () {
+		const subBlocks = this.body.filter(term => term instanceof Block) as Block[];
+
+		return subBlocks.some(term => term.head === "\\midi")
+			&& !subBlocks.some(term => term.head === "\\layout");
+	}
 };
 
 
