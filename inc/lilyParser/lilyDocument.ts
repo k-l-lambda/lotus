@@ -880,4 +880,21 @@ export default class LilyDocument {
 			return term;
 		});
 	}
+
+
+	removeInvalidExpressionsOnRests (): number {
+		const isInvalidPostEvent = (event: PostEvent): boolean => [".", "!", "_"].includes(event.arg as string);
+
+		let count = 0;
+		this.root.forEachTerm(MusicEvent, (term: MusicEvent) => {
+			if (term.isRest) {
+				if (term.post_events.some(isInvalidPostEvent)) {
+					term.post_events = term.post_events.filter(event => !isInvalidPostEvent(event));
+					++count;
+				}
+			}
+		});
+
+		return count;
+	}
 };

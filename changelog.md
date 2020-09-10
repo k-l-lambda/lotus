@@ -28,6 +28,13 @@
 
 
 
+*	2020.9.10
+
+	+	lilyDocument.ts: markup method of removeInvalidExpressionsOnRests.
+
+	*	Post event of . ! _ on rest result in duration error in lilypond output MIDI.
+
+
 *	2020.9.9
 
 	+	lilyNotationMatch.ts: added argv of articulate.
