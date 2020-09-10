@@ -18,7 +18,24 @@ const recoverJSON = (json: string | object, classDict) => {
 };
 
 
+class SimpleClass {
+	constructor (data?: object) {
+		if (data)
+			Object.assign(this, data);
+	}
+
+
+	toJSON () {
+		return {
+			__prototype: (this.constructor as any).className,
+			...this,
+		};
+	}
+};
+
+
 
 export {
 	recoverJSON,
+	SimpleClass,
 };

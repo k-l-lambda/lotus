@@ -839,7 +839,7 @@ export class AfterGrace extends Command {
 
 
 	get measureLayout (): measureLayout.MeasureLayout {
-		return new measureLayout.BlockMLayout([
+		return measureLayout.BlockMLayout.fromSeq([
 			this.body.measureLayout,
 			this.grace.measureLayout,
 		]);
@@ -1170,7 +1170,7 @@ export class MusicBlock extends BaseTerm {
 			return layout;
 		}
 
-		return new measureLayout.BlockMLayout(seq);
+		return measureLayout.BlockMLayout.fromSeq(seq);
 	}
 
 
@@ -1735,10 +1735,10 @@ export class MusicEvent extends BaseTerm {
 
 	get measureLayout (): measureLayout.MeasureLayout {
 		if (this.measures.length > 1)
-			return new measureLayout.BlockMLayout(this.measures.map(measure => new measureLayout.SingleMLayout(measure)));
+			return measureLayout.BlockMLayout.fromSeq(this.measures.map(measure => measureLayout.SingleMLayout.from(measure)));
 
 		if (this.measures.length === 1)
-			return new measureLayout.SingleMLayout(this._measure);
+			return measureLayout.SingleMLayout.from(this._measure);
 
 		return null;
 	}

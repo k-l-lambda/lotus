@@ -1,4 +1,8 @@
 
+import {SimpleClass} from "../jsonRecovery";
+
+
+
 enum LayoutType {
 	Ordinary = "ordinary",
 	Full = "full",
@@ -20,11 +24,18 @@ type MeasureSeq = MeasureLayout[];
 const spreadMeasureSeq = (seq: MeasureSeq, type: LayoutType = LayoutType.Ordinary): number[] => [].concat(...seq.map(layout => layout.serialize(type)));
 
 
-class SingleMLayout implements MeasureLayout {
+class SingleMLayout extends SimpleClass implements MeasureLayout {
+	static className = "SingleMLayout";
+
+
 	measure: number;
 
-	constructor (measure: number) {
-		this.measure = measure;
+
+	static from (measure: number) {
+		const layout = new SingleMLayout();
+		layout.measure = measure;
+
+		return layout;
 	}
 
 
@@ -39,7 +50,10 @@ class SingleMLayout implements MeasureLayout {
 };
 
 
-class BlockMLayout implements MeasureLayout {
+class BlockMLayout extends SimpleClass implements MeasureLayout {
+	static className = "BlockMLayout";
+
+
 	seq: MeasureSeq = [];
 
 
@@ -72,9 +86,11 @@ class BlockMLayout implements MeasureLayout {
 	}
 
 
-	constructor (seq?: MeasureSeq) {
-		if (seq)
-			this.seq = BlockMLayout.trimSeq(seq);
+	static fromSeq (seq: MeasureSeq): BlockMLayout {
+		const layout = new BlockMLayout();
+		layout.seq = BlockMLayout.trimSeq(seq);
+
+		return layout;
 	}
 
 
@@ -84,7 +100,10 @@ class BlockMLayout implements MeasureLayout {
 };
 
 
-class VoltaMLayout implements MeasureLayout {
+class VoltaMLayout extends SimpleClass implements MeasureLayout {
+	static className = "VoltaMLayout";
+
+
 	times: number;
 	body: MeasureSeq = [];
 	alternates: MeasureSeq[];
@@ -149,7 +168,10 @@ class VoltaMLayout implements MeasureLayout {
 };
 
 
-class ABAMLayout implements MeasureLayout {
+class ABAMLayout extends SimpleClass implements MeasureLayout {
+	static className = "ABAMLayout";
+
+
 	main: MeasureLayout;
 	rest: MeasureSeq = [];
 
