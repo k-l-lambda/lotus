@@ -30,6 +30,8 @@
 
 *	2020.9.10
 
+	+	scoreMaker.ts: added version field in score bundle.
+
 	+	tools/batchMarkup.ts created.
 
 	+	lilyDocument.ts: markup method of removeInvalidExpressionsOnRests.

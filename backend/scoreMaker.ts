@@ -7,23 +7,18 @@ import {MIDI} from "@k-l-lambda/web-widgets";
 // eslint-disable-next-line
 import {Readable} from "stream";
 
-import {xml2ly, engraveSvg} from "./lilyCommands";
+import npmPackage from "../package.json";
+import {xml2ly, engraveSvg, LilyProcessOptions} from "./lilyCommands";
 import {LilyDocument, replaceSourceToken, LilyTerms} from "../inc/lilyParser";
 import * as staffSvg from "../inc/staffSvg";
 import {SingleLock} from "../inc/mutex";
 import {PitchContextTable} from "../inc/pitchContext";
 import * as LilyNotation from "../inc/lilyNotation";
 import {svgToPng} from "./canvas";
-// eslint-disable-next-line
 import LogRecorder from "../inc/logRecorder";
-// eslint-disable-next-line
 import ScoreJSON, {NoteLinking} from "../inc/scoreJSON";
-// eslint-disable-next-line
-import {LilyProcessOptions} from "./lilyCommands";
-// eslint-disable-next-line
 import {LilyDocumentAttribute, LilyDocumentAttributeReadOnly} from "../inc/lilyParser/lilyDocument";
-// eslint-disable-next-line
-import { Block } from "../inc/lilyParser/lilyTerms";
+import {Block} from "../inc/lilyParser/lilyTerms";
 
 
 
@@ -106,7 +101,7 @@ const makeScoreV1 = async (source: string, lilyParser: GrammarParser, {midi, log
 		composer: unescapeStringExp(attributes.composer),
 		pageSize: doc.pageSize,
 		pageCount: doc.pages.length,
-		staffSize: attributes.staffSize,
+		staffSize: attributes.staffSize as number,
 	};
 
 	midi = midi || engraving.midi;
@@ -540,6 +535,7 @@ const makeScoreV4 = async (source: string, lilyParser: GrammarParser, {midi, log
 
 		return {
 			score: {
+				version: npmPackage.version,
 				meta,
 				doc,
 				midi,
@@ -587,6 +583,7 @@ const makeScoreV4 = async (source: string, lilyParser: GrammarParser, {midi, log
 	return {
 		bakingImages,
 		score: {
+			version: npmPackage.version,
 			meta,
 			doc,
 			midi,

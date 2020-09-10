@@ -20,13 +20,16 @@ export interface ScoreMeta {
 	title: string;
 	composer: string;
 	pageSize: {
-		width: Number,
-		height: Number,
+		width: number,
+		height: number,
 	};
+	pageCount: number;
+	staffSize: number;
 }
 
 
 interface ScoreJSON {
+	version?: string;
 	meta: ScoreMeta;
 	doc: SheetDocument;
 	hashTable: {[key: string]: any};
