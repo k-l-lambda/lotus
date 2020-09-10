@@ -7,14 +7,13 @@ import {Readable} from "stream";
 
 import npmPackage from "../package.json";
 import {xml2ly, engraveSvg, LilyProcessOptions} from "./lilyCommands";
-import {LilyDocument, replaceSourceToken, LilyTerms} from "../inc/lilyParser";
+import {LilyDocument, LilyTerms} from "../inc/lilyParser";
 import * as staffSvg from "../inc/staffSvg";
 import {SingleLock} from "../inc/mutex";
-import {PitchContextTable} from "../inc/pitchContext";
 import * as LilyNotation from "../inc/lilyNotation";
 import {svgToPng} from "./canvas";
 import LogRecorder from "../inc/logRecorder";
-import ScoreJSON, {NoteLinking} from "../inc/scoreJSON";
+import ScoreJSON from "../inc/scoreJSON";
 import {LilyDocumentAttribute, LilyDocumentAttributeReadOnly} from "../inc/lilyParser/lilyDocument";
 import {Block} from "../inc/lilyParser/lilyTerms";
 
@@ -79,17 +78,8 @@ const xmlBufferToLy = async (xml: Buffer, options: LilyProcessOptions = {}): Pro
 const unescapeStringExp = exp => exp && exp.toString();
 
 
-interface IncompleteScoreJSON {
-	meta?: any,
-	doc?: any;
-	hashTable?: {[key: string]: any};
-	midi?: MIDI.MidiData;
-	noteLinkings?: NoteLinking;
-	pitchContextGroup?: any;
-};
-
-
-interface SheetNotationResult extends IncompleteScoreJSON {
+interface SheetNotationResult extends Partial<ScoreJSON> {
+	midi: MIDI.MidiData;
 	midiNotation: MusicNotation.NotationData;
 	sheetNotation: staffSvg.StaffNotation.SheetNotation;
 	lilyDocument: LilyDocument;
@@ -97,7 +87,7 @@ interface SheetNotationResult extends IncompleteScoreJSON {
 };
 
 
-const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {withNotation = true, logger, lilyDocument, includeFolders, baking}: {
+const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {withNotation = false, logger, lilyDocument, includeFolders, baking}: {
 	withNotation?: boolean,
 	logger?: LogRecorder,
 	lilyDocument?: LilyDocument,
@@ -136,12 +126,13 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 			argsGen.release({attributes, tieLocations});
 			//console.log("tp.1:", Date.now() - t0);
 		},
-		onMidiRead: withNotation && (midi_ => {
+		onMidiRead: midi_ => {
 			//console.log("tm.0:", Date.now() - t0);
 			midi = midi_;
-			midiNotation = midi && MusicNotation.Notation.parseMidi(midi);
+			if (withNotation)
+				midiNotation = midi && MusicNotation.Notation.parseMidi(midi);
 			//console.log("tm.1:", Date.now() - t0);
-		}),
+		},
 		onSvgRead: async (index, svg) => {
 			//console.log("ts.0:", Date.now() - t0);
 			const args = await argsGen.wait();
@@ -172,7 +163,7 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 		composer: unescapeStringExp(attributes.composer),
 		pageSize: doc.pageSize,
 		pageCount: doc.pages.length,
-		staffSize: attributes.staffSize,
+		staffSize: attributes.staffSize as number,
 	};
 
 	const sheetNotation = staffSvg.StaffNotation.parseNotationFromSheetDocument(doc, {logger});
@@ -194,47 +185,29 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 };
 
 
-const makeScore = async (source: string, lilyParser: GrammarParser, {midi, logger, unfoldRepeats = false, baking = false, includeFolders}: {
-	midi?: MIDI.MidiData,
-	logger?: LogRecorder,
-	unfoldRepeats?: boolean,
-	includeFolders?: string[],
-	baking?: boolean,
-} = {}): Promise<{
+interface MakerOptions {
+	midi: MIDI.MidiData;
+	logger: LogRecorder;
+	includeFolders: string[];
+	baking: boolean;
+};
+
+
+interface MakerResult {
 	bakingImages?: Readable[],
-	score: ScoreJSON | IncompleteScoreJSON,
-}> => {
+	score: Partial<ScoreJSON>,
+};
+
+
+const makeScore = async (
+	source: string,
+	lilyParser: GrammarParser,
+	{midi, logger, baking = false, includeFolders}: Partial<MakerOptions> = {},
+): Promise<MakerResult> => {
 	const t0 = Date.now();
 
-	let lilyDocument = null;
-	let unfoldSource = null;
-
-	if (unfoldRepeats) {
-		lilyDocument = new LilyDocument(lilyParser.parse(source));
-		lilyDocument.interpret();
-		if (lilyDocument.containsRepeat()) {
-			lilyDocument.unfoldRepeats();
-			unfoldSource = lilyDocument.toString();
-
-			// keep 2 version lilypond source note href uniform
-			source = replaceSourceToken(unfoldSource, "\\unfoldRepeats");
-		}
-	}
-
-	const foldData = await makeSheetNotation(source, lilyParser, {logger, lilyDocument, withNotation: !midi && !unfoldSource, includeFolders, baking});
-	const {meta, doc, hashTable, bakingImages} = foldData;
-
-	lilyDocument = lilyDocument || foldData.lilyDocument;
-	//let sheetNotation = foldData.sheetNotation;
-
-	const matchingMidi = midi || foldData.midi;
-
-	if (unfoldSource) {
-		const unfoldData = await makeSheetNotation(unfoldSource, lilyParser, {logger, lilyDocument, withNotation: !midi, includeFolders});
-
-		midi = midi || unfoldData.midi;
-		//sheetNotation = unfoldData.sheetNotation;
-	}
+	const foldData = await makeSheetNotation(source, lilyParser, {logger, includeFolders, baking});
+	const {meta, doc, hashTable, bakingImages, lilyDocument} = foldData;
 
 	midi = midi || foldData.midi;
 	const lilyNotation = lilyDocument.interpret().getNotation();
@@ -251,7 +224,6 @@ const makeScore = async (source: string, lilyParser: GrammarParser, {midi, logge
 				version: npmPackage.version,
 				meta,
 				doc,
-				midi,
 				hashTable,
 			},
 		};
@@ -259,7 +231,7 @@ const makeScore = async (source: string, lilyParser: GrammarParser, {midi, logge
 
 	const t5 = Date.now();
 
-	const matcher = await LilyNotation.matchWithMIDI(lilyNotation, matchingMidi);
+	const matcher = await LilyNotation.matchWithExactMIDI(lilyNotation, midi);
 
 	logger.append("scoreMaker.profile.matching", {cost: Date.now() - t5});
 
@@ -276,7 +248,7 @@ const makeScore = async (source: string, lilyParser: GrammarParser, {midi, logge
 		logger.append("makeScore.match", {coverage, omitC, omitS, path: matcher.path});
 	}
 
-	const midiNotation = matcher.sample;
+	const midiNotation = lilyNotation.toPerformingNotationWithEvents(LilyNotation.LayoutType.Ordinary);
 
 	const matchedIds: Set<string> = new Set();
 	midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));
@@ -286,11 +258,6 @@ const makeScore = async (source: string, lilyParser: GrammarParser, {midi, logge
 	if (baking)
 		doc.pruneForBakingMode();
 
-	const pitchContextGroup = PitchContextTable.createPitchContextGroup(
-		lilyNotation.pitchContextGroup.map(table => table.items.map(item => item.context)), midiNotation);
-
-	const noteLinkings = midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]) as NoteLinking);
-
 	logger.append("scoreMaker.profile.full", {cost: Date.now() - t0});
 
 	return {
@@ -299,10 +266,8 @@ const makeScore = async (source: string, lilyParser: GrammarParser, {midi, logge
 			version: npmPackage.version,
 			meta,
 			doc,
-			midi,
 			hashTable: !baking ? hashTable : null,
-			noteLinkings,
-			pitchContextGroup,
+			lilyNotation,
 		},
 	};
 };

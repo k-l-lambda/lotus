@@ -15,29 +15,28 @@ import ScoreJSON from "../inc/scoreJSON";
 export default class ScoreBundle {
 	scoreJSON: ScoreJSON;
 
-	midiNotation: object;
+	midiNotation: MusicNotation.Notation;
+	pitchContextGroup: PitchContextTable[];
 	matchedIds: Set<string>;
 	onStatus: (...args: any) => any;
 	bakingImages: string[];
 
 
-	constructor (source, {loadNotation = true, onStatus = ((..._) => _), jsonHandle = json => json} = {}) {
+	constructor (source, {measureLayout = LilyNotation.LayoutType.Full, onStatus = ((..._) => _), jsonHandle = json => json} = {}) {
 		this.scoreJSON = jsonHandle(recoverJSON(source, {StaffToken, SheetDocument, PitchContext, PitchContextTable, DictArray}));
 		this.onStatus = onStatus;
 
-		if (!this.scoreJSON.midi)
-			console.warn("No midi data, baking will fail.");
-
 		this.onStatus("json loaded");
 
-		if (loadNotation)
-			this.loadNotation();
+		if (measureLayout)
+			this.loadNotation(measureLayout);
 	}
 
 
-	loadNotation () {
-		if (this.scoreJSON.midi) {
-			const midiNotation = MusicNotation.Notation.parseMidi(this.scoreJSON.midi);
+	loadNotation (layout: LilyNotation.LayoutType) {
+		const lilyNotation = this.scoreJSON.lilyNotation;
+		if (lilyNotation) {
+			/*const midiNotation = MusicNotation.Notation.parseMidi(this.scoreJSON.midi);
 
 			if (this.scoreJSON.noteLinkings) {
 				this.scoreJSON.noteLinkings.forEach((fields, i) => Object.assign(midiNotation.notes[i], fields));
@@ -47,9 +46,12 @@ export default class ScoreBundle {
 				this.scoreJSON.doc.updateMatchedTokens(this.matchedIds);
 
 				LilyNotation.assignNotationEventsIds(midiNotation);
-			}
+			}*/
+			this.midiNotation = lilyNotation.toPerformingNotationWithEvents(layout);
+			this.pitchContextGroup = lilyNotation.getContextGroup(layout);
 
-			this.midiNotation = midiNotation;
+			this.matchedIds = this.midiNotation.notes.reduce((ids, note) => (note.ids && note.ids.forEach(id => ids.add(id)), ids), new Set<string>());
+			this.scoreJSON.doc.updateMatchedTokens(this.matchedIds);
 
 			this.onStatus("notation loaded");
 		}

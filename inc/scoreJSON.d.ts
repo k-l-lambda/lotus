@@ -1,19 +1,14 @@
 
-// eslint-disable-next-line
-import {MIDI} from "@k-l-lambda/web-widgets";
-
-// eslint-disable-next-line
 import SheetDocument from "./staffSvg/sheetDocument";
-// eslint-disable-next-line
-import {PitchContextTable} from "./pitchContext";
+import * as LilyNotation from "../inc/lilyNotation";
 
 
 
-export interface NoteLinking {
+/*export interface NoteLinking {
 	ids: string[];
 	staffTrack: number;
 	contextIndex: number;
-}
+}*/
 
 
 export interface ScoreMeta {
@@ -33,9 +28,7 @@ interface ScoreJSON {
 	meta: ScoreMeta;
 	doc: SheetDocument;
 	hashTable: {[key: string]: any};
-	midi: MIDI.MidiData;
-	noteLinkings: NoteLinking[];
-	pitchContextGroup: PitchContextTable[];
+	lilyNotation: LilyNotation.Notation,
 }
 
 

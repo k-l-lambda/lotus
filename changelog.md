@@ -9,19 +9,14 @@
 	implicit notes matching with sheet document
 		tremolo type note match
 		setTempo missing issue in Once measure layout
-	staffNotation
-		remove note time from staff document
 	lilyInterpreter
 		execute parallelMusic
 	lyrics in music normalization
 	lyrics hilighting
 		match chord with voice in the same staff
-	measure notes in Notation parsing
 	staffSvg
-		try create MIDI file pure by LilyParser
 		fix partial measures
 			add partial on standalone block
-				parse duration in \times
 		treble_8
 		system splitting, chord mode symbol affiliation
 		remove empty track	(6.1 落叶.ly)
@@ -29,6 +24,8 @@
 
 
 *	2020.9.10
+
+	+	scoreMaker.ts: replaced midi, noteLinkings, pitchContextGroup by lilyNotation in score bundle.
 
 	+	scoreMaker.ts: added version field in score bundle.
 
