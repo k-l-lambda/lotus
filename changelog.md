@@ -25,6 +25,8 @@
 
 *	2020.9.10
 
+	+	ly/articulate-lotus.ly created.
+
 	+	scoreBundle.ts: bundle version checking added.
 
 	+	scoreBundle.ts: fixed bundle json parsing.

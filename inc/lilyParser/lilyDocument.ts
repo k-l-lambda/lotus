@@ -862,7 +862,7 @@ export default class LilyDocument {
 
 
 	articulateMIDIOutput () {
-		const ARTICULATE_FILENAME = "articulate.ly";
+		const ARTICULATE_FILENAME = "articulate-lotus.ly";
 
 		const midiScore = this.makeMIDIDedicatedScore();
 
