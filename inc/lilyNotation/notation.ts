@@ -3,7 +3,7 @@ import _ from "lodash";
 
 import {MusicNotation} from "@k-l-lambda/web-widgets";
 
-import {WHOLE_DURATION_MAGNITUDE} from "../lilyParser";
+import {WHOLE_DURATION_MAGNITUDE} from "../lilyParser/utils";
 import {PitchContextTable} from "../pitchContext";
 import {MatcherResult} from "./matcher";
 import {MeasureLayout, LayoutType} from "./measureLayout";
@@ -12,6 +12,9 @@ import ImplicitType from "./implicitType";
 
 
 const TICKS_PER_BEAT = WHOLE_DURATION_MAGNITUDE / 4;
+
+// import WHOLE_DURATION_MAGNITUDE from "../lilyParser" may result in null error in nodejs
+console.assert(Number.isFinite(TICKS_PER_BEAT), "TICKS_PER_BEAT is invalid:", TICKS_PER_BEAT);
 
 
 interface StaffNoteProperties {
@@ -144,6 +147,14 @@ export class Notation {
 	}
 
 
+	toJSON () {
+		return {
+			__prototype: "LilyNotation",
+			...this,
+		};
+	}
+
+
 	toAbsoluteNotes (measureIndices: number[] = this.ordinaryMeasureIndices): Note[] {
 		let measureTick = 0;
 		const measureNotes: Note[][] = measureIndices.map(index => {
@@ -174,9 +185,6 @@ export class Notation {
 		const abNotes = this.toAbsoluteNotes(measureIndices);
 		const notes = Notation.performAbsoluteNotes(abNotes);
 		const endTime = notes[notes.length - 1].start + notes[notes.length - 1].duration;
-
-		// global TICKS_PER_BEAT is NaN in nodejs, why?
-		const TICKS_PER_BEAT = WHOLE_DURATION_MAGNITUDE / 4;
 
 		const notation = new MusicNotation.Notation({
 			ticksPerBeat: TICKS_PER_BEAT,

@@ -54,7 +54,7 @@ class BlockMLayout extends SimpleClass implements MeasureLayout {
 	static className = "BlockMLayout";
 
 
-	seq: MeasureSeq = [];
+	seq: MeasureSeq;
 
 
 	static trimSeq (seq: MeasureSeq): MeasureSeq {
@@ -105,7 +105,7 @@ class VoltaMLayout extends SimpleClass implements MeasureLayout {
 
 
 	times: number;
-	body: MeasureSeq = [];
+	body: MeasureSeq;
 	alternates: MeasureSeq[];
 
 
@@ -173,7 +173,7 @@ class ABAMLayout extends SimpleClass implements MeasureLayout {
 
 
 	main: MeasureLayout;
-	rest: MeasureSeq = [];
+	rest: MeasureSeq;
 
 
 	serialize (type: LayoutType): number[] {

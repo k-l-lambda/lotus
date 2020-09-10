@@ -3,7 +3,7 @@ import {MusicNotation} from "@k-l-lambda/web-widgets";
 
 import {recoverJSON} from "../inc/jsonRecovery";
 import {StaffToken, SheetDocument} from "../inc/staffSvg";
-import {PitchContext, PitchContextTable} from "../inc/pitchContext";
+import {PitchContextTable} from "../inc/pitchContext";
 import * as LilyNotation from "../inc/lilyNotation";
 import * as SheetBaker from "./sheetBaker";
 import DictArray from "../inc/DictArray";
@@ -23,7 +23,7 @@ export default class ScoreBundle {
 
 
 	constructor (source, {measureLayout = LilyNotation.LayoutType.Full, onStatus = ((..._) => _), jsonHandle = json => json} = {}) {
-		this.scoreJSON = jsonHandle(recoverJSON(source, {StaffToken, SheetDocument, PitchContext, PitchContextTable, DictArray}));
+		this.scoreJSON = jsonHandle(recoverJSON(source, {StaffToken, SheetDocument, LilyNotation: LilyNotation.Notation, ...LilyNotation.MLayoutClasses, DictArray}));
 		this.onStatus = onStatus;
 
 		this.onStatus("json loaded");
@@ -36,17 +36,6 @@ export default class ScoreBundle {
 	loadNotation (layout: LilyNotation.LayoutType) {
 		const lilyNotation = this.scoreJSON.lilyNotation;
 		if (lilyNotation) {
-			/*const midiNotation = MusicNotation.Notation.parseMidi(this.scoreJSON.midi);
-
-			if (this.scoreJSON.noteLinkings) {
-				this.scoreJSON.noteLinkings.forEach((fields, i) => Object.assign(midiNotation.notes[i], fields));
-
-				this.matchedIds = this.scoreJSON.noteLinkings.reduce((ids, note) => (note.ids && note.ids.forEach(id => ids.add(id)), ids), new Set()) as Set<string>;
-
-				this.scoreJSON.doc.updateMatchedTokens(this.matchedIds);
-
-				LilyNotation.assignNotationEventsIds(midiNotation);
-			}*/
 			this.midiNotation = lilyNotation.toPerformingNotationWithEvents(layout);
 			this.pitchContextGroup = lilyNotation.getContextGroup(layout);
 

@@ -183,7 +183,7 @@
 				if (this.sourceText) {
 					const scoreBundle = new ScoreBundle(this.sourceText, {onStatus: message => this.logTime(message)});
 					this.sheetDocument = scoreBundle.scoreJSON.doc;
-					this.pitchContextGroup = scoreBundle.scoreJSON.pitchContextGroup;
+					this.pitchContextGroup = scoreBundle.pitchContextGroup;
 					this.midiNotation = scoreBundle.midiNotation;
 					this.svgHashTable = scoreBundle.scoreJSON.hashTable;
 

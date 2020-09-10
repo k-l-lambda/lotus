@@ -25,6 +25,8 @@
 
 *	2020.9.10
 
+	+	scoreBundle.ts: fixed bundle json parsing.
+
 	+	scoreMaker.ts: replaced midi, noteLinkings, pitchContextGroup by lilyNotation in score bundle.
 
 	+	scoreMaker.ts: added version field in score bundle.
