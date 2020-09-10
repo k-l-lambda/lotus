@@ -115,13 +115,18 @@ export default class Scheduler {
 
 
 	lookupTick (position: SheetPosition): number {
-		const item = this.tickTable.find(item => item.row === position.row && item.x <= position.x && item.endX >= position.x);
+		const rowItems = this.tickTable.filter(item => item.row === position.row).sort((i1, i2) => i1.x - i2.x);
+		let item = rowItems.find(item => item.x <= position.x && item.endX >= position.x);
 		if (!item) {
-			//console.warn("lookup position out of range:", position, this.tickTable);
-			return null;
+			const firstItem = rowItems[0];
+			if (firstItem && position.x < firstItem.endX)
+				item = firstItem;
+			else
+				//console.warn("lookup position out of range:", position, this.tickTable);
+				return null;
 		}
 
-		const tick = item.tick + (position.x - item.x) * (item.endTick - item.tick) / (item.endX - item.x);
+		const tick = item.tick + Math.max(position.x - item.x, 0) * (item.endTick - item.tick) / (item.endX - item.x);
 
 		return tick;
 	}

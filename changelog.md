@@ -25,6 +25,8 @@
 
 *	2020.9.10
 
+	+	scheduler.ts: refined Scheduler.lookupTick to allow row head area.
+
 	+	ly/articulate-lotus.ly created.
 
 	+	scoreBundle.ts: bundle version checking added.
