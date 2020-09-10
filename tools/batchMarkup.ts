@@ -1,5 +1,6 @@
 
 import fs from "fs";
+import path from "path";
 import yargs from "yargs";
 
 import "../env.js";
@@ -57,7 +58,8 @@ const main = async () => {
 				await fs.promises.writeFile(lyPath, ly);
 			}
 
-			console.log(changes ? "\x1b[32m" : "\x1b[0m", `${++index}\t${lyPath}\t${changes}`);
+			const filePath = path.relative(inputDir, lyPath);
+			console.log(changes ? "\x1b[32m" : "\x1b[0m", `${++index}\t${filePath}\t${changes}`);
 		}
 		catch (err) {
 			console.warn("markup failed:", lyPath, err);
