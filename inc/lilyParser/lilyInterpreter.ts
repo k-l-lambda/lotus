@@ -35,6 +35,8 @@ const FUNCTIONAL_VARIABLE_NAME_PATTERN = /^lotus/;
 
 interface PitchContextTerm {
 	staffName: string;
+	track?: number;
+	//voiceName?: string;
 
 	tick?: number;
 	event: MusicEvent;
@@ -95,7 +97,8 @@ class LilyStaffContext extends StaffContext {
 			const contextIndex = this.snapshot({tick: event._tick});
 
 			this.notes.push(...term.pitches.map(pitch => ({
-				channel: 0,
+				track: term.track,
+				channel: 0,	// TODO: determine channel by track instrument
 				measure: event._measure,
 				start: event._tick,
 				duration: event.durationMagnitude,
@@ -758,12 +761,17 @@ class MusicPerformance {
 	}
 
 
+	get trackNames (): string[] {
+		return this.musicTracks.map(track => `${track.contextDict.Staff}:${track.contextDict.Voice}`);
+	}
+
+
 	getNotation ({logger = new LogRecorder()} = {}): LilyNotation.Notation {
 		const pcTerms: PitchContextTerm[] = [].concat(...this.musicTracks.map((track, i) =>
 			track.generateStaffTracks().map(term => ({track: i, ...term}))));
 		//console.log("pcTerms:", pcTerms);
 
-		const termsToContexts = (staffTerms, trackIndex) => {
+		const termsToContexts = (staffTerms: PitchContextTerm[], trackIndex: number): LilyStaffContext => {
 			staffTerms.forEach(term => {
 				if (term.event)
 					term.tick = term.event._tick;
@@ -801,7 +809,7 @@ class MusicPerformance {
 		const measureHeads = mainTrack && mainTrack.measureHeads;
 		const measureLayout = mainTrack && mainTrack.block.measureLayout;
 
-		return LilyNotation.Notation.fromAbsoluteNotes(notes, measureHeads, {pitchContextGroup, measureLayout});
+		return LilyNotation.Notation.fromAbsoluteNotes(notes, measureHeads, {pitchContextGroup, measureLayout, trackNames: this.trackNames});
 	}
 
 

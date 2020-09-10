@@ -39,6 +39,7 @@ interface MeasureNote extends Partial<StaffNoteProperties> {
 	tick: number;
 	duration: number;
 
+	track: number;
 	id: string;
 	ids: string[];
 	pitch: number;
@@ -68,13 +69,15 @@ interface Measure {
 
 
 const EXTRA_NOTE_FIELDS = ["rest", "tied", "overlapped", "implicitType", "contextIndex", "staffTrack"];
-const COMMON_NOTE_FIELDS = ["id", "ids", "pitch", "velocity", ...EXTRA_NOTE_FIELDS];
+const COMMON_NOTE_FIELDS = ["id", "ids", "pitch", "velocity", "track", ...EXTRA_NOTE_FIELDS];
 
 
 export class Notation {
 	pitchContextGroup: PitchContextTable[];
 	measureLayout: MeasureLayout;
 	measures: Measure[];
+
+	trackNames: string[];
 
 
 	static fromAbsoluteNotes (notes: Note[], measureHeads: number[], data?: Partial<Notation>): Notation {
@@ -147,10 +150,27 @@ export class Notation {
 	}
 
 
+	get trackTickBias (): {[key: string]: number} {
+		const headMeasure = this.measures[0];
+		return this.trackNames.reduce((map, name, track) => {
+			map[name] = 0;
+			if (headMeasure) {
+				const note = headMeasure.notes.find(note => note.track === track);
+				if (note)
+					map[name] = Math.min(note.tick, 0);
+			}
+
+			return map;
+		}, {});
+	}
+
+
 	toJSON () {
 		return {
 			__prototype: "LilyNotation",
-			...this,
+			pitchContextGroup: this.pitchContextGroup,
+			measureLayout: this.measureLayout,
+			measures: this.measures,
 		};
 	}
 
