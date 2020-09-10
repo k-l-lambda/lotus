@@ -1,14 +1,29 @@
 
 import {MusicNotation} from "@k-l-lambda/web-widgets";
 
+import npmPackage from "../package.json";
 import {recoverJSON} from "../inc/jsonRecovery";
 import {StaffToken, SheetDocument} from "../inc/staffSvg";
 import {PitchContextTable} from "../inc/pitchContext";
 import * as LilyNotation from "../inc/lilyNotation";
 import * as SheetBaker from "./sheetBaker";
 import DictArray from "../inc/DictArray";
-// eslint-disable-next-line
 import ScoreJSON from "../inc/scoreJSON";
+
+
+
+const parseVersion = (ver: string): number => {
+	if(ver) {
+		const captures = ver.match(/\d+/g);
+		if (captures) {
+			const numbers = captures.map(Number).reverse();
+	
+			return numbers.reduce((ver, n, i) => ver + n * (1000 ** i), 0);
+		}
+	}
+
+	return -1;
+};
 
 
 
@@ -22,9 +37,11 @@ export default class ScoreBundle {
 	bakingImages: string[];
 
 
-	constructor (source, {measureLayout = LilyNotation.LayoutType.Full, onStatus = ((..._) => _), jsonHandle = json => json} = {}) {
-		this.scoreJSON = jsonHandle(recoverJSON(source, {StaffToken, SheetDocument, LilyNotation: LilyNotation.Notation, ...LilyNotation.MLayoutClasses, DictArray}));
+	constructor (source: string, {measureLayout = LilyNotation.LayoutType.Full, onStatus = ((..._) => _), jsonHandle = json => json} = {}) {
 		this.onStatus = onStatus;
+
+		this.scoreJSON = jsonHandle(recoverJSON(source, {StaffToken, SheetDocument, LilyNotation: LilyNotation.Notation, ...LilyNotation.MLayoutClasses, DictArray}));
+		this.checkVersion();
 
 		this.onStatus("json loaded");
 
@@ -47,7 +64,7 @@ export default class ScoreBundle {
 	}
 
 
-	bakeSheet (canvas) {
+	bakeSheet (canvas: HTMLCanvasElement) {
 		console.assert(!!this.scoreJSON.doc, "sheetDocument is null.");
 		console.assert(!!this.scoreJSON.hashTable, "hashTable is null.");
 		console.assert(!!this.matchedIds, "matchedIds is null.");
@@ -60,5 +77,15 @@ export default class ScoreBundle {
 			matchedIds: this.matchedIds,
 			canvas,
 		});
+	}
+
+
+	checkVersion () {
+		const apiVersion = parseVersion(npmPackage.version);
+		const version = parseVersion(this.scoreJSON.version);
+
+		// TODO: declare the lowest compibile version
+		if (version < apiVersion)
+			console.warn(`This score bundle version[${this.scoreJSON.version}] is too low! The current Lotus API version is: ${npmPackage.version}.`);
 	}
 };
