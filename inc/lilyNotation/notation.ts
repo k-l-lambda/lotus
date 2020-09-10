@@ -150,6 +150,8 @@ export class Notation {
 	}
 
 
+	// In Lilypond 2.20.0, minus tick value at the head of a track result in MIDI event time bias,
+	//	So store the bias values to correct MIDI time from lilyond.
 	get trackTickBias (): {[key: string]: number} {
 		const headMeasure = this.measures[0];
 		return this.trackNames.reduce((map, name, track) => {

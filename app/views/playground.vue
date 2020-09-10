@@ -654,6 +654,7 @@
 				this.sheetDocument = null;
 				this.sheetNotation = null;
 				this.svgHashTable = null;
+				this.lilyNotation = null;
 				this.midi = null;
 				this.midiNotation = null;
 				this.pitchContextGroup = null;
@@ -918,12 +919,11 @@
 					this.pitchContextGroup = PitchContextTable.createPitchContextGroup(this.sheetNotation.pitchContexts, this.midiNotation);
 				}
 				else {
-					const lilyNotation = this.lilyDocument.interpret().getNotation();
-					this.matcherNotations = await LilyNotation.matchWithExactMIDI(lilyNotation, midi);
+					this.lilyNotation = this.lilyDocument.interpret().getNotation();
+					this.matcherNotations = await LilyNotation.matchWithExactMIDI(this.lilyNotation, midi);
 
-					//console.log("lilyNotation:", lilyNotation);
-					this.midiNotation = lilyNotation.toPerformingNotationWithEvents(this.measureLayout);
-					this.pitchContextGroup = lilyNotation.getContextGroup(this.measureLayout);
+					this.midiNotation = this.lilyNotation.toPerformingNotationWithEvents(this.measureLayout);
+					this.pitchContextGroup = this.lilyNotation.getContextGroup(this.measureLayout);
 				}
 
 				this.matchedIds = new Set();
