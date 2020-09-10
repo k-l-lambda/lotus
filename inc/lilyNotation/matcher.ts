@@ -47,25 +47,48 @@ const IMPLICIT_PITCH_BIAS = {
 };
 
 
-const alignNotationTicks = (source: MusicNotation.Notation, criterion: MusicNotation.Notation) => {
+const alignNotationTicks = (source: MusicNotation.Notation, criterion: MusicNotation.Notation, {midiTrackTickBias}: {midiTrackTickBias?: number[]}) => {
 	const midiTickFactor = criterion.ticksPerBeat / source.ticksPerBeat;
 
 	source.ticksPerBeat = criterion.ticksPerBeat;
 	source.notes.forEach(note => {
 		note.startTick *= midiTickFactor;
 		note.endTick *= midiTickFactor;
+
+		const bias = midiTrackTickBias && midiTrackTickBias[note.track];
+		if (bias) {
+			note.startTick += bias;
+			note.endTick += bias;
+		}
 	});
+
 	source.events.forEach(event => {
 		event.ticks *= midiTickFactor;
+
+		const bias = midiTrackTickBias && midiTrackTickBias[event.track];
+		if (bias)
+			event.ticks += bias;
 	});
+	source.events.sort((e1, e2) => e1.ticks - e2.ticks);
 };
 
 
 const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData): Promise<MatcherResult> => {
 	const criterion = lilyNotation.toPerformingNotation();
 
+	const trackTickBiasMap = lilyNotation.trackTickBias;
+	const midiTrackTickBias = target.tracks.map(events => {
+		const nameEvent = events.find(event => event.subtype === "trackName");
+		const name = nameEvent && nameEvent.text;
+		if (name)
+			return trackTickBiasMap[name] || 0;
+
+		return 0;
+	});
+	//console.log("midiTrackTickBias:", midiTrackTickBias);
+
 	const midiNotation = MusicNotation.Notation.parseMidi(target);
-	alignNotationTicks(midiNotation, criterion);
+	alignNotationTicks(midiNotation, criterion, {midiTrackTickBias});
 
 	// 1st pass: ordinary notes exact matching
 	const noteKey = note => `${note.channel}|${Math.round(note.startTick)}|${note.pitch}`;

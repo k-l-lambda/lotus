@@ -25,6 +25,8 @@
 
 *	2020.9.10
 
+	+	matcher.ts: shift MIDI ticks with trackTickBias.
+
 	+	notation.ts: Notation.trackTickBias added.
 
 	+	scheduler.ts: refined Scheduler.lookupTick to allow row head area.

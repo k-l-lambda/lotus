@@ -241,14 +241,18 @@ export class Notation {
 
 		let ticks = 0;
 
-		const track = [].concat(...measureEvents)
-			.sort((e1, e2) => e1.ticks - e2.ticks)
-			.map(e => {
-				e.data.deltaTime = e.ticks - ticks;
-				ticks = e.ticks;
+		const sortedEvents = [].concat(...measureEvents).sort((e1, e2) => e1.ticks - e2.ticks);
+		//console.log("sortedEvents:", sortedEvents);
 
-				return e.data;
-			});
+		const track = sortedEvents.map(e => {
+			const data = {
+				...e.data,
+				deltaTime: e.ticks - ticks,
+			};
+			ticks = e.ticks;
+
+			return data;
+		});
 		track.push({deltaTime: 0, type: "meta", subtype: "endOfTrack"});
 
 		const midi = {
