@@ -30,6 +30,8 @@
 
 *	2020.9.10
 
+	+	tools/batchMarkup.ts created.
+
 	+	lilyDocument.ts: markup method of removeInvalidExpressionsOnRests.
 
 	*	Post event of . ! _ on rest result in duration error in lilypond output MIDI.
