@@ -23,6 +23,11 @@
 
 
 
+*	2020.9.11
+
+	+	notations-matcher.vue: refined link lines.
+
+
 *	2020.9.10
 
 	+	matcher.ts: shift MIDI ticks with trackTickBias.

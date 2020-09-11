@@ -21,6 +21,10 @@
 			</g>
 			<g class="links" v-if="links">
 				<line v-for="link of links" :key="link.s.index"
+					:class="{
+						oblique: link.s.start !== link.c.start,
+						'heavy-oblique': Math.abs(link.s.start - link.c.start) > 128,
+					}"
 					:x1="positionS.x + link.s.start * timeScale"
 					:x2="positionC.x + link.c.start * timeScale"
 					:y1="positionS.y - link.s.pitch + 0.5"
@@ -139,7 +143,7 @@
 							note.duration = 2000;
 						}
 						else {
-							note.start = note.startTick * 16 * (type === "s" ? this.timeFactorC : 1);
+							note.start = note.startTick * 32 * (type === "s" ? this.timeFactorC : 1);
 							note.duration = 2000;
 						}
 						note.classes = note.classes || {};
@@ -165,11 +169,25 @@
 	};
 </script>
 
-<style scoped>
-	.links line
+<style lang="scss" scoped>
+	.links
 	{
-		stroke: #000a;
-		stroke-width: 0.1px;
+		 line
+		{
+			stroke: #000a;
+			stroke-width: 0.1px;
+
+			&.oblique
+			{
+				stroke: #400;
+
+				&.heavy-oblique
+				{
+					stroke: #a00;
+					stroke-width: 0.2px;
+				}
+			}
+		}
 	}
 </style>
 
