@@ -18,7 +18,7 @@ import * as constants from "../backend/constants";
 
 
 
-const checkFile = async (filename: string, {articulate = false} = {}) => {
+const checkFile = async (filename: string, {articulate = false, dumpOmit = false} = {}) => {
 	const source = fs.readFileSync(filename).toString();
 
 	const lilyParser = await loadLilyParser();
@@ -68,7 +68,7 @@ const checkFile = async (filename: string, {articulate = false} = {}) => {
 	const averageTickOffset = totalOffset / midiNotation.notes.length;
 
 	console.log(filename, ":", omitC, omitS, averageTickOffset);
-	/*if (omitC || omitS) {
+	if (dumpOmit && (omitC || omitS)) {
 		console.debug("path:", path);
 		if (omitC > 0) {
 			console.debug("cis:", cis, Array.from(cis).map(ci => criterion.notes[ci]).map(note =>
@@ -84,7 +84,7 @@ const checkFile = async (filename: string, {articulate = false} = {}) => {
 			console.debug("sis:", sis, sis.map(si => midiNotation.notes[si]).map(note =>
 				({startTick: note.startTick, pitch: note.pitch, channel: note.channel})));
 		}
-	}*/
+	}
 
 	return {
 		midi,
@@ -129,7 +129,7 @@ const main = async () => {
 	let i = 0;
 	for (const lyFile of lyFiles) {
 		try {
-			const result = await checkFile(lyFile, {articulate: !!argv.articulate});
+			const result = await checkFile(lyFile, {articulate: !!argv.articulate, dumpOmit: !!argv.dumpOmit});
 			if (argv.breakOnLargeOffset && Math.abs(result.averageTickOffset) > TICK_OFFSET_THRESHOLD) {
 				console.warn("Large averageTickOffset:", result.offsetMap);
 				break;
@@ -185,7 +185,7 @@ const main = async () => {
 	}
 
 	if (issues.length) {
-		issues.sort((i1, i2) => (i1.coverage - Math.abs(i1.averageTickOffset) / TICK_OFFSET_THRESHOLD) - (i2.coverage - Math.abs(i2.averageTickOffset) / TICK_OFFSET_THRESHOLD));
+		issues.sort((i1, i2) => i1.coverage - i2.coverage);
 
 		log("Issues:");
 		log(YAML.stringify(issues));
