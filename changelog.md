@@ -2,6 +2,7 @@
 ## TODO
 	scheduler issue on trill notes
 		Op.823 No.62
+	assignMatcher: copy note properties into measure notes
 	MIDI post processing
 		arpeggio
 		after grace
@@ -24,6 +25,20 @@
 
 
 *	2020.9.11
+
+	*	Notation calling hierarchy:
+		*	LilyInterpreter.getNotation
+			*	MusicTrack.generateStaffTracks
+			*	LilyStaffContext.executeTerm
+			*	LilyNotation.fromAbsoluteNotes
+		*	matcher.matchWithExactMIDI
+			*	LilyNotation.toPerformingNotation
+			*	LilyNotation.assignMatcher
+		*	LilyNotation.toPerformingNotationWithEvents
+			*	assignNotationNoteDataFromEvents
+		*	LilyNotation.getContextGroup
+			*	LilyNotation.toPerformingNotation
+			*	PitchContextTable.createPitchContextGroup
 
 	+	measureLayout.ts: fixed ABAMLayout.serialize.
 
