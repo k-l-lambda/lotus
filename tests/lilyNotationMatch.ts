@@ -14,6 +14,7 @@ import {LilyDocument} from "../inc/lilyParser";
 import walkDir from "../backend/walkDir";
 import * as LilyNotation from "../inc/lilyNotation";
 import * as statStorage from "../backend/statStorage";
+import * as constants from "../backend/constants";
 
 
 
@@ -21,8 +22,9 @@ const checkFile = async (filename: string, {articulate = false} = {}) => {
 	const source = fs.readFileSync(filename).toString();
 
 	const lilyParser = await loadLilyParser();
+	const includeFolders = constants.LY_INCLUDE_FOLDERS;
 
-	const midi = await (articulate ? makeArticulatedMIDI(source, lilyParser) : makeMIDI(source, lilyParser, {unfoldRepeats: false}));
+	const midi = await (articulate ? makeArticulatedMIDI(source, lilyParser, {includeFolders}) : makeMIDI(source, lilyParser, {includeFolders}));
 	//const midiNotation = MusicNotation.Notation.parseMidi(midi);
 
 	const lilyDocument = new LilyDocument(lilyParser.parse(source));
