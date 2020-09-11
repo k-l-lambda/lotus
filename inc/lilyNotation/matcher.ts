@@ -102,22 +102,22 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 
 	const restCNotes = [];
 	criterion.notes.forEach(note => {
-		if (!(note as any).implicitType) {
-			const key = noteKey(note);
-			const sn = snoteMap[key];
-			if (sn) {
-				path[sn.index] = note.index;
-				delete snoteMap[key];
+		const implicit = !!(note as any).implicitType;
 
+		const key = noteKey(note);
+		const sn = snoteMap[key];
+		if (sn) {
+			path[sn.index] = note.index;
+			delete snoteMap[key];
+
+			if (!implicit)
 				return;
-			}
 		}
 
 		restCNotes.push(note);
 	});
 
 	// 2nd pass: implicit notes matching
-	const restCNotes2 = [];
 	const restSNotes = Object.values(snoteMap);
 	restCNotes.forEach(note => {
 		if (note.implicitType) {
@@ -126,22 +126,19 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 				const matches = restSNotes.filter(sn => {
 					const tick = Math.round(sn.startTick);
 					const pb = sn.pitch - note.pitch;
-					return tick >= note.startTick && tick < note.endTick && pbs.includes(pb);
+					return tick >= note.startTick && tick <= note.endTick && pbs.includes(pb);
 				});
 
 				matches.forEach(sn => {
 					path[sn.index] = note.index;
-					//delete snoteMap[noteKey(sn)];
+					delete snoteMap[noteKey(sn)];
 				});
-
-				return;
 			}
 		}
-
-		restCNotes2.push(note);
 	});
 
 	// 3rd pass: rest fuzzy matching
+	const restCNotes2 = restCNotes.filter(note => !note.implicitType);
 	const restCNotes3 = [];
 	restCNotes2.forEach(note => {
 		const sn = restSNotes.find(sn => sn.pitch === note.pitch && Math.abs(sn.startTick - note.startTick) < 4);
