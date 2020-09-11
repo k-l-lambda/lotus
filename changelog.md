@@ -25,6 +25,8 @@
 
 *	2020.9.11
 
+	+	measureLayout.ts: fixed ABAMLayout.serialize.
+
 	+	notations-matcher.vue: refined link lines.
 
 

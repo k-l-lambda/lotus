@@ -178,7 +178,7 @@ class ABAMLayout extends SimpleClass implements MeasureLayout {
 
 	serialize (type: LayoutType): number[] {
 		const seqA = this.main.serialize(type);
-		const seqA_ = spreadMeasureSeq(this.main.seq);
+		const seqA_ = spreadMeasureSeq(this.main.seq, LayoutType.Once);
 		const seqB = spreadMeasureSeq(this.rest, type);
 
 		switch (type) {

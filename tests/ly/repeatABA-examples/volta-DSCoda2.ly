@@ -37,7 +37,7 @@
 
 
 PartPOneVoiceOne = \relative b' {
-	\clef "treble" \key g \major \time 6/8 \tempo 4. = 65
+	\clef "treble" \key g \major \time 6/8
 	\partial 8 \stemDown b8 ^1 |	 % 1
 	\lotusRepeatABA {
 		{
@@ -78,8 +78,8 @@ PartPOneVoiceOne = \relative b' {
 			\stemDown b2. ~ |	 % 26
 			b4. ~ b4 b,8 |	 % 27
 		}
-		\mark \markup { \musicglyph #"scripts.coda" } e4 ^2 fs8 gs4 ^4 _1 a8 ^1 |	 % 28
 		\repeat volta 2 {
+			\mark \markup { \musicglyph #"scripts.coda" } e4 ^2 fs8 gs4 ^4 _1 a8 ^1 |	 % 28
 			\stemDown b4 b8 b4 b8 |	 % 29
 			c4. ^3 c4. |	 % 30
 			\barNumberCheck #30 b4. ~ ^2 b4 b8 ^3 |	 % 31
@@ -164,8 +164,8 @@ PartPOneVoiceThree = \relative e {
 	b,8 [ _"L.H" ds8 fs8 ] r4 r8 |	 % 24
 	\change Staff = "1" b8 [ \change Staff = "2" \change Staff = "1" ds8 ^"L.H" fs8 ] \change Staff = "2" r4 r8 |	 % 25
 	R2.*2 |	 % 26-27
-	e,8 ~ _5 [ <e gs>8 ~ _3 ~ <e gs b>8 ~ _2 ] ~ ~ <e gs b e>4. |	 % 28
 	\repeat volta 2 {
+		e,8 ~ _5 [ <e gs>8 ~ _3 ~ <e gs b>8 ~ _2 ] ~ ~ <e gs b e>4. |	 % 28
 		\stemDown e8 ~ [ <e gs>8 ~ ~ <e gs b>8 ~ ] ~ ~ <e gs b e>4. |	 % 29
 		\stemUp a,8 _5 [ c8 e8 _1 ] \stemDown d8 _5 [ fs8 a8 _1 ] |	 % 30
 		g8 ~ [ <g b>8 ~ ~ <g b d>8 ~ ] ~ ~ <g b d g>4. |	 % 31
@@ -237,8 +237,9 @@ PartPOneVoiceTwo = \relative b {
 	s8*9 |	 % 23
 	\stemDown b8 ^1 [ ds8 ^2 _"R.H" fs8 ^3 ] |	 % 24
 	s4. b8 [ ds8 ^"R.H" fs8 ] |	 % 25
-	s4*9 |	 % 26-28
+	s4*6 |	 % 26-27
 	\repeat volta 2 {
+		s4*3
 		s4*9 |	 % 29-31
 		s4*9
 	}
