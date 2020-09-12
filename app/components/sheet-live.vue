@@ -220,27 +220,6 @@
 
 
 		computed: {
-			linkedTokens () {
-				if (!this.doc)
-					return null;
-
-				const tokens = new Map();
-				this.doc.pages.forEach(
-					page => page.rows.forEach(
-						row => row.staves.forEach(
-							staff => staff && staff.measures.forEach(
-								measure => measure.tokens.forEach(
-									token => {
-										if (token.href) {
-											Vue.set(token, "on", token.on || false);
-											tokens.set(token.href, token);
-										}
-									})))));
-
-				return tokens;
-			},
-
-
 			progressTicks () {
 				return this.midiPlayer && this.midiPlayer.progressTicks;
 			},
@@ -414,7 +393,13 @@
 
 					this.updateStatusMap();
 
-					this.scheduler = SheetScheduler.createFromNotation(this.midiNotation, this.linkedTokens);
+					const tokenMap = this.doc && this.doc.getTokenMap();
+					if (tokenMap) {
+						for (const token of tokenMap.values())
+							Vue.set(token, "on", token.on || false);
+
+						this.scheduler = SheetScheduler.createFromNotation(this.midiNotation, tokenMap);
+					}
 				}
 				
 			},

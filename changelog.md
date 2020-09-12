@@ -1,9 +1,5 @@
 
 ## TODO
-	prismjs line number issue
-	line number mismatch in windows
-	scheduler issue on trill notes
-		Op.823 No.62
 	assignMatcher: copy note properties into measure notes
 	MIDI post processing
 		arpeggio
@@ -27,6 +23,8 @@
 
 
 *	2020.9.12
+
+	+	sheetDocument.ts: SheetDocument.getTokenMap added.
 
 	+	scheduler.ts: refined Scheduler.createFromNotation for multiple notes - 1 token match.
 

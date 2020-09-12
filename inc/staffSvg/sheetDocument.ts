@@ -379,6 +379,17 @@ class SheetDocument {
 	}
 
 
+	getTokenMap (): Map<string, StaffToken> {
+		return this.rows.reduce((tokenMap, row) => {
+			row.staves.forEach(staff => staff.measures.forEach(measure => measure.tokens
+				.filter(token => token.href)
+				.forEach(token => tokenMap.set(token.href, token))));
+
+			return tokenMap;
+		}, new Map<string, StaffToken>());
+	}
+
+
 	alignTokensWithNotation (notation: LilyNotation.Notation) {
 		const shortId = (href: string): string => href.split(":").slice(0, 2).join(":");
 
