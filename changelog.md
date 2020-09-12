@@ -1,5 +1,7 @@
 
 ## TODO
+	prismjs line number issue
+	line number mismatch in windows
 	scheduler issue on trill notes
 		Op.823 No.62
 	assignMatcher: copy note properties into measure notes
@@ -22,6 +24,11 @@
 		system splitting, chord mode symbol affiliation
 		remove empty track	(6.1 落叶.ly)
 
+
+
+*	2020.9.12
+
+	+	scheduler.ts: refined Scheduler.createFromNotation for multiple notes - 1 token match.
 
 
 *	2020.9.11

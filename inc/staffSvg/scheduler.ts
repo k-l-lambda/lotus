@@ -31,9 +31,14 @@ export default class Scheduler {
 
 	static createFromNotation (midiNotation, tokenMap: Map<string, StaffToken>) {
 		const tokenTable: {[key: number]: StaffToken[]} = {};
+		const idSet = new Set<string>();
 
 		midiNotation.notes.forEach(note => {
 			if (note.ids) {
+				if (note.ids.some(id => idSet.has(id)))
+					return;
+				note.ids.forEach(idSet.add.bind(idSet));
+
 				tokenTable[note.startTick] = tokenTable[note.startTick] || [];
 				const tokens = note.ids.map(id => tokenMap.get(id)).filter(t => t);
 				tokenTable[note.startTick].push(...tokens);
@@ -55,7 +60,7 @@ export default class Scheduler {
 				x: token.x,
 				endX: token.endX,
 			};
-		}).filter(item => item).sort((i1, i2) => i1.tick - i2.tick);
+		}).filter(Boolean).sort((i1, i2) => i1.tick - i2.tick);
 		//console.log("sequence:", sequence);
 
 		tickTable.forEach((item, i) => {
