@@ -234,7 +234,10 @@ export class Notation {
 
 			const events = measure.events.map(mevent => ({
 				ticks: measureTick + mevent.ticks,
-				data: mevent.data,
+				data: {
+					...mevent.data,
+					measure: index,
+				},
 			}));
 
 			measureTick += measure.duration;
@@ -384,7 +387,7 @@ export const assignNotationEventsIds = (midiNotation: MusicNotation.NotationData
 };
 
 
-const assignNotationNoteDataFromEvents = (midiNotation: MusicNotation.NotationData, fields = ["ids"]) => {
+const assignNotationNoteDataFromEvents = (midiNotation: MusicNotation.NotationData, fields = ["ids", "measure"]) => {
 	const noteId = (channel: number, pitch: number, tick: number): string => `${channel}|${pitch}|${tick}`;
 
 	const noteMap = midiNotation.notes.reduce((map, note) => {

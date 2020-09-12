@@ -32,10 +32,15 @@ export default class Scheduler {
 	static createFromNotation (midiNotation, tokenMap: Map<string, StaffToken>) {
 		const tokenTable: {[key: number]: StaffToken[]} = {};
 		const idSet = new Set<string>();
+		let measureIndex = 0;
 
 		midiNotation.notes.forEach(note => {
 			if (note.ids) {
-				if (note.ids.some(id => idSet.has(id)))
+				if (note.measure > measureIndex) {
+					idSet.clear();
+					measureIndex = note.measure;
+				}
+				else if (note.ids.some(id => idSet.has(id)))
 					return;
 				note.ids.forEach(idSet.add.bind(idSet));
 

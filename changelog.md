@@ -24,6 +24,8 @@
 
 *	2020.9.12
 
+	+	scheduler.ts: fixed repeat problem by measure index from notes.
+
 	+	notation.ts: added Notation.getMeasureIndices.
 
 	+	sheetDocument.ts: SheetDocument.getTokenMap added.
