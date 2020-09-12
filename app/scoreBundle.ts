@@ -53,8 +53,10 @@ export default class ScoreBundle {
 	loadNotation (layout: LilyNotation.LayoutType) {
 		const lilyNotation = this.scoreJSON.lilyNotation;
 		if (lilyNotation) {
-			this.midiNotation = lilyNotation.toPerformingNotationWithEvents(layout);
-			this.pitchContextGroup = lilyNotation.getContextGroup(layout);
+			const measureIndices = lilyNotation.getMeasureIndices(layout);
+
+			this.midiNotation = lilyNotation.toPerformingNotationWithEvents(measureIndices);
+			this.pitchContextGroup = lilyNotation.getContextGroup(measureIndices);
 
 			this.matchedIds = this.midiNotation.notes.reduce((ids, note) => (note.ids && note.ids.forEach(id => ids.add(id)), ids), new Set<string>());
 			this.scoreJSON.doc.updateMatchedTokens(this.matchedIds);

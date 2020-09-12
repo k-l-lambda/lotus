@@ -24,6 +24,8 @@
 
 *	2020.9.12
 
+	+	notation.ts: added Notation.getMeasureIndices.
+
 	+	sheetDocument.ts: SheetDocument.getTokenMap added.
 
 	+	scheduler.ts: refined Scheduler.createFromNotation for multiple notes - 1 token match.

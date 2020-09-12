@@ -202,6 +202,11 @@ export class Notation {
 	}
 
 
+	getMeasureIndices (type: LayoutType) {
+		return this.measureLayout.serialize(type);
+	}
+
+
 	toPerformingNotation (measureIndices: number[] = this.ordinaryMeasureIndices): MusicNotation.Notation {
 		//console.debug("toPerformingNotation:", this, measureIndices);
 		const abNotes = this.toAbsoluteNotes(measureIndices);
@@ -220,10 +225,8 @@ export class Notation {
 	}
 
 
-	toPerformingNotationWithEvents (type: LayoutType): MusicNotation.Notation {
-		const measureIndices = this.measureLayout.serialize(type);
-		//console.log("toPerformingNotationWithEvents:", this, measureIndices);
-
+	toPerformingNotationWithEvents (measureIndices: number[]): MusicNotation.Notation {
+		// TODO: write measure index into event data
 		let measureTick = 0;
 		const measureEvents: MeasureEvent[][] = measureIndices.map(index => {
 			const measure = this.measures[index - 1];
@@ -272,9 +275,7 @@ export class Notation {
 	}
 
 
-	getContextGroup (type: LayoutType): PitchContextTable[] {
-		const measureIndices = this.measureLayout.serialize(type);
-
+	getContextGroup (measureIndices: number[]): PitchContextTable[] {
 		const contextGroup = this.pitchContextGroup.map(table => table.items.map(item => item.context));
 		const midiNotation = this.toPerformingNotation(measureIndices);
 

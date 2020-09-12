@@ -922,8 +922,9 @@
 					this.lilyNotation = this.lilyDocument.interpret().getNotation();
 					this.matcherNotations = await LilyNotation.matchWithExactMIDI(this.lilyNotation, midi);
 
-					this.midiNotation = this.lilyNotation.toPerformingNotationWithEvents(this.measureLayout);
-					this.pitchContextGroup = this.lilyNotation.getContextGroup(this.measureLayout);
+					const measureIndices = this.lilyNotation.getMeasureIndices(this.measureLayout);
+					this.midiNotation = this.lilyNotation.toPerformingNotationWithEvents(measureIndices);
+					this.pitchContextGroup = this.lilyNotation.getContextGroup(measureIndices);
 				}
 
 				this.matchedIds = new Set();

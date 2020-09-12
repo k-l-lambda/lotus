@@ -248,7 +248,7 @@ const makeScore = async (
 		logger.append("makeScore.match", {coverage, omitC, omitS, path: matcher.path});
 	}
 
-	const midiNotation = lilyNotation.toPerformingNotationWithEvents(LilyNotation.LayoutType.Ordinary);
+	const midiNotation = lilyNotation.toPerformingNotation();
 
 	const matchedIds: Set<string> = new Set();
 	midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => matchedIds.add(id)));
