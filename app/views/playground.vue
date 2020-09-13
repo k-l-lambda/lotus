@@ -286,6 +286,7 @@
 	import TextSource from "../../inc/textSource.ts";
 	import * as SheetBaker from "../sheetBaker.ts";
 	import {PitchContextTable} from "../../inc/pitchContext.ts";
+	import npmPackage from "../../package.json";
 
 	import {MidiRoll} from "@k-l-lambda/web-widgets";
 	import SourceEditor from "../components/source-editor.vue";
@@ -910,7 +911,7 @@
 				if (this.enabledSheetNotation) {
 					console.assert(this.sheetNotation, "sheetNotation is null.");
 
-					const midiNotation = MusicNotation.Notation.parseMidi(this.midi);
+					const midiNotation = MusicNotation.Notation.parseMidi(midi);
 
 					this.matcherNotations = await StaffNotation.matchNotations(midiNotation, this.sheetNotation, {enableFuzzy: this.enabledFuzzyMatcher});
 
@@ -952,15 +953,17 @@
 					staffSize: attributes.staffSize,
 				};
 
-				const noteLinkings = this.midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
+				//const noteLinkings = this.midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));
 
 				const data = {
+					version: npmPackage.version + " -playground",
 					meta,
 					doc: this.sheetDocument,
-					midi: this.midi,
+					//midi: this.midi,
 					hashTable: this.bakingSheet ? null : this.svgHashTable,
-					noteLinkings,
-					pitchContextGroup: this.pitchContextGroup,
+					//noteLinkings,
+					lilyNotation: this.lilyNotation,
+					//pitchContextGroup: this.pitchContextGroup,
 				};
 				const score = new Blob([JSON.stringify(data)], {type: "application/json"});
 

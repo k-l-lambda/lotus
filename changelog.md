@@ -24,6 +24,8 @@
 
 *	2020.9.13
 
+	+	playground.vue: refined exportScore for v0.6.
+
 	+	notation.ts: refined output midi notation tracks.
 
 	+	matcher.ts: match notes with track map.
