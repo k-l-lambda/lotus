@@ -77,21 +77,23 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 	const criterion = lilyNotation.toPerformingNotation();
 
 	const trackTickBiasMap = lilyNotation.trackTickBias;
-	const midiTrackTickBias = target.tracks.map(events => {
+	const targetTrackNames = target.tracks.map(events => {
 		const nameEvent = events.find(event => event.subtype === "trackName");
-		const name = nameEvent && nameEvent.text;
-		if (name)
-			return trackTickBiasMap[name] || 0;
-
-		return 0;
+		return nameEvent ? nameEvent.text : null;
 	});
+	//console.log("tacke names:", lilyNotation.trackNames, targetTrackNames, target.tracks.map(t => t.filter(e => ["noteOn", "noteOff"].includes(e.subtype))));
+	const trackIndexC2S = lilyNotation.trackNames.map(name => targetTrackNames.indexOf(name));
+	console.assert(!trackIndexC2S.includes(-1), "mismatch track found:", trackIndexC2S, lilyNotation.trackNames, targetTrackNames);
+	//console.debug("trackIndexC2S:", trackIndexC2S);
+
+	const midiTrackTickBias = targetTrackNames.map(name => name ? (trackTickBiasMap[name] || 0) : 0);
 	//console.log("midiTrackTickBias:", midiTrackTickBias);
 
 	const midiNotation = MusicNotation.Notation.parseMidi(target);
 	alignNotationTicks(midiNotation, criterion, {midiTrackTickBias});
 
 	// 1st pass: ordinary notes exact matching
-	const noteKey = note => `${note.channel}|${Math.round(note.startTick)}|${note.pitch}`;
+	const noteKey = note => `${note.track}|${Math.round(note.startTick)}|${note.pitch}`;
 
 	const snoteMap: {[key: string]: MusicNotation.Note} = {};
 	midiNotation.notes.forEach(note => {
@@ -104,7 +106,7 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 	criterion.notes.forEach(note => {
 		const implicit = !!(note as any).implicitType;
 
-		const key = noteKey(note);
+		const key = noteKey({...note, track: trackIndexC2S[note.track]});
 		const sn = snoteMap[key];
 		if (sn) {
 			path[sn.index] = note.index;

@@ -22,6 +22,11 @@
 
 
 
+*	2020.9.13
+
+	+	matcher.ts: match notes with track map.
+
+
 *	2020.9.12
 
 	+	scheduler.ts: fixed repeat problem by measure index from notes.
