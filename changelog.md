@@ -1,6 +1,5 @@
 
 ## TODO
-	assignMatcher: copy note properties into measure notes
 	MIDI post processing
 		arpeggio
 		after grace
@@ -23,6 +22,8 @@
 
 
 *	2020.9.13
+
+	+	notation.ts: append note events in toPerformingNotationWithEvents.
 
 	+	notation.ts: sub notes on MeasureNote added.
 

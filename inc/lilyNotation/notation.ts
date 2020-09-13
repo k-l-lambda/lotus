@@ -1,7 +1,7 @@
 
 import _ from "lodash";
 
-import {MusicNotation} from "@k-l-lambda/web-widgets";
+import {MusicNotation, MIDI} from "@k-l-lambda/web-widgets";
 
 import {WHOLE_DURATION_MAGNITUDE} from "../lilyParser/utils";
 import {PitchContextTable} from "../pitchContext";
@@ -104,12 +104,7 @@ export class Notation {
 				tick: note.startTick - tick,
 				duration: note.endTick - note.startTick,
 				..._.pick(note, COMMON_NOTE_FIELDS),
-				subNotes: [{
-					track: note.track,
-					startTick: 0,
-					endTick: note.endTick - note.startTick,
-					pitch: note.pitch,
-				}],
+				subNotes: [],
 			} as MeasureNote));
 
 			return {
@@ -266,7 +261,14 @@ export class Notation {
 			return events;
 		});
 
-		const tracks = [].concat(...measureEvents).reduce((tracks, mevent) => {
+		interface MidiEvent extends MIDI.MidiEvent {
+			ticks?: number;
+			measure?: number;
+			ids?: string[];
+		};
+		type MidiTrack = MidiEvent[];
+
+		const tracks: MidiTrack[] = [].concat(...measureEvents).reduce((tracks, mevent) => {
 			tracks[mevent.track] = tracks[mevent.track] || [];
 			tracks[mevent.track].push({
 				ticks: mevent.ticks,
@@ -287,8 +289,48 @@ export class Notation {
 			text: `${npmPackage.name} ${npmPackage.version}`,
 		});
 
-		const finalTicks = Math.max(...measureEvents[measureEvents.length - 1].map(event => event.ticks));
+		// append note events
+		measureTick = 0;
+		measureIndices.map(index => {
+			const measure = this.measures[index - 1];
+			console.assert(!!measure, "invalid measure index:", index, this.measures.length);
 
+			measure.notes.forEach(note => {
+				const tick = measureTick + note.tick;
+
+				note.subNotes.forEach(subnote => {
+					const track = tracks[subnote.track];
+
+					track.push({
+						ticks: tick + subnote.startTick,
+						measure: index,
+						ids: note.ids,
+						type: "channel",
+						subtype: "noteOn",
+						channel: note.channel,
+						noteNumber: subnote.pitch,
+						velocity: subnote.velocity,
+					});
+
+					track.push({
+						ticks: tick + subnote.endTick,
+						measure: index,
+						ids: note.ids,
+						type: "channel",
+						subtype: "noteOff",
+						channel: note.channel,
+						noteNumber: subnote.pitch,
+						velocity: 0,
+					});
+				});
+			});
+
+			measureTick += measure.duration;
+		});
+
+		const finalTick = measureTick;
+
+		// sort & make deltaTime
 		tracks.forEach(events => {
 			events.sort((e1, e2) => e1.ticks - e2.ticks);
 
@@ -298,7 +340,7 @@ export class Notation {
 				ticks = event.ticks;
 			});
 
-			events.push({deltaTime: finalTicks - ticks, type: "meta", subtype: "endOfTrack"});
+			events.push({deltaTime: finalTick - ticks, type: "meta", subtype: "endOfTrack"});
 		});
 
 		const midi = {
@@ -353,11 +395,15 @@ export class Notation {
 			console.assert(!!mn, "cannot find measure note for c note:", cn, measure);
 
 			if (!indices.length) {
-				console.assert(!!mn.subNotes[0], "no default sub note for measure note:", mn);
-
 				const track = matcher.trackMap[mn.track];
-				mn.subNotes[0].velocity = velocities[track] || 90;
-				mn.subNotes[0].track = track;
+
+				mn.subNotes = [{
+					track,
+					startTick: 0,
+					endTick: mn.duration,
+					pitch: mn.pitch,
+					velocity: velocities[track] || 90,
+				}];
 			}
 			else {
 				const sn0 = matcher.sample.notes[indices[0]];
@@ -366,10 +412,12 @@ export class Notation {
 					const sn = matcher.sample.notes[si];
 					velocities[sn.track] = sn.velocity;
 
+					console.assert(sn.endTick > sn.startTick, "midi note duration is zero or negative:", sn);
+
 					return {
 						track: sn.track,
-						startTick: sn.startTick - sn0.startTick,
-						endTick: sn.endTick - sn0.startTick,
+						startTick: Math.round(sn.startTick - sn0.startTick),
+						endTick: Math.round(sn.endTick - sn0.startTick),
 						pitch: sn.pitch,
 						velocity: sn.velocity,
 					};
@@ -382,6 +430,10 @@ export class Notation {
 
 		//console.log("matcher.sample.events:", matcher.sample.events);
 		(matcher.sample.events as MeasureEvent[]).forEach(event => {
+			// exclude note events
+			if (["noteOn", "noteOff"].includes(event.data.subtype))
+				return;
+
 			if (Number.isInteger(event.data.measure)) {
 				const measure = this.measures[event.data.measure - 1];
 				console.assert(!!measure, "measure index is invalid:", event.data.measure, this.measures.length);
@@ -389,7 +441,7 @@ export class Notation {
 				measure.events.push({
 					data: event.data,
 					track: event.track,
-					ticks: event.ticks * tickFactor - measure.tick,
+					ticks: Math.round(event.ticks * tickFactor - measure.tick),
 				});
 			}
 			else {
@@ -404,7 +456,7 @@ export class Notation {
 						measure.events.push({
 							data: event.data,
 							track: event.track,
-							ticks: tick - measure.tick,
+							ticks: Math.round(tick - measure.tick),
 						});
 					}
 				}
