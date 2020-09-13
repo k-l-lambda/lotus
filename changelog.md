@@ -24,6 +24,8 @@
 
 *	2020.9.13
 
+	+	notation.ts: refined output midi notation tracks.
+
 	+	matcher.ts: match notes with track map.
 
 
@@ -48,6 +50,7 @@
 		*	matcher.matchWithExactMIDI
 			*	LilyNotation.toPerformingNotation
 			*	LilyNotation.assignMatcher
+				*	assignNotationEventsIds
 		*	LilyNotation.toPerformingNotationWithEvents
 			*	assignNotationNoteDataFromEvents
 		*	LilyNotation.getContextGroup

@@ -8,6 +8,7 @@ import {PitchContextTable} from "../pitchContext";
 import {MatcherResult} from "./matcher";
 import {MeasureLayout, LayoutType} from "./measureLayout";
 import ImplicitType from "./implicitType";
+import npmPackage from "../../package.json";
 
 
 
@@ -49,6 +50,7 @@ interface MeasureNote extends Partial<StaffNoteProperties> {
 
 interface MeasureEvent {
 	data: any;
+	track: number;
 	ticks?: number;
 };
 
@@ -226,7 +228,9 @@ export class Notation {
 
 
 	toPerformingNotationWithEvents (measureIndices: number[]): MusicNotation.Notation {
-		// TODO: write measure index into event data
+		if (!measureIndices.length)
+			return null;
+
 		let measureTick = 0;
 		const measureEvents: MeasureEvent[][] = measureIndices.map(index => {
 			const measure = this.measures[index - 1];
@@ -234,6 +238,7 @@ export class Notation {
 
 			const events = measure.events.map(mevent => ({
 				ticks: measureTick + mevent.ticks,
+				track: mevent.track,
 				data: {
 					...mevent.data,
 					measure: index,
@@ -245,7 +250,7 @@ export class Notation {
 			return events;
 		});
 
-		let ticks = 0;
+		/*let ticks = 0;
 
 		const sortedEvents = [].concat(...measureEvents).sort((e1, e2) => e1.ticks - e2.ticks);
 		//console.log("sortedEvents:", sortedEvents);
@@ -259,16 +264,48 @@ export class Notation {
 
 			return data;
 		});
-		track.push({deltaTime: 0, type: "meta", subtype: "endOfTrack"});
+		track.push({deltaTime: 0, type: "meta", subtype: "endOfTrack"});*/
+		const tracks = [].concat(...measureEvents).reduce((tracks, mevent) => {
+			tracks[mevent.track] = tracks[mevent.track] || [];
+			tracks[mevent.track].push({
+				ticks: mevent.ticks,
+				...mevent.data,
+			});
+
+			return tracks;
+		}, []);
+
+		// ensure no empty track
+		for (let t = 0; t < tracks.length; ++t)
+			tracks[t] = tracks[t] || [];
+
+		tracks[0] && tracks[0].push({
+			ticks: 0,
+			type: "meta",
+			subtype: "text",
+			text: `${npmPackage.name} ${npmPackage.version}`,
+		});
+
+		const finalTicks = Math.max(...measureEvents[measureEvents.length - 1].map(event => event.ticks));
+
+		tracks.forEach(events => {
+			events.sort((e1, e2) => e1.ticks - e2.ticks);
+
+			let ticks = 0;
+			events.forEach(event => {
+				event.deltaTime = event.ticks - ticks;
+				ticks = event.ticks;
+			});
+
+			events.push({deltaTime: finalTicks - ticks, type: "meta", subtype: "endOfTrack"});
+		});
 
 		const midi = {
 			header: {
 				formatType: 0,
 				ticksPerBeat: TICKS_PER_BEAT,
 			},
-			tracks: [
-				track,
-			],
+			tracks,
 		};
 
 		const notation = MusicNotation.Notation.parseMidi(midi);
@@ -311,6 +348,7 @@ export class Notation {
 
 				measure.events.push({
 					data: event.data,
+					track: event.track,
 					ticks: event.ticks * tickFactor - measure.tick,
 				});
 			}
@@ -325,6 +363,7 @@ export class Notation {
 					if (measure) {
 						measure.events.push({
 							data: event.data,
+							track: event.track,
 							ticks: tick - measure.tick,
 						});
 					}
