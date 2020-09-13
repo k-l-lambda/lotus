@@ -23,6 +23,7 @@ interface StaffNoteProperties {
 	tied: boolean;
 	overlapped: boolean;
 	implicitType: ImplicitType;
+	afterGrace: boolean;
 
 	contextIndex: number;
 	staffTrack: number;
@@ -81,7 +82,7 @@ interface Measure {
 };*/
 
 
-const EXTRA_NOTE_FIELDS = ["rest", "tied", "overlapped", "implicitType", "contextIndex", "staffTrack"];
+const EXTRA_NOTE_FIELDS = ["rest", "tied", "overlapped", "implicitType", "afterGrace", "contextIndex", "staffTrack"];
 const COMMON_NOTE_FIELDS = ["id", "ids", "pitch", "velocity", "track", "channel", ...EXTRA_NOTE_FIELDS];
 
 
@@ -379,7 +380,7 @@ export class Notation {
 		});
 		assignNotationEventsIds(matcher.sample, ["ids", "measure"]);
 
-		// TODO: post process MIDI events for afterGrace, arpeggio
+		// TODO: post process MIDI events for arpeggio
 
 		// assign sub notes
 		const c2sIndices = Array(matcher.criterion.notes.length).fill(null).map(() => []);
@@ -394,7 +395,12 @@ export class Notation {
 			const mn = measure.notes.find(note => note.tick === cn.startTick - measure.tick && note.pitch === cn.pitch);
 			console.assert(!!mn, "cannot find measure note for c note:", cn, measure);
 
-			if (!indices.length) {
+			const snotes = indices
+				.map(si => matcher.sample.notes[si])
+				.filter((sn, i) => Math.abs(sn.startTick - cn.startTick) < WHOLE_DURATION_MAGNITUDE
+					&& (!mn.afterGrace || i < 1)); // lilypond's afterGrace MIDI parsing is ill, clip notes to avoid error matching
+
+			if (!snotes.length) {
 				const track = matcher.trackMap[mn.track];
 
 				mn.subNotes = [{
@@ -406,10 +412,9 @@ export class Notation {
 				}];
 			}
 			else {
-				const sn0 = matcher.sample.notes[indices[0]];
+				const sn0 = snotes[0];
 
-				mn.subNotes = indices.map(si => {
-					const sn = matcher.sample.notes[si];
+				mn.subNotes = snotes.map(sn => {
 					velocities[sn.track] = sn.velocity;
 
 					console.assert(sn.endTick > sn.startTick, "midi note duration is zero or negative:", sn);

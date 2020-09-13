@@ -23,6 +23,8 @@
 
 *	2020.9.13
 
+	+	notation.ts: refined note assignment for afterGrace.
+
 	+	notation.ts: append note events in toPerformingNotationWithEvents.
 
 	+	notation.ts: sub notes on MeasureNote added.

@@ -49,6 +49,7 @@ interface PitchContextTerm {
 	key?: number;
 	newMeasure?: boolean;
 	pitches?: ChordElement[];
+	tickBias?: number;
 };
 
 
@@ -110,6 +111,7 @@ class LilyStaffContext extends StaffContext {
 				ids: [pitch.href],
 				tied: !!pitch._tied,
 				rest: event.isRest,
+				afterGrace: !!term.tickBias,
 				implicitType: event.implicitType,
 				staffTrack: this.staffTrack,
 				contextIndex,
@@ -345,6 +347,9 @@ export class MusicTrack {
 				const pcTerm = getCurrentTerm(track.staffName);
 				pcTerm.event = term;
 				pcTerm.pitches = term.pitchElements;
+
+				if (track.tickBias)
+					pcTerm.tickBias = track.tickBias;
 
 				commitTerm();
 			}
