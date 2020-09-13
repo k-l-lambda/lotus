@@ -269,6 +269,8 @@ export class Notation {
 		};
 		type MidiTrack = MidiEvent[];
 
+		const eventPriority = (event: MidiEvent): number => event.ticks + (event.subtype === "noteOff" ? -1e-4 : 0);
+
 		const tracks: MidiTrack[] = [].concat(...measureEvents).reduce((tracks, mevent) => {
 			tracks[mevent.track] = tracks[mevent.track] || [];
 			tracks[mevent.track].push({
@@ -333,7 +335,7 @@ export class Notation {
 
 		// sort & make deltaTime
 		tracks.forEach(events => {
-			events.sort((e1, e2) => e1.ticks - e2.ticks);
+			events.sort((e1, e2) => eventPriority(e1) - eventPriority(e2));
 
 			let ticks = 0;
 			events.forEach(event => {
@@ -418,6 +420,11 @@ export class Notation {
 					velocities[sn.track] = sn.velocity;
 
 					console.assert(sn.endTick > sn.startTick, "midi note duration is zero or negative:", sn);
+
+					// fix bad subnote duration
+					const duration = sn.endTick - sn.startTick;
+					if (duration > mn.duration * 2)
+						sn.endTick = sn.startTick + mn.duration;
 
 					return {
 						track: sn.track,
