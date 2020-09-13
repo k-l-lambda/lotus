@@ -36,15 +36,26 @@ export interface Note extends MusicNotation.Note, Partial<StaffNoteProperties> {
 };
 
 
+interface SubNote {
+	track: number;
+	startTick: number;
+	endTick: number;
+	pitch: number;
+	velocity?: number;
+};
+
+
 interface MeasureNote extends Partial<StaffNoteProperties> {
 	tick: number;
+	pitch: number;
 	duration: number;
 
 	track: number;
+	channel: number;
 	id: string;
 	ids: string[];
-	pitch: number;
-	velocity?: number;
+
+	subNotes: SubNote[];
 };
 
 
@@ -71,7 +82,7 @@ interface Measure {
 
 
 const EXTRA_NOTE_FIELDS = ["rest", "tied", "overlapped", "implicitType", "contextIndex", "staffTrack"];
-const COMMON_NOTE_FIELDS = ["id", "ids", "pitch", "velocity", "track", ...EXTRA_NOTE_FIELDS];
+const COMMON_NOTE_FIELDS = ["id", "ids", "pitch", "velocity", "track", "channel", ...EXTRA_NOTE_FIELDS];
 
 
 export class Notation {
@@ -93,6 +104,12 @@ export class Notation {
 				tick: note.startTick - tick,
 				duration: note.endTick - note.startTick,
 				..._.pick(note, COMMON_NOTE_FIELDS),
+				subNotes: [{
+					track: note.track,
+					startTick: 0,
+					endTick: note.endTick - note.startTick,
+					pitch: note.pitch,
+				}],
 			} as MeasureNote));
 
 			return {
@@ -190,7 +207,6 @@ export class Notation {
 				endTick: measureTick + mnote.tick + mnote.duration,
 				start: measureTick + mnote.tick,
 				duration: mnote.duration,
-				channel: 0,
 				measure: index,
 				..._.pick(mnote, COMMON_NOTE_FIELDS),
 			}) as Note);
@@ -250,21 +266,6 @@ export class Notation {
 			return events;
 		});
 
-		/*let ticks = 0;
-
-		const sortedEvents = [].concat(...measureEvents).sort((e1, e2) => e1.ticks - e2.ticks);
-		//console.log("sortedEvents:", sortedEvents);
-
-		const track = sortedEvents.map(e => {
-			const data = {
-				...e.data,
-				deltaTime: e.ticks - ticks,
-			};
-			ticks = e.ticks;
-
-			return data;
-		});
-		track.push({deltaTime: 0, type: "meta", subtype: "endOfTrack"});*/
 		const tracks = [].concat(...measureEvents).reduce((tracks, mevent) => {
 			tracks[mevent.track] = tracks[mevent.track] || [];
 			tracks[mevent.track].push({
@@ -338,6 +339,45 @@ export class Notation {
 
 		// TODO: post process MIDI events for afterGrace, arpeggio
 
+		// assign sub notes
+		const c2sIndices = Array(matcher.criterion.notes.length).fill(null).map(() => []);
+		matcher.path.forEach((ci, si) => si >= 0 && c2sIndices[ci].push(si));
+
+		const velocities: {[key: number]: number} = {};
+		c2sIndices.forEach((indices, ci) => {
+			const cn = matcher.criterion.notes[ci] as any;
+			const measure = this.measures[cn.measure - 1];
+			console.assert(!!measure, "cannot find measure for c note:", cn, this.measures.length);
+
+			const mn = measure.notes.find(note => note.tick === cn.startTick - measure.tick && note.pitch === cn.pitch);
+			console.assert(!!mn, "cannot find measure note for c note:", cn, measure);
+
+			if (!indices.length) {
+				console.assert(!!mn.subNotes[0], "no default sub note for measure note:", mn);
+
+				const track = matcher.trackMap[mn.track];
+				mn.subNotes[0].velocity = velocities[track] || 90;
+				mn.subNotes[0].track = track;
+			}
+			else {
+				const sn0 = matcher.sample.notes[indices[0]];
+
+				mn.subNotes = indices.map(si => {
+					const sn = matcher.sample.notes[si];
+					velocities[sn.track] = sn.velocity;
+
+					return {
+						track: sn.track,
+						startTick: sn.startTick - sn0.startTick,
+						endTick: sn.endTick - sn0.startTick,
+						pitch: sn.pitch,
+						velocity: sn.velocity,
+					};
+				});
+			}
+		});
+
+		// assign events
 		this.measures.forEach(measure => measure.events = []);
 
 		//console.log("matcher.sample.events:", matcher.sample.events);

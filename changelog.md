@@ -24,6 +24,8 @@
 
 *	2020.9.13
 
+	+	notation.ts: sub notes on MeasureNote added.
+
 	+	playground.vue: refined exportScore for v0.6.
 
 	+	notation.ts: refined output midi notation tracks.
@@ -51,6 +53,8 @@
 			*	LilyNotation.fromAbsoluteNotes
 		*	matcher.matchWithExactMIDI
 			*	LilyNotation.toPerformingNotation
+				*	LilyNotation.toAbsoluteNotes
+				*	Notation.performAbsoluteNotes
 			*	LilyNotation.assignMatcher
 				*	assignNotationEventsIds
 		*	LilyNotation.toPerformingNotationWithEvents

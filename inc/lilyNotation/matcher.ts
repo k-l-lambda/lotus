@@ -11,7 +11,8 @@ import ImplicitType from "./implicitType";
 export interface MatcherResult {
 	criterion: MusicNotation.NotationData,
 	sample: MusicNotation.NotationData,
-	path: number[],
+	path: number[],	// S to C
+	trackMap?: number[],	// C to S
 };
 
 
@@ -175,7 +176,7 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 			path[note.index] = cn.index;
 	});
 
-	const matcher = {criterion, sample: midiNotation, path};
+	const matcher = {criterion, sample: midiNotation, path, trackMap: trackIndexC2S};
 	lilyNotation.assignMatcher(matcher);
 
 	return matcher;
