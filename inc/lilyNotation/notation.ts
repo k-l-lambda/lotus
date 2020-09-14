@@ -457,14 +457,17 @@ export class Notation {
 		// assign events
 		this.measures.forEach(measure => measure.events = []);
 
-		//console.log("matcher.sample.events:", matcher.sample.events);
+		//console.debug("matcher.trackMap:", matcher.trackMap);
 		(matcher.sample.events as MeasureEvent[]).forEach(event => {
 			// exclude note events
 			if (["noteOn", "noteOff"].includes(event.data.subtype))
 				return;
 
-			const id = event.data.ids && event.data.ids[0];
-			const track = id ? (this.idTrackMap[id] || 0) : 0;
+			let track = matcher.trackMap[event.track];
+			if (!Number.isFinite(track)) {
+				const id = event.data.ids && event.data.ids[0];
+				track = id ? (this.idTrackMap[id] || 0) : 0;
+			}
 
 			if (Number.isInteger(event.data.measure)) {
 				const measure = this.measures[event.data.measure - 1];

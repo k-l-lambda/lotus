@@ -21,6 +21,8 @@
 
 *	2020.9.14
 
+	+	matcher.ts: refined definition of trackMap.
+
 	+	notation.ts: use track value from parser.
 
 

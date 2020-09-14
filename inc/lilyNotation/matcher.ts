@@ -12,7 +12,7 @@ export interface MatcherResult {
 	criterion: MusicNotation.NotationData,
 	sample: MusicNotation.NotationData,
 	path: number[],	// S to C
-	trackMap?: number[],	// C to S
+	trackMap?: number[],	// S to C
 };
 
 
@@ -107,7 +107,7 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 	criterion.notes.forEach(note => {
 		const implicit = !!(note as any).implicitType;
 
-		const key = noteKey({...note, track: trackIndexC2S[note.track]});
+		const key = noteKey({...note, track: trackIndexC2S[note.track - 1]});
 		const sn = snoteMap[key];
 		if (sn) {
 			path[sn.index] = note.index;
@@ -176,7 +176,9 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 			path[note.index] = cn.index;
 	});
 
-	const matcher = {criterion, sample: midiNotation, path, trackMap: trackIndexC2S};
+	const trackMap = Object.entries(trackIndexC2S).reduce((map, [ct, st]) => ((st >= 0 && (map[st] = Number(ct) + 1)), map), []);
+
+	const matcher = {criterion, sample: midiNotation, path, trackMap};
 	lilyNotation.assignMatcher(matcher);
 
 	return matcher;
