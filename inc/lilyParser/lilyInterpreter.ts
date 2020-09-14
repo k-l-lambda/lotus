@@ -773,7 +773,7 @@ class MusicPerformance {
 
 	getNotation ({logger = new LogRecorder()} = {}): LilyNotation.Notation {
 		const pcTerms: PitchContextTerm[] = [].concat(...this.musicTracks.map((track, i) =>
-			track.generateStaffTracks().map(term => ({track: i, ...term}))));
+			track.generateStaffTracks().map(term => ({track: i + 1, ...term}))));
 		//console.log("pcTerms:", pcTerms);
 
 		const termsToContexts = (staffTerms: PitchContextTerm[], trackIndex: number): LilyStaffContext => {

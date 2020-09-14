@@ -19,6 +19,11 @@
 
 
 
+*	2020.9.14
+
+	+	notation.ts: use track value from parser.
+
+
 *	2020.9.13
 
 	+	notation.ts: fixed note duration issue in Notation.assignMatcher.

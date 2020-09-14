@@ -38,7 +38,7 @@ export interface Note extends MusicNotation.Note, Partial<StaffNoteProperties> {
 
 
 interface SubNote {
-	track: number;
+	//track: number;
 	startTick: number;
 	endTick: number;
 	pitch: number;
@@ -92,6 +92,7 @@ export class Notation {
 	measures: Measure[];
 
 	trackNames: string[];
+	idTrackMap: {[key: string]: number};
 
 
 	static fromAbsoluteNotes (notes: Note[], measureHeads: number[], data?: Partial<Notation>): Notation {
@@ -114,6 +115,13 @@ export class Notation {
 				notes: mnotes,
 			};
 		});
+
+		notation.idTrackMap = notes.reduce((map, note) => {
+			if (note.id)
+				map[note.id] = note.track;
+
+			return map;
+		}, {});
 
 		return notation;
 	}
@@ -239,7 +247,7 @@ export class Notation {
 	}
 
 
-	toPerformingNotationWithEvents (measureIndices: number[]): MusicNotation.Notation {
+	toPerformingMIDI (measureIndices: number[]): MIDI.MidiData {
 		if (!measureIndices.length)
 			return null;
 
@@ -281,11 +289,8 @@ export class Notation {
 			return tracks;
 		}, []);
 
-		// ensure no empty track
-		for (let t = 0; t < tracks.length; ++t)
-			tracks[t] = tracks[t] || [];
-
-		tracks[0] && tracks[0].push({
+		tracks[0] = tracks[0] || [];
+		tracks[0].push({
 			ticks: 0,
 			type: "meta",
 			subtype: "text",
@@ -302,7 +307,7 @@ export class Notation {
 				const tick = measureTick + note.tick;
 
 				note.subNotes.forEach(subnote => {
-					const track = tracks[subnote.track];
+					const track = tracks[note.track] = tracks[note.track] || [];
 
 					track.push({
 						ticks: tick + subnote.startTick,
@@ -333,6 +338,10 @@ export class Notation {
 
 		const finalTick = measureTick;
 
+		// ensure no empty track
+		for (let t = 0; t < tracks.length; ++t)
+			tracks[t] = tracks[t] || [];
+
 		// sort & make deltaTime
 		tracks.forEach(events => {
 			events.sort((e1, e2) => eventPriority(e1) - eventPriority(e2));
@@ -346,15 +355,23 @@ export class Notation {
 			events.push({deltaTime: finalTick - ticks, type: "meta", subtype: "endOfTrack"});
 		});
 
-		const midi = {
+		return {
 			header: {
 				formatType: 0,
 				ticksPerBeat: TICKS_PER_BEAT,
 			},
 			tracks,
 		};
+	}
 
+
+	toPerformingNotationWithEvents (measureIndices: number[]): MusicNotation.Notation {
+		if (!measureIndices.length)
+			return null;
+
+		const midi = this.toPerformingMIDI(measureIndices);
 		const notation = MusicNotation.Notation.parseMidi(midi);
+	
 		assignNotationNoteDataFromEvents(notation);
 
 		return notation;
@@ -403,14 +420,14 @@ export class Notation {
 					&& (!mn.afterGrace || i < 1)); // lilypond's afterGrace MIDI parsing is ill, clip notes to avoid error matching
 
 			if (!snotes.length) {
-				const track = matcher.trackMap[mn.track];
+				//const track = matcher.trackMap[mn.track];
 
 				mn.subNotes = [{
-					track,
+					//track,
 					startTick: 0,
 					endTick: mn.duration,
 					pitch: mn.pitch,
-					velocity: velocities[track] || 90,
+					velocity: velocities[mn.track] || 90,
 				}];
 			}
 			else {
@@ -427,7 +444,7 @@ export class Notation {
 						sn.endTick = sn.startTick + mn.duration;
 
 					return {
-						track: sn.track,
+						//track: sn.track,
 						startTick: Math.round(sn.startTick - sn0.startTick),
 						endTick: Math.round(sn.endTick - sn0.startTick),
 						pitch: sn.pitch,
@@ -446,13 +463,16 @@ export class Notation {
 			if (["noteOn", "noteOff"].includes(event.data.subtype))
 				return;
 
+			const id = event.data.ids && event.data.ids[0];
+			const track = id ? (this.idTrackMap[id] || 0) : 0;
+
 			if (Number.isInteger(event.data.measure)) {
 				const measure = this.measures[event.data.measure - 1];
 				console.assert(!!measure, "measure index is invalid:", event.data.measure, this.measures.length);
 
 				measure.events.push({
 					data: event.data,
-					track: event.track,
+					track,
 					ticks: Math.round(event.ticks * tickFactor - measure.tick),
 				});
 			}
@@ -467,7 +487,7 @@ export class Notation {
 					if (measure) {
 						measure.events.push({
 							data: event.data,
-							track: event.track,
+							track,
 							ticks: Math.round(tick - measure.tick),
 						});
 					}
