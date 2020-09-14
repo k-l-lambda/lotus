@@ -21,6 +21,8 @@
 
 *	2020.9.14
 
+	+	batchScoreMaker.ts: added argument of includeFolders.
+
 	+	batchScoreMaker.ts: added default argument as inputLyDir on argv.
 
 	+	matcher.ts: refined definition of trackMap.

@@ -13,6 +13,7 @@ import {emptyCache} from "../backend/lilyCommands";
 import asyncCall from "../inc/asyncCall";
 import LogRecorder from "../inc/logRecorder";
 import * as statStorage from "../backend/statStorage";
+import * as constants from "../backend/constants";
 
 
 
@@ -172,6 +173,7 @@ const main = async () => {
 
 		const markup = argv.markup ? fs.readFileSync(argv.markup).toString() : null;
 		const baking = !!argv.baking;
+		const includeFolders = constants.LY_INCLUDE_FOLDERS;
 
 		const qualityThreshold = argv.qualityThreshold ? Number(argv.qualityThreshold) : 0;
 
@@ -213,7 +215,7 @@ const main = async () => {
 					console.log("midi loaded:", midiPath);
 				}
 
-				const {score, bakingImages} = await ScoreMaker.makeScore(ly, lilyParser, {midi, logger, baking});
+				const {score, bakingImages} = await ScoreMaker.makeScore(ly, lilyParser, {midi, logger, baking, includeFolders});
 
 				//console.log("logger.records:", logger.records);
 				//debugger;
