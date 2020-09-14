@@ -109,6 +109,12 @@ export class Notation {
 				subNotes: [],
 			} as MeasureNote));
 
+			// reduce note data size
+			mnotes.forEach(mn => ["rest", "tied", "implicitType", "afterGrace"].forEach(field => {
+				if (!mn[field])
+					delete mn[field];
+			}));
+
 			return {
 				tick,
 				duration,
