@@ -403,7 +403,7 @@ export class Notation {
 
 		// assign sub notes
 		const c2sIndices = Array(matcher.criterion.notes.length).fill(null).map(() => []);
-		matcher.path.forEach((ci, si) => si >= 0 && c2sIndices[ci].push(si));
+		matcher.path.forEach((ci, si) => ci >= 0 && c2sIndices[ci].push(si));
 
 		const velocities: {[key: number]: number} = {};
 		c2sIndices.forEach((indices, ci) => {
