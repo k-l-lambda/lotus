@@ -21,6 +21,8 @@
 
 *	2020.9.14
 
+	+	lilypond.jison: added command syntax of articulate.
+
 	+	batchScoreMaker.ts: added argument of includeFolders.
 
 	+	batchScoreMaker.ts: added default argument as inputLyDir on argv.

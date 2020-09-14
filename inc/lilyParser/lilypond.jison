@@ -272,6 +272,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\hide"							return 'CMD_HIDE';
 "\\crossStaff"						return 'CMD_CROSSSTAFF';
 "\\keepWithTag"						return 'CMD_KEEPWITHTAG';
+"\\articulate"						return 'CMD_ARTICULATE';
 
 // zero commands
 "\\tempoLegend"						return 'CMD_TEMPOLEGEND';
@@ -1991,6 +1992,8 @@ music_identifier
 	| CMD_SCALEDURATIONS FRACTION composite_music
 		{$$ = command($1, $2, $3);}
 	| CMD_TUPLETNEUTRAL music
+		{$$ = command($1, $2);}
+	| CMD_ARTICULATE music
 		{$$ = command($1, $2);}
 	| markup_font_size music
 		{$$ = command($1, $2);}
