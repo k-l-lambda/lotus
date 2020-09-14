@@ -18,7 +18,7 @@ import * as statStorage from "../backend/statStorage";
 
 interface Arguments {
 	//[x: string]: unknown;
-	//_: string[];
+	_: string[];
 	//$0: string;
 
 	inputLyDir?: string;
@@ -133,8 +133,10 @@ const main = async () => {
 		log("XML to ly finished, success:", counting.success, "failure:", counting.failure, "skip:", counting.skip);
 	}
 
-	if (argv.inputLyDir) {
-		const lyFiles = walkDir(argv.inputLyDir, /\.ly$/, {recursive: true});
+	const inputLyDir = argv.inputLyDir || argv._[0];
+
+	if (inputLyDir) {
+		const lyFiles = walkDir(inputLyDir, /\.ly$/, {recursive: true});
 		lyFiles.forEach(path => lilyFiles.add(path));
 	}
 
@@ -156,7 +158,7 @@ const main = async () => {
 
 	let processedCount = 0;
 
-	if (argv.inputLyDir || argv.bundleScore) {
+	if (inputLyDir || argv.bundleScore) {
 		const counting = {
 			success: 0,
 			perfect: 0,
