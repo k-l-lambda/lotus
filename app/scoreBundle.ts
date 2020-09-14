@@ -17,7 +17,7 @@ const parseVersion = (ver: string): number => {
 		const captures = ver.match(/\d+/g);
 		if (captures) {
 			const numbers = captures.map(Number).reverse();
-	
+
 			return numbers.reduce((ver, n, i) => ver + n * (1000 ** i), 0);
 		}
 	}
@@ -83,11 +83,11 @@ export default class ScoreBundle {
 
 
 	checkVersion () {
-		const apiVersion = parseVersion(npmPackage.version);
+		//const apiVersion = parseVersion(npmPackage.version);
 		const version = parseVersion(this.scoreJSON.version);
 
-		// TODO: declare the lowest compibile version
-		if (version < apiVersion)
+		// warning line
+		if (version < parseVersion("0.6.1"))
 			console.warn(`This score bundle version[${this.scoreJSON.version}] is too low! The current Lotus API version is: ${npmPackage.version}.`);
 	}
 };
