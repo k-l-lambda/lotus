@@ -36,7 +36,7 @@ export default class Scheduler {
 
 		midiNotation.notes.forEach(note => {
 			if (note.ids) {
-				if (note.measure > measureIndex) {
+				if (note.measure !== measureIndex) {
 					idSet.clear();
 					measureIndex = note.measure;
 				}
