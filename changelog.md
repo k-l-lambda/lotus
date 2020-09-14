@@ -21,6 +21,8 @@
 
 *	2020.9.14
 
+	+	sheetDocument.ts: assign track in SheetDocument.alignTokensWithNotation.
+
 	+	lilypond.jison: added command syntax of articulate.
 
 	+	batchScoreMaker.ts: added argument of includeFolders.

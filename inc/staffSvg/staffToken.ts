@@ -25,6 +25,7 @@ export default class StaffToken {
 	tied?: boolean;
 	stemX?: number;
 	stemUp?: boolean;
+	track?: number;
 
 
 	constructor (data) {
@@ -43,7 +44,7 @@ export default class StaffToken {
 			__prototype: "StaffToken",
 			x, y,
 			..._.pick(this, ["rx", "ry", "sw", "start", "target", "source", "tied",
-				"symbol", "hash", "href", "scale", "width", "height", "text", "stemX", "stemUp"]),
+				"symbol", "hash", "href", "scale", "width", "height", "text", "stemX", "stemUp", "track"]),
 		};
 	}
 
