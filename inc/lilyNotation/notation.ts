@@ -358,7 +358,7 @@ export class Notation {
 				ticks = event.ticks;
 			});
 
-			events.push({deltaTime: finalTick - ticks, type: "meta", subtype: "endOfTrack"});
+			events.push({deltaTime: Math.max(finalTick - ticks, 0), type: "meta", subtype: "endOfTrack"});
 		});
 
 		return {

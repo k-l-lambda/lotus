@@ -21,6 +21,8 @@
 
 *	2020.9.14
 
+	+	notation.ts: added protection on endOfTrack's deltaTime to prevent negative deltaTime.
+
 	+	lilypond.jison: added command syntax of articulate.
 
 	+	batchScoreMaker.ts: added argument of includeFolders.
