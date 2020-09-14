@@ -1,5 +1,6 @@
 
 ## TODO
+	assign track on SheetDocument.alignTokensWithNotation
 	MIDI post processing
 		arpeggio
 	implicit notes matching with sheet document
