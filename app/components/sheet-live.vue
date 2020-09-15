@@ -121,7 +121,7 @@
 									:transform="`translate(${token.x + token.musicFontNoteOffset}, ${token.y})` + (token.scale && token.scale !== 1 ? ` scale(${token.scale})` : '')"
 									class="token matched"
 								>
-									<text :data-href="token.href">{{token.fontChar}}</text>
+									<text :data-href="token.href" :data-track="token.track">{{token.fontChar}}</text>
 								</g>
 							</g>
 							<g class="markings">
