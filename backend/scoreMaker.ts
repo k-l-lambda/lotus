@@ -81,7 +81,7 @@ const unescapeStringExp = exp => exp && exp.toString();
 interface SheetNotationResult extends Partial<ScoreJSON> {
 	midi: MIDI.MidiData;
 	midiNotation: MusicNotation.NotationData;
-	sheetNotation: staffSvg.StaffNotation.SheetNotation;
+	//sheetNotation: staffSvg.StaffNotation.SheetNotation;
 	lilyDocument: LilyDocument;
 	bakingImages?: Readable[];
 };
@@ -166,17 +166,19 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 		staffSize: attributes.staffSize as number,
 	};
 
+	/*const t00 = Date.now();
 	const sheetNotation = staffSvg.StaffNotation.parseNotationFromSheetDocument(doc, {logger});
 
 	// correct notation time by location-tick table from lily document
 	const tickTable = lilyDocument.getLocationTickTable();
 	staffSvg.StaffNotation.assignTickByLocationTable(sheetNotation, tickTable);
+	console.log("parseNotationFromSheetDocument cost:", Date.now() - t00);*/
 
 	return {
 		midi,
 		bakingImages: baking ? bakingImages : null,
 		midiNotation,
-		sheetNotation,
+		//sheetNotation,
 		meta,
 		doc,
 		hashTable,
@@ -217,7 +219,7 @@ const makeScore = async (
 			console.warn("Neither lilypond or external arguments did not offer MIDI data, score maker finished incompletely.");
 
 		if (!lilyNotation)
-			console.warn("sheetNotation parsing failed, score maker finished incompletely.");
+			console.warn("lilyNotation parsing failed, score maker finished incompletely.");
 
 		return {
 			score: {
