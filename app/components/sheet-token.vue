@@ -3,6 +3,7 @@
 		:transform="`translate(${token.x}, ${token.y})`"
 		:class="classes"
 		:data-href="token.href"
+		:data-track="token.track"
 		@click="$emit('click', $event)"
 	>
 		<use :class="token.classes" :data-href="token.href" :xlink:href="`#sign-${token.hash}`" />
