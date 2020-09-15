@@ -421,6 +421,13 @@ class SheetDocument {
 			else
 				note.overlapped = true;
 		}));
+
+		// assign tracks
+		noteheads.forEach(token => {
+			const track = notation.idTrackMap[token.href];
+			if (Number.isInteger(track))
+				token.track = track;
+		});
 	}
 
 

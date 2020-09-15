@@ -22,6 +22,8 @@
 
 *	2020.9.14
 
+	+	sheetDocument.ts: assign track in SheetDocument.alignTokensWithNotation.
+
 	+	notation.ts: added protection on endOfTrack's deltaTime to prevent negative deltaTime.
 
 	+	lilypond.jison: added command syntax of articulate.
