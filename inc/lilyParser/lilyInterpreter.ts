@@ -953,15 +953,15 @@ export default class LilyInterpreter {
 						break;
 					}
 				}
+			}
 
-				this.createMusicPerformance();
+			this.createMusicPerformance();
 
-				if (this.musicPerformance) {
-					this.layoutMusic = this.musicPerformance;
-					this.midiMusic = this.musicPerformance;
+			if (this.musicPerformance) {
+				this.layoutMusic = this.musicPerformance;
+				this.midiMusic = this.musicPerformance;
 
-					this.musicPerformance = null;
-				}
+				this.musicPerformance = null;
 			}
 		}
 		else if (term instanceof Assignment) {
