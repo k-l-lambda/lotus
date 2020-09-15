@@ -31,8 +31,9 @@
 								</g>
 							</g>
 							<g v-if="showMarkPitchContexts && pitchContextMarks[row.index] && pitchContextMarks[row.index][iii]" class="pitch-context">
-								<g v-for="(item, i4) of pitchContextMarks[row.index][iii]" :key="i4" :transform="`translate(${item.x}, 0.5)`">
-									<g>
+								<g v-for="(item, i4) of pitchContextMarks[row.index][iii]" :key="i4" :transform="`translate(${item.x}, 0)`">
+									<line class="base-line" x1="0" x2="0" y1="-3" y2="3" />
+									<g transform="translate(0.2, 0.5)">
 										<g v-for="(pitch, i5) of item.names[0]" :key="i5" class="pitch"
 											:transform="`translate(0, ${pitch.y})`"
 											:class="{
@@ -44,7 +45,7 @@
 											<text>{{pitch.name}}</text>
 										</g>
 									</g>
-									<g transform="translate(1.6,0)">
+									<g transform="translate(1.6, 0.5)">
 										<g v-for="(pitch, i5) of item.names[1]" :key="i5" class="pitch"
 											:transform="`translate(0, ${pitch.y})`"
 											:class="{
@@ -651,54 +652,6 @@
 			rect
 			{
 				fill: transparent;
-			}
-
-			.pitch-context
-			{
-				.pitch
-				{
-					text
-					{
-						fill: #0004;
-						font-size: 1px;
-						pointer-events: none;
-					}
-
-					&:hover
-					{
-						text
-						{
-							fill: #000;
-							transform: scale(1.6);
-							font-weight: bold;
-						}
-					}
-
-					.bg
-					{
-						x: 0;
-						y: -1px;
-						width: 1.6px;
-						height: 1px;
-						fill: #fff2;
-					}
-
-					&.sharp
-					{
-						.bg
-						{
-							fill: orange;
-						}
-					}
-
-					&.flat
-					{
-						.bg
-						{
-							fill: #aaf;
-						}
-					}
-				}
 			}
 		}
 

@@ -21,6 +21,8 @@
 
 *	2020.9.15
 
+	+	playground.vue: added controls of chromatic mode.
+
 	+	lilyInterpreter.ts: fix music track anchro pitch for single chord non-relative music block.
 
 

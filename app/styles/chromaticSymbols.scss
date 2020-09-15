@@ -1,187 +1,270 @@
 
-.chromatic .sheet.live
+.chromatic
 {
-	.page
+	.sheet.live
 	{
-		background: white !important;
-		border: 1px black solid;
+		.page
+		{
+			background: white !important;
+			border: 1px black solid;
+		}
+	
+		.mark
+		{
+			visibility: visible;
+			opacity: 1;
+		}
 	}
 
 
-	.staff-line
+	&[data-chromatic='symbols'] .sheet.live
 	{
-		stroke: gainsboro;
-	}
-
-	.measure-separator
-	{
-		fill: darkblue;
-	}
-
-	.additional-line
-	{
-		fill: chocolate;
-	}
-
-	.brace, .vertical-line
-	{
-		fill: whitesmoke;
-	}
-
-	.note-stem
-	{
-		fill: #66a;
-
-		&.bald
+		.staff-line
+		{
+			stroke: gainsboro;
+		}
+	
+		.measure-separator
+		{
+			fill: darkblue;
+		}
+	
+		.additional-line
+		{
+			fill: chocolate;
+		}
+	
+		.brace, .vertical-line
+		{
+			fill: whitesmoke;
+		}
+	
+		.note-stem
+		{
+			fill: #66a;
+	
+			&.bald
+			{
+				stroke: red;
+				stroke-width: 0.1px;
+			}
+		}
+	
+		.notetail
+		{
+			fill: #c0d0e0;
+		}
+	
+		.staves-connection
+		{
+			fill: dodgerblue;
+			stroke: dodgerblue;
+			stroke-width: .6px;
+		}
+	
+		.clef
+		{
+			fill: magenta;
+		}
+	
+		.notehead
+		{
+			fill: deepskyblue;
+		}
+	
+		.attached .notehead
+		{
+			fill: steelblue;
+		}
+	
+		.rest
+		{
+			fill: lightblue;
+		}
+	
+		.number
+		{
+			fill: lightslategray;
+		}
+	
+		.time-sig, .time-sig.number
+		{
+			fill: seagreen;
+		}
+	
+		.tempo-notehead
+		{
+			fill: lightgreen;
+		}
+	
+		.dot
+		{
+			fill: orange;
+		}
+	
+		.alter
+		{
+			fill: darkgreen;
+		}
+	
+		.attached .alter
+		{
+			fill: lightgreen;
+		}
+	
+		.octave
+		{
+			fill: violet;
+		}
+	
+		.octave.line
+		{
+			stroke: violet;
+		}
+	
+		.slur
+		{
+			fill: pink;
+			stroke: pink;
+		}
+	
+		.expressive, .arpeggio, .tr, .tr-wave, .attached, .sustain
+		{
+			fill: wheat;
+		}
+	
+		.notice
 		{
 			stroke: red;
-			stroke-width: 0.1px;
-		}
-	}
-
-	.notetail
-	{
-		fill: #c0d0e0;
-	}
-
-	.staves-connection
-	{
-		fill: dodgerblue;
-		stroke: dodgerblue;
-		stroke-width: .6px;
-	}
-
-	.clef
-	{
-		fill: magenta;
-	}
-
-	.notehead
-	{
-		fill: deepskyblue;
-	}
-
-	.attached .notehead
-	{
-		fill: steelblue;
-	}
-
-	.rest
-	{
-		fill: lightblue;
-	}
-
-	.number
-	{
-		fill: lightslategray;
-	}
-
-	.time-sig, .time-sig.number
-	{
-		fill: seagreen;
-	}
-
-	.tempo-notehead
-	{
-		fill: lightgreen;
-	}
-
-	.dot
-	{
-		fill: orange;
-	}
-
-	.alter
-	{
-		fill: darkgreen;
-	}
-
-	.attached .alter
-	{
-		fill: lightgreen;
-	}
-
-	.octave
-	{
-		fill: violet;
-	}
-
-	.octave.line
-	{
-		stroke: violet;
-	}
-
-	.slur
-	{
-		fill: pink;
-		stroke: pink;
-	}
-
-	.expressive, .arpeggio, .tr, .tr-wave, .attached, .sustain
-	{
-		fill: wheat;
-	}
-
-	.notice
-	{
-		stroke: red;
-		stroke-width: 1;
-
-		&.alter
-		{
-			stroke-width: 60;
-		}
-	}
-
-	.mark
-	{
-		visibility: visible;
-		opacity: 1;
-
-		.row > rect
-		{
-			fill: #ffff0008;
-			stroke: #ff0a;
-			stroke-width: 0.3;
+			stroke-width: 1;
+	
+			&.alter
+			{
+				stroke-width: 60;
+			}
 		}
 	
-		.staff
+		.mark
 		{
-			circle
+			.row > rect
 			{
-				r: 1;
-				fill: #4086;
+				fill: #ffff0008;
+				stroke: #ff0a;
+				stroke-width: 0.3;
 			}
-
-			line
+		
+			.staff
 			{
-				stroke: black;
-				stroke-width: 0.1;
-				stroke-dasharray: 0.5, 0.5;
+				circle
+				{
+					r: 1;
+					fill: #4086;
+				}
+	
+				line
+				{
+					stroke: black;
+					stroke-width: 0.1;
+					stroke-dasharray: 0.5, 0.5;
+				}
+		
+				rect.head
+				{
+					fill: #0002;
+				}
 			}
 	
-			rect.head
+			.measure
 			{
-				fill: #0002;
+				text
+				{
+					fill: #0046;
+				}
 			}
 		}
-
-		.measure
+	
+		.measure .text
 		{
-			text
-			{
-				fill: #0046;
-			}
+			fill: #cce;
+		}
+	
+		.page-tokens .text
+		{
+			fill: #eee;
 		}
 	}
 
-	.measure .text
-	{
-		fill: #cce;
-	}
 
-	.page-tokens .text
+	&[data-chromatic='pitch'] .sheet.live
 	{
-		fill: #eee;
+		.page
+		{
+			use
+			{
+				fill: #0003;
+
+				&.slur
+				{
+					stroke: transparent;
+				}
+			}
+		}
+
+		.mark
+		{
+			.pitch-context
+			{
+				.base-line
+				{
+					stroke-width: 0.1px;
+					stroke: black;
+				}
+
+				.pitch
+				{
+					text
+					{
+						fill: #000c;
+						font-size: 1px;
+						pointer-events: none;
+						font-weight: bold;
+					}
+
+					&:hover
+					{
+						text
+						{
+							fill: #000;
+							transform: scale(1.6);
+						}
+					}
+
+					.bg
+					{
+						x: 0;
+						y: -1px;
+						width: 1.6px;
+						height: 1px;
+						fill: #fff2;
+					}
+
+					&.sharp
+					{
+						.bg
+						{
+							fill: orange;
+						}
+					}
+
+					&.flat
+					{
+						.bg
+						{
+							fill: #aaf;
+						}
+					}
+				}
+			}
+		}
 	}
 }

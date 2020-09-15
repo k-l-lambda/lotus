@@ -30,9 +30,15 @@
 				<BoolStoreInput v-show="false" v-model="showNotationsMatcher" sessionKey="lotus-showNotationsMatcher" />
 				<BoolStoreInput v-show="false" v-model="enabledMidiAudio" sessionKey="lotus-enabledMidiAudio" />
 				<BoolStoreInput v-show="false" v-model="showCursor" sessionKey="lotus-playground.showCursor" />
+				<StoreInput v-show="false" v-model="chromaticMode" localKey="lotus-playground.chromaticMode" />
 				<CheckButton content="&#x1f3b9;" v-model="tokenizeStaff" title="live staff" />
 				<fieldset v-show="tokenizeStaff">
-					<CheckButton content="&#x1f3a8;" v-model="chromaticSymbols" :disabled="!sheetDocument" title="chromatic symbols" />
+					<CheckButton content="&#x1f3a8;" v-model="enabledChromatic" :disabled="!sheetDocument" title="chromatic mode" />
+					<select v-show="enabledChromatic" v-model="chromaticMode">
+						<option value="symbols">symbols</option>
+						<option value="pitch">pitch</option>
+						<option value="track">track</option>
+					</select>
 					<CheckButton content="&#x2633;" v-model="rollVisible" :disabled="!midiPlayer" title="show MIDI roll" />
 					<CheckButton content="c|s" v-model="showNotationsMatcher" :disabled="!matcherNotations" title="show notations matcher" />
 					<CheckButton content="&#x1f50a;" v-model="enabledMidiAudio" title="MIDI Audio" />
@@ -74,9 +80,12 @@
 				</span>
 				<Loading v-show="sourceIsLoading" />
 			</div>
-			<div class="build-container" ref="buildContainer" :class="{
-				loading: engraving, dirty: engraverDirty, chromatic: chromaticSymbols, inspecting: showNotationsMatcher,
-			}">
+			<div class="build-container" ref="buildContainer"
+				:class="{
+					loading: engraving, dirty: engraverDirty, chromatic: enabledChromatic, inspecting: showNotationsMatcher,
+				}"
+				:data-chromatic="chromaticMode"
+			>
 				<MidiRoll v-if="tokenizeStaff && midiPlayer" v-show="rollVisible"
 					:player="midiPlayer"
 					:timeScale="16e-3"
@@ -103,8 +112,8 @@
 						:pitchContextGroup="pitchContextGroup"
 						:midiPlayer.sync="midiPlayer"
 						:showMark="true"
-						:showMarkLocators="chromaticSymbols"
-						:showMarkPitchContexts="chromaticSymbols"
+						:showMarkLocators="enabledChromatic && chromaticMode === 'symbols'"
+						:showMarkPitchContexts="enabledChromatic && chromaticMode === 'pitch'"
 						:enablePointer="enabledPointer"
 						:showCursor="showCursor"
 						:bakingMode="bakingSheet"
@@ -364,7 +373,8 @@
 				midi: null,
 				midiNotation: null,
 				pitchContextGroup: null,
-				chromaticSymbols: false,
+				enabledChromatic: false,
+				chromaticMode: "symbols",
 				midiPlayer: null,
 				rollVisible: false,
 				matcherNotations: null,
