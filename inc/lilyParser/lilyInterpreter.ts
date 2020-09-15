@@ -559,6 +559,9 @@ class TrackContext {
 			term._previous = this.event;
 
 			if (term instanceof Chord) {
+				if (!this.track.anchorPitch)
+					this.track.anchorPitch = ChordElement.default.clone();
+
 				this.setPitch(term.absolutePitch);
 
 				term.pitches.forEach(pitch => {
