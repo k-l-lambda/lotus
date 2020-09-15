@@ -955,12 +955,15 @@
 				await this.updateLilyDocument();
 				const attributes = this.lilyDocument.globalAttributes({readonly: true});
 
+				const midiMusic = this.lilyDocument.interpret().midiMusic;
+
 				const meta = {
 					title: attributes.title,
 					composer: attributes.composer,
 					pageSize: this.sheetDocument.pageSize,
 					pageCount: this.sheetDocument.pages.length,
 					staffSize: attributes.staffSize,
+					trackInfos: midiMusic && midiMusic.trackContextDicts,
 				};
 
 				//const noteLinkings = this.midiNotation.notes.map(note => _.pick(note, ["ids", "staffTrack", "contextIndex"]));

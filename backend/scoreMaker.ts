@@ -157,6 +157,8 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 		}));
 	}
 
+	const midiMusic = lilyDocument.interpret().midiMusic;
+
 	const {attributes} = await argsGen.wait();
 	const meta = {
 		title: unescapeStringExp(attributes.title),
@@ -164,6 +166,7 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 		pageSize: doc.pageSize,
 		pageCount: doc.pages.length,
 		staffSize: attributes.staffSize as number,
+		trackInfos: midiMusic && midiMusic.trackContextDicts,
 	};
 
 	/*const t00 = Date.now();

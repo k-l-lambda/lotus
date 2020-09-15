@@ -20,6 +20,7 @@ export interface ScoreMeta {
 	};
 	pageCount: number;
 	staffSize: number;
+	trackInfos: {[key: string]: string}[];
 }
 
 

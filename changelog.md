@@ -21,6 +21,8 @@
 
 *	2020.9.15
 
+	+	scoreJSON: added field of trackInfos on ScoreMeta.
+
 	+	source-editor.vue: refined style to solve line height inconsistent issue.
 
 	+	sheet-token.vue: added data-track on DOM.

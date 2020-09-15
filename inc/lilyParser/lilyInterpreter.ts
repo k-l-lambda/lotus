@@ -774,6 +774,14 @@ class MusicPerformance {
 	}
 
 
+	get trackContextDicts (): ContextDict[] {
+		const dicts = this.musicTracks.map(track => track.contextDict);
+		dicts.unshift(undefined);	// zero placeholder for track index from 1 in notation & SheetDocument
+
+		return dicts;
+	}
+
+
 	getNotation ({logger = new LogRecorder()} = {}): LilyNotation.Notation {
 		const pcTerms: PitchContextTerm[] = [].concat(...this.musicTracks.map((track, i) =>
 			track.generateStaffTracks().map(term => ({track: i + 1, ...term}))));
