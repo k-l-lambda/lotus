@@ -85,6 +85,7 @@
 		//background-color: transparent;
 		font-family: monospace;
 		font-size: 16px;
+		line-height: 19px;
 		overflow: auto;
 	}
 </style>

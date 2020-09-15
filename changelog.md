@@ -21,6 +21,8 @@
 
 *	2020.9.15
 
+	+	source-editor.vue: refined style to solve line height inconsistent issue.
+
 	+	sheet-token.vue: added data-track on DOM.
 
 	+	playground.vue: added controls of chromatic mode.
