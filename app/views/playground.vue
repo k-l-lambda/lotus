@@ -958,8 +958,8 @@
 				const midiMusic = this.lilyDocument.interpret().midiMusic;
 
 				const meta = {
-					title: attributes.title,
-					composer: attributes.composer,
+					title: attributes.title && attributes.title.toString(),
+					composer: attributes.composer && attributes.composer.toString(),
 					pageSize: this.sheetDocument.pageSize,
 					pageCount: this.sheetDocument.pages.length,
 					staffSize: attributes.staffSize,
