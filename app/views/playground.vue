@@ -1361,7 +1361,7 @@
 
 <style lang="scss">
 	@import "../styles/common.scss";
-	@import "../styles/chromaticSymbols.scss";
+	@import "../styles/chromatic.scss";
 
 	
 	.drag-hover
