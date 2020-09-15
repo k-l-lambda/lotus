@@ -1300,6 +1300,8 @@
 					if (position)
 						this.highlightSourcePosition(position.map(Number));
 				}
+				else
+					console.log("token:", token);
 			},
 
 
