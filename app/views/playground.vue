@@ -992,7 +992,7 @@
 					}));
 				}
 
-				const blob = await pack.generateAsync({type: "blob"});
+				const blob = await pack.generateAsync({type: "blob", compression: "DEFLATE", compressionOptions: {level: 5}});
 				downloadUrl(URL.createObjectURL(blob), `${this.title || ""}.zip`);
 			},
 
