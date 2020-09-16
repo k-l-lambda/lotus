@@ -38,7 +38,6 @@ export interface Note extends MusicNotation.Note, Partial<StaffNoteProperties> {
 
 
 interface SubNote {
-	//track: number;
 	startTick: number;
 	endTick: number;
 	pitch: number;
@@ -193,6 +192,12 @@ export class Notation {
 
 			return map;
 		}, {});
+	}
+
+
+	get idSet (): Set<string> {
+		return this.measures.reduce((set, measure) =>
+			(measure.notes.forEach(note => note.ids.forEach(id => set.add(id))), set), new Set<string>());
 	}
 
 

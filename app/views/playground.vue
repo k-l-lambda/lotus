@@ -928,6 +928,9 @@
 					this.midiNotation = midiNotation;
 
 					this.pitchContextGroup = PitchContextTable.createPitchContextGroup(this.sheetNotation.pitchContexts, this.midiNotation);
+
+					this.matchedIds = new Set();
+					this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => this.matchedIds.add(id)));
 				}
 				else {
 					this.lilyNotation = this.lilyDocument.interpret().getNotation();
@@ -936,10 +939,10 @@
 					const measureIndices = this.lilyNotation.getMeasureIndices(this.measureLayout);
 					this.midiNotation = this.lilyNotation.toPerformingNotationWithEvents(measureIndices);
 					this.pitchContextGroup = this.lilyNotation.getContextGroup(measureIndices);
+
+					this.matchedIds = this.lilyNotation.idSet;
 				}
 
-				this.matchedIds = new Set();
-				this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => this.matchedIds.add(id)));
 				this.sheetDocument.updateMatchedTokens(this.matchedIds);
 
 				if (this.bakingSheet)

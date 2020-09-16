@@ -1,5 +1,7 @@
 
 ## TODO
+	split rests to satisfy measure splitting
+	swap tracks at a specific measure
 	MIDI post processing
 		arpeggio
 	implicit notes matching with sheet document
@@ -17,6 +19,11 @@
 		system splitting, chord mode symbol affiliation
 		remove empty track	(6.1 落叶.ly)
 
+
+
+*	2020.9.16
+
+	+	scoreBundle.ts: refined matchedIds generation.
 
 
 *	2020.9.15

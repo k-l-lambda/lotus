@@ -45,6 +45,11 @@ export default class ScoreBundle {
 
 		this.onStatus("json loaded");
 
+		if (this.scoreJSON.lilyNotation) {
+			this.matchedIds = this.scoreJSON.lilyNotation.idSet;
+			this.scoreJSON.doc.updateMatchedTokens(this.matchedIds);
+		}
+
 		if (measureLayout)
 			this.loadNotation(measureLayout);
 	}
@@ -57,9 +62,6 @@ export default class ScoreBundle {
 
 			this.midiNotation = lilyNotation.toPerformingNotationWithEvents(measureIndices);
 			this.pitchContextGroup = lilyNotation.getContextGroup(measureIndices);
-
-			this.matchedIds = this.midiNotation.notes.reduce((ids, note) => (note.ids && note.ids.forEach(id => ids.add(id)), ids), new Set<string>());
-			this.scoreJSON.doc.updateMatchedTokens(this.matchedIds);
 
 			this.onStatus("notation loaded");
 		}
