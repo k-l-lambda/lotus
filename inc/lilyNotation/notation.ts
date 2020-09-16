@@ -258,7 +258,7 @@ export class Notation {
 	}
 
 
-	toPerformingMIDI (measureIndices: number[]): MIDI.MidiData {
+	toPerformingMIDI (measureIndices: number[], {trackList}: {trackList?: boolean[]} = {}): MIDI.MidiData {
 		if (!measureIndices.length)
 			return null;
 
@@ -315,11 +315,14 @@ export class Notation {
 			console.assert(!!measure, "invalid measure index:", index, this.measures.length);
 
 			measure.notes.forEach(note => {
+				if (trackList && !trackList[note.track])
+					return;
+
 				const tick = measureTick + note.tick;
 
-				note.subNotes.forEach(subnote => {
-					const track = tracks[note.track] = tracks[note.track] || [];
+				const track = tracks[note.track] = tracks[note.track] || [];
 
+				note.subNotes.forEach(subnote => {
 					track.push({
 						ticks: tick + subnote.startTick,
 						measure: index,
@@ -376,11 +379,11 @@ export class Notation {
 	}
 
 
-	toPerformingNotationWithEvents (measureIndices: number[]): MusicNotation.Notation {
+	toPerformingNotationWithEvents (measureIndices: number[], options: {trackList?: boolean[]} = {}): MusicNotation.Notation {
 		if (!measureIndices.length)
 			return null;
 
-		const midi = this.toPerformingMIDI(measureIndices);
+		const midi = this.toPerformingMIDI(measureIndices, options);
 		const notation = MusicNotation.Notation.parseMidi(midi);
 	
 		assignNotationNoteDataFromEvents(notation);

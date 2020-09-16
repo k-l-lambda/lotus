@@ -23,6 +23,8 @@
 
 *	2020.9.16
 
+	+	notation.ts: added parameter of trackList on notation output methods.
+
 	+	scoreBundle.ts: refined matchedIds generation.
 
 

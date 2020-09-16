@@ -465,14 +465,16 @@
 		async created () {
 			window.$main = this;
 
-			Object.defineProperty(window, "$liyad", {
-				get: async () => {
-					window.liyad = await import("liyad");
-					console.log("liyad:", window.liyad);
+			if (!window.$liyad) {
+				Object.defineProperty(window, "$liyad", {
+					get: async () => {
+						window.liyad = await import("liyad");
+						console.log("liyad:", window.liyad);
 
-					return window.liyad;
-				},
-			});
+						return window.liyad;
+					},
+				});
+			}
 
 			if (MidiAudio.WebAudio.empty())
 				MidiAudio.loadPlugin({soundfontUrl: "/soundfont/", api: "webaudio"}).then(() => console.log("Soundfont loaded."));
@@ -946,7 +948,7 @@
 					this.matcherNotations = await LilyNotation.matchWithExactMIDI(this.lilyNotation, midi);
 
 					const measureIndices = this.lilyNotation.getMeasureIndices(this.measureLayout);
-					this.midiNotation = this.lilyNotation.toPerformingNotationWithEvents(measureIndices);
+					this.midiNotation = this.lilyNotation.toPerformingNotationWithEvents(measureIndices, {trackList: [null, false, true]});
 					this.pitchContextGroup = this.lilyNotation.getContextGroup(measureIndices);
 
 					this.matchedIds = this.lilyNotation.idSet;
