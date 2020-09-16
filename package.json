@@ -1,6 +1,6 @@
 {
   "name": "lotus",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Lotus is a sheet music toolset, an enhancement of LilyPond.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
