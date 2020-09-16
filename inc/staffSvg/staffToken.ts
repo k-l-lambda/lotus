@@ -27,6 +27,10 @@ export default class StaffToken {
 	stemUp?: boolean;
 	track?: number;
 
+	row?: number;
+	measure?: number;
+	endX?: number;
+
 
 	constructor (data) {
 		Object.assign(this, data);

@@ -11,13 +11,13 @@ import * as LilyNotation from "../lilyNotation";
 
 
 
-export interface StaffMarking {
+interface SheetMarkingData {
 	id: string;
 	text: string;
-	cls?: string;
 	x: number;
 	y: number;
-};
+	cls: string;
+}
 
 
 export interface SheetMeasure {
@@ -39,12 +39,12 @@ export interface SheetStaff {
 	measures: SheetMeasure[];
 	tokens: StaffToken[];
 
-	markings: StaffMarking[];
+	markings?: Partial<SheetMarkingData>[];
 
 	// the third staff line Y coordinate value
 	//	The third staff line Y supposed to be zero, but regarding to the line stroke width,
 	//	there is some error for original values in SVG document (which erased by coordinate rounding).
-	yRoundOffset: number; // 0.0657 for default
+	yRoundOffset?: number; // 0.0657 for default
 
 	x: number;
 	y: number;
@@ -62,7 +62,7 @@ export interface SheetSystem {
 
 	x: number;
 	y: number;
-	width: number;
+	width?: number;
 	top: number;
 	bottom: number;
 };
@@ -111,18 +111,19 @@ class SheetMarking {
 	index: number;	// as v-for key
 
 	id?: string;
+	text?: string;
 	x?: number;
 	y?: number;
 	cls?: string;
 
 
-	constructor (fields) {
+	constructor (fields: Partial<SheetMarkingData>) {
 		this.index = sheetMarkingIndex++;
 		Object.assign(this, fields);
 	}
 
 
-	get alterText () {
+	get alterText (): string {
 		return Number.isInteger(this.alter) ? ALTER_PREFIXES[this.alter] : null;
 	}
 };
@@ -145,24 +146,24 @@ class SheetDocument {
 	pages: SheetPage[];
 
 
-	constructor (fields) {
+	constructor (fields: Partial<SheetDocument>) {
 		Object.assign(this, fields);
 
 		this.updateTokenIndex();
 	}
 
 
-	get rows () {
+	get rows (): SheetSystem[] {
 		return [].concat(...this.pages.map(page => page.rows));
 	}
 
 
-	get trackCount () {
+	get trackCount (): number{
 		return Math.max(...this.rows.map(row => row.staves.length), 0);
 	}
 
 
-	get pageSize () {
+	get pageSize (): {width: number, height: number} {
 		const page = this.pages && this.pages[0];
 		if (!page)
 			return null;
@@ -234,7 +235,7 @@ class SheetDocument {
 	}
 
 
-	addMarking (rowIndex, staffIndex, data) {
+	addMarking (rowIndex: number, staffIndex: number, data: Partial<SheetMarkingData>): SheetMarking {
 		const row = this.rows[rowIndex];
 		if (!row) {
 			console.warn("row index out of range:", rowIndex, this.rows.length);
@@ -254,7 +255,7 @@ class SheetDocument {
 	}
 
 
-	removeMarking (id) {
+	removeMarking (id: string) {
 		this.rows.forEach(row => row.staves.forEach(staff =>
 			staff.markings = staff.markings.filter(marking => marking.id !== id)));
 	}
@@ -265,7 +266,7 @@ class SheetDocument {
 	}
 
 
-	toJSON () {
+	toJSON (): object {
 		return {
 			__prototype: "SheetDocument",
 			pages: this.pages,
@@ -295,7 +296,7 @@ class SheetDocument {
 	}
 
 
-	lookupMeasureIndex (rowIndex, x): number {
+	lookupMeasureIndex (rowIndex: number, x: number): number {
 		const row = this.rows[rowIndex];
 		if (!row || !row.measureIndices)
 			return null;
