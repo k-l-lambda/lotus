@@ -55,12 +55,12 @@ export default class ScoreBundle {
 	}
 
 
-	loadNotation (layout: LilyNotation.LayoutType) {
+	loadNotation (layout: LilyNotation.LayoutType, trackList?: boolean[]) {
 		const lilyNotation = this.scoreJSON.lilyNotation;
 		if (lilyNotation) {
 			const measureIndices = lilyNotation.getMeasureIndices(layout);
 
-			this.midiNotation = lilyNotation.toPerformingNotationWithEvents(measureIndices);
+			this.midiNotation = lilyNotation.toPerformingNotationWithEvents(measureIndices, {trackList});
 			this.pitchContextGroup = lilyNotation.getContextGroup(measureIndices);
 
 			this.onStatus("notation loaded");
