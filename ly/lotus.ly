@@ -5,7 +5,7 @@
 lotusRepeatABA = #(define-music-function (music)
 	(ly:music?)
 	"The placeholder function to represent a music repeat type AB -> ABA,
-		e.g. Da Carpo al Fine, Da Segno al Coda and so on.
+		e.g. Da Capo al Fine, Da Segno al Coda, etc.
 	"
 	music
 )
