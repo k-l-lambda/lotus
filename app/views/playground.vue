@@ -465,6 +465,15 @@
 		async created () {
 			window.$main = this;
 
+			Object.defineProperty(window, "$liyad", {
+				get: async () => {
+					window.liyad = await import("liyad");
+					console.log("liyad:", window.liyad);
+
+					return window.liyad;
+				},
+			});
+
 			if (MidiAudio.WebAudio.empty())
 				MidiAudio.loadPlugin({soundfontUrl: "/soundfont/", api: "webaudio"}).then(() => console.log("Soundfont loaded."));
 
