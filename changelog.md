@@ -23,6 +23,8 @@
 
 *	2020.9.17
 
+	+	lilyInterpreter.ts: set note channel according to instrument.
+
 	+	sheetConstants.css: use CSS variables.
 
 

@@ -57,6 +57,8 @@ class LilyStaffContext extends StaffContext {
 	staffTrack: number;
 	notes: LilyNotation.Note[] = [];
 
+	channelMap: number[] = [];
+
 
 	executeTerm (term: PitchContextTerm) {
 		//console.log("executeTerm:", term);
@@ -99,7 +101,7 @@ class LilyStaffContext extends StaffContext {
 
 			this.notes.push(...term.pitches.map(pitch => ({
 				track: term.track,
-				channel: 0,	// TODO: determine channel by track instrument
+				channel: this.channelMap[term.track] || 0,
 				measure: event._measure,
 				start: event._tick,
 				duration: event.durationMagnitude,
@@ -782,6 +784,31 @@ class MusicPerformance {
 	}
 
 
+	get trackInstruments (): string[] {
+		return this.musicTracks.map(track => {
+			const instrumentKey = Object.keys(track.contextDict).find(key => /\.instrumentName/.test(key));
+			if (instrumentKey)
+				return track.contextDict[instrumentKey];
+
+			return null;
+		});
+	}
+
+
+	get instrumentList (): string[] {
+		return Array.from(new Set(this.trackInstruments));
+	}
+
+
+	get channelMap (): number[] {
+		const instrumentList = this.instrumentList;
+		const channels = this.trackInstruments.map(instrument => instrumentList.indexOf(instrument) + 1);
+		channels.unshift(0);
+
+		return channels;
+	}
+
+
 	getNotation ({logger = new LogRecorder()} = {}): LilyNotation.Notation {
 		const pcTerms: PitchContextTerm[] = [].concat(...this.musicTracks.map((track, i) =>
 			track.generateStaffTracks().map(term => ({track: i + 1, ...term}))));
@@ -796,6 +823,7 @@ class MusicPerformance {
 
 			const context = new LilyStaffContext({logger});
 			context.staffTrack = trackIndex;
+			context.channelMap = this.channelMap;
 
 			logger.append("staffTerms", staffTerms);
 			//console.debug("staffTerms:", staffTerms);
@@ -1048,8 +1076,19 @@ export default class LilyInterpreter {
 		}
 		else if (term instanceof Include)
 			this.includeFiles.add(term.filename);
-		else if (term instanceof Command)
+		else if (term instanceof Command) {
+			switch (term.cmd) {
+			case "set":
+				if (term.args[0] instanceof Assignment) {
+					const assign = term.args[0];
+					contextDict[assign.key.toString()] = assign.value.toString();
+				}
+
+				break;
+			}
+
 			return parseRaw({proto: term.proto, cmd: term.cmd, args: term.args.map(arg => this.execute(arg, {execMusic, contextDict}))});
+		}
 
 		return term;
 	}
