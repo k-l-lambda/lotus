@@ -23,6 +23,8 @@
 
 *	2020.9.17
 
+	+	lilyDocument.ts: markup method of appendMIDIInstrumentsFromName added.
+
 	+	lilyTerms.ts: ContextedMusic.withClause added.
 
 	+	notation.ts: fixed track matching.

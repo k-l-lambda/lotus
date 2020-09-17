@@ -753,7 +753,29 @@ export default class LilyDocument {
 	}
 
 
+	appendMIDIInstrumentsFromName () {
+		const isSet = (term: BaseTerm, keyPattern: RegExp): boolean => term instanceof Command && term.cmd === "set" && keyPattern.test((term.args[0] as Assignment).key.toString());
+		const append = (body: BaseTerm[]) => {
+			const ntIndex = body.findIndex(term => isSet(term, /\.instrumentName/));
+			if (ntIndex >= 0 && !body.some(term => isSet(term, /\.midiInstrument/))) {
+				const nameAssign = (body[ntIndex] as Command).args[0] as Assignment;
+				const key = nameAssign.key.toString().replace(/\.instrumentName/, ".midiInstrument");
+				body.splice(ntIndex + 1, 0, Command.createSet(key, nameAssign.value));
+			}
+		};
+
+		this.root.forEachTopTerm(Block, block => {
+			if (block.head === "\\score") {
+				block.forEachTerm(SimultaneousList, simu => append(simu.list));
+				block.forEachTerm(MusicBlock, musicBlock => append(musicBlock.body));
+			}
+		});
+	}
+
+
 	useMidiInstrumentChannelMapping () {
+		this.appendMIDIInstrumentsFromName();
+
 		const midiBlock = this.root.findFirst(term => term instanceof Block && term.head === "\\midi") as Block;
 		if (!midiBlock) {
 			console.warn("no MIDI block found.");

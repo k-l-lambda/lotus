@@ -496,6 +496,11 @@ export class Command extends BaseTerm {
 	args: any[];
 
 
+	static createSet (key: string|BaseTerm, value: BaseTerm): Command {
+		return new Command({cmd: "set", args: [new Assignment({key, value})]});
+	}
+
+
 	constructor (data) {
 		super(data);
 
