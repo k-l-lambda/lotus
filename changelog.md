@@ -23,6 +23,8 @@
 
 *	2020.9.17
 
+	+	notation.ts: fixed track matching.
+
 	+	lilyInterpreter.ts: set note channel according to instrument.
 
 	+	sheetConstants.css: use CSS variables.
@@ -107,6 +109,7 @@
 			*	LilyNotation.assignMatcher
 				*	assignNotationEventsIds
 		*	LilyNotation.toPerformingNotationWithEvents
+			*	LilyNotation.toPerformingMIDI
 			*	assignNotationNoteDataFromEvents
 		*	LilyNotation.getContextGroup
 			*	LilyNotation.toPerformingNotation

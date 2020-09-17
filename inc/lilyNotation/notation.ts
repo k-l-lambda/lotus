@@ -136,6 +136,7 @@ export class Notation {
 		const notes = abNotes.filter(note => !note.rest && !note.tied && !note.overlapped).map(note => ({
 			measure: note.measure,
 			channel: note.channel,
+			track: note.track,
 			start: note.start,
 			startTick: note.startTick,
 			endTick: note.endTick,
@@ -425,7 +426,8 @@ export class Notation {
 			const measure = this.measures[cn.measure - 1];
 			console.assert(!!measure, "cannot find measure for c note:", cn, this.measures.length);
 
-			const mn = measure.notes.find(note => note.tick === cn.startTick - measure.tick && note.pitch === cn.pitch);
+			//const mn = measure.notes.find(note => note.tick === cn.startTick - measure.tick && note.pitch === cn.pitch);
+			const mn = measure.notes.find(note => note.id === cn.id);
 			console.assert(!!mn, "cannot find measure note for c note:", cn, measure);
 
 			const snotes = indices

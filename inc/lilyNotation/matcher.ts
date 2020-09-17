@@ -90,7 +90,7 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 	const midiTrackTickBias = targetTrackNames.map(name => name ? (trackTickBiasMap[name] || 0) : 0);
 	//console.log("midiTrackTickBias:", midiTrackTickBias);
 
-	const midiNotation = MusicNotation.Notation.parseMidi(target);
+	const midiNotation = MusicNotation.Notation.parseMidi(target, {fixOverlap: false});
 	alignNotationTicks(midiNotation, criterion, {midiTrackTickBias});
 
 	// 1st pass: ordinary notes exact matching
