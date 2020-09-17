@@ -23,6 +23,8 @@
 
 *	2020.9.17
 
+	+	lilyTerms.ts: ContextedMusic.withClause added.
+
 	+	notation.ts: fixed track matching.
 
 	+	lilyInterpreter.ts: set note channel according to instrument.

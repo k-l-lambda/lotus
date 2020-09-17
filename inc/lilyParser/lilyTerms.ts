@@ -977,6 +977,13 @@ export class Block extends BaseTerm {
 		return subBlocks.some(term => term.head === "\\midi")
 			&& !subBlocks.some(term => term.head === "\\layout");
 	}
+
+
+	get assignmentDict (): {[key: string]: string} {
+		const assignments = this.body.filter(term => term instanceof Assignment) as Assignment[];
+
+		return assignments.reduce((dict, assignment) => ((dict[assignment.key.toString()] = assignment.value.toString()), dict), {});
+	}
 };
 
 
@@ -1450,14 +1457,21 @@ export class ContextedMusic extends BaseTerm {
 	}
 
 
+	get withClause (): Command {
+		if (this.head.args[2] && this.head.args[2] instanceof Command && this.head.args[2].cmd === "with")
+			return this.head.args[2];
+	}
+
+
 	get contextDict (): {[key: string]: string} {
-		const dict = {};
+		const withEntries = this.withClause ? Object.entries((this.withClause.args[0] as Block).assignmentDict) : [];
+		const entries = withEntries.map(([key, value]) => [`${this.type}.${key}`, value]);
 
 		const pair = this.head.getAssignmentPair();
 		if (pair)
-			dict[pair.key.toString()] = pair.value.toString();
+			entries.push([pair.key.toString(), pair.value.toString()]);
 
-		return dict;
+		return entries.reduce((dict, [key, value]) => ((dict[key] = value), dict), {});
 	}
 
 
