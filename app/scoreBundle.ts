@@ -85,11 +85,14 @@ export default class ScoreBundle {
 
 
 	checkVersion () {
-		//const apiVersion = parseVersion(npmPackage.version);
+		const apiVersion = parseVersion(npmPackage.version);
 		const version = parseVersion(this.scoreJSON.version);
 
 		// warning line
 		if (version < parseVersion("0.6.1"))
 			console.warn(`This score bundle version[${this.scoreJSON.version}] is too low! The current Lotus API version is: ${npmPackage.version}.`);
+
+		if (version > apiVersion)
+			console.warn(`The current Lotus API version[${npmPackage.version}] is behind this score bundle[${this.scoreJSON.version}]. If any score problem encountered, try to upgrade Lotus API.`);
 	}
 };
