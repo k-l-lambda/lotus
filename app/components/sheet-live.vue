@@ -630,9 +630,6 @@
 	@import "../styles/sheetConstants.css";
 
 
-	$musicFontSize: 2.2px;
-
-
 	.sheet
 	{
 		.mark
@@ -671,15 +668,7 @@
 				{
 					user-select: none;
 					pointer-events: none;
-					font-size: $musicFontSize;
-					fill: var(--lotus-token-default-color);
-
-					&.on
-					{
-						fill: var(--lotus-token-on-color);
-						stroke-width: 0.1;
-						stroke: var(--lotus-token-on-color);
-					}
+					font-size: var(--music-font-size);
 				}
 			}
 		}
@@ -690,7 +679,7 @@
 			{
 				font-family: lotus-music;
 				user-select: none;
-				font-size: $musicFontSize;
+				font-size: var(--music-font-size);
 			}
 
 			.alter
@@ -703,4 +692,29 @@
 
 <style>
 	@import "../styles/music-font.css";
+</style>
+<style lang="scss">
+	@import "../styles/sheetConstants.css";
+
+
+	.sheet
+	{
+		.bake
+		{
+			.token
+			{
+				text
+				{
+					fill: var(--lotus-token-default-color);
+
+					&.on
+					{
+						fill: var(--lotus-token-on-color);
+						stroke-width: 0.1;
+						stroke: var(--lotus-token-on-color);
+					}
+				}
+			}
+		}
+	}
 </style>
