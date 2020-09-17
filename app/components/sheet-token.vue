@@ -25,19 +25,19 @@
 </script>
 
 <style lang="scss" scoped>
-	@import "../styles/sheetConstants.scss";
+	@import "../styles/sheetConstants.css";
 
 
 	.token
 	{
 		.staff-line, .line, .slur
 		{
-			stroke: $token-default-color;
+			stroke: var(--lotus-token-default-color);
 		}
 
 		use
 		{
-			fill: $token-default-color;
+			fill: var(--lotus-token-default-color);
 			//stroke-width: 0;
 		}
 
@@ -45,9 +45,9 @@
 		{
 			use.on
 			{
-				fill: $token-on-color;
+				fill: var(--lotus-token-on-color);
 				stroke-width: 0.1;
-				stroke: $token-on-color;
+				stroke: var(--lotus-token-on-color);
 			}
 		}
 	}

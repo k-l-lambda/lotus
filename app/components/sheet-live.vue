@@ -626,7 +626,7 @@
 </script>
 
 <style lang="scss" scoped>
-	@import "../styles/sheetConstants.scss";
+	@import "../styles/sheetConstants.css";
 
 
 	$musicFontSize: 2.2px;
@@ -671,13 +671,13 @@
 					user-select: none;
 					pointer-events: none;
 					font-size: $musicFontSize;
-					fill: $token-default-color;
+					fill: var(--lotus-token-default-color);
 
 					&.on
 					{
-						fill: $token-on-color;
+						fill: var(--lotus-token-on-color);
 						stroke-width: 0.1;
-						stroke: $token-on-color;
+						stroke: var(--lotus-token-on-color);
 					}
 				}
 			}
