@@ -21,6 +21,11 @@
 
 
 
+*	2020.9.19
+
+	+	lilyParser.ts: enhanced music block redivide by measure heads.
+
+
 *	2020.9.17
 
 	+	notation.ts: fixed track matching.

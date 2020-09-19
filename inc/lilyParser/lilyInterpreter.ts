@@ -313,6 +313,11 @@ export class MusicTrack {
 	}
 
 
+	redivide () {
+		this.block.redivide({measureHeads: this.measureHeads});
+	}
+
+
 	generateStaffTracks (): PitchContextTerm[] {
 		const pcTerms: PitchContextTerm[] = [];
 

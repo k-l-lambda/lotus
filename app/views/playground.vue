@@ -290,7 +290,7 @@
 	import LogRecorder from "../../inc/logRecorder.ts";
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import loadLilyParser from "../loadLilyParser.js";
-	import {LilyDocument, replaceSourceToken, createPianoRhythm} from "../../inc/lilyParser";
+	import {LilyDocument, replaceSourceToken, createPianoRhythm, LilyTerms} from "../../inc/lilyParser";
 	import {CM_TO_PX} from "../../inc/constants.ts";
 	import TextSource from "../../inc/textSource.ts";
 	import * as SheetBaker from "../sheetBaker.ts";
@@ -886,21 +886,6 @@
 				const partMidi = MidiUtils.sliceMidi(this.midi, startTick, endTick);
 				console.log("partMidi:", partMidi);
 
-				/*const body = new FormData();
-				body.append("midi", midi);
-				body.append("options", JSON.stringify({removeInstrumentName: true, tupletReplace: true}));
-
-				const response = await fetch("/midi2ly", {
-					method: "POST",
-					body,
-				});
-				if (!response.ok) {
-					console.warn("MIDI to ly failed:", await response.text());
-					return;
-				}
-
-				const ly = await response.text();
-				console.log("ly:", ly);*/
 				const midi = new Blob([MIDI.encodeMidiFile(partMidi)], {type: "audio/midi"});
 				const ly = this.midi2ly(midi);
 				console.log("ly:", ly);
@@ -1200,20 +1185,30 @@
 
 
 			async redivideLilyDocument ({reconstruct = false} = {}) {
-				//const locations = this.sheetDocument.getLocationTable();
-
-				//this.updateLilyDocument();
-				//measures.assignMeasures(this.lilyDocument, locations);
-				//console.log("lilyDocument:", this.lilyDocument);
 				await this.updateLilyDocument();
 				const interpreter = this.lilyDocument.interpret({useCached: false});
 
 				if (reconstruct) {
+					interpreter.layoutMusic.musicTracks.forEach(track => track.redivide());
+
 					this.lilyDocument = interpreter.toDocument();
 					this.lilySource = this.lilyDocument.toString();
 				}
+				else {
+					this.lilyDocument.root.forEachTopTerm(LilyTerms.Assignment, assign => {
+						if (assign.value && typeof assign.value === "object" && assign.value.isMusic) {
+							const key = assign.key.toString();
+							const track = interpreter.layoutMusic.musicTracks.find(track => track.contextDict.Voice === key);
+							const block = assign.value.findFirst(LilyTerms.MusicBlock);
+							//console.log("track:", key, track, block);
 
-				this.executeMarkup("redivide");
+							block.redivide({measureHeads: track.measureHeads});
+						}
+					});
+					this.lilySource = this.lilyDocument.toString();
+				}
+
+				//this.executeMarkup("redivide");
 			},
 
 
