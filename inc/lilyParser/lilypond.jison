@@ -2053,10 +2053,10 @@ zero_command
 		{$$ = command($1);}
 	| CMD_PRALL
 		{$$ = command($1);}
-	| CMD_SUSTAINOFF
-		{$$ = command($1);}
-	| CMD_SUSTAINON
-		{$$ = command($1);}
+	//| CMD_SUSTAINOFF
+	//	{$$ = command($1);}
+	//| CMD_SUSTAINON
+	//	{$$ = command($1);}
 	| CMD_TRILL
 		{$$ = command($1);}
 	| CMD_TURN
@@ -2467,6 +2467,12 @@ post_event_nofinger
 		{$$ = postEvent($1, $2);}
 	// extra formula
 	| expressive_mark
+		{$$ = postEvent(null, $1);}
+	// extra formula
+	| CMD_SUSTAINOFF
+		{$$ = postEvent(null, $1);}
+	// extra formula
+	| CMD_SUSTAINON
 		{$$ = postEvent(null, $1);}
 	// extra formula
 	| "["

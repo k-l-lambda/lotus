@@ -1,7 +1,7 @@
 
 ## TODO
-	split rests to satisfy measure splitting
-	swap tracks at a specific measure
+	track-measure lilypond section editor
+		duration checker
 	MIDI post processing
 		arpeggio
 	implicit notes matching with sheet document
