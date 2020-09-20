@@ -12,7 +12,7 @@ import {
 	BaseTerm,
 	Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, AfterGrace, Clef, Scheme, Include, Rest,
 	KeySignature, OctaveShift, Duration, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version,
-	ChordMode, LyricMode, ChordElement, Language, PostEvent, Transposition,
+	ChordMode, LyricMode, ChordElement, Language, PostEvent, Transposition, ParallelMusic,
 } from "./lilyTerms";
 
 
@@ -1078,6 +1078,9 @@ export default class LilyInterpreter {
 				lyrics: this.execute(term.lyrics),
 				body: this.execute(term.body, {execMusic, contextDict: {...contextDict, ...term.contextDict}}),
 			});
+		}
+		else if (term instanceof ParallelMusic) {
+			// TODO:
 		}
 		else if (term instanceof Include)
 			this.includeFiles.add(term.filename);

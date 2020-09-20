@@ -1,5 +1,7 @@
 
 ## TODO
+	lilyInterpreter
+		execute parallelMusic
 	track-measure lilypond section editor
 		duration checker
 	MIDI post processing
@@ -7,8 +9,6 @@
 	implicit notes matching with sheet document
 		tremolo type note match
 		setTempo missing issue in Once measure layout
-	lilyInterpreter
-		execute parallelMusic
 	lyrics in music normalization
 	lyrics hilighting
 		match chord with voice in the same staff
@@ -19,6 +19,11 @@
 		system splitting, chord mode symbol affiliation
 		remove empty track	(6.1 落叶.ly)
 
+
+
+*	2020.9.20
+
+	+	lilyParser: term class of ParallelMusic added.
 
 
 *	2020.9.19

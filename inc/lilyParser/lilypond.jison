@@ -8,6 +8,7 @@
 		markup: "MarkupCommand",
 		repeat: "Repeat",
 		relative: "Relative",
+		parallelMusic: "ParallelMusic",
 		time: "TimeSignature",
 		partial: "Partial",
 		times: "Times",

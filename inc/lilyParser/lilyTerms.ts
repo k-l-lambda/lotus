@@ -783,6 +783,30 @@ export class Relative extends Command {
 }
 
 
+export class ParallelMusic extends Command {
+	get varNames (): string[] {
+		return ((this.args[0].exp as SchemePointer).value as SchemeFunction).asList as string[];
+	}
+
+
+	get body (): MusicBlock {
+		return this.args[1];
+	}
+
+
+	get voices (): MusicVoice[] {
+		const voiceNames = this.varNames;
+		const chunks = this.body.musicChunks;
+		const measureCount = Math.ceil(chunks.length / voiceNames.length);
+
+		return voiceNames.map((name, index) => ({
+			name: name.toString(),
+			body: Array(measureCount).fill(null).map((_, m) => chunks[m * voiceNames.length + index]).filter(Boolean),
+		}));
+	}
+};
+
+
 export class TimeSignature extends Command {
 	get value (): FractionNumber {
 		return FractionNumber.fromExpression(this.args[0]);
@@ -1047,7 +1071,7 @@ export class MusicBlock extends BaseTerm {
 		};
 
 		for (const term of this.entries) {
-			if (term instanceof Command && term.cmd === "repeat") {
+			if (term instanceof Repeat) {
 				dumpChunk();
 				chunks.push(...term.musicChunks);
 			}
@@ -1063,6 +1087,7 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	// [deprecated]
 	// for parallelMusic only
 	get voiceNames () {
 		const header = this._parent as Command;
@@ -1077,6 +1102,7 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	// [deprecated]
 	get voices (): MusicVoice[] {
 		const voiceNames = this.voiceNames;
 		if (!voiceNames)
@@ -2425,6 +2451,7 @@ export const termDictionary = {
 	MarkupCommand,
 	Repeat,
 	Relative,
+	ParallelMusic,
 	TimeSignature,
 	Partial,
 	Times,

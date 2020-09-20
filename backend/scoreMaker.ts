@@ -119,7 +119,6 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 
 			const attributes = lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
 
-			//const tieLocations = lilyDocument.getTiedNoteLocations(text)
 			const tieLocations = lilyDocument.getTiedNoteLocations2()
 				.reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
 
