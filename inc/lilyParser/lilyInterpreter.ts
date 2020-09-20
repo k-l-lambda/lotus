@@ -1,7 +1,7 @@
 
 import {romanize} from "../romanNumeral";
 import {WHOLE_DURATION_MAGNITUDE, GRACE_DURATION_FACTOR, lcmMulti, lcm} from "./utils";
-import {parseRaw, getDurationSubdivider} from "./lilyTerms";
+import {parseRaw, getDurationSubdivider, MusicChunk} from "./lilyTerms";
 import LogRecorder from "../logRecorder";
 import {StaffContext, PitchContextTable} from "../pitchContext";
 import * as idioms from "./idioms";
@@ -446,6 +446,37 @@ class TrackContext {
 	}
 
 
+	clone (): this {
+		const ctx = {...this};
+		Object.setPrototypeOf(ctx, Object.getPrototypeOf(this));
+
+		return ctx;
+	}
+
+
+	mergeParallelClones (contexts: TrackContext[]) {
+		const frontContext = contexts.reduce((front, context) => {
+			const next = !front || context.tick > front.tick ? context : front;
+			next.tying = next.tying || context.tying;
+			next.staccato = next.staccato || context.staccato;
+
+			return next;
+		}, null);
+		const lastContext = contexts[contexts.length - 1];
+
+		this.tick = frontContext.tick;
+		this.tickInMeasure = frontContext.tickInMeasure;
+		this.measureIndex = frontContext.measureIndex;
+		this.partialDuration = frontContext.partialDuration;
+		this.tying = frontContext.tying;
+		this.staccato = frontContext.staccato;
+
+		this.pitch = lastContext.pitch;
+		this.event = lastContext.event;
+		this.pitch = lastContext.pitch;
+	}
+
+
 	get factor (): {value: number} {
 		for (let i = this.stack.length - 1; i >= 0; i--) {
 			const status = this.stack[i];
@@ -742,6 +773,21 @@ class TrackContext {
 		else if (term instanceof PostEvent) {
 			if (term.isStaccato)
 				this.staccato = true;
+		}
+		else if (term instanceof SimultaneousList) {
+			const contexts: TrackContext[] = [];
+			let lastContext = this;
+			for (const subterm of term.list) {
+				const context = this.clone();
+				context.pitch = lastContext.pitch;
+				context.event = lastContext.event;
+
+				context.execute(subterm);
+				contexts.push(context);
+				lastContext = context;
+			}
+
+			this.mergeParallelClones(contexts);
 		}
 		else {
 			if (term.isMusic)
@@ -1080,7 +1126,14 @@ export default class LilyInterpreter {
 			});
 		}
 		else if (term instanceof ParallelMusic) {
-			// TODO:
+			term.voices.forEach(voice => {
+				const block = new MusicBlock({
+					body: MusicChunk.join(voice.body),
+				});
+
+				const value = this.execute(block);
+				this.variableTable.set(voice.name, value);
+			});
 		}
 		else if (term instanceof Include)
 			this.includeFiles.add(term.filename);

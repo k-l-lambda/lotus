@@ -15,9 +15,18 @@ interface Location {
 };
 
 
-class MusicChunk {
+// concat array of array
+const cc = <T>(arrays: T[][]): T[] => [].concat(...arrays);
+
+
+export class MusicChunk {
 	parent: MusicBlock;
 	terms: BaseTerm[];
+
+
+	static join (chunks: MusicChunk[]): BaseTerm[] {
+		return cc(chunks.map((chunk, i) => i === chunks.length - 1 ? chunk.terms : [...chunk.terms, new Divide({})]));
+	}
 
 
 	constructor (parent: MusicBlock) {
@@ -46,10 +55,6 @@ interface MusicVoice {
 	name?: string;
 	body: MusicChunk[];
 };
-
-
-// concat array of array
-const cc = <T>(arrays: T[][]): T[] => [].concat(...arrays);
 
 
 const isNullItem = item => item === "" || item === undefined || item === null || (Array.isArray(item) && !item.length);
