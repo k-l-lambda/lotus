@@ -23,6 +23,8 @@
 
 *	2020.9.20
 
+	+	lilyInterpreter.ts: fixed MusicTrack.spreadRelativeBlocks.
+
 	+	lilyInterpreter.ts: execute SimultaneousList in TrackContext.
 
 	+	lilyParser: term class of ParallelMusic added.

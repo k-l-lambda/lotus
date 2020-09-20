@@ -252,8 +252,20 @@ export class MusicTrack {
 			return;
 
 		this.transform((term, context) => {
-			if (term instanceof Relative)
-				return term.shiftBody(context.pitch);
+			if (term instanceof Relative) {
+				if (term.music instanceof MusicBlock)
+					term.music.updateChordAnchors();
+
+				const terms = term.shiftBody(context.pitch);
+
+				// initialize anchor pitch for track head chord
+				if (!context.event || !context.event.getPreviousT(Chord)) {
+					const head = terms.find(t => t instanceof Chord);
+					head._anchorPitch = this.anchorPitch;
+				}
+
+				return terms;
+			}
 			else
 				return [term];
 		});
@@ -473,7 +485,6 @@ class TrackContext {
 
 		this.pitch = lastContext.pitch;
 		this.event = lastContext.event;
-		this.pitch = lastContext.pitch;
 	}
 
 

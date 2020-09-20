@@ -776,8 +776,11 @@ export class Relative extends Command {
 	// with side effect
 	shiftBody (newAnchor?: ChordElement): BaseTerm[] {
 		const headChord = this.headChord;
-		if (newAnchor && headChord)
+		if (newAnchor && headChord) {
 			headChord.shiftAnchor(newAnchor);
+			headChord._anchorPitch = null;
+			//console.log("shiftAnchor.post:", headChord.join(), headChord);
+		}
 
 		const music = this.music;
 		if (music instanceof MusicBlock)
@@ -1219,6 +1222,7 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	// deprecated
 	updateChordChains () {
 		let previous: MusicEvent = null;
 
@@ -1255,7 +1259,7 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
-	// with side effect
+	/*// with side effect
 	spreadRelativeBlocks (): this {
 		this.forEachTerm(MusicBlock, block => block.spreadRelativeBlocks());
 
@@ -1274,7 +1278,7 @@ export class MusicBlock extends BaseTerm {
 		}));
 
 		return this;
-	}
+	}*/
 
 
 	// with side effect
@@ -1314,7 +1318,7 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
-	// pure
+	/*// pure
 	flatten ({spreadRepeats = false} = {}): Relative {
 		this.updateChordChains();
 
@@ -1328,7 +1332,7 @@ export class MusicBlock extends BaseTerm {
 		block.unfoldDurationMultipliers();
 
 		return Relative.makeBlock(block, {anchor: anchor && anchor.clone()});
-	}
+	}*/
 
 
 	// with side effect
@@ -1939,6 +1943,7 @@ export class Chord extends MusicEvent {
 
 
 	shiftAnchor (newAnchor: ChordElement) {
+		//console.log("shiftAnchor:", this.join(), newAnchor.join(), this.absolutePitch.pitchValue, newAnchor.pitchValue, this.anchorPitch.pitchValue);
 		const _location = this.basePitch._location;
 		const shift = idioms.phonetDifferToShift(this.basePitch.phonetStep - newAnchor.phonetStep);
 		const relativeOctave = this.basePitch.absoluteOctave(this.anchorPitch) - newAnchor.octave - shift;

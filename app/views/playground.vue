@@ -1247,7 +1247,9 @@
 					interpreter.layoutMusic.musicTracks.forEach(track => track.flatten({spreadRepeats: true}));
 				const newDoc = interpreter.toDocument();
 
-				console.log("new doc:", interpreter, newDoc, lilyNotation);
+				console.log("INTERPRETER:", interpreter);
+				console.log("DOC:", newDoc);
+				console.log("NOTATION:", lilyNotation);
 			},
 
 
