@@ -261,7 +261,8 @@ export class MusicTrack {
 				// initialize anchor pitch for track head chord
 				if (!context.event || !context.event.getPreviousT(Chord)) {
 					const head = terms.find(t => t instanceof Chord);
-					head._anchorPitch = this.anchorPitch;
+					if (head)
+						head._anchorPitch = this.anchorPitch;
 				}
 
 				return terms;

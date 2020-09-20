@@ -1,7 +1,6 @@
 
 ## TODO
-	lilyInterpreter
-		execute parallelMusic
+	chop Op.9 No.1: no layoutMusic & midiMusic
 	track-measure lilypond section editor
 		duration checker
 	MIDI post processing

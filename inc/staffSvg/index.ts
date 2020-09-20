@@ -104,7 +104,8 @@ const postProcessSheetDocument = (sheet: SheetDocument, lilyDocument: LilyDocume
 	// align token id
 	const interpreter = lilyDocument.interpret();
 	const lilyNotation = interpreter.getNotation();
-	sheet.alignTokensWithNotation(lilyNotation);
+	if (lilyNotation)
+		sheet.alignTokensWithNotation(lilyNotation);
 
 	const attributes = lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
 

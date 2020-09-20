@@ -199,12 +199,12 @@
 						<td><BoolStoreInput v-model="engraveWithLogs" localKey="lotus-engraveWithLogs" /></td>
 					</tr>
 					<tr>
-						<td>Fuzzy Notation Matcher</td>
-						<td><BoolStoreInput v-model="enabledFuzzyMatcher" localKey="lotus-enabledFuzzyMatcher" /></td>
-					</tr>
-					<tr>
 						<td>Use Sheet Notation</td>
 						<td><BoolStoreInput v-model="enabledSheetNotation" localKey="lotus-enabledSheetNot" /></td>
+					</tr>
+					<tr v-show="enabledSheetNotation">
+						<td>Fuzzy Notation Matcher</td>
+						<td><BoolStoreInput v-model="enabledFuzzyMatcher" localKey="lotus-enabledFuzzyMatcher" /></td>
 					</tr>
 					<tr>
 						<td>Measure Repeat Type</td>
