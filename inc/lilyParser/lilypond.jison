@@ -1606,7 +1606,7 @@ multiple_voices_music_list
 	: music_list
 		{$$ = $1;}
 	| multiple_voices_music_list E_BACKSLASH music_list
-		{$$ = [...$1, $2, $3];}
+		{$$ = [...$1, $2, ...$3];}
 	;
 
 sequential_music
