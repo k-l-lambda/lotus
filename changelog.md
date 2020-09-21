@@ -22,6 +22,8 @@
 
 *	2020.9.21
 
+	+	lilyTerms.ts: added bad duration protection in MusicBlock.redivide.
+
 	+	lilyInterpreter.ts: fixed anchor pitch initialization in MusicTrack.spreadRelativeBlocks.
 
 	+	batchMarkup.ts: added markup process of redivide-interpret.

@@ -1395,20 +1395,36 @@ export class MusicBlock extends BaseTerm {
 					const rests = [];
 					let nextMeasure;
 					for (nextMeasure = term._measure; nextMeasure < measureHeads.length && endTick > measureHeads[nextMeasure]; ++nextMeasure) {
-						const rest = new Rest({name: "s", duration: Duration.fromMagnitude(measureHeads[nextMeasure] - startTick), post_events: []});
+						const duration = Duration.fromMagnitude(measureHeads[nextMeasure] - startTick);
+						if (!duration) {
+							console.warn("invalid middle rest duration, splitting gave up:", measureHeads[nextMeasure] - startTick, term);
+							return [term];
+						}
+	
+						const rest = new Rest({name: "s", duration, post_events: []});
 						rest._measure = nextMeasure;
 						rest._lastMeasure = nextMeasure;
 						rests.push(rest);
 
+						console.assert(!!rest.duration, "middle splitted rest duration invalid:", measureHeads[nextMeasure] - startTick);
+
 						startTick = measureHeads[nextMeasure];
 					}
 
-					const rest = new Rest({name: "s", duration: Duration.fromMagnitude(endTick - startTick), post_events: [...post_events]});
+					const duration = Duration.fromMagnitude(endTick - startTick);
+					if (!duration) {
+						console.warn("invalid tail rest duration, splitting gave up:", endTick - startTick, term);
+						return [term];
+					}
+
+					const rest = new Rest({name: "s", duration, post_events: [...post_events]});
 					rest._measure = nextMeasure;
 					rest._lastMeasure = nextMeasure;
 					rests.push(rest);
 
 					console.assert(rests.reduce((sum, rest) => sum + rest.durationMagnitude, 0) === term.durationMagnitude, "duration splitting error:", rests, term);
+					if (rests.reduce((sum, rest) => sum + rest.durationMagnitude, 0) !== term.durationMagnitude)
+						debugger;
 
 					return rests;
 				}
