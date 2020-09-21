@@ -20,6 +20,11 @@
 
 
 
+*	2020.9.21
+
+	+	batchMarkup.ts: added markup process of redivide-interpret.
+
+
 *	2020.9.20
 
 	+	lilyInterpreter.ts: fixed MusicTrack.spreadRelativeBlocks.

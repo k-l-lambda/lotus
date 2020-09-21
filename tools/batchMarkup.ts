@@ -6,7 +6,7 @@ import yargs from "yargs";
 import "../env.js";
 import walkDir from "../backend/walkDir";
 import loadLilyParser from "../backend/loadLilyParserNode";
-import {LilyDocument} from "../inc/lilyParser";
+import {LilyDocument, LilyTerms} from "../inc/lilyParser";
 
 
 
@@ -35,7 +35,7 @@ const main = async () => {
 	const cost = Date.now() - t0;
 	console.log("lilyParser loaded, cost:", `${cost * 1e-3}s`);
 
-	const markups = argv.markups || ["removeInvalidExpressionsOnRests"];
+	const markups = (argv.markups || "").split(",").filter(Boolean);
 
 	const lyFiles = walkDir(inputDir, /\.ly$/, {recursive: true});
 
@@ -48,9 +48,35 @@ const main = async () => {
 			const lilyDocument = new LilyDocument(lilyParser.parse(originalLy));
 
 			let changes = 0;
-			for (const markup of markups) 
-				changes += lilyDocument[markup]();
-			
+			for (const markup of markups) {
+				switch (markup) {
+				case "redivide-interpret": {
+					const interpreter = lilyDocument.interpret();
+					lilyDocument.root.forEachTopTerm(LilyTerms.Assignment, assign => {
+						if (assign.value && typeof assign.value === "object" && assign.value.isMusic) {
+							const key = assign.key.toString();
+							const track = interpreter.layoutMusic.musicTracks.find(track => track.contextDict.Voice === key);
+							if (track) {
+								const block = assign.value.findFirst(LilyTerms.MusicBlock);
+								block.redivide({measureHeads: track.measureHeads});
+
+								++changes;
+							}
+						}
+					});
+				}
+
+					break;
+				default: {
+					const result = lilyDocument[markup]();
+
+					if (typeof result === "number")
+						changes += result;
+					else
+						++changes;
+				}
+				}
+			}
 
 			if (changes) {
 				const ly = lilyDocument.toString();
