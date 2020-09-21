@@ -245,7 +245,9 @@ export class Notation {
 		//console.debug("toPerformingNotation:", this, measureIndices);
 		const abNotes = this.toAbsoluteNotes(measureIndices);
 		const notes = Notation.performAbsoluteNotes(abNotes);
-		const endTime = notes[notes.length - 1].start + notes[notes.length - 1].duration;
+
+		const lastNote = notes[notes.length - 1];
+		const endTime = lastNote ? (lastNote.start + lastNote.duration) : 0;
 
 		const notation = new MusicNotation.Notation({
 			ticksPerBeat: TICKS_PER_BEAT,

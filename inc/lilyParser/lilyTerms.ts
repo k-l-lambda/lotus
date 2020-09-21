@@ -1580,6 +1580,11 @@ export class ContextedMusic extends BaseTerm {
 		if (this.body instanceof SimultaneousList)
 			this.body.list = value;
 	}
+
+
+	get measureLayout (): measureLayout.MeasureLayout {
+		return this.body.measureLayout;
+	}
 };
 
 
