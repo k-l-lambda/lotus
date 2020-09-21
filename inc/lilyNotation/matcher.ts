@@ -83,9 +83,8 @@ const matchWithExactMIDI = async (lilyNotation: Notation, target: MIDI.MidiData)
 		return nameEvent ? nameEvent.text : null;
 	});
 	const trackIndexC2S = lilyNotation.trackNames.map(name => targetTrackNames.indexOf(name));
-	//console.assert(!trackIndexC2S.includes(-1), "mismatch track found:", trackIndexC2S, lilyNotation.trackNames, targetTrackNames);
-	if (trackIndexC2S.includes(-1))
-		console.debug("mismatched track found:", trackIndexC2S, lilyNotation.trackNames, targetTrackNames);
+	//if (trackIndexC2S.includes(-1))
+	//	console.debug("mismatched track found:", trackIndexC2S, lilyNotation.trackNames, targetTrackNames);
 
 	const midiTrackTickBias = targetTrackNames.map(name => name ? (trackTickBiasMap[name] || 0) : 0);
 	//console.log("midiTrackTickBias:", midiTrackTickBias);
