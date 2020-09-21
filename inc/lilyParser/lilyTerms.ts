@@ -1,7 +1,7 @@
 
 import _ from "lodash";
 
-import {WHOLE_DURATION_MAGNITUDE, FractionNumber, lcmMulti} from "./utils";
+import {WHOLE_DURATION_MAGNITUDE, FractionNumber, lcmMulti, gcd} from "./utils";
 import * as idioms from "./idioms";
 import {LILYPOND_VERSION} from "../constants";
 import * as measureLayout from "../lilyNotation/measureLayout";
@@ -15,9 +15,18 @@ interface Location {
 };
 
 
-class MusicChunk {
+// concat array of array
+const cc = <T>(arrays: T[][]): T[] => [].concat(...arrays);
+
+
+export class MusicChunk {
 	parent: MusicBlock;
 	terms: BaseTerm[];
+
+
+	static join (chunks: MusicChunk[]): BaseTerm[] {
+		return cc(chunks.map((chunk, i) => i === chunks.length - 1 ? chunk.terms : [...chunk.terms, new Divide({})]));
+	}
 
 
 	constructor (parent: MusicBlock) {
@@ -46,10 +55,6 @@ interface MusicVoice {
 	name?: string;
 	body: MusicChunk[];
 };
-
-
-// concat array of array
-const cc = <T>(arrays: T[][]): T[] => [].concat(...arrays);
 
 
 const isNullItem = item => item === "" || item === undefined || item === null || (Array.isArray(item) && !item.length);
@@ -776,8 +781,11 @@ export class Relative extends Command {
 	// with side effect
 	shiftBody (newAnchor?: ChordElement): BaseTerm[] {
 		const headChord = this.headChord;
-		if (newAnchor && headChord)
+		if (newAnchor && headChord) {
 			headChord.shiftAnchor(newAnchor);
+			headChord._anchorPitch = null;
+			//console.log("shiftAnchor.post:", headChord.join(), headChord);
+		}
 
 		const music = this.music;
 		if (music instanceof MusicBlock)
@@ -786,6 +794,30 @@ export class Relative extends Command {
 		return [music];
 	}
 }
+
+
+export class ParallelMusic extends Command {
+	get varNames (): string[] {
+		return ((this.args[0].exp as SchemePointer).value as SchemeFunction).asList as string[];
+	}
+
+
+	get body (): MusicBlock {
+		return this.args[1];
+	}
+
+
+	get voices (): MusicVoice[] {
+		const voiceNames = this.varNames;
+		const chunks = this.body.musicChunks;
+		const measureCount = Math.ceil(chunks.length / voiceNames.length);
+
+		return voiceNames.map((name, index) => ({
+			name: name.toString(),
+			body: Array(measureCount).fill(null).map((_, m) => chunks[m * voiceNames.length + index]).filter(Boolean),
+		}));
+	}
+};
 
 
 export class TimeSignature extends Command {
@@ -1059,7 +1091,7 @@ export class MusicBlock extends BaseTerm {
 		};
 
 		for (const term of this.entries) {
-			if (term instanceof Command && term.cmd === "repeat") {
+			if (term instanceof Repeat) {
 				dumpChunk();
 				chunks.push(...term.musicChunks);
 			}
@@ -1075,6 +1107,7 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	// [deprecated]
 	// for parallelMusic only
 	get voiceNames () {
 		const header = this._parent as Command;
@@ -1089,6 +1122,7 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	// [deprecated]
 	get voices (): MusicVoice[] {
 		const voiceNames = this.voiceNames;
 		if (!voiceNames)
@@ -1200,6 +1234,7 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
+	// deprecated
 	updateChordChains () {
 		let previous: MusicEvent = null;
 
@@ -1236,7 +1271,7 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
-	// with side effect
+	/*// with side effect
 	spreadRelativeBlocks (): this {
 		this.forEachTerm(MusicBlock, block => block.spreadRelativeBlocks());
 
@@ -1255,7 +1290,7 @@ export class MusicBlock extends BaseTerm {
 		}));
 
 		return this;
-	}
+	}*/
 
 
 	// with side effect
@@ -1295,7 +1330,7 @@ export class MusicBlock extends BaseTerm {
 	}
 
 
-	// pure
+	/*// pure
 	flatten ({spreadRepeats = false} = {}): Relative {
 		this.updateChordChains();
 
@@ -1309,7 +1344,7 @@ export class MusicBlock extends BaseTerm {
 		block.unfoldDurationMultipliers();
 
 		return Relative.makeBlock(block, {anchor: anchor && anchor.clone()});
-	}
+	}*/
 
 
 	// with side effect
@@ -1337,12 +1372,49 @@ export class MusicBlock extends BaseTerm {
 
 
 	// with side effects
-	redivide ({recursive = true} = {}) {
+	redivide ({recursive = true, measureHeads = null}: {recursive?: boolean, measureHeads?: number[]} = {}) {
 		if (recursive) {
 			this.forEachTerm(MusicBlock, block => {
 				if (!block._parent || block._parent.cmd !== "alternative")
-					block.redivide();
+					block.redivide({recursive, measureHeads});
 			});
+		}
+
+		// split rests
+		if (measureHeads) {
+			this.body = [].concat(...this.body.map(term => {
+				if (!(term instanceof Rest) || term.name !== "s" || !Number.isInteger(term._measure))
+					return [term];
+
+				const nextHead = measureHeads[term._measure];
+				const endTick = term._tick + term.durationMagnitude;
+				if (nextHead > 0 && endTick > nextHead) {
+					const post_events = term.post_events;
+
+					let startTick = term._tick;
+					const rests = [];
+					let nextMeasure;
+					for (nextMeasure = term._measure; nextMeasure < measureHeads.length && endTick > measureHeads[nextMeasure]; ++nextMeasure) {
+						const rest = new Rest({name: "s", duration: Duration.fromMagnitude(measureHeads[nextMeasure] - startTick), post_events: []});
+						rest._measure = nextMeasure;
+						rest._lastMeasure = nextMeasure;
+						rests.push(rest);
+
+						startTick = measureHeads[nextMeasure];
+					}
+
+					const rest = new Rest({name: "s", duration: Duration.fromMagnitude(endTick - startTick), post_events: [...post_events]});
+					rest._measure = nextMeasure;
+					rest._lastMeasure = nextMeasure;
+					rests.push(rest);
+
+					console.assert(rests.reduce((sum, rest) => sum + rest.durationMagnitude, 0) === term.durationMagnitude, "duration splitting error:", rests, term);
+
+					return rests;
+				}
+
+				return [term];
+			}));
 		}
 
 		const isPostTerm = term => !term
@@ -1890,6 +1962,7 @@ export class Chord extends MusicEvent {
 
 
 	shiftAnchor (newAnchor: ChordElement) {
+		//console.log("shiftAnchor:", this.join(), newAnchor.join(), this.absolutePitch.pitchValue, newAnchor.pitchValue, this.anchorPitch.pitchValue);
 		const _location = this.basePitch._location;
 		const shift = idioms.phonetDifferToShift(this.basePitch.phonetStep - newAnchor.phonetStep);
 		const relativeOctave = this.basePitch.absoluteOctave(this.anchorPitch) - newAnchor.octave - shift;
@@ -2123,6 +2196,34 @@ export class Duration extends BaseTerm {
 			Duration._default = new Duration({number: 4, dots: 0});
 
 		return Duration._default;
+	}
+
+
+	static fromMagnitude (magnitude: number): Duration {
+		if (!Number.isInteger(magnitude)) {
+			console.warn("magnitude must be integer:", magnitude);
+			return null;
+		}
+
+		const di = gcd(magnitude, WHOLE_DURATION_MAGNITUDE);
+		const denominator = WHOLE_DURATION_MAGNITUDE / di;
+		const numerator = magnitude / di;
+		if (!Number.isInteger(Math.log2(denominator)))
+			return new Duration({number: 1, dots: 0, multipliers: [`${numerator}/${denominator}`]});
+
+		switch (numerator) {
+		case 1:
+			return new Duration({number: denominator, dots: 0});
+
+		case 3:
+			return new Duration({number: denominator / 2, dots: 1});
+
+		case 7:
+			return new Duration({number: denominator / 4, dots: 2});
+
+		default:
+			return new Duration({number: denominator, dots: 0, multipliers: [numerator.toString()]});
+		}
 	}
 
 
@@ -2379,6 +2480,7 @@ export const termDictionary = {
 	MarkupCommand,
 	Repeat,
 	Relative,
+	ParallelMusic,
 	TimeSignature,
 	Partial,
 	Times,

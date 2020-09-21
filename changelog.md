@@ -1,14 +1,13 @@
 
 ## TODO
-	split rests to satisfy measure splitting
-	swap tracks at a specific measure
+	chop Op.9 No.1: no layoutMusic & midiMusic
+	track-measure lilypond section editor
+		duration checker
 	MIDI post processing
 		arpeggio
 	implicit notes matching with sheet document
 		tremolo type note match
 		setTempo missing issue in Once measure layout
-	lilyInterpreter
-		execute parallelMusic
 	lyrics in music normalization
 	lyrics hilighting
 		match chord with voice in the same staff
@@ -19,6 +18,20 @@
 		system splitting, chord mode symbol affiliation
 		remove empty track	(6.1 落叶.ly)
 
+
+
+*	2020.9.20
+
+	+	lilyInterpreter.ts: fixed MusicTrack.spreadRelativeBlocks.
+
+	+	lilyInterpreter.ts: execute SimultaneousList in TrackContext.
+
+	+	lilyParser: term class of ParallelMusic added.
+
+
+*	2020.9.19
+
+	+	lilyParser.ts: enhanced music block redivide by measure heads.
 
 
 *	2020.9.17

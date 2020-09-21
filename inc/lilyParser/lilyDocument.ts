@@ -634,6 +634,7 @@ export default class LilyDocument {
 	}
 
 
+	// [deprecated]
 	// generate tied notehead location candidates
 	getTiedNoteLocations (source: TextSource): [number, number][] {
 		const chordPairs: [Chord, Chord][] = [];

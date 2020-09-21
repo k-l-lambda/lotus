@@ -1,7 +1,7 @@
 
 import {romanize} from "../romanNumeral";
 import {WHOLE_DURATION_MAGNITUDE, GRACE_DURATION_FACTOR, lcmMulti, lcm} from "./utils";
-import {parseRaw, getDurationSubdivider} from "./lilyTerms";
+import {parseRaw, getDurationSubdivider, MusicChunk} from "./lilyTerms";
 import LogRecorder from "../logRecorder";
 import {StaffContext, PitchContextTable} from "../pitchContext";
 import * as idioms from "./idioms";
@@ -12,7 +12,7 @@ import {
 	BaseTerm,
 	Root, Block, MusicEvent, Repeat, Relative, TimeSignature, Partial, Times, Tuplet, Grace, AfterGrace, Clef, Scheme, Include, Rest,
 	KeySignature, OctaveShift, Duration, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version,
-	ChordMode, LyricMode, ChordElement, Language, PostEvent, Transposition,
+	ChordMode, LyricMode, ChordElement, Language, PostEvent, Transposition, ParallelMusic,
 } from "./lilyTerms";
 
 
@@ -252,8 +252,21 @@ export class MusicTrack {
 			return;
 
 		this.transform((term, context) => {
-			if (term instanceof Relative)
-				return term.shiftBody(context.pitch);
+			if (term instanceof Relative) {
+				if (term.music instanceof MusicBlock)
+					term.music.updateChordAnchors();
+
+				const terms = term.shiftBody(context.pitch);
+
+				// initialize anchor pitch for track head chord
+				if (!context.event || !context.event.getPreviousT(Chord)) {
+					const head = terms.find(t => t instanceof Chord);
+					if (head)
+						head._anchorPitch = this.anchorPitch;
+				}
+
+				return terms;
+			}
 			else
 				return [term];
 		});
@@ -310,6 +323,11 @@ export class MusicTrack {
 		const newBlock = new MusicBlock({body: terms.map(term => term.clone())});
 
 		return MusicTrack.fromBlockAnchor(newBlock, context.pitch);
+	}
+
+
+	redivide () {
+		this.block.redivide({measureHeads: this.measureHeads});
 	}
 
 
@@ -438,6 +456,36 @@ class TrackContext {
 			this.voiceName = this.track.contextDict.Voice;
 		}
 		//console.debug("contextDict:", contextDict);
+	}
+
+
+	clone (): this {
+		const ctx = {...this};
+		Object.setPrototypeOf(ctx, Object.getPrototypeOf(this));
+
+		return ctx;
+	}
+
+
+	mergeParallelClones (contexts: TrackContext[]) {
+		const frontContext = contexts.reduce((front, context) => {
+			const next = !front || context.tick > front.tick ? context : front;
+			next.tying = next.tying || context.tying;
+			next.staccato = next.staccato || context.staccato;
+
+			return next;
+		}, null);
+		const lastContext = contexts[contexts.length - 1];
+
+		this.tick = frontContext.tick;
+		this.tickInMeasure = frontContext.tickInMeasure;
+		this.measureIndex = frontContext.measureIndex;
+		this.partialDuration = frontContext.partialDuration;
+		this.tying = frontContext.tying;
+		this.staccato = frontContext.staccato;
+
+		this.pitch = lastContext.pitch;
+		this.event = lastContext.event;
 	}
 
 
@@ -737,6 +785,21 @@ class TrackContext {
 		else if (term instanceof PostEvent) {
 			if (term.isStaccato)
 				this.staccato = true;
+		}
+		else if (term instanceof SimultaneousList) {
+			const contexts: TrackContext[] = [];
+			let lastContext = this;
+			for (const subterm of term.list) {
+				const context = this.clone();
+				context.pitch = lastContext.pitch;
+				context.event = lastContext.event;
+
+				context.execute(subterm);
+				contexts.push(context);
+				lastContext = context;
+			}
+
+			this.mergeParallelClones(contexts);
 		}
 		else {
 			if (term.isMusic)
@@ -1072,6 +1135,16 @@ export default class LilyInterpreter {
 				head: this.execute(term.head),
 				lyrics: this.execute(term.lyrics),
 				body: this.execute(term.body, {execMusic, contextDict: {...contextDict, ...term.contextDict}}),
+			});
+		}
+		else if (term instanceof ParallelMusic) {
+			term.voices.forEach(voice => {
+				const block = new MusicBlock({
+					body: MusicChunk.join(voice.body),
+				});
+
+				const value = this.execute(block);
+				this.variableTable.set(voice.name, value);
 			});
 		}
 		else if (term instanceof Include)
