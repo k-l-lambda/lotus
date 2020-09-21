@@ -2216,14 +2216,17 @@ export class Duration extends BaseTerm {
 
 
 	static fromMagnitude (magnitude: number): Duration {
-		if (!Number.isInteger(magnitude)) {
+		const MULTI = 1024;
+		const MULTI_DURATION_MAGNITUDE = WHOLE_DURATION_MAGNITUDE * MULTI;
+		const multiMag = magnitude * MULTI;
+		if (!Number.isInteger(multiMag)) {
 			console.warn("magnitude must be integer:", magnitude);
 			return null;
 		}
 
-		const di = gcd(magnitude, WHOLE_DURATION_MAGNITUDE);
-		const denominator = WHOLE_DURATION_MAGNITUDE / di;
-		const numerator = magnitude / di;
+		const di = gcd(multiMag, MULTI_DURATION_MAGNITUDE);
+		const denominator = MULTI_DURATION_MAGNITUDE / di;
+		const numerator = multiMag / di;
 		if (!Number.isInteger(Math.log2(denominator)))
 			return new Duration({number: 1, dots: 0, multipliers: [`${numerator}/${denominator}`]});
 
