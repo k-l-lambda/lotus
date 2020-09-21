@@ -180,15 +180,15 @@
 					</tr>
 					<tr>
 						<td>Remove Trill Spans</td>
-						<td><button @click="removeTrillSpans">remove</button></td>
+						<td><button @click="removeTrillSpans" :disabled="loadingLilyParser">remove</button></td>
 					</tr>
 					<tr>
 						<td>Prune Stem Directions</td>
-						<td><button @click="executeMarkup('pruneStemDirections')">prune</button></td>
+						<td><button @click="executeMarkup('pruneStemDirections')" :disabled="loadingLilyParser">prune</button></td>
 					</tr>
 					<tr>
 						<td>Redivide Measures</td>
-						<td><button @click="redivideLilyDocument">redivide</button></td>
+						<td><button @click="redivideLilyDocument" :disabled="loadingLilyParser">redivide</button></td>
 					</tr>
 					<tr>
 						<th>Engrave</th>
