@@ -803,6 +803,11 @@ class TrackContext {
 
 			this.mergeParallelClones(contexts);
 		}
+		else if (term instanceof ContextedMusic) {
+			// TODO: process contextDict
+
+			this.execute(term.body);
+		}
 		else {
 			if (term.isMusic)
 				console.warn("[TrackContext]	unexpected music term:", term);
@@ -1105,7 +1110,7 @@ export default class LilyInterpreter {
 					console.warn("uninitialized variable is referred:", term);
 			}
 
-			return this.execute(result, {execMusic});
+			return this.execute(result, {execMusic, contextDict});
 		}
 		else if (term instanceof MusicBlock) {
 			const result = new MusicBlock({

@@ -22,6 +22,7 @@
 
 *	2020.9.21
 
+	+	lilyInterpreter.ts: enhanced TrackContext.execute for ContextedMusic.
 	+	lilyInterpreter.ts: enhanced LilyInterpreter.execute for Variable.
 
 	+	lilyTerms.ts: added bad duration protection in MusicBlock.redivide.
