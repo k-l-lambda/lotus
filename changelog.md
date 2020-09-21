@@ -22,6 +22,8 @@
 
 *	2020.9.21
 
+	+	lilyInterpreter.ts: enhanced LilyInterpreter.execute for Variable.
+
 	+	lilyTerms.ts: added bad duration protection in MusicBlock.redivide.
 
 	+	lilyInterpreter.ts: fixed anchor pitch initialization in MusicTrack.spreadRelativeBlocks.

@@ -1105,7 +1105,7 @@ export default class LilyInterpreter {
 					console.warn("uninitialized variable is referred:", term);
 			}
 
-			return result;
+			return this.execute(result, {execMusic});
 		}
 		else if (term instanceof MusicBlock) {
 			const result = new MusicBlock({
