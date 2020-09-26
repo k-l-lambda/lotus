@@ -1512,6 +1512,12 @@ export class SimultaneousList extends BaseTerm {
 	get durationMagnitude (): number {
 		return Math.max(...this.list.filter(term => term instanceof BaseTerm).map(term => term.durationMagnitude));
 	}
+
+
+	get measureLayout (): measureLayout.MeasureLayout {
+		const track = this.list.find(term => term instanceof BaseTerm && term.measureLayout);
+		return track && track.measureLayout;
+	}
 };
 
 

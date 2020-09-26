@@ -19,6 +19,11 @@
 
 
 
+*	2020.9.26
+
+	+	lilyTerms.ts: SimultaneousList.measureLayout added.
+
+
 *	2020.9.21
 
 	+	lilyTerms.ts: ContextedMusic.measureLayout added.
