@@ -189,16 +189,23 @@ const FILE_BORN_OUPUT_PATTERN = /output\sto\s`(.+)'/;
 const LILYPOND_PATH = filePathResolve(env.LILYPOND_DIR, "lilypond");
 
 
-const engraveSvg = async (source: string, {onProcStart, onMidiRead, onSvgRead, includeFolders = []}: {
-	onProcStart?: () => void|Promise<void>,
-	onMidiRead?: (content: MIDI.MidiData, {filePath: string}) => void|Promise<void>,
-	onSvgRead?: (index: number, content: string, {filePath: string}) => void|Promise<void>,
-	includeFolders?: string[],	// include folder path should be relative to TEMP_DIR
-} = {}): Promise<{
-	logs: string,
-	svgs: string[],
-	midi: MIDI.MidiData,
-}> => {
+interface EngraverOptions {
+	onProcStart?: () => void|Promise<void>;
+	onMidiRead?: (content: MIDI.MidiData, options?: {filePath: string}) => void|Promise<void>;
+	onSvgRead?: (index: number, content: string, options?: {filePath: string}) => void|Promise<void>;
+	includeFolders?: string[];	// include folder path should be relative to TEMP_DIR
+};
+
+interface EngraverResult {
+	logs: string;
+	svgs: string[];
+	midi: MIDI.MidiData;
+};
+
+
+const engraveSvgCli = async (source: string,
+	{onProcStart, onMidiRead, onSvgRead, includeFolders = []}: EngraverOptions = {},
+): Promise<EngraverResult> => {
 	const hash = genHashString();
 	const sourceFilename = `${env.TEMP_DIR}engrave-${hash}.ly`;
 
@@ -396,11 +403,58 @@ const engraveScm = async (source: string, {onProcStart, includeFolders = []}: {
 };
 
 
+let engraveSvg = engraveSvgCli;
+
+
+const lyAddon = process.env.LILYPOND_ADDON && require(process.env.LILYPOND_ADDON);
+if (lyAddon) {
+	engraveSvg = async (source: string,
+		{onProcStart, onMidiRead, onSvgRead, includeFolders = []}: EngraverOptions = {}): Promise<EngraverResult> => {
+		let logs;
+		const svgs = [];
+		let midi;
+
+		const engravePromise = lyAddon.engrave(source, {
+			includeFolders,
+			log (message) {
+				logs = message;
+			},
+			onSVG (filename, content) {
+				const captures = filename.match(/-(\d+)\.svg$/);
+				const index = captures ? Number(captures[1]) - 1 : 0;
+
+				const svg = postProcessSvg(content);
+				svgs[index] = svg;
+
+				onSvgRead && onSvgRead(index, svg);
+			},
+			onMIDI (_, buffer) {
+				midi = MIDI.parseMidiData(buffer);
+
+				onMidiRead && onMidiRead(midi);
+			},
+		});
+
+		await onProcStart && onProcStart();
+
+		const error = await engravePromise;
+		console.debug("engraveSvgByAddon result:", error);
+
+		return {
+			logs,
+			svgs,
+			midi,
+		};
+	};
+}
+
+
 
 export {
 	xml2ly,
 	midi2ly,
 	engraveSvg,
+	engraveSvgCli,
 	engraveSvgWithStream,
 	engraveScm,
 	setEnvironment,

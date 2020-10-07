@@ -19,6 +19,11 @@
 
 
 
+*	2020.10.7
+
+	+	lilyCommands.ts: engraveSVG by lilypond addon added.
+
+
 *	2020.9.26
 
 	+	lilyTerms.ts: SimultaneousList.measureLayout added.
