@@ -19,6 +19,11 @@
 
 
 
+*	2020.10.10
+
+	+	staffSvg: adjusted to compatible with lilypond 2.21.
+
+
 *	2020.10.7
 
 	+	lilyCommands.ts: engraveSVG by lilypond addon added.

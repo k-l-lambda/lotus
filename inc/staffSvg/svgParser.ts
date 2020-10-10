@@ -154,6 +154,9 @@ const svgToElements = (svgText, {logger = null, DOMParser = null} = {}) => {
 
 					if (g.color)
 						child.color = g.color;
+
+					if (g.href)
+						child.href = g.href;
 				}
 	
 				root.children.splice(gi, 1, ...g.children);

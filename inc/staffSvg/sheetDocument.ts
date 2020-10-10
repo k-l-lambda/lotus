@@ -409,7 +409,7 @@ class SheetDocument {
 					console.warn("unresolved command chord element:", token.source, token);
 			}
 
-			map.set(shortId(token.href), token);
+			token.href && map.set(shortId(token.href), token);
 
 			return map;
 		}, new Map());

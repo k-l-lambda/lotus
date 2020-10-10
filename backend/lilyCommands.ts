@@ -438,7 +438,7 @@ if (lyAddon) {
 		await onProcStart && onProcStart();
 
 		const error = await engravePromise;
-		console.debug("engraveSvgByAddon result:", error);
+		console.debug("\nLilypond error level:", error);
 
 		return {
 			logs,
