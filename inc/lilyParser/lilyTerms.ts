@@ -1423,8 +1423,8 @@ export class MusicBlock extends BaseTerm {
 					rests.push(rest);
 
 					console.assert(rests.reduce((sum, rest) => sum + rest.durationMagnitude, 0) === term.durationMagnitude, "duration splitting error:", rests, term);
-					if (rests.reduce((sum, rest) => sum + rest.durationMagnitude, 0) !== term.durationMagnitude)
-						debugger;
+					//if (rests.reduce((sum, rest) => sum + rest.durationMagnitude, 0) !== term.durationMagnitude)
+					//	debugger;
 
 					return rests;
 				}
