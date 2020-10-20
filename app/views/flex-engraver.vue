@@ -376,8 +376,10 @@
 
 				if (this.fixStaffSize) {
 					staffSize = this.fitStaffSize;
-					const ysc = (innerHeight / staffSize + ss) / (nh + ss);
-					systemCount = Math.max(Math.floor(ysc), 1);
+					//const ysc = (innerHeight / staffSize + ss) / (nh + ss);
+					//systemCount = Math.max(Math.floor(ysc), 1);
+					const xsc = (nw - constants.STAFF_HEAD_DEDUCTION) * staffSize / (innerWidth - constants.STAFF_HEAD_DEDUCTION * staffSize);
+					systemCount = Math.ceil(xsc - 0.2);
 				}
 				else {
 					for (; systemCount < 1e+3; ++systemCount) {
@@ -420,6 +422,7 @@
 					}
 				}
 				const horizontalNaturalCount = (nw - constants.STAFF_HEAD_DEDUCTION) * staffSize / (innerWidth - constants.STAFF_HEAD_DEDUCTION * staffSize);
+				console.log("horizontalNaturalCount:", horizontalNaturalCount, systemCount);
 
 				// vertical middle align
 				const preferInnerHeight = staffSize * (nh * systemCount + ss * (systemCount - 1));
@@ -440,7 +443,7 @@
 				globalAttributes.staffSize.value = staffSize;
 				globalAttributes.paperWidth.value = {proto: "NumberUnit", number: paperWidth, unit: "\\cm"};
 				globalAttributes.paperHeight.value = {proto: "NumberUnit", number: paperHeight, unit: "\\cm"};
-				globalAttributes.raggedLast.value = systemCount <= 1 && horizontalNaturalCount < 0.6;
+				globalAttributes.raggedLast.value = systemCount <= 1 && horizontalNaturalCount < 0.8;
 
 				if (!this.fixStaffSize)
 					this.fitStaffSize = staffSize;

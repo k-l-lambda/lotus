@@ -19,6 +19,11 @@
 
 
 
+*	2020.10.20
+
+	+	flex-engraver.vue: fixed systemCount for fixed staff size.
+
+
 *	2020.10.10
 
 	+	staffSvg: adjusted to compatible with lilypond 2.21.
