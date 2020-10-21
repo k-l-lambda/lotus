@@ -406,7 +406,7 @@ const engraveScm = async (source: string, {onProcStart, includeFolders = []}: {
 let engraveSvg = engraveSvgCli;
 
 
-const lyAddon = process.env.LILYPOND_ADDON && require(process.env.LILYPOND_ADDON);
+const lyAddon = env.LILYPOND_ADDON && require(env.LILYPOND_ADDON);
 if (lyAddon) {
 	engraveSvg = async (source: string,
 		{onProcStart, onMidiRead, onSvgRead, includeFolders = []}: EngraverOptions = {}): Promise<EngraverResult> => {
