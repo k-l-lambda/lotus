@@ -19,6 +19,11 @@
 
 
 
+*	2020.10.21
+
+	+	backend/lilyAddon.ts created.
+
+
 *	2020.10.20
 
 	+	flex-engraver.vue: fixed systemCount for fixed staff size.

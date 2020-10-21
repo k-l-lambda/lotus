@@ -4,19 +4,32 @@ import fs from "fs";
 import path from "path";
 import child_process from "child-process-promise";
 import {MIDI} from "@k-l-lambda/web-widgets";
-// eslint-disable-next-line
 import {Writable} from "stream";
 
 import asyncCall from "../inc/asyncCall";
 import {SingleLock} from "../inc/mutex";
 import {preprocessXml} from "./xmlTools";
+import * as lilyAddon from "./lilyAddon";
 
 
 
-let env = process.env;
+let MUSICXML2LY_PATH;
+let MIDI2LY_PATH;
+let LILYPOND_PATH;
+
+
+let env;
 const setEnvironment = e => {
 	env = e;
+
+	MUSICXML2LY_PATH = filePathResolve(env.LILYPOND_DIR, "musicxml2ly");
+	MIDI2LY_PATH = filePathResolve(env.LILYPOND_DIR, "midi2ly");
+	LILYPOND_PATH = filePathResolve(env.LILYPOND_DIR, "lilypond");
+
 	emptyCache();
+
+	if (env.LILYPOND_ADDON)
+		lilyAddon.loadAddon(env.LILYPOND_ADDON);
 };
 
 
@@ -49,10 +62,8 @@ const emptyCache = async () => {
 	}
 };
 
-emptyCache();
 
-
-interface LilyProcessOptions {
+export interface LilyProcessOptions {
 	// xml
 	language?: string;
 	removeMeasureImplicit?: boolean;
@@ -122,10 +133,6 @@ const postProcessLy = (ly: string, {
 };
 
 
-const MUSICXML2LY_PATH = filePathResolve(env.LILYPOND_DIR, "musicxml2ly");
-const MIDI2LY_PATH = filePathResolve(env.LILYPOND_DIR, "midi2ly");
-
-
 const xml2ly = async (xml: string, {language = "english", ...options}: LilyProcessOptions): Promise<string> => {
 	xml = preprocessXml(xml, options);
 	//console.log("xml:", options, xml.substr(0, 100));
@@ -186,17 +193,14 @@ const postProcessSvg = (svg: string): string => {
 const FILE_BORN_OUPUT_PATTERN = /output\sto\s`(.+)'/;
 
 
-const LILYPOND_PATH = filePathResolve(env.LILYPOND_DIR, "lilypond");
-
-
-interface EngraverOptions {
+export interface EngraverOptions {
 	onProcStart?: () => void|Promise<void>;
 	onMidiRead?: (content: MIDI.MidiData, options?: {filePath: string}) => void|Promise<void>;
 	onSvgRead?: (index: number, content: string, options?: {filePath: string}) => void|Promise<void>;
 	includeFolders?: string[];	// include folder path should be relative to TEMP_DIR
 };
 
-interface EngraverResult {
+export interface EngraverResult {
 	logs: string;
 	svgs: string[];
 	midi: MIDI.MidiData;
@@ -403,50 +407,8 @@ const engraveScm = async (source: string, {onProcStart, includeFolders = []}: {
 };
 
 
-let engraveSvg = engraveSvgCli;
-
-
-const lyAddon = env.LILYPOND_ADDON && require(env.LILYPOND_ADDON);
-if (lyAddon) {
-	engraveSvg = async (source: string,
-		{onProcStart, onMidiRead, onSvgRead, includeFolders = []}: EngraverOptions = {}): Promise<EngraverResult> => {
-		let logs;
-		const svgs = [];
-		let midi;
-
-		const engravePromise = lyAddon.engrave(source, {
-			includeFolders,
-			log (message) {
-				logs = message;
-			},
-			onSVG (filename, content) {
-				const captures = filename.match(/-(\d+)\.svg$/);
-				const index = captures ? Number(captures[1]) - 1 : 0;
-
-				const svg = postProcessSvg(content);
-				svgs[index] = svg;
-
-				onSvgRead && onSvgRead(index, svg);
-			},
-			onMIDI (_, buffer) {
-				midi = MIDI.parseMidiData(buffer);
-
-				onMidiRead && onMidiRead(midi);
-			},
-		});
-
-		await onProcStart && onProcStart();
-
-		const error = await engravePromise;
-		console.debug("\nLilypond error level:", error);
-
-		return {
-			logs,
-			svgs,
-			midi,
-		};
-	};
-}
+const engraveSvg = async (source: string, options: EngraverOptions = {}): Promise<EngraverResult> =>
+	(env.LILYPOND_ADDON ? lilyAddon.engraveSvg : engraveSvgCli)(source, options);
 
 
 
@@ -459,5 +421,5 @@ export {
 	engraveScm,
 	setEnvironment,
 	emptyCache,
-	LilyProcessOptions,
+	postProcessSvg,
 };

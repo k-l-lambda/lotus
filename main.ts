@@ -4,7 +4,7 @@ import http from "http";
 import * as webEditor from "@k-l-lambda/web-editor";
 
 import "./env.js";
-import {service} from "./backend";
+import {service, setEnvironment} from "./backend";
 import * as dirServer from "./backend/dirServer";
 
 
@@ -20,6 +20,9 @@ app.use("*.html", (_, res) => {
 
 
 app.use("/", express.static("./dist"));
+
+
+setEnvironment(process.env);
 
 
 Object.entries(service)
