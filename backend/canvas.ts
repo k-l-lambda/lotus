@@ -2,7 +2,7 @@
 //import {loadImage, createCanvas} from "canvas";
 import {PNGStream} from "canvas";
 
-const {loadImage, createCanvas}: any = process.env.MOBILE_MODE ? require("canvas") : {};
+const {loadImage, createCanvas}: any = !process.env.MOBILE_MODE ? require("canvas") : {};
 
 
 
