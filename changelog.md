@@ -19,6 +19,11 @@
 
 
 
+*	2020.10.22
+
+	+	lilyAddon.ts: engraveSvgWithStream added.
+
+
 *	2020.10.21
 
 	+	backend/lilyAddon.ts created.

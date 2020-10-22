@@ -204,12 +204,13 @@ export interface EngraverResult {
 	logs: string;
 	svgs: string[];
 	midi: MIDI.MidiData;
+	errorLevel: number;
 };
 
 
 const engraveSvgCli = async (source: string,
 	{onProcStart, onMidiRead, onSvgRead, includeFolders = []}: EngraverOptions = {},
-): Promise<EngraverResult> => {
+): Promise<Partial<EngraverResult>> => {
 	const hash = genHashString();
 	const sourceFilename = `${env.TEMP_DIR}engrave-${hash}.ly`;
 
@@ -323,7 +324,7 @@ const engraveSvgCli = async (source: string,
 };
 
 
-const engraveSvgWithStream = async (source: string, output: Writable, {includeFolders = []}: {includeFolders?: string[]} = {}) => {
+const engraveSvgWithStreamCli = async (source: string, output: Writable, {includeFolders = []}: {includeFolders?: string[]} = {}) => {
 	const hash = genHashString();
 	const sourceFilename = `${env.TEMP_DIR}engrave-${hash}.ly`;
 
@@ -407,8 +408,12 @@ const engraveScm = async (source: string, {onProcStart, includeFolders = []}: {
 };
 
 
-const engraveSvg = async (source: string, options: EngraverOptions = {}): Promise<EngraverResult> =>
+const engraveSvg = async (source: string, options: EngraverOptions = {}): Promise<Partial<EngraverResult>> =>
 	(env.LILYPOND_ADDON ? lilyAddon.engraveSvg : engraveSvgCli)(source, options);
+
+
+const engraveSvgWithStream = async (source: string, output: Writable, options: {includeFolders?: string[]} = {}) =>
+	(env.LILYPOND_ADDON ? lilyAddon.engraveSvgWithStream : engraveSvgWithStreamCli)(source, output, options);
 
 
 
@@ -418,6 +423,7 @@ export {
 	engraveSvg,
 	engraveSvgCli,
 	engraveSvgWithStream,
+	engraveSvgWithStreamCli,
 	engraveScm,
 	setEnvironment,
 	emptyCache,

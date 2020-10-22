@@ -2,13 +2,18 @@
 import fs from "fs";
 
 import "../env.js";
-import {engraveSvgWithStream} from "../backend/lilyCommands";
+import {engraveSvgWithStream, setEnvironment} from "../backend/lilyCommands";
 
+
+
+setEnvironment(process.env);
 
 
 const main = async (...args) => {
 	const ly = fs.readFileSync(args[0]).toString();
-	await engraveSvgWithStream(ly, process.stdout);
+	const result = await engraveSvgWithStream(ly, process.stdout);
+
+	console.log("Done:", result);
 };
 
 
