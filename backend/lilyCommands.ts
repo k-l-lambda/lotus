@@ -28,8 +28,15 @@ const setEnvironment = e => {
 
 	emptyCache();
 
-	if (env.LILYPOND_ADDON)
+	if (env.LILYPOND_ADDON) {
+		if (env.LILYPOND_ADDON_ASSETS_DIR) {
+			process.env.LILYPOND_PATH = path.join(env.LILYPOND_ADDON_ASSETS_DIR, "bin/lilypond");
+			process.env.GUILE_LOAD_PATH = path.join(env.LILYPOND_ADDON_ASSETS_DIR, "share/guile/1.8");
+			process.env.FONTCONFIG_PATH = path.join(env.LILYPOND_ADDON_ASSETS_DIR, "share/fonts");
+		}
+
 		lilyAddon.loadAddon(env.LILYPOND_ADDON);
+	}
 };
 
 
