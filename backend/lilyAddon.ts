@@ -75,7 +75,7 @@ const engraveSvgWithStream = async (source: string,
 			// Write stream in non-main thread may result in blocking, so post a task to event looping.
 			setImmediate(() => {
 				output.write(svg);
-				output.write("\n\n");
+				output.write("\n\n\n\n");
 			});
 		},
 		onMIDI (_, buffer) {
