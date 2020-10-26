@@ -19,6 +19,11 @@
 
 
 
+*	2020.10.26
+
+	+	lilyAddon.ts: fixed stream blocking problem in engraveSvgWithStream.
+
+
 *	2020.10.22
 
 	+	lilyAddon.ts: engraveSvgWithStream added.
