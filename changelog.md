@@ -21,6 +21,8 @@
 
 *	2020.10.26
 
+	+	index.ts: export constants.
+
 	+	lilyAddon.ts: fixed stream blocking problem in engraveSvgWithStream.
 
 

@@ -4,6 +4,7 @@ import * as staffNotation from "./inc/staffSvg/staffNotation";
 import {recoverJSON} from "./inc/jsonRecovery";
 import * as lilyParser from "./inc/lilyParser";
 import LogRecorder from "./inc/logRecorder";
+import * as constants from "./inc/constants";
 
 import SheetLive from "./app/components/sheet-live.vue";
 import SheetSigns from "./app/components/sheet-signs.vue";
@@ -18,6 +19,7 @@ export {
 	recoverJSON,
 	lilyParser,
 	LogRecorder,
+	constants,
 	SheetLive,
 	SheetSigns,
 	SheetBaker,
