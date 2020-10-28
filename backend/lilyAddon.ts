@@ -64,7 +64,7 @@ const engraveSvgWithStream = async (source: string,
 	let logs;
 	let midi;
 
-	const tasks = [];
+	//const tasks = [];
 
 	const errorLevel = await lilypondEx.engrave(source, {
 		includeFolders,
@@ -72,22 +72,20 @@ const engraveSvgWithStream = async (source: string,
 			logs = message;
 		},
 		onSVG (_, content) {
-			const svg = postProcessSvg(content);
-
 			// Write stream in non-main thread may result in blocking, so post a task to event looping.
-			tasks.push(new Promise(resolve => setImmediate(() => {
-				output.write(svg);
+			//tasks.push(new Promise(resolve => ));
+			setImmediate(() => {
+				output.write(content);
 				output.write("\n\n\n\n");
-
-				resolve();
-			})));
+			});
 		},
 		onMIDI (_, buffer) {
 			midi = MIDI.parseMidiData(buffer);
 		},
 	});
 
-	await Promise.all(tasks);
+	//await Promise.all(tasks);
+	await new Promise(resolve => setImmediate(resolve));
 
 	return {
 		logs,
