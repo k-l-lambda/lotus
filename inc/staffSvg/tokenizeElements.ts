@@ -7,8 +7,54 @@ import StaffToken from "./staffToken";
 
 
 
-const normalizeElement = (elem, attributes) => {
-	const data : any = {x: null, y: null, identity: {type: elem.type}};
+interface Position
+{
+	x: number;
+	y: number;
+};
+
+interface Transform
+{
+	translate?: Position;
+	scale?: Position;
+};
+
+type ElementValue = string | number | Transform | Position;
+
+interface StaffFields {
+	href: string;
+	transform: Transform;
+	x: number;
+	y: number;
+	rx: number;
+	ry: number;
+	x1: number;
+	y1: number;
+	x2: number;
+	y2: number;
+	width: number;
+	height: number;
+	sw: number;
+	sw2: number;
+	scale: Position;
+	["stroke-width"]: number;
+};
+
+export interface StaffElement extends Partial<StaffFields> {
+	type: string,
+	[key: string]: ElementValue,
+};
+
+export type HashTable = {[key: string]: StaffElement};
+
+interface StaffElementData extends Partial<StaffFields> {
+	hash?: string;
+	identity: StaffElement;
+};
+
+
+const normalizeElement = (elem: StaffElement, attributes): StaffElementData => {
+	const data: StaffElementData = {x: null, y: null, identity: {type: elem.type}};
 
 	const basicSW1 = sizeToStrokeWidth1(attributes.staffSize);
 	const basicSW2 = sizeToStrokeWidth2(attributes.staffSize);
@@ -109,7 +155,10 @@ const normalizeElement = (elem, attributes) => {
 
 
 // TODO: consider split arc linking line into 2 parts
-const tokenizeElements = (elements, attributes, logger) => {
+const tokenizeElements = (elements, attributes, logger): {
+	tokens: StaffToken[],
+	hashTable: HashTable,
+} => {
 	const es = elements.map(e => normalizeElement(e, attributes)).filter(e => e);
 
 	//logger.append("tokenizeElements", {elementCount: es.length});

@@ -21,6 +21,8 @@
 
 *	2020.10.30
 
+	+	staffSvg: added type of HashTable.
+
 	+	flex-engraver.vue: exportSourceList added.
 
 

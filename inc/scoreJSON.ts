@@ -1,14 +1,8 @@
 
 import SheetDocument from "./staffSvg/sheetDocument";
-import * as LilyNotation from "../inc/lilyNotation";
+import {HashTable} from "./staffSvg/tokenizeElements";
+import * as LilyNotation from "./lilyNotation";
 
-
-
-/*export interface NoteLinking {
-	ids: string[];
-	staffTrack: number;
-	contextIndex: number;
-}*/
 
 
 export interface ScoreMeta {
@@ -28,7 +22,7 @@ interface ScoreJSON {
 	version?: string;
 	meta: ScoreMeta;
 	doc: SheetDocument;
-	hashTable: {[key: string]: any};
+	hashTable: HashTable;
 	lilyNotation: LilyNotation.Notation,
 }
 
