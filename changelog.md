@@ -1,5 +1,6 @@
 
 ## TODO
+	ScoreMaker: added option to ignore lilyNotation.
 	track-measure lilypond section editor
 		duration checker
 	MIDI post processing
