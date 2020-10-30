@@ -19,6 +19,11 @@
 
 
 
+*	2020.10.30
+
+	+	flex-engraver.vue: exportSourceList added.
+
+
 *	2020.10.26
 
 	+	index.ts: export constants.

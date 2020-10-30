@@ -22,6 +22,7 @@
 			<button @click="renderSheet">&#x1f3bc;</button>
 			<!--button @click="exportScore">json</button-->
 			<button @click="copySource" title="copy lilypond source">&#x2398;</button>
+			<button @click="exportSourceList" title="export scores json">&#x2913;</button>
 			<div class="gauge-view" v-if="gaugeSvgDoc">
 				<SheetSimple v-if="gaugeSvgDoc" :documents="[gaugeSvgDoc]" />
 			</div>
@@ -426,7 +427,7 @@
 
 				// vertical middle align
 				const preferInnerHeight = staffSize * (nh * systemCount + ss * (systemCount - 1));
-				const topMargin = 0.9 * (paperHeight - preferInnerHeight) / 2;
+				const topMargin = Math.max(0.9 * (paperHeight - preferInnerHeight) / 2, 0);
 				//console.log("topMargin:", topMargin);
 				globalAttributes.topMargin.value = {proto: "NumberUnit", number: topMargin, unit: "\\cm"};
 
@@ -494,6 +495,13 @@
 				navigator.clipboard.writeText(adjustedSource);
 
 				console.log("Source copyed.");
+			},
+
+
+			async exportSourceList () {
+				const text = JSON.stringify(this.sourceList);
+				const blob = new Blob([text], {type: "text/plain"});
+				downloadUrl(URL.createObjectURL(blob), "FlexEngraverSources.json");
 			},
 
 
