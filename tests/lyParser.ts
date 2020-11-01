@@ -22,7 +22,6 @@ const main = async sourceList => {
 		}
 	}
 
-	//const grammar = fs.readFileSync("./inc/lilyParser/lilypond.jison").toString();
 	const parser = await loadLilyParser();
 
 	const failures = [];

@@ -11,7 +11,7 @@ export default async function load () {
 	if (!parser) {
 		const t0 = performance.now();
 
-		const {default: grammarURL} = await import("../inc/lilyParser/lilypond.jison");
+		const {default: grammarURL} = await import("../jison/lilypond.jison");
 		const grammar = await (await fetch(grammarURL)).text();
 		//console.log("grammar:", grammar);
 

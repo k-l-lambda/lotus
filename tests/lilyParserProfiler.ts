@@ -9,9 +9,9 @@ import asyncCall from "../inc/asyncCall";
 
 const testParserLoading = async (revision, times = 3) => {
 	if (revision)
-		await child_process.spawn("git", ["checkout", revision, "./inc/lilyParser/lilypond.jison"]);
+		await child_process.spawn("git", ["checkout", revision, "./jison/lilypond.jison"]);
 
-	const grammar = (await asyncCall(fs.readFile, "./inc/lilyParser/lilypond.jison")).toString();
+	const grammar = (await asyncCall(fs.readFile, "./jison/lilypond.jison")).toString();
 
 	const costs = [];
 
