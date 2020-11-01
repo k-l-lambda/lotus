@@ -22,6 +22,8 @@
 
 *	2020.11.1
 
+	+	measureLayout.ts: property of code on MeasureLayout classes added.
+
 	+	measureLayout.jison: range grammar added, allow to ignore prefix 'i:'.
 
 	+	tests/measuresParser.ts created.

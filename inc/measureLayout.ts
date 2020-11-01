@@ -15,6 +15,7 @@ interface MeasureLayout {
 	serialize (type: LayoutType): number[];
 
 	seq: MeasureSeq;
+	code: string;
 };
 
 
@@ -22,6 +23,13 @@ type MeasureSeq = MeasureLayout[];
 
 
 const spreadMeasureSeq = (seq: MeasureSeq, type: LayoutType = LayoutType.Ordinary): number[] => [].concat(...seq.map(layout => layout.serialize(type)));
+
+
+const seqToCode = (seq: MeasureSeq, {withBrackets = false}: {withBrackets?: boolean} = {}): string => {
+	const code = seq.map(layout => layout.code).join(", ");
+
+	return withBrackets ? `[${code}]` : code;
+};
 
 
 class SingleMLayout extends SimpleClass implements MeasureLayout {
@@ -46,6 +54,11 @@ class SingleMLayout extends SimpleClass implements MeasureLayout {
 
 	get seq (): MeasureSeq {
 		return [this];
+	}
+
+
+	get code (): string {
+		return this.measure.toString();
 	}
 };
 
@@ -96,6 +109,11 @@ class BlockMLayout extends SimpleClass implements MeasureLayout {
 
 	serialize (type: LayoutType): number[] {
 		return spreadMeasureSeq(this.seq, type);
+	}
+
+
+	get code (): string {
+		return seqToCode(this.seq, {withBrackets: true});
 	}
 };
 
@@ -165,6 +183,17 @@ class VoltaMLayout extends SimpleClass implements MeasureLayout {
 			...alternates,
 		];
 	}
+
+
+	get code (): string {
+		const body = seqToCode(this.body, {withBrackets: true});
+
+		let code = `${this.times}*${body}`;
+		if (this.alternates)
+			code += "{" + this.alternates.map(seq => seqToCode(seq, {withBrackets: seq.length > 1})).join(", ") +"}";
+
+		return code;
+	}
 };
 
 
@@ -213,6 +242,11 @@ class ABAMLayout extends SimpleClass implements MeasureLayout {
 			this.main,
 			...this.rest,
 		];
+	}
+
+
+	get code (): string {
+		return "<" + this.main.code + ", " + seqToCode(this.rest) + ">";
 	}
 };
 
