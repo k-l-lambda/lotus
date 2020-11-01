@@ -22,6 +22,8 @@
 
 *	2020.11.1
 
+	+	tests/measuresParser.ts created.
+
 	+	backend/loadJisonParserNode.ts created.
 
 	+	remote-file.vue: convert CRLF to LF to avoid href errors on Windows.
