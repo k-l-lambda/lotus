@@ -20,9 +20,11 @@ const parse = (lilyParser, measuresParser, sourceFile) => {
 	const sourceS = (interpreter.variableTable.get("measureLayoutS") as LiteralString).toString();
 
 	const layout2i = measuresParser.parse(sourceI);
+	const layout2s = measuresParser.parse(sourceS);
 
 	console.log("layout1:", layout1);
 	console.log("layout2i:", layout2i);
+	console.log("layout2s:", layout2s);
 
 	return true;
 };

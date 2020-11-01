@@ -4,6 +4,31 @@
 
 	const singleLayout = measure => ({proto: "SingleMLayout", measure});
 	const blockLayout = seq => ({proto: "BlockMLayout", seq});
+
+	const segment = n => ({segment: true, length: Number(n)});
+
+
+	const serializeSeq = (item, options) => {
+		if (item.segment) {
+			const index = options.index;
+			options.index += item.length;
+
+			return Array(item.length).fill(0).map((_, i) => singleLayout(index + i));
+		}
+
+		return [serialize(item, options)];
+	};
+
+	const serialize = (item, options = {index: 1}) => {
+		switch (item.proto) {
+		case "BlockMLayout":
+			item.seq = [].concat(...item.seq.map(it => serializeSeq(it, options)));
+
+			break;
+		}
+
+		return item;
+	};
 %}
 
 
@@ -12,8 +37,9 @@
 %option flex unicode
 
 A					[a-z]
-N					[0-9]
-UNSIGNED			{N}+
+N					[1-9]
+N0					[0-9]
+UNSIGNED			{N}{N0}*
 WORD				{A}+
 
 SPECIAL				[*,\[\]<>{}]
@@ -48,32 +74,28 @@ measure_layout
 	: 'i:' index_wise_measure_layout
 		{$$ = root("index-wise", $2);}
 	| 's:' segment_wise_measure_layout
-		{$$ = root("segment-wise", $2);}
+		{$$ = root("segment-wise", serialize($2));}
 	;
 
+
 index_wise_measure_layout
-	: sequence
+	: iw_sequence
 		{
-			if ($1.length === 1 && $1.proto === "BlockMLayout")
-				$$ = $1;
+			if ($1.length === 1 && $1[0].proto === "BlockMLayout")
+				$$ = $1[0];
 			else
 				$$ = blockLayout($1);
 		}
 	;
 
-segment_wise_measure_layout
-	: %empty
-		{$$ = null;}
-	;
-
-sequence
-	: layout_item
+iw_sequence
+	: iw_item
 		{$$ = [$1];}
-	| sequence ',' layout_item
+	| iw_sequence ',' iw_item
 		{$$ = [...$1, $3];}
 	;
 
-layout_item
+iw_item
 	: single_layout
 		{$$ = $1;}
 	;
@@ -81,4 +103,27 @@ layout_item
 single_layout
 	: UNSIGNED
 		{$$ = singleLayout($1);}
+	;
+
+
+segment_wise_measure_layout
+	: sw_sequence
+		{
+			if ($1.length === 1 && $1[0].proto === "BlockMLayout")
+				$$ = $1[0];
+			else
+				$$ = blockLayout($1);
+		}
+	;
+
+sw_sequence
+	: sw_item
+		{$$ = [$1];}
+	| sw_sequence sw_item
+		{$$ = [...$1, $2];}
+	;
+
+sw_item
+	: UNSIGNED
+		{$$ = segment($1);}
 	;
