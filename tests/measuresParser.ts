@@ -16,13 +16,13 @@ const parse = (lilyParser, measuresParser, sourceFile) => {
 	const interpreter = doc.interpret();
 	const layout1 = interpreter.layoutMusic.musicTracks[0].block.measureLayout;
 
-	const sourceI = (interpreter.variableTable.get("measureLayoutI") as LiteralString).exp;
-	const sourceS = (interpreter.variableTable.get("measureLayoutS") as LiteralString).exp;
+	const sourceI = (interpreter.variableTable.get("measureLayoutI") as LiteralString).toString();
+	const sourceS = (interpreter.variableTable.get("measureLayoutS") as LiteralString).toString();
 
-	console.log("layout1:", layout1, sourceI, sourceS);
+	const layout2i = measuresParser.parse(sourceI);
 
-	// TODO:
-	void(measuresParser);
+	console.log("layout1:", layout1);
+	console.log("layout2i:", layout2i);
 
 	return true;
 };
