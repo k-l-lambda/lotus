@@ -5,6 +5,7 @@
 	const singleLayout = measure => ({proto: "SingleMLayout", measure});
 	const blockLayout = seq => ({proto: "BlockMLayout", seq});
 	const voltaBlock = (times, body, alternates) => ({proto: "VoltaMLayout", times, body, alternates});
+	const abaBlock = (main, rest) => ({proto: "ABAMLayout", main, rest});
 
 	const segment = n => ({segment: true, length: Number(n)});
 
@@ -38,6 +39,11 @@
 		case "VoltaMLayout":
 			item.body = speard(item.body);
 			item.alternates = item.alternates.map(speard);
+
+			break;
+		case "ABAMLayout":
+			item.main = serializeSeq(item.main, options);
+			item.rest = speard(item.rest);
 
 			break;
 		}
@@ -117,6 +123,8 @@ iw_item
 		{$$ = $1;}
 	| iw_volta
 		{$$ = $1;}
+	| iw_aba
+		{$$ = $1;}
 	;
 
 single
@@ -151,6 +159,11 @@ iw_alternates
 		{$$ = alternates($2);}
 	;
 
+iw_aba
+	: '<' iw_item ',' iw_sequence '>'
+		{$$ = abaBlock($2, $4);}
+	;
+
 
 segment_wise_measure_layout
 	: sw_sequence
@@ -175,6 +188,8 @@ sw_item
 	| sw_block_item
 		{$$ = $1;}
 	| sw_volta
+		{$$ = $1;}
+	| sw_aba
 		{$$ = $1;}
 	;
 
@@ -208,4 +223,9 @@ sw_optional_alternates
 sw_alternates
 	: '{' sw_sequence '}'
 		{$$ = alternates($2);}
+	;
+
+sw_aba
+	: '<' sw_item sw_sequence '>'
+		{$$ = abaBlock($2, $3);}
 	;
