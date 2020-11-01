@@ -26,7 +26,27 @@ const spreadMeasureSeq = (seq: MeasureSeq, type: LayoutType = LayoutType.Ordinar
 
 
 const seqToCode = (seq: MeasureSeq, {withBrackets = false}: {withBrackets?: boolean} = {}): string => {
-	const code = seq.map(layout => layout.code).join(", ");
+	//const code = seq.map(layout => layout.code).join(", ");
+	let code = "";
+	let inRange = false;
+
+	for (let i = 0; i < seq.length; ++i) {
+		const middle = seq[i - 1] instanceof SingleMLayout && seq[i] instanceof SingleMLayout && seq[i + 1] instanceof SingleMLayout;
+		if (middle) {
+			if (!inRange) {
+				code += "..";
+				inRange = true;
+			}
+		}
+		else {
+			if (i > 0 && !inRange)
+				code += ", ";
+
+			inRange = false;
+
+			code += seq[i].code;
+		}
+	}
 
 	return withBrackets ? `[${code}]` : code;
 };
