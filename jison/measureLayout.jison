@@ -20,9 +20,11 @@
 	};
 
 	const serialize = (item, options = {index: 1}) => {
+		const speard = seq => [].concat(...seq.map(it => serializeSeq(it, options)));
+
 		switch (item.proto) {
 		case "BlockMLayout":
-			item.seq = [].concat(...item.seq.map(it => serializeSeq(it, options)));
+			item.seq = speard(item.seq);
 
 			break;
 		}
@@ -98,11 +100,18 @@ iw_sequence
 iw_item
 	: single_layout
 		{$$ = $1;}
+	| iw_block_layout
+		{$$ = $1;}
 	;
 
 single_layout
 	: UNSIGNED
 		{$$ = singleLayout($1);}
+	;
+
+iw_block_layout
+	: '[' iw_sequence ']'
+		{$$ = blockLayout($2);}
 	;
 
 
@@ -124,6 +133,18 @@ sw_sequence
 	;
 
 sw_item
+	: segement
+		{$$ = $1;}
+	| sw_block_layout
+		{$$ = $1;}
+	;
+
+segement
 	: UNSIGNED
 		{$$ = segment($1);}
+	;
+
+sw_block_layout
+	: '[' sw_sequence ']'
+		{$$ = blockLayout($2);}
 	;
