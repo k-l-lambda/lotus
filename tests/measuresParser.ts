@@ -30,7 +30,15 @@ const parse = (lilyParser, measuresParser, sourceFile) => {
 	console.log("layout2i:", layout2i);
 	console.log("layout2s:", layout2s);
 
-	return true;
+	const seq1 = layout1.serialize(measureLayout.LayoutType.Full);
+	const seq2i = layout2i.serialize(measureLayout.LayoutType.Full);
+	const seq2s = layout2s.serialize(measureLayout.LayoutType.Full);
+
+	console.log("seq1:", seq1);
+	console.log("seq2i:", seq2i);
+	console.log("seq2s:", seq2s);
+
+	return JSON.stringify(seq1) === JSON.stringify(seq2i) && JSON.stringify(seq1) === JSON.stringify(seq2s);
 };
 
 
@@ -54,6 +62,9 @@ const main = async sourceList => {
 		try {
 			const result = parse(lilyParser, measuresParser, source);
 			console.log("result:", result);
+
+			if (!result)
+				failures.push({source, error: "logic error"});
 		}
 		catch (error) {
 			console.warn("failed:", source, error);

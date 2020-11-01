@@ -48,11 +48,11 @@
 			break;
 		case "VoltaMLayout":
 			item.body = speard(item.body);
-			item.alternates = item.alternates.map(speard);
+			item.alternates = item.alternates && item.alternates.map(speard);
 
 			break;
 		case "ABAMLayout":
-			item.main = serializeSeq(item.main, options);
+			item.main = serialize(item.main, options);
 			item.rest = speard(item.rest);
 
 			break;
@@ -171,7 +171,7 @@ iw_volta
 
 iw_optional_alternates
 	: %empty
-		{$$ = []}
+		{$$ = null;}
 	| iw_alternates
 		{$$ = $1;}
 	;
@@ -237,7 +237,7 @@ sw_volta
 
 sw_optional_alternates
 	: %empty
-		{$$ = []}
+		{$$ = null;}
 	| sw_alternates
 		{$$ = $1;}
 	;
