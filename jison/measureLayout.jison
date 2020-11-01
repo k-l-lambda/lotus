@@ -1,16 +1,16 @@
 
 %{
-	const root = (type, data) => ({proto: "MesaureLayout", type, data});
+	const root = (type, data) => ({__prototype: "MesaureLayout", type, data});
 
-	const singleLayout = measure => ({proto: "SingleMLayout", measure});
-	const blockLayout = seq => ({proto: "BlockMLayout", seq});
-	const voltaBlock = (times, body, alternates) => ({proto: "VoltaMLayout", times, body, alternates});
-	const abaBlock = (main, rest) => ({proto: "ABAMLayout", main, rest});
+	const singleLayout = n => ({__prototype: "SingleMLayout", measure: Number(n)});
+	const blockLayout = seq => ({__prototype: "BlockMLayout", seq});
+	const voltaBlock = (times, body, alternates) => ({__prototype: "VoltaMLayout", times: Number(times), body, alternates});
+	const abaBlock = (main, rest) => ({__prototype: "ABAMLayout", main, rest});
 
 	const segment = n => ({segment: true, length: Number(n)});
 
 	const alternates = items => items.map(item => {
-		if (item.proto === "BlockMLayout")
+		if (item.__prototype === "BlockMLayout")
 			return item.seq;
 
 		return [item];
@@ -41,7 +41,7 @@
 	const serialize = (item, options = {index: 1}) => {
 		const speard = seq => [].concat(...seq.map(it => serializeSeq(it, options)));
 
-		switch (item.proto) {
+		switch (item.__prototype) {
 		case "BlockMLayout":
 			item.seq = speard(item.seq);
 
@@ -115,7 +115,7 @@ measure_layout
 index_wise_measure_layout
 	: iw_sequence
 		{
-			if ($1.length === 1 && $1[0].proto === "BlockMLayout")
+			if ($1.length === 1 && $1[0].__prototype === "BlockMLayout")
 				$$ = $1[0];
 			else
 				$$ = blockLayout($1);
@@ -190,7 +190,7 @@ iw_aba
 segment_wise_measure_layout
 	: sw_sequence
 		{
-			if ($1.length === 1 && $1[0].proto === "BlockMLayout")
+			if ($1.length === 1 && $1[0].__prototype === "BlockMLayout")
 				$$ = $1[0];
 			else
 				$$ = blockLayout($1);
@@ -205,8 +205,8 @@ sw_sequence
 	;
 
 sw_item
-	: segement
-		{$$ = $1;}
+	: segment
+		{$$ = blockLayout([$1]);}
 	| sw_block_item
 		{$$ = $1;}
 	| sw_volta
@@ -215,7 +215,7 @@ sw_item
 		{$$ = $1;}
 	;
 
-segement
+segment
 	: UNSIGNED
 		{$$ = segment($1);}
 	;

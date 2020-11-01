@@ -209,8 +209,8 @@
 					<tr>
 						<td>Measure Repeat Type</td>
 						<td>
-							<StoreInput v-show="false" v-model="measureLayout" localKey="lotus-measureLayout" />
-							<select v-model="measureLayout">
+							<StoreInput v-show="false" v-model="measureLayoutType" localKey="lotus-measureLayoutType" />
+							<select v-model="measureLayoutType">
 								<option value="ordinary">Ordinary</option>
 								<option value="full">Full</option>
 								<option value="conservative">Conservative</option>
@@ -419,7 +419,7 @@
 				sourceEditorFilePath: null,
 				sourceEditorConnected: false,
 				sourceEditorLoading: false,
-				measureLayout: "ordinary",
+				measureLayoutType: "ordinary",
 				articulateMIDI: false,
 			};
 		},
@@ -932,7 +932,7 @@
 					this.lilyNotation = this.lilyDocument.interpret().getNotation();
 					this.matcherNotations = await LilyNotation.matchWithExactMIDI(this.lilyNotation, midi);
 
-					const measureIndices = this.lilyNotation.getMeasureIndices(this.measureLayout);
+					const measureIndices = this.lilyNotation.getMeasureIndices(this.measureLayoutType);
 					this.midiNotation = this.lilyNotation.toPerformingNotationWithEvents(measureIndices);
 					this.pitchContextGroup = this.lilyNotation.getContextGroup(measureIndices);
 

@@ -6,6 +6,8 @@ import loadLilyParserNode from "../backend/loadLilyParserNode";
 import walkDir from "../backend/walkDir";
 import {LilyDocument} from "../inc/lilyParser";
 import {LiteralString} from "../inc/lilyParser/lilyTerms";
+import {recoverJSON} from "../inc/jsonRecovery";
+import * as measureLayout from "../inc/measureLayout";
 
 
 
@@ -19,8 +21,10 @@ const parse = (lilyParser, measuresParser, sourceFile) => {
 	const sourceI = (interpreter.variableTable.get("measureLayoutI") as LiteralString).toString();
 	const sourceS = (interpreter.variableTable.get("measureLayoutS") as LiteralString).toString();
 
-	const layout2i = measuresParser.parse(sourceI);
-	const layout2s = measuresParser.parse(sourceS);
+	const parseMeasures = source => recoverJSON(measuresParser.parse(source).data, measureLayout);
+
+	const layout2i = parseMeasures(sourceI);
+	const layout2s = parseMeasures(sourceS);
 
 	console.log("layout1:", layout1);
 	console.log("layout2i:", layout2i);
