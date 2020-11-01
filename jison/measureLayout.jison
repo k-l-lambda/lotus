@@ -4,6 +4,7 @@
 
 	const singleLayout = measure => ({proto: "SingleMLayout", measure});
 	const blockLayout = seq => ({proto: "BlockMLayout", seq});
+	const voltaBlock = (times, body, alternates) => ({proto: "VoltaMLayout", times, body, alternates});
 
 	const segment = n => ({segment: true, length: Number(n)});
 
@@ -25,6 +26,11 @@
 		switch (item.proto) {
 		case "BlockMLayout":
 			item.seq = speard(item.seq);
+
+			break;
+		case "VoltaMLayout":
+			item.body = speard(item.body);
+			item.alternates = item.alternates.map(speard);
 
 			break;
 		}
@@ -98,20 +104,37 @@ iw_sequence
 	;
 
 iw_item
-	: single_layout
+	: single
 		{$$ = $1;}
-	| iw_block_layout
+	| iw_block_item
+		{$$ = $1;}
+	| iw_volta
 		{$$ = $1;}
 	;
 
-single_layout
+single
 	: UNSIGNED
 		{$$ = singleLayout($1);}
 	;
 
-iw_block_layout
+iw_block_item
+	: iw_block
+		{$$ = blockLayout($1);}
+	;
+
+iw_block
 	: '[' iw_sequence ']'
-		{$$ = blockLayout($2);}
+		{$$ = $2;}
+	;
+
+iw_volta
+	: UNSIGNED '*' iw_block iw_optional_alternates
+		{$$ = voltaBlock($1, $3, $4);}
+	;
+
+iw_optional_alternates
+	: %empty
+		{$$ = []}
 	;
 
 
@@ -135,7 +158,9 @@ sw_sequence
 sw_item
 	: segement
 		{$$ = $1;}
-	| sw_block_layout
+	| sw_block_item
+		{$$ = $1;}
+	| sw_volta
 		{$$ = $1;}
 	;
 
@@ -144,7 +169,22 @@ segement
 		{$$ = segment($1);}
 	;
 
-sw_block_layout
+sw_block_item
+	: sw_block
+		{$$ = blockLayout($1);}
+	;
+
+sw_block
 	: '[' sw_sequence ']'
-		{$$ = blockLayout($2);}
+		{$$ = $2;}
+	;
+
+sw_volta
+	: UNSIGNED '*' sw_block sw_optional_alternates
+		{$$ = voltaBlock($1, $3, $4);}
+	;
+
+sw_optional_alternates
+	: %empty
+		{$$ = []}
 	;
