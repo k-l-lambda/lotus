@@ -6,7 +6,7 @@ import {MusicNotation, MIDI} from "@k-l-lambda/web-widgets";
 import {WHOLE_DURATION_MAGNITUDE} from "../lilyParser/utils";
 import {PitchContextTable} from "../pitchContext";
 import {MatcherResult} from "./matcher";
-import {MeasureLayout, LayoutType} from "./measureLayout";
+import {MeasureLayout, LayoutType} from "../measureLayout";
 import ImplicitType from "./implicitType";
 import npmPackage from "../../package.json";
 

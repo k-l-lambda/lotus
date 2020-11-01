@@ -1,5 +1,5 @@
 
-import {SimpleClass} from "../jsonRecovery";
+import {SimpleClass} from "./jsonRecovery";
 
 
 

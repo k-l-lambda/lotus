@@ -4,7 +4,7 @@ import _ from "lodash";
 import {WHOLE_DURATION_MAGNITUDE, FractionNumber, lcmMulti, gcd} from "./utils";
 import * as idioms from "./idioms";
 import {LILYPOND_VERSION} from "../constants";
-import * as measureLayout from "../lilyNotation/measureLayout";
+import * as measureLayout from "../measureLayout";
 import ImplicitType from "../lilyNotation/implicitType";
 
 
