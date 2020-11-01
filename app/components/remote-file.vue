@@ -30,7 +30,9 @@
 
 		created () {
 			this.remoteFile.on("sync", ({timestamp}) => {
-				this.$emit("update:content", this.remoteFile.content);
+				// convert CRLF -> LF
+				const content = this.remoteFile.content.replace(/\r\n/g, "\n");
+				this.$emit("update:content", content);
 				this.$nextTick(() => this.loading = false);
 
 				console.debug("remote file synchronized:", new Date(timestamp));
