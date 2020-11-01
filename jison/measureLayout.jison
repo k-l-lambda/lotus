@@ -8,6 +8,13 @@
 
 	const segment = n => ({segment: true, length: Number(n)});
 
+	const alternates = items => items.map(item => {
+		if (item.proto === "BlockMLayout")
+			return item.seq;
+
+		return [item];
+	});
+
 
 	const serializeSeq = (item, options) => {
 		if (item.segment) {
@@ -135,6 +142,13 @@ iw_volta
 iw_optional_alternates
 	: %empty
 		{$$ = []}
+	| iw_alternates
+		{$$ = $1;}
+	;
+
+iw_alternates
+	: '{' iw_sequence '}'
+		{$$ = alternates($2);}
 	;
 
 
@@ -187,4 +201,11 @@ sw_volta
 sw_optional_alternates
 	: %empty
 		{$$ = []}
+	| sw_alternates
+		{$$ = $1;}
+	;
+
+sw_alternates
+	: '{' sw_sequence '}'
+		{$$ = alternates($2);}
 	;
