@@ -3,5 +3,5 @@
 	s1
 }
 
-measureLayoutI = "1"
-measureLayoutS = "1"
+measureLayoutI = "i: 1"
+measureLayoutS = "s: 1"

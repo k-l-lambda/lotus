@@ -4,16 +4,27 @@ import fs from "fs";
 import loadJisonParser from "../backend/loadJisonParserNode";
 import loadLilyParserNode from "../backend/loadLilyParserNode";
 import walkDir from "../backend/walkDir";
+import {LilyDocument} from "../inc/lilyParser";
+import {LiteralString} from "../inc/lilyParser/lilyTerms";
 
 
 
-const parse = (parser, sourceFile) => {
+const parse = (lilyParser, measuresParser, sourceFile) => {
 	const source = fs.readFileSync(sourceFile).toString();
 
-	return parser.parse(source);
+	const doc = new LilyDocument(lilyParser.parse(source));
+	const interpreter = doc.interpret();
+	const layout1 = interpreter.layoutMusic.musicTracks[0].block.measureLayout;
+
+	const sourceI = (interpreter.variableTable.get("measureLayoutI") as LiteralString).exp;
+	const sourceS = (interpreter.variableTable.get("measureLayoutS") as LiteralString).exp;
+
+	console.log("layout1:", layout1, sourceI, sourceS);
 
 	// TODO:
-	void(loadJisonParser);
+	void(measuresParser);
+
+	return true;
 };
 
 
@@ -26,7 +37,8 @@ const main = async sourceList => {
 		}
 	}
 
-	const parser = await loadLilyParserNode();
+	const measuresParser = await loadJisonParser("./jison/measureLayout.jison");
+	const lilyParser = await loadLilyParserNode();
 
 	const failures = [];
 
@@ -34,7 +46,7 @@ const main = async sourceList => {
 		console.log("Parsing", source, "...");
 
 		try {
-			const result = parse(parser, source);
+			const result = parse(lilyParser, measuresParser, source);
 			console.log("result:", result);
 		}
 		catch (error) {

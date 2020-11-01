@@ -95,7 +95,7 @@ class BlockMLayout extends SimpleClass implements MeasureLayout {
 
 
 	serialize (type: LayoutType): number[] {
-		return spreadMeasureSeq(this. seq, type);
+		return spreadMeasureSeq(this.seq, type);
 	}
 };
 
