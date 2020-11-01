@@ -1,23 +1,8 @@
 
-import fs from "fs";
+import loadJisonParser from "./loadJisonParserNode";
 
 import {Parser} from "../inc/jisonWrapper";
-import asyncCall from "../inc/asyncCall";
 
 
 
-let parser = null;
-
-
-
-export default async function load (): Promise<Parser> {
-	if (!parser) {
-		const grammar = (await asyncCall(fs.readFile, "./inc/lilyParser/lilypond.jison")).toString();
-
-		//console.log("grammar:", grammar);
-
-		parser = new Parser(grammar);
-	}
-
-	return parser;
-};
+export default (): Promise<Parser> => loadJisonParser("./inc/lilyParser/lilypond.jison");

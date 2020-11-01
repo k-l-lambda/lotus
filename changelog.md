@@ -22,7 +22,9 @@
 
 *	2020.11.1
 
-	>	remote-file.vue: convert CRLF to LF to avoid href errors on Windows.
+	+	backend/loadJisonParserNode.ts created.
+
+	+	remote-file.vue: convert CRLF to LF to avoid href errors on Windows.
 
 
 *	2020.10.30
