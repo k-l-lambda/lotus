@@ -16,6 +16,16 @@
 		return [item];
 	});
 
+	const range = (start, end) => {
+		start = Number(start);
+		end = Number(end);
+
+		if (!(end >= start))
+			throw new Error(`invalid measure range: ${start}..${end}`);
+
+		return Array(end + 1 - start).fill(0).map((_, i) => singleLayout(start + i));
+	};
+
 
 	const serializeSeq = (item, options) => {
 		if (item.segment) {
@@ -74,6 +84,7 @@ SPECIAL				[*,\[\]<>{}]
 
 {UNSIGNED}							return 'UNSIGNED'
 {WORD}":"							return yytext
+".."								return yytext
 
 <<EOF>>								return 'EOF';
 
@@ -92,7 +103,9 @@ start_symbol
 	;
 
 measure_layout
-	: 'i:' index_wise_measure_layout
+	: index_wise_measure_layout
+		{$$ = root(null, $1);}
+	| 'i:' index_wise_measure_layout
 		{$$ = root("index-wise", $2);}
 	| 's:' segment_wise_measure_layout
 		{$$ = root("segment-wise", serialize($2));}
@@ -112,8 +125,17 @@ index_wise_measure_layout
 iw_sequence
 	: iw_item
 		{$$ = [$1];}
+	| range
+		{$$ = $1;}
 	| iw_sequence ',' iw_item
 		{$$ = [...$1, $3];}
+	| iw_sequence ',' range
+		{$$ = [...$1, ...$3];}
+	;
+
+range
+	: UNSIGNED '..' UNSIGNED
+		{$$ = range($1, $3);}
 	;
 
 iw_item
