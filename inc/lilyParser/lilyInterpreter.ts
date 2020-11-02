@@ -199,6 +199,19 @@ export class MusicTrack {
 	}
 
 
+	get measureLayoutCode (): string {
+		let code = this.block.measureLayout.code;
+		if (/^\[.*\]$/.test(code))
+			code = code.match(/\[(.*)\]/)[1];
+
+		return code;
+	}
+
+	set measureLayoutCode (_: string) {
+		// TODO:
+	}
+
+
 	transform (transformer: MusicTransformer) {
 		new TrackContext(this, {transformer}).execute(this.music);
 	}
@@ -876,6 +889,15 @@ class MusicPerformance {
 		channels.unshift(0);
 
 		return channels;
+	}
+
+
+	get measureLayoutCode (): string {
+		return this.mainTrack && this.mainTrack.measureLayoutCode;
+	}
+
+	set measureLayoutCode (value: string) {
+		this.musicTracks.forEach(track => track.measureLayoutCode = value);
 	}
 
 

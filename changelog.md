@@ -20,6 +20,11 @@
 
 
 
+*	2020.11.2
+
+	+	lilyInterpreter.ts: measureLayoutCode property on MusicPerformance added.
+
+
 *	2020.11.1
 
 	+	measureLayout.ts: property of code on MeasureLayout classes added.
