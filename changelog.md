@@ -22,6 +22,8 @@
 
 *	2020.11.2
 
+	+	inc/streamParser.ts created.
+
 	+	lilyAddon.ts: removed midi output in engraveSvgWithStream.
 
 	+	lilyInterpreter.ts: measureLayoutCode property on MusicPerformance added.
