@@ -16,7 +16,7 @@ interface EngraverOptions {
 	includeFolders: string[];
 	withMIDI: boolean;
 	withNotation: boolean;
-	withDocument: boolean;
+	withLilyDoc: boolean;
 	logger: LogRecorder;
 };
 
@@ -39,6 +39,8 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 
 	const argsGen = new SingleLock<ParserArguments>(true);
 
+	const hashKeys = new Set<string>();
+
 	const engraving = await engraveSvg(source, {
 		includeFolders: options.includeFolders,
 
@@ -53,7 +55,7 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 			const tieLocations = lilyDocument.getTiedNoteLocations2()
 				.reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
 
-			if (options.withDocument)
+			if (options.withLilyDoc)
 				outputJSON({lilyDocument: lilyDocument.root});
 
 			argsGen.release({attributes, tieLocations});
@@ -74,11 +76,21 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 			const args = await argsGen.wait();
 			const page = staffSvg.parseSvgPage(svg, source, {DOMParser, logger: options.logger, ...args});
 
+			// select incremental keys to send
+			const hashTable = {};
+			Object.entries(page.hashTable).forEach(([key, elem]) => {
+				if (!hashKeys.has(key))
+					hashTable[key] = elem;
+			});
+
 			outputJSON({
 				page: index,
 				structure: page.structure,
-				hashTable: page.hashTable,
+				hashTable,
 			});
+
+			Object.keys(hashTable).forEach(key => hashKeys.add(key));
+
 			//console.log("ts.1:", Date.now() - t0);
 		},
 	});
