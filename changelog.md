@@ -21,6 +21,8 @@
 
 *	2020.11.2
 
+	+	advancedEngraver.ts: added option of withLilyNotation.
+
 	+	profiler.vue: constructSheetFromStream added.
 
 	+	backend: service handler of advanced-engrave added.

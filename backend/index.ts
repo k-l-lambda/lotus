@@ -121,6 +121,7 @@ const service = {
 					withMIDI: !!fields.withMIDI,
 					withNotation: !!fields.withNotation,
 					withLilyDoc: !!fields.withLilyDoc,
+					withLilyNotation: !!fields.withLilyNotation,
 					logger,
 				});
 

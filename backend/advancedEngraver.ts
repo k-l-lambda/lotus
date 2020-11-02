@@ -8,6 +8,7 @@ import {engraveSvg} from "./lilyCommands";
 import {LilyDocumentAttributeReadOnly} from "../inc/lilyParser/lilyDocument";
 import {SingleLock} from "../inc/mutex";
 import * as staffSvg from "../inc/staffSvg";
+import * as LilyNotation from "../inc/lilyNotation";
 import LogRecorder from "../inc/logRecorder";
 
 
@@ -17,6 +18,7 @@ interface EngraverOptions {
 	withMIDI: boolean;
 	withNotation: boolean;
 	withLilyDoc: boolean;
+	withLilyNotation: boolean;
 	logger: LogRecorder;
 };
 
@@ -39,6 +41,7 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 
 	const t0 = Date.now();
 
+	const notatioinGen = new SingleLock<LilyNotation.Notation>(true);
 	const argsGen = new SingleLock<ParserArguments>(true);
 
 	const hashKeys = new Set<string>();
@@ -50,7 +53,9 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 		onProcStart: () => {
 			//console.log("tp.0:", Date.now() - t0);
 			const lilyDocument = new LilyDocument(lilyParser.parse(source));
-			lilyDocument.interpret();
+			const interpreter = lilyDocument.interpret();
+
+			notatioinGen.release(interpreter.getNotation());
 
 			const attributes = lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
 
@@ -73,6 +78,16 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 				const midiNotation = MusicNotation.Notation.parseMidi(midi);
 				outputJSON({midiNotation});
 			}
+
+			if (options.withLilyNotation && midi) {
+				notatioinGen
+					.wait()
+					.then(lilyNotation => {
+						LilyNotation.matchWithExactMIDI(lilyNotation, midi)
+							.then(() => outputJSON({lilyNotation}));
+					});
+			}
+
 			//console.log("tm.1:", Date.now() - t0);
 		},
 		onSvgRead: async (index, svg) => {

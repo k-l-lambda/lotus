@@ -424,11 +424,13 @@ class SheetDocument {
 		}));
 
 		// assign tracks
-		noteheads.forEach(token => {
-			const track = notation.idTrackMap[token.href];
-			if (Number.isInteger(track))
-				token.track = track;
-		});
+		if (notation.idTrackMap) {
+			noteheads.forEach(token => {
+				const track = notation.idTrackMap[token.href];
+				if (Number.isInteger(track))
+					token.track = track;
+			});
+		}
 	}
 
 

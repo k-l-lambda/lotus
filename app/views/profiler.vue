@@ -32,7 +32,7 @@
 
 <script>
 	import url from "url";
-	import Vue from "vue";
+	//import Vue from "vue";
 	import debounce from "lodash/debounce";
 
 	import "../utils.js";
@@ -40,6 +40,8 @@
 	import ScoreBundle from "../scoreBundle.ts";
 	import StreamParser from "../../inc/streamParser";
 	import * as staffSvg from "../../inc/staffSvg";
+	//import * as lilyParser from "../../inc/lilyParser";
+	import * as LilyNotation from "../../inc/lilyNotation";
 	import {recoverJSON} from "../../inc/jsonRecovery";
 
 	import SheetLive from "../components/sheet-live.vue";
@@ -163,8 +165,10 @@
 
 						const body = new FormData();
 						body.append("source", source);
-						body.append("withNotation", 1);
+						//body.append("withMIDI", 1);
+						//body.append("withNotation", 1);
 						//body.append("withLilyDoc", 1);
+						body.append("withLilyNotation", 1);
 						//body.append("log", 1);
 
 						const response = await fetch("/advanced-engrave", {
@@ -260,10 +264,14 @@
 				this.bakingSheet = false;
 
 				const pages = [];
+				//let lilyDocument;
+				let lilyNotation;
+				let midiNotation;
+				let pitchContextGroup;
 
 				parser.on("data", json => {
-					const data = recoverJSON(json, staffSvg);
-					//console.log("data:", data);
+					const data = recoverJSON(json, {...staffSvg, LilyNotation: LilyNotation.Notation, ...LilyNotation.MLayoutClasses});
+					console.log("data:", data);
 
 					if (data.page !== undefined) {
 						pages[data.page] = data.structure;
@@ -272,9 +280,38 @@
 
 						this.sheetDocument = new staffSvg.SheetDocument({pages});
 					}
+
+					/*if (data.lilyDocument) {
+						lilyDocument = new lilyParser.LilyDocument(data.lilyDocument);
+						lilyNotation = lilyDocument.interpret().getNotation();
+					}*/
+
+					/*if (data.midi) {
+						LilyNotation.matchWithExactMIDI(lilyNotation, data.midi).then(() => {
+							const measureIndices = lilyNotation.getMeasureIndices(LilyNotation.LayoutType.Full);
+							this.midiNotation = lilyNotation.toPerformingNotationWithEvents(measureIndices);
+							this.pitchContextGroup = lilyNotation.getContextGroup(measureIndices);
+						});
+					}*/
+
+					if (data.lilyNotation) {
+						lilyNotation = data.lilyNotation;
+
+						const measureIndices = lilyNotation.getMeasureIndices(LilyNotation.LayoutType.Full);
+						midiNotation = lilyNotation.toPerformingNotationWithEvents(measureIndices);
+						pitchContextGroup = lilyNotation.getContextGroup(measureIndices);
+					}
 				});
 
 				await parser.read();
+
+				if (lilyNotation && this.sheetDocument) {
+					this.sheetDocument.alignTokensWithNotation(lilyNotation);
+					this.sheetDocument.updateMatchedTokens(lilyNotation.idSet);
+
+					this.midiNotation = midiNotation;
+					this.pitchContextGroup = pitchContextGroup;
+				}
 			},
 
 
