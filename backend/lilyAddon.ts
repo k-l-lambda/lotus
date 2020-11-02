@@ -62,7 +62,7 @@ const engraveSvgWithStream = async (source: string,
 	output: Writable, {includeFolders = []}: {includeFolders?: string[]} = {},
 ): Promise<Partial<EngraverResult>> => {
 	let logs;
-	let midi;
+	//let midi;
 
 	//const tasks = [];
 
@@ -79,9 +79,9 @@ const engraveSvgWithStream = async (source: string,
 				output.write("\n\n\n\n");
 			});
 		},
-		onMIDI (_, buffer) {
-			midi = MIDI.parseMidiData(buffer);
-		},
+		//onMIDI (_, buffer) {
+		//	midi = MIDI.parseMidiData(buffer);
+		//},
 	});
 
 	//await Promise.all(tasks);
@@ -89,7 +89,7 @@ const engraveSvgWithStream = async (source: string,
 
 	return {
 		logs,
-		midi,
+		//midi,
 		errorLevel,
 	};
 };
