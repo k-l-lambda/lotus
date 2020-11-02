@@ -104,6 +104,39 @@ const service = {
 				};
 			}),
 	},
+
+
+	"/advanced-engrave": {
+		post: (req, res) => new formidable.IncomingForm().parse(req, async (err, fields) => {
+			try {
+				if (err)
+					throw err;
+
+				const logger = new LogRecorder({enabled: !!fields.log});
+
+				const lilyParser = await loadLilyParser();
+
+				const task = advancedEngrave(fields.source, lilyParser, res, {
+					includeFolders: constants.LY_INCLUDE_FOLDERS,
+					withMIDI: !!fields.withMIDI,
+					withNotation: !!fields.withNotation,
+					logger,
+				});
+
+				res.writeHead(200);
+
+				await task;
+				res.end();
+			}
+			catch (err) {
+				console.warn("advanced-engrave error:", err);
+		
+				res.writeHead(500);
+				res.write(err.toString());
+				res.end();
+			}
+		}),
+	},
 };
 
 

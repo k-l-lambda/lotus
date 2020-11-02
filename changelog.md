@@ -1,6 +1,5 @@
 
 ## TODO
-	ScoreMaker: added option to ignore lilyNotation.
 	track-measure lilypond section editor
 		duration checker
 	MIDI post processing
@@ -21,6 +20,8 @@
 
 
 *	2020.11.2
+
+	+	backend: service handler of advanced-engrave added.
 
 	+	backend/advancedEngraver.ts created.
 

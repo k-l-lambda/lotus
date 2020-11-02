@@ -1,6 +1,7 @@
 
 import {Writable} from "stream";
 import {MusicNotation} from "@k-l-lambda/web-widgets";
+import {DOMParser} from "xmldom";
 
 import {LilyDocument} from "../inc/lilyParser";
 import {engraveSvg} from "./lilyCommands";
@@ -27,7 +28,7 @@ interface GrammarParser {
 const STREAM_SEPARATOR = "\n\n\n\n";
 
 
-const advancedEngrave = async (source: string, lilyParser: GrammarParser, output: Writable, options: Partial<EngraverOptions>) => {
+const advancedEngrave = async (source: string, lilyParser: GrammarParser, output: Writable, options: Partial<EngraverOptions> = {}) => {
 	const outputJSON = data => {
 		output.write(JSON.stringify(data));
 		output.write(STREAM_SEPARATOR);
@@ -80,6 +81,7 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 
 	outputJSON({
 		logs: engraving.logs,
+		logger: options.logger,
 		errorLevel: engraving.errorLevel,
 	});
 };

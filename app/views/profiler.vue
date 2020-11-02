@@ -37,6 +37,7 @@
 	import "../utils.js";
 	import {animationDelay} from "../delay.js";
 	import ScoreBundle from "../scoreBundle.ts";
+	import StreamParser from "../../inc/streamParser";
 
 	import SheetLive from "../components/sheet-live.vue";
 	import SheetSigns from "../components/sheet-signs.vue";
@@ -149,6 +150,39 @@
 
 						this.sourceText = await pack.file("score.json").async("text");
 						this.logTime("sourceText loaded.");
+					}
+
+					break;
+				case "text/x-lilypond":
+				case "text/lilypond-source": {
+						const source = await file.readAs("Text");
+
+						const body = new FormData();
+						body.append("source", source);
+						body.append("withNotation", 1);
+						//body.append("log", 1);
+
+						const response = await fetch("/advanced-engrave", {
+							method: "POST",
+							body,
+						});
+						if (!response.ok) {
+							this.error = await response.text();
+							console.warn("advanced-engrave failed:", this.error);
+
+							return;
+						}
+
+						const parser = new StreamParser(response.body.getReader());
+
+						parser.on("data", json => {
+							const data = JSON.parse(json);
+							console.log("data:", data);
+
+							// TODO:
+						});
+
+						await parser.read();
 					}
 
 					break;

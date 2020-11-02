@@ -8,7 +8,7 @@ export default class StreamParser extends EventEmitter {
 	separator: string;
 
 
-	constructor (reader, {separator = "\n\n\n\n"}) {
+	constructor (reader, {separator = "\n\n\n\n"} = {}) {
 		super();
 
 		this.reader = reader;
@@ -26,17 +26,26 @@ export default class StreamParser extends EventEmitter {
 				const deltaText = new TextDecoder("utf-8").decode(value);
 
 				buffer += deltaText;
-				const separatorIndex = buffer.indexOf(this.separator);
-				if (separatorIndex >= 0) {
-					const part = buffer.substr(0, separatorIndex);
-					this.emit("data", part);
-
-					buffer = buffer.substr(separatorIndex + this.separator.length);
+				while (true) {
+					const separatorIndex = buffer.indexOf(this.separator);
+					if (separatorIndex >= 0) {
+						const part = buffer.substr(0, separatorIndex);
+						this.emit("data", part);
+	
+						buffer = buffer.substr(separatorIndex + this.separator.length);
+					}
+					else
+						break;
 				}
 			}
 
 			if (done)
 				break;
+		}
+
+		if (buffer) {
+			console.log("last buffer:", buffer);
+			this.emit("data", buffer);
 		}
 	}
 };
