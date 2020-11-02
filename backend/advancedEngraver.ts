@@ -37,6 +37,8 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 
 	type ParserArguments = {attributes: LilyDocumentAttributeReadOnly, tieLocations: {[key: string]: boolean}};
 
+	const t0 = Date.now();
+
 	const argsGen = new SingleLock<ParserArguments>(true);
 
 	const hashKeys = new Set<string>();
@@ -58,6 +60,8 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 			if (options.withLilyDoc)
 				outputJSON({lilyDocument: lilyDocument.root});
 
+			//console.log("tp.1:", Date.now() - t0);
+
 			argsGen.release({attributes, tieLocations});
 		},
 		onMidiRead: midi => {
@@ -72,7 +76,7 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 			//console.log("tm.1:", Date.now() - t0);
 		},
 		onSvgRead: async (index, svg) => {
-			//console.log("ts.0:", Date.now() - t0);
+			//console.log("ts.0:", index, Date.now() - t0);
 			const args = await argsGen.wait();
 			const page = staffSvg.parseSvgPage(svg, source, {DOMParser, logger: options.logger, ...args});
 
@@ -91,9 +95,14 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 
 			Object.keys(hashTable).forEach(key => hashKeys.add(key));
 
-			//console.log("ts.1:", Date.now() - t0);
+			//console.log("ts.1:", index, Date.now() - t0);
 		},
 	});
+
+	const tn = Date.now();
+	//console.log("tn:", tn - t0);
+
+	options.logger.append("advancedEngraver.profile.engraving", {cost: tn - t0});
 
 	outputJSON({
 		logs: engraving.logs,

@@ -21,6 +21,8 @@
 
 *	2020.11.2
 
+	+	profiler.vue: constructSheetFromStream added.
+
 	+	backend: service handler of advanced-engrave added.
 
 	+	backend/advancedEngraver.ts created.

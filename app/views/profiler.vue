@@ -12,7 +12,7 @@
 			<span v-if="fps" class="fps"><em>{{fps.toFixed(1)}}</em>fps</span>
 		</header>
 		<main @scroll="onScroll">
-			<SheetSigns v-if="!bakingSheet && svgHashTable" v-show="false" :hashTable="svgHashTable" />
+			<SheetSigns v-if="!bakingSheet && svgHashTable" v-show="false" ref="signs" :hashTable="svgHashTable" />
 			<SheetLive v-if="sheetDocument" ref="sheet"
 				:doc="sheetDocument"
 				:midiNotation="midiNotation"
@@ -22,7 +22,7 @@
 				:noteHighlight="noteHighlight"
 				:bakingMode="bakingSheet"
 				:backgroundImages="bakingSheet ? bakingImages : null"
-				:showPagesProgressively="true"
+				:showPagesProgressively="showPagesProgressively"
 				@midi="onMidi"
 			/>
 		</main>
@@ -32,12 +32,15 @@
 
 <script>
 	import url from "url";
+	import Vue from "vue";
 	import debounce from "lodash/debounce";
 
 	import "../utils.js";
 	import {animationDelay} from "../delay.js";
 	import ScoreBundle from "../scoreBundle.ts";
 	import StreamParser from "../../inc/streamParser";
+	import * as staffSvg from "../../inc/staffSvg";
+	import {recoverJSON} from "../../inc/jsonRecovery";
 
 	import SheetLive from "../components/sheet-live.vue";
 	import SheetSigns from "../components/sheet-signs.vue";
@@ -73,6 +76,7 @@
 				sourceBakingImages: null,
 				fps: null,
 				disableStore: false,
+				showPagesProgressively: true,
 			};
 		},
 
@@ -160,7 +164,7 @@
 						const body = new FormData();
 						body.append("source", source);
 						body.append("withNotation", 1);
-						//body.append("withDocument", 1);
+						//body.append("withLilyDoc", 1);
 						//body.append("log", 1);
 
 						const response = await fetch("/advanced-engrave", {
@@ -175,15 +179,7 @@
 						}
 
 						const parser = new StreamParser(response.body.getReader());
-
-						parser.on("data", json => {
-							const data = JSON.parse(json);
-							console.log("data:", data);
-
-							// TODO:
-						});
-
-						await parser.read();
+						this.constructSheetFromStream(parser);
 					}
 
 					break;
@@ -216,6 +212,8 @@
 				this.bakingImages = null;
 
 				if (this.sourceText) {
+					this.showPagesProgressively = true;
+
 					const scoreBundle = new ScoreBundle(this.sourceText, {onStatus: message => this.logTime(message)});
 					this.sheetDocument = scoreBundle.scoreJSON.doc;
 					this.pitchContextGroup = scoreBundle.pitchContextGroup;
@@ -248,6 +246,35 @@
 
 					this.$refs.sheet.updatePageVisibility();
 				}
+			},
+
+
+			async constructSheetFromStream (parser) {
+				this.sheetDocument = null;
+				this.midiNotation = null;
+				this.pitchContextGroup = null;
+				this.bakingImages = null;
+				this.svgHashTable = {};
+
+				this.showPagesProgressively = false;
+				this.bakingSheet = false;
+
+				const pages = [];
+
+				parser.on("data", json => {
+					const data = recoverJSON(json, staffSvg);
+					//console.log("data:", data);
+
+					if (data.page !== undefined) {
+						pages[data.page] = data.structure;
+						//Object.assign(this.svgHashTable, data.hashTable);
+						this.svgHashTable = {...this.svgHashTable, ...data.hashTable};
+
+						this.sheetDocument = new staffSvg.SheetDocument({pages});
+					}
+				});
+
+				await parser.read();
 			},
 
 
