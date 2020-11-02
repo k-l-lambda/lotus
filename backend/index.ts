@@ -120,6 +120,7 @@ const service = {
 					includeFolders: constants.LY_INCLUDE_FOLDERS,
 					withMIDI: !!fields.withMIDI,
 					withNotation: !!fields.withNotation,
+					withDocument: !!fields.withDocument,
 					logger,
 				});
 

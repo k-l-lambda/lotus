@@ -16,6 +16,7 @@ interface EngraverOptions {
 	includeFolders: string[];
 	withMIDI: boolean;
 	withNotation: boolean;
+	withDocument: boolean;
 	logger: LogRecorder;
 };
 
@@ -51,6 +52,9 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 
 			const tieLocations = lilyDocument.getTiedNoteLocations2()
 				.reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
+
+			if (options.withDocument)
+				outputJSON({lilyDocument: lilyDocument.root});
 
 			argsGen.release({attributes, tieLocations});
 		},

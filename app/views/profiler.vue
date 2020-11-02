@@ -160,6 +160,7 @@
 						const body = new FormData();
 						body.append("source", source);
 						body.append("withNotation", 1);
+						//body.append("withDocument", 1);
 						//body.append("log", 1);
 
 						const response = await fetch("/advanced-engrave", {
