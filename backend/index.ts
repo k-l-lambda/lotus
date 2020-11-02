@@ -10,6 +10,7 @@ import {LilyDocument} from "../inc/lilyParser";
 import LogRecorder from "../inc/logRecorder";
 import * as ScoreMaker from "./scoreMaker";
 import * as constants from "./constants";
+import {advancedEngrave} from "./advancedEngraver";
 
 
 
@@ -115,4 +116,5 @@ export {
 	service,
 	lilyCommands,
 	ScoreMaker,
+	advancedEngrave,
 };

@@ -22,6 +22,8 @@
 
 *	2020.11.2
 
+	+	backend/advancedEngraver.ts created.
+
 	+	inc/streamParser.ts created.
 
 	+	lilyAddon.ts: removed midi output in engraveSvgWithStream.
