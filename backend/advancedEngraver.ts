@@ -16,6 +16,8 @@ type StaffArguments = {attributes: staffSvg.StaffAttributes, tieLocations?: {[ke
 
 
 interface EngraverOptions {
+	streamSeparator: string;
+
 	includeFolders: string[];
 	withMIDI: boolean;
 	withNotation: boolean;
@@ -37,9 +39,11 @@ const STREAM_SEPARATOR = "\n\n\n\n";
 
 
 const advancedEngrave = async (source: string, lilyParser: GrammarParser, output: Writable, options: Partial<EngraverOptions> = {}) => {
+	const {streamSeparator = STREAM_SEPARATOR} = options;
+
 	const outputJSON = data => {
 		output.write(JSON.stringify(data));
-		output.write(STREAM_SEPARATOR);
+		output.write(streamSeparator);
 	};
 
 	const t0 = Date.now();
