@@ -254,6 +254,9 @@ const makeScore = async (
 
 	doc.updateMatchedTokens(lilyNotation.idSet);
 
+	// idTrackMap is useless in bundled score
+	delete lilyNotation.idTrackMap;
+
 	if (baking)
 		doc.pruneForBakingMode();
 

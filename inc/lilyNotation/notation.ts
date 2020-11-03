@@ -208,6 +208,7 @@ export class Notation {
 			pitchContextGroup: this.pitchContextGroup,
 			measureLayout: this.measureLayout,
 			measures: this.measures,
+			idTrackMap: this.idTrackMap,
 		};
 	}
 
