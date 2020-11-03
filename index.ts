@@ -5,6 +5,7 @@ import * as backend from "./backend";
 import LogRecorder from "./inc/logRecorder";
 import * as constants from "./inc/constants";
 import * as LilyNotation from "./inc/lilyNotation";
+import {recoverJSON} from "./inc/jsonRecovery";
 
 
 
@@ -15,4 +16,5 @@ export {
 	LogRecorder,
 	backend,
 	constants,
+	recoverJSON,
 };
