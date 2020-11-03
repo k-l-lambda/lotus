@@ -28,6 +28,7 @@ export interface LilyDocumentAttribute {
 };
 
 export interface LilyDocumentAttributeReadOnly {
+	staffSize: number;
 	[key: string]: AttributeValue
 };
 

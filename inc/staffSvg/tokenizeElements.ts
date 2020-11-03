@@ -4,6 +4,7 @@ import _ from "lodash";
 import {POS_PRECISION, SIZE_PRECISION, STROKE_PRECISION, roundNumber, sizeToStrokeWidth1, sizeToStrokeWidth2} from "./utils";
 import {identityHash, symbolize} from "./svgSymbols";
 import StaffToken from "./staffToken";
+import LogRecorder from "../logRecorder";
 
 
 
@@ -53,7 +54,13 @@ interface StaffElementData extends Partial<StaffFields> {
 };
 
 
-const normalizeElement = (elem: StaffElement, attributes): StaffElementData => {
+export interface StaffAttributes
+{
+	staffSize: number;
+};
+
+
+const normalizeElement = (elem: StaffElement, attributes: StaffAttributes): StaffElementData => {
 	const data: StaffElementData = {x: null, y: null, identity: {type: elem.type}};
 
 	const basicSW1 = sizeToStrokeWidth1(attributes.staffSize);
@@ -155,7 +162,7 @@ const normalizeElement = (elem: StaffElement, attributes): StaffElementData => {
 
 
 // TODO: consider split arc linking line into 2 parts
-const tokenizeElements = (elements, attributes, logger): {
+const tokenizeElements = (elements: StaffElement[], attributes: StaffAttributes, logger: LogRecorder): {
 	tokens: StaffToken[],
 	hashTable: HashTable,
 } => {

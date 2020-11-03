@@ -1,6 +1,6 @@
 
 import {svgToElements} from "./svgParser";
-import tokenizeElements from "./tokenizeElements";
+import tokenizeElements, {StaffAttributes} from "./tokenizeElements";
 import organizeTokens from "./organizeTokens";
 import LogRecorder from "../logRecorder";
 import StaffToken from "./staffToken";
@@ -22,7 +22,7 @@ import {SheetPage} from "./sheetDocument";
 interface SvgPageParserOptions {
 	lilyDocument?: LilyDocument;
 	logger?: LogRecorder;
-	attributes?: LilyDocumentAttributeReadOnly;
+	attributes?: StaffAttributes;
 	tieLocations?: {[key: string]: boolean};
 
 	DOMParser?: any;
@@ -173,4 +173,5 @@ export {
 	StaffToken,
 	SheetDocument,
 	StaffNotation,
+	StaffAttributes,
 };
