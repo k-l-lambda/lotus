@@ -5,12 +5,14 @@ import {DOMParser} from "xmldom";
 
 import {LilyDocument} from "../inc/lilyParser";
 import {engraveSvg} from "./lilyCommands";
-import {LilyDocumentAttributeReadOnly} from "../inc/lilyParser/lilyDocument";
 import {SingleLock} from "../inc/mutex";
 import * as staffSvg from "../inc/staffSvg";
 import * as LilyNotation from "../inc/lilyNotation";
 import LogRecorder from "../inc/logRecorder";
 
+
+
+type StaffArguments = {attributes: staffSvg.StaffAttributes, tieLocations?: {[key: string]: boolean}};
 
 
 interface EngraverOptions {
@@ -20,6 +22,9 @@ interface EngraverOptions {
 	withLilyDoc: boolean;
 	withLilyNotation: boolean;
 	logger: LogRecorder;
+
+	lilyNotation: LilyNotation.Notation;
+	staffArgs: StaffArguments;
 };
 
 
@@ -37,12 +42,10 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 		output.write(STREAM_SEPARATOR);
 	};
 
-	type ParserArguments = {attributes: LilyDocumentAttributeReadOnly, tieLocations: {[key: string]: boolean}};
-
 	const t0 = Date.now();
 
 	const notatioinGen = new SingleLock<LilyNotation.Notation>(true);
-	const argsGen = new SingleLock<ParserArguments>(true);
+	const argsGen = new SingleLock<StaffArguments>(true);
 
 	const hashKeys = new Set<string>();
 
@@ -52,22 +55,32 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 		// do some work during lilypond process running to save time
 		onProcStart: () => {
 			//console.log("tp.0:", Date.now() - t0);
+			if (options.staffArgs)
+				argsGen.release(options.staffArgs);
+
+			if (!options.withLilyNotation && !options.withLilyDoc && options.staffArgs)
+				return;
+
 			const lilyDocument = new LilyDocument(lilyParser.parse(source));
-			const interpreter = lilyDocument.interpret();
 
-			notatioinGen.release(interpreter.getNotation());
-
-			const attributes = lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
-
-			const tieLocations = lilyDocument.getTiedNoteLocations2()
-				.reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
+			if (options.withLilyNotation) {
+				const interpreter = lilyDocument.interpret();
+				notatioinGen.release(interpreter.getNotation());
+			}
 
 			if (options.withLilyDoc)
 				outputJSON({lilyDocument: lilyDocument.root});
 
-			//console.log("tp.1:", Date.now() - t0);
+			if (!options.staffArgs) {
+				const attributes = lilyDocument.globalAttributes({readonly: true}) as staffSvg.StaffAttributes;
 
-			argsGen.release({attributes, tieLocations});
+				const tieLocations = lilyDocument.getTiedNoteLocations2()
+					.reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
+
+				//console.log("tp.1:", Date.now() - t0);
+
+				argsGen.release({attributes, tieLocations});
+			}
 		},
 		onMidiRead: midi => {
 			//console.log("tm.0:", Date.now() - t0);
@@ -82,10 +95,9 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 			if (options.withLilyNotation && midi) {
 				notatioinGen
 					.wait()
-					.then(lilyNotation => {
-						LilyNotation.matchWithExactMIDI(lilyNotation, midi)
-							.then(() => outputJSON({lilyNotation}));
-					});
+					.then(lilyNotation => LilyNotation.matchWithExactMIDI(lilyNotation, midi)
+						.then(() => outputJSON({lilyNotation})),
+					);
 			}
 
 			//console.log("tm.1:", Date.now() - t0);
@@ -101,6 +113,14 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 				if (!hashKeys.has(key))
 					hashTable[key] = elem;
 			});
+
+			// modify by lilyNotation
+			if (options.lilyNotation) {
+				const sheetDocument = new staffSvg.SheetDocument({pages: [page.structure]}, {initialize: false});
+
+				sheetDocument.alignTokensWithNotation(options.lilyNotation);
+				sheetDocument.updateMatchedTokens(options.lilyNotation.idSet);
+			}
 
 			outputJSON({
 				page: index,

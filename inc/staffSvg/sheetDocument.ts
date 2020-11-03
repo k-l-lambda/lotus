@@ -146,10 +146,11 @@ class SheetDocument {
 	pages: SheetPage[];
 
 
-	constructor (fields: Partial<SheetDocument>) {
+	constructor (fields: Partial<SheetDocument>, {initialize = true} = {}) {
 		Object.assign(this, fields);
 
-		this.updateTokenIndex();
+		if (initialize)
+			this.updateTokenIndex();
 	}
 
 

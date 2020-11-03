@@ -32,7 +32,6 @@
 
 <script>
 	import url from "url";
-	//import Vue from "vue";
 	import debounce from "lodash/debounce";
 
 	import "../utils.js";
@@ -40,7 +39,6 @@
 	import ScoreBundle from "../scoreBundle.ts";
 	import StreamParser from "../../inc/streamParser";
 	import * as staffSvg from "../../inc/staffSvg";
-	//import * as lilyParser from "../../inc/lilyParser";
 	import * as LilyNotation from "../../inc/lilyNotation";
 	import {recoverJSON} from "../../inc/jsonRecovery";
 
@@ -264,7 +262,6 @@
 				this.bakingSheet = false;
 
 				const pages = [];
-				//let lilyDocument;
 				let lilyNotation;
 				let midiNotation;
 				let pitchContextGroup;

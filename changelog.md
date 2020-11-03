@@ -19,6 +19,11 @@
 
 
 
+*	2020.11.3
+
+	+	advancedEngraver.ts: added options of input lilyNotation.
+
+
 *	2020.11.2
 
 	+	advancedEngraver.ts: added option of withLilyNotation.
