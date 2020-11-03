@@ -21,6 +21,8 @@
 
 *	2020.11.3
 
+	+	advancedEngraver.ts: rectify sheet document in backend.
+
 	+	advancedEngraver.ts: added options of input lilyNotation.
 
 

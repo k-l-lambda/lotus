@@ -262,9 +262,9 @@
 				this.bakingSheet = false;
 
 				const pages = [];
-				let lilyNotation;
-				let midiNotation;
-				let pitchContextGroup;
+				//let lilyNotation;
+				//let midiNotation;
+				//let pitchContextGroup;
 
 				parser.on("data", json => {
 					const data = recoverJSON(json, {...staffSvg, LilyNotation: LilyNotation.Notation, ...LilyNotation.MLayoutClasses});
@@ -292,23 +292,23 @@
 					}*/
 
 					if (data.lilyNotation) {
-						lilyNotation = data.lilyNotation;
+						const lilyNotation = data.lilyNotation;
 
 						const measureIndices = lilyNotation.getMeasureIndices(LilyNotation.LayoutType.Full);
-						midiNotation = lilyNotation.toPerformingNotationWithEvents(measureIndices);
-						pitchContextGroup = lilyNotation.getContextGroup(measureIndices);
+						this.midiNotation = lilyNotation.toPerformingNotationWithEvents(measureIndices);
+						this.pitchContextGroup = lilyNotation.getContextGroup(measureIndices);
 					}
 				});
 
 				await parser.read();
 
-				if (lilyNotation && this.sheetDocument) {
+				/*if (lilyNotation && this.sheetDocument) {
 					this.sheetDocument.alignTokensWithNotation(lilyNotation);
 					this.sheetDocument.updateMatchedTokens(lilyNotation.idSet);
 
 					this.midiNotation = midiNotation;
 					this.pitchContextGroup = pitchContextGroup;
-				}
+				}*/
 			},
 
 

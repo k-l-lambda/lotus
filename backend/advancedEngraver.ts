@@ -63,9 +63,12 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 
 			const lilyDocument = new LilyDocument(lilyParser.parse(source));
 
-			if (options.withLilyNotation) {
+			if (!options.lilyNotation) {
 				const interpreter = lilyDocument.interpret();
-				notatioinGen.release(interpreter.getNotation());
+				options.lilyNotation = interpreter.getNotation();
+
+				notatioinGen.release(options.lilyNotation);
+				//console.log("tp.1:", Date.now() - t0);
 			}
 
 			if (options.withLilyDoc)
@@ -77,12 +80,14 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 				const tieLocations = lilyDocument.getTiedNoteLocations2()
 					.reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
 
-				//console.log("tp.1:", Date.now() - t0);
+				//console.log("tp.2:", Date.now() - t0);
 
-				argsGen.release({attributes, tieLocations});
+				options.staffArgs = {attributes, tieLocations};
+				argsGen.release(options.staffArgs);
+				//console.log("tp.3:", Date.now() - t0);
 			}
 		},
-		onMidiRead: midi => {
+		onMidiRead: async midi => {
 			//console.log("tm.0:", Date.now() - t0);
 			if (options.withMIDI)
 				outputJSON({midi});
@@ -93,18 +98,20 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 			}
 
 			if (options.withLilyNotation && midi) {
-				notatioinGen
-					.wait()
-					.then(lilyNotation => LilyNotation.matchWithExactMIDI(lilyNotation, midi)
-						.then(() => outputJSON({lilyNotation})),
-					);
+				const lilyNotation = options.lilyNotation || await notatioinGen.wait();
+				//console.log("tm.2:", Date.now() - t0);
+				await LilyNotation.matchWithExactMIDI(lilyNotation, midi);
+				//console.log("tm.3:", Date.now() - t0);
+
+				outputJSON({lilyNotation});
 			}
 
-			//console.log("tm.1:", Date.now() - t0);
+			//console.log("tm.4:", Date.now() - t0);
 		},
 		onSvgRead: async (index, svg) => {
 			//console.log("ts.0:", index, Date.now() - t0);
-			const args = await argsGen.wait();
+			const args = options.staffArgs || await argsGen.wait();
+			//console.log("ts.1:", index, Date.now() - t0);
 			const page = staffSvg.parseSvgPage(svg, source, {DOMParser, logger: options.logger, ...args});
 
 			// select incremental keys to send
@@ -114,8 +121,10 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 					hashTable[key] = elem;
 			});
 
-			// modify by lilyNotation
-			if (options.lilyNotation) {
+			// rectify page data by lilyNotation
+			const lilyNotation = options.lilyNotation || await notatioinGen.wait();
+			//console.log("ts.2:", index, Date.now() - t0);
+			if (lilyNotation) {
 				const sheetDocument = new staffSvg.SheetDocument({pages: [page.structure]}, {initialize: false});
 
 				sheetDocument.alignTokensWithNotation(options.lilyNotation);
@@ -130,7 +139,7 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 
 			Object.keys(hashTable).forEach(key => hashKeys.add(key));
 
-			//console.log("ts.1:", index, Date.now() - t0);
+			//console.log("ts.3:", index, Date.now() - t0);
 		},
 	});
 
