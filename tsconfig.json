@@ -26,7 +26,8 @@
 		],
 		"skipLibCheck": true,
 		"noImplicitAny": false,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"outDir": "lib.browser"
 	},
 	"include": [
 		"app/**/*.ts",

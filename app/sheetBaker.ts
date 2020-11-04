@@ -149,6 +149,7 @@ const bakeLiveSheetGen = async function* ({sheetDocument, signs, hashTable, matc
 		}
 	`;*/
 
+	// @ts-ignore
 	const svgDoms = [...sheet.$el.children];
 	for (const svg of svgDoms) {
 		// not working?
