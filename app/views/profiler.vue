@@ -3,6 +3,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5">
 		<header class="controls">
 			<StoreInput v-if="!disableStore" v-show="false" v-model="sourceText" sessionKey="lotus-profilerSourceText" />
+			<BoolStoreInput v-if="!disableStore" v-show="false" v-model="bakingSheet" sessionKey="lotus-profilerBakingSheet" />
 			<input type="file" @change="onScoreChange" />
 			<button @click="homePlayer">&#x23ee;</button>
 			<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
@@ -45,6 +46,7 @@
 	import SheetLive from "../components/sheet-live.vue";
 	import SheetSigns from "../components/sheet-signs.vue";
 	import StoreInput from "../components/store-input.vue";
+	import BoolStoreInput from "../components/bool-store-input.vue";
 	import CheckButton from "../components/check-button.vue";
 
 
@@ -57,6 +59,7 @@
 			SheetLive,
 			SheetSigns,
 			StoreInput,
+			BoolStoreInput,
 			CheckButton,
 		},
 
@@ -216,7 +219,7 @@
 				if (this.sourceText) {
 					this.showPagesProgressively = true;
 
-					const scoreBundle = new ScoreBundle(this.sourceText, {onStatus: message => this.logTime(message)});
+					const scoreBundle = ScoreBundle.fromJSON(this.sourceText, {onStatus: message => this.logTime(message)});
 					this.sheetDocument = scoreBundle.scoreJSON.doc;
 					this.pitchContextGroup = scoreBundle.pitchContextGroup;
 					this.midiNotation = scoreBundle.midiNotation;

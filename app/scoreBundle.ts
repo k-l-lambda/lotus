@@ -37,21 +37,28 @@ export default class ScoreBundle {
 	bakingImages: string[];
 
 
-	constructor (source: string, {measureLayout = LilyNotation.LayoutType.Full, onStatus = ((..._) => _), jsonHandle = json => json} = {}) {
-		this.onStatus = onStatus;
+	static fromJSON (source: string, {measureLayout = LilyNotation.LayoutType.Full, onStatus = ((..._) => _), jsonHandle = json => json} = {}): ScoreBundle {
+		const bundle = new ScoreBundle({onStatus});
 
-		this.scoreJSON = jsonHandle(recoverJSON(source, {StaffToken, SheetDocument, LilyNotation: LilyNotation.Notation, ...LilyNotation.MLayoutClasses, DictArray}));
-		this.checkVersion();
+		bundle.scoreJSON = jsonHandle(recoverJSON(source, {StaffToken, SheetDocument, LilyNotation: LilyNotation.Notation, ...LilyNotation.MLayoutClasses, DictArray}));
+		bundle.checkVersion();
 
-		this.onStatus("json loaded");
+		bundle.onStatus("json loaded");
 
-		if (this.scoreJSON.lilyNotation) {
-			this.matchedIds = this.scoreJSON.lilyNotation.idSet;
-			this.scoreJSON.doc.updateMatchedTokens(this.matchedIds);
+		if (bundle.scoreJSON.lilyNotation) {
+			bundle.matchedIds = bundle.scoreJSON.lilyNotation.idSet;
+			bundle.scoreJSON.doc.updateMatchedTokens(bundle.matchedIds);
 		}
 
 		if (measureLayout)
-			this.loadNotation(measureLayout);
+			bundle.loadNotation(measureLayout);
+
+		return bundle;
+	}
+
+
+	constructor ({onStatus = ((..._) => _)} = {}) {
+		this.onStatus = onStatus;
 	}
 
 

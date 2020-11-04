@@ -19,6 +19,11 @@
 
 
 
+*	2020.11.4
+
+	+	scoreBundle.ts: ScoreBundle.fromJSON added.
+
+
 *	2020.11.3
 
 	+	advancedEngraver.ts: rectify sheet document in backend.
