@@ -23,7 +23,7 @@ interface ScoreJSON {
 	meta: ScoreMeta;
 	doc: SheetDocument;
 	hashTable: HashTable;
-	lilyNotation: LilyNotation.Notation,
+	lilyNotation: LilyNotation.Notation;
 }
 
 

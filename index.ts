@@ -6,6 +6,8 @@ import LogRecorder from "./inc/logRecorder";
 import * as constants from "./inc/constants";
 import * as LilyNotation from "./inc/lilyNotation";
 import {recoverJSON} from "./inc/jsonRecovery";
+import {PitchContextTable} from "./inc/pitchContext";
+import ScoreJSON from "./inc/scoreJSON";
 
 
 
@@ -17,4 +19,6 @@ export {
 	backend,
 	constants,
 	recoverJSON,
+	PitchContextTable,
+	ScoreJSON,
 };

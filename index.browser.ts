@@ -6,6 +6,8 @@ import * as lilyParser from "./inc/lilyParser";
 import LogRecorder from "./inc/logRecorder";
 import * as constants from "./inc/constants";
 import StreamParser from "./inc/streamParser";
+import {PitchContextTable} from "./inc/pitchContext";
+import ScoreJSON from "./inc/scoreJSON";
 
 import SheetLive from "./app/components/sheet-live.vue";
 import SheetSigns from "./app/components/sheet-signs.vue";
@@ -26,4 +28,6 @@ export {
 	SheetSigns,
 	SheetBaker,
 	ScoreBundle,
+	PitchContextTable,
+	ScoreJSON,
 };

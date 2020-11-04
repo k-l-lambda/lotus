@@ -1,6 +1,6 @@
 
 import {svgToElements} from "./svgParser";
-import tokenizeElements, {StaffAttributes} from "./tokenizeElements";
+import tokenizeElements, {StaffAttributes, HashTable} from "./tokenizeElements";
 import organizeTokens from "./organizeTokens";
 import LogRecorder from "../logRecorder";
 import StaffToken from "./staffToken";
@@ -8,13 +8,9 @@ import SheetDocument from "./sheetDocument";
 import * as StaffNotation from "./staffNotation";
 import TextSource from "../textSource";
 import * as domUtils from "../domUtils";
-// eslint-disable-next-line
 import LilyDocument from "../lilyParser/lilyDocument";
-// eslint-disable-next-line
-import {LilyDocumentAttributeReadOnly} from "../lilyParser/lilyDocument";
-// eslint-disable-next-line
+import {LilyDocumentAttribute, LilyDocumentAttributeReadOnly} from "../lilyParser/lilyDocument";
 import {Scheme, SchemePair} from "../lilyParser/lilyTerms";
-// eslint-disable-next-line
 import {SheetPage} from "./sheetDocument";
 
 
@@ -174,4 +170,7 @@ export {
 	SheetDocument,
 	StaffNotation,
 	StaffAttributes,
+	HashTable,
+	LilyDocumentAttribute,
+	LilyDocumentAttributeReadOnly,
 };
