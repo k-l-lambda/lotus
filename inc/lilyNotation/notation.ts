@@ -93,6 +93,8 @@ export class Notation {
 	trackNames: string[];
 	idTrackMap: {[key: string]: number};
 
+	ripe: boolean = false;
+
 
 	static fromAbsoluteNotes (notes: Note[], measureHeads: number[], data?: Partial<Notation>): Notation {
 		const notation = new Notation(data);
@@ -519,6 +521,8 @@ export class Notation {
 				}
 			}
 		});
+
+		this.ripe = true;
 
 		return this;
 	}
