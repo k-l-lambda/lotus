@@ -5,6 +5,7 @@ import {recoverJSON} from "./inc/jsonRecovery";
 import * as lilyParser from "./inc/lilyParser";
 import LogRecorder from "./inc/logRecorder";
 import * as constants from "./inc/constants";
+import * as LilyNotation from "./inc/lilyNotation";
 import StreamParser from "./inc/streamParser";
 import {PitchContextTable} from "./inc/pitchContext";
 import ScoreJSON from "./inc/scoreJSON";
@@ -23,6 +24,7 @@ export {
 	lilyParser,
 	LogRecorder,
 	constants,
+	LilyNotation,
 	StreamParser,
 	SheetLive,
 	SheetSigns,
