@@ -1,6 +1,5 @@
 
 ## TODO
-	consider mainScore variable for interpreter.
 	track-measure lilypond section editor
 		duration checker
 	MIDI post processing
@@ -11,6 +10,7 @@
 	lyrics in music normalization
 	lyrics hilighting
 		match chord with voice in the same staff
+	excludeChordTracksFromMIDI issue
 	staffSvg
 		fix partial measures
 			add partial on standalone block
@@ -21,6 +21,8 @@
 
 
 *	2020.11.5
+
+	+	lilyDocument.ts: added markup method of abstractMainScore.
 
 	+	lilyInterpreter.ts: added main score to unify separated layoutMusic & midiMusic.
 

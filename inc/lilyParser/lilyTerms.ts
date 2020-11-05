@@ -1,7 +1,7 @@
 
 import _ from "lodash";
 
-import {WHOLE_DURATION_MAGNITUDE, FractionNumber, lcmMulti, gcd} from "./utils";
+import {WHOLE_DURATION_MAGNITUDE, FractionNumber, lcmMulti, gcd, MAIN_SCORE_NAME} from "./utils";
 import * as idioms from "./idioms";
 import {LILYPOND_VERSION} from "../constants";
 import * as measureLayout from "../measureLayout";
@@ -627,6 +627,14 @@ export class Variable extends Command {
 		const field = dict.getField(this.name);
 
 		return field && field.value;
+	}
+
+
+	get isMusic (): boolean {
+		if ([MAIN_SCORE_NAME].includes(this.name))
+			return true;
+
+		return false;
 	}
 };
 

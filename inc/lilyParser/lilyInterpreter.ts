@@ -1,6 +1,6 @@
 
 import {romanize} from "../romanNumeral";
-import {WHOLE_DURATION_MAGNITUDE, GRACE_DURATION_FACTOR, lcmMulti, lcm} from "./utils";
+import {WHOLE_DURATION_MAGNITUDE, GRACE_DURATION_FACTOR, FUNCTIONAL_VARIABLE_NAME_PATTERN, MAIN_SCORE_NAME, lcmMulti, lcm} from "./utils";
 import {parseRaw, getDurationSubdivider, MusicChunk} from "./lilyTerms";
 import LogRecorder from "../logRecorder";
 import {StaffContext, PitchContextTable} from "../pitchContext";
@@ -28,11 +28,6 @@ type MusicListener = (music: BaseTerm, context: TrackContext) => void;
 
 
 type ContextDict = {[key: string]: string};
-
-
-const FUNCTIONAL_VARIABLE_NAME_PATTERN = /^lotus/;
-
-const MAIN_SCORE_NAME = "lotusMainScore";
 
 
 interface PitchContextTerm {

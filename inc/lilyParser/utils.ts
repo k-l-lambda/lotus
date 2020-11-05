@@ -5,6 +5,11 @@ const WHOLE_DURATION_MAGNITUDE = 128 * 3 * 5;
 const GRACE_DURATION_FACTOR = 0.2246;
 
 
+const FUNCTIONAL_VARIABLE_NAME_PATTERN = /^lotus/;
+
+const MAIN_SCORE_NAME = "lotusMainScore";
+
+
 // Greatest common divisor & Least common multiple
 const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
 /*const gcd = (a: number, b: number): number => {
@@ -80,6 +85,8 @@ const replaceSourceToken = (source: string, token: string): string => {
 export {
 	WHOLE_DURATION_MAGNITUDE,
 	GRACE_DURATION_FACTOR,
+	FUNCTIONAL_VARIABLE_NAME_PATTERN,
+	MAIN_SCORE_NAME,
 	gcd,
 	lcm,
 	lcmMulti,

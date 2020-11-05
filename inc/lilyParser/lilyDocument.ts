@@ -10,6 +10,7 @@ import {
 	SchemePointer, Comment, Language, StemDirection,
 } from "./lilyTerms";
 import LilyInterpreter from "./lilyInterpreter";
+import {MAIN_SCORE_NAME} from "./utils";
 
 // eslint-disable-next-line
 import {Root} from "./lilyTerms";
@@ -612,6 +613,9 @@ export default class LilyDocument {
 
 		const isBlock = (head, term) => term instanceof Block && term.head === head;
 
+		// TODO: midiMusic forked in interpreter issue
+		//this.abstractMainScore();
+
 		const score = this.root.getBlock("score");
 		const newScore = score.clone() as Block;
 		newScore.forEachTerm(SimultaneousList, simul => {
@@ -888,6 +892,7 @@ export default class LilyDocument {
 	articulateMIDIOutput () {
 		const ARTICULATE_FILENAME = "articulate-lotus.ly";
 
+		this.abstractMainScore();
 		const midiScore = this.makeMIDIDedicatedScore();
 
 		if (!this.root.includeFiles.includes(ARTICULATE_FILENAME)) {
@@ -920,5 +925,21 @@ export default class LilyDocument {
 		});
 
 		return count;
+	}
+
+
+	abstractMainScore () {
+		const score = this.root.getBlock("score");
+		const music = score.body.find(term => term.isMusic);
+		if (music && !(music instanceof Variable)) {
+			const sectionIndex = this.root.sections.indexOf(score);
+			const assignment = new Assignment({
+				key: MAIN_SCORE_NAME,
+				value: music,
+			});
+			this.root.sections.splice(sectionIndex, 0, assignment);
+
+			score.body = score.body.map(term => term === music ? new Variable({name: MAIN_SCORE_NAME}) : term);
+		}
 	}
 };
