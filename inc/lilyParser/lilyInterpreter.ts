@@ -32,6 +32,8 @@ type ContextDict = {[key: string]: string};
 
 const FUNCTIONAL_VARIABLE_NAME_PATTERN = /^lotus/;
 
+const MAIN_SCORE_NAME = "lotusMainScore";
+
 
 interface PitchContextTerm {
 	staffName: string;
@@ -976,6 +978,7 @@ export default class LilyInterpreter {
 	staffNames: string[] = [];
 	musicTrackIndex: number = 0;
 	musicPerformance: MusicPerformance;
+	mainPerformance: MusicPerformance;
 
 	version: Version = null;
 	language: Language = null;
@@ -1094,8 +1097,17 @@ export default class LilyInterpreter {
 		}
 		else if (term instanceof Assignment) {
 			if (term.key) {
-				const value = this.execute(term.value);
-				this.variableTable.set(term.key as string, value);
+				const name = term.key as string;
+				const isMainScore = name === MAIN_SCORE_NAME;
+				if (isMainScore)
+					this.musicPerformance = null;
+
+				const value = this.execute(term.value, {execMusic: isMainScore});
+
+				this.variableTable.set(name, value);
+
+				if (isMainScore)
+					this.mainPerformance = this.musicPerformance;
 			}
 		}
 		else if (term instanceof Block) {
@@ -1130,6 +1142,12 @@ export default class LilyInterpreter {
 				}
 				else
 					console.warn("uninitialized variable is referred:", term);
+			}
+
+			if (term.name === MAIN_SCORE_NAME) {
+				this.musicPerformance = this.mainPerformance;
+
+				return term;
 			}
 
 			return this.execute(result, {execMusic, contextDict});
@@ -1198,9 +1216,10 @@ export default class LilyInterpreter {
 
 	updateTrackAssignments () {
 		if (this.layoutMusic)
-			this.layoutMusic.musicTracks.forEach((track, i) => this.variableTable.set(LilyInterpreter.trackName(i + 1), track.music));
+			this.layoutMusic.musicTracks.forEach(track => this.variableTable.set(track.name, track.music));
 
-		// TODO: process midiMusic
+		if (this.midiMusic && this.midiMusic !== this.layoutMusic)
+			this.midiMusic.musicTracks.forEach(track => this.variableTable.set(track.name, track.music));
 	}
 
 

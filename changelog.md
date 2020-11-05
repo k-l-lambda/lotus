@@ -1,5 +1,6 @@
 
 ## TODO
+	consider mainScore variable for interpreter.
 	track-measure lilypond section editor
 		duration checker
 	MIDI post processing
@@ -17,6 +18,11 @@
 		system splitting, chord mode symbol affiliation
 		remove empty track	(6.1 落叶.ly)
 
+
+
+*	2020.11.5
+
+	+	lilyInterpreter.ts: added main score to unify separated layoutMusic & midiMusic.
 
 
 *	2020.11.4
