@@ -974,7 +974,6 @@ export default class LilyInterpreter {
 	musicTrackIndex: number = 0;
 	musicPerformance: MusicPerformance;
 	mainPerformance: MusicPerformance;
-	mainScore: BaseTerm;
 
 	version: Version = null;
 	language: Language = null;
@@ -999,6 +998,11 @@ export default class LilyInterpreter {
 	/*eval (term: BaseTerm): BaseTerm {
 		return this.execute(term.clone());
 	}*/
+
+
+	get mainScore (): BaseTerm {
+		return this.variableTable.get(MAIN_SCORE_NAME);
+	};
 
 
 	interpretMusic (music: BaseTerm, contextDict: ContextDict): Variable {
@@ -1102,10 +1106,8 @@ export default class LilyInterpreter {
 
 				this.variableTable.set(name, value);
 
-				if (isMainScore) {
+				if (isMainScore)
 					this.mainPerformance = this.musicPerformance;
-					this.mainScore = value;
-				}
 			}
 		}
 		else if (term instanceof Block) {
@@ -1218,6 +1220,13 @@ export default class LilyInterpreter {
 
 		if (this.midiMusic && this.midiMusic !== this.layoutMusic)
 			this.midiMusic.musicTracks.forEach(track => this.variableTable.set(track.name, track.music));
+
+		// update main score variable order in table
+		const mainScore = this.mainScore;
+		if (mainScore) {
+			this.variableTable.delete(MAIN_SCORE_NAME);
+			this.variableTable.set(MAIN_SCORE_NAME, mainScore);
+		}
 	}
 
 
