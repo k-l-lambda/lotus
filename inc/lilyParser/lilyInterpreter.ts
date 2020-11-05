@@ -1226,6 +1226,11 @@ export default class LilyInterpreter {
 
 		const variables = [].concat(...[this.paper, this.layout, ...this.scores, this.mainScore].filter(block => block).map(block => block.findAll(Variable).map(variable => variable.name)));
 		const variablesUnique = Array.from(new Set(variables));
+
+		// sort variables by order in variable table
+		const vars = [...this.variableTable.keys()];
+		variablesUnique.sort((v1, v2) => vars.indexOf(v1) - vars.indexOf(v2));
+
 		const assignments = variablesUnique.filter(name => this.variableTable.get(name)).map(name => new Assignment({key: name, value: this.variableTable.get(name)}));
 		const includes = Array.from(this.includeFiles).map(filename => Include.create(filename));
 
