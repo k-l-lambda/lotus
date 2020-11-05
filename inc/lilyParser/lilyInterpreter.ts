@@ -974,6 +974,7 @@ export default class LilyInterpreter {
 	musicTrackIndex: number = 0;
 	musicPerformance: MusicPerformance;
 	mainPerformance: MusicPerformance;
+	mainScore: BaseTerm;
 
 	version: Version = null;
 	language: Language = null;
@@ -1101,8 +1102,10 @@ export default class LilyInterpreter {
 
 				this.variableTable.set(name, value);
 
-				if (isMainScore)
+				if (isMainScore) {
 					this.mainPerformance = this.musicPerformance;
+					this.mainScore = value;
+				}
 			}
 		}
 		else if (term instanceof Block) {
@@ -1221,8 +1224,9 @@ export default class LilyInterpreter {
 	toDocument (): LilyDocument {
 		this.updateTrackAssignments();
 
-		const variables = [].concat(...[this.paper, this.layout, ...this.scores].filter(block => block).map(block => block.findAll(Variable).map(variable => variable.name)));
-		const assignments = variables.filter(name => this.variableTable.get(name)).map(name => new Assignment({key: name, value: this.variableTable.get(name)}));
+		const variables = [].concat(...[this.paper, this.layout, ...this.scores, this.mainScore].filter(block => block).map(block => block.findAll(Variable).map(variable => variable.name)));
+		const variablesUnique = Array.from(new Set(variables));
+		const assignments = variablesUnique.filter(name => this.variableTable.get(name)).map(name => new Assignment({key: name, value: this.variableTable.get(name)}));
 		const includes = Array.from(this.includeFiles).map(filename => Include.create(filename));
 
 		const root = new Root({sections: [
