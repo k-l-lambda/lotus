@@ -154,4 +154,8 @@ export const createPianoRhythm = (interpreter: LilyInterpreter, {dotTracks = tru
 	}
 
 	interpreter.addIncludeFile("rhythmSymbols.ly");
+	interpreter.appendReservedVariables([
+		"dotB", "dotW",
+		"lyrRed", "lyrGreen", "lyrYellow", "lyrGray",
+	]);
 };

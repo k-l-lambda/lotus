@@ -989,6 +989,8 @@ export default class LilyInterpreter {
 
 	functionalCommand?: Variable;
 
+	reservedVariables: string[] = [];
+
 
 	static trackName (index: number): string {
 		return `Voice_${romanize(index)}`;
@@ -1023,6 +1025,9 @@ export default class LilyInterpreter {
 
 
 	interpretDocument (doc: LilyDocument): this {
+		if (doc.reservedVariables)
+			this.appendReservedVariables(doc.reservedVariables);
+
 		this.execute(doc.root);
 
 		return this;
@@ -1255,7 +1260,10 @@ export default class LilyInterpreter {
 			...this.scores,
 		].filter(section => section)});
 
-		return new LilyDocument(root);
+		const doc = new LilyDocument(root);
+		doc.reservedVariables = this.reservedVariables;
+
+		return doc;
 	}
 
 
@@ -1270,6 +1278,11 @@ export default class LilyInterpreter {
 
 	addIncludeFile (filename: string) {
 		this.includeFiles.add(filename);
+	}
+
+
+	appendReservedVariables (names: string[]) {
+		this.reservedVariables.push(...names);
 	}
 
 

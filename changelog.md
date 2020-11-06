@@ -22,6 +22,8 @@
 
 *	2020.11.6
 
+	+	lilyInterpreter.ts: reservedVariables added.
+
 	+	advancedEngraver.ts: refined output stream in callbacks.
 
 	+	pianoRhythm.ts: fixed for interpreter.mainScore.
