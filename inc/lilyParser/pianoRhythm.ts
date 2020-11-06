@@ -92,15 +92,19 @@ interface PianoRhythmOptions {
 };
 
 
+const isPianoStaff = term => term instanceof ContextedMusic && term.type === "PianoStaff";
+
+
+
 export const createPianoRhythm = (interpreter: LilyInterpreter, {dotTracks = true, numberTrack, colored}: PianoRhythmOptions = {}) => {
 	console.assert(interpreter.scores.length, "interpreter.scores is empty.");
 
-	const pianoMusic = interpreter.scores[0].findFirst(term => term instanceof ContextedMusic && term.type === "PianoStaff") as ContextedMusic;
+	let pianoMusic = interpreter.mainScore.findFirst(isPianoStaff) as ContextedMusic;
+	if (!pianoMusic)
+		pianoMusic = interpreter.scores[0].findFirst(isPianoStaff) as ContextedMusic;
 	//console.log("pianoMusic:", pianoMusic);
-	if (!pianoMusic) {
-		console.warn("no pianoMusic");
-		return;
-	}
+	if (!pianoMusic)
+		throw new Error("[createPianoRhythm] no pianoMusic");
 
 	const list = pianoMusic.body as SimultaneousList;
 
