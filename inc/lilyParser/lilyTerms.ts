@@ -15,6 +15,35 @@ interface Location {
 };
 
 
+abstract class Locator {
+	location: Location;
+
+
+	constructor (term: BaseTerm) {
+		term._location = term._location || {lines: [0, 0], columns: [0, 0]};
+		this.location = term._location;
+	}
+
+	abstract set (line: number, column: number): void;
+};
+
+
+class OpenLocator extends Locator {
+	set (line: number, column: number) {
+		this.location.lines[0] = line;
+		this.location.columns[0] = column;
+	}
+};
+
+
+class CloseLocator extends Locator {
+	set (line: number, column: number) {
+		this.location.lines[1] = line;
+		this.location.columns[1] = column;
+	}
+};
+
+
 // concat array of array
 const cc = <T>(arrays: T[][]): T[] => [].concat(...arrays);
 
@@ -116,11 +145,11 @@ export class BaseTerm {
 
 
 	join (): string {
-		let words = this.serialize().filter(word => word !== null);
+		let words = this.serialize().filter(word => ["string", "number"].includes(typeof word)) as string[];
 		words = words.filter((word, i) => !(i && words[i - 1] === "\n" && word === "\n"));
 
 		let indent = 0;
-		const result = [];
+		const result: string[] = [];
 
 		const pop = char => {
 			if (!char || result[result.length - 1] === char) {
@@ -166,6 +195,61 @@ export class BaseTerm {
 		}
 
 		return result.join("");
+	}
+
+
+	relocate (source: string = this.join()) {
+		const words = this.serialize()
+			.filter(word => word && (typeof word !== "string" || (/\S/.test(word) && !word.includes("\b"))))
+			.map(word => typeof word === "string" ? word.replace(/\n/g, "") : word);
+
+		const chars = source.split("");
+		let line = 1;
+		let column = 0;
+
+		let wordIndex = 0;
+
+		for (let i = 0; i < chars.length; ++i) {
+			if (wordIndex >= words.length)
+				break;
+
+			const char = chars[i];
+
+			switch (char) {
+			case "\n":
+				++line;
+				column = 0;
+
+				break;
+			case " ":
+			case "\t":
+				++column;
+
+				break;
+			default:
+				let word = words[wordIndex];
+				while (word instanceof Locator) {
+					word.set(line, column);
+
+					++wordIndex;
+					word = words[wordIndex];
+				}
+
+				if (wordIndex >= words.length)
+					break;
+
+				word = word.toString();
+				if (char === word[0]) {
+					i += word.length - 1;
+					column += word.length;
+					++wordIndex;
+				}
+				else {
+					//debugger;
+					throw new Error(`unexpected char in source: [${i}]'${char}', expect: ${word}`);
+				}
+			}
+		}
 	}
 
 
@@ -1937,7 +2021,7 @@ export class Chord extends MusicEvent {
 
 	serialize () {
 		const innerPitches = this.pitches.map(BaseTerm.optionalSerialize);
-		const pitches = (this.single && !this.options.withAngle) ? innerPitches : [
+		const pitches = (this.single && !this.options.withAngle) ? cc(innerPitches) : [
 			"<", "\b", ...cc(innerPitches), "\b", ">",
 		];
 
@@ -1948,8 +2032,10 @@ export class Chord extends MusicEvent {
 		).concat(...(this.post_events || []).map(BaseTerm.optionalSerialize));
 
 		return [
+			new OpenLocator(this),
 			...pitches,
 			...postfix,
+			new CloseLocator(this),
 		];
 	}
 
@@ -2090,8 +2176,10 @@ export class ChordElement extends BaseTerm {
 		).concat(...(post_events || []).map(item => ["\b", ...BaseTerm.optionalSerialize(item)]));
 
 		return [
+			new OpenLocator(this),
 			this.pitch,
 			...postfix,
+			new CloseLocator(this),
 		];
 	}
 

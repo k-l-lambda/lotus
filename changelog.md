@@ -20,6 +20,11 @@
 
 
 
+*	2020.11.6
+
+	+	lilyDocument.ts: relocate from source text implemented.
+
+
 *	2020.11.5
 
 	+	lilyDocument.ts: added markup method of abstractMainScore.

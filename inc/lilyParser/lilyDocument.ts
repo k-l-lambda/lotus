@@ -260,6 +260,12 @@ export default class LilyDocument {
 	}
 
 
+	// update terms' _location data according to a serialized source
+	relocate (source: string = this.toString()) {
+		this.root.relocate(source);
+	}
+
+
 	appendIncludeFile (filename: string) {
 		if (!this.root.includeFiles.includes(filename)) {
 			const versionPos = this.root.sections.findIndex(term => term instanceof Version);
