@@ -41,10 +41,10 @@ const STREAM_SEPARATOR = "\n\n\n\n";
 const advancedEngrave = async (source: string, lilyParser: GrammarParser, output: Writable, options: Partial<EngraverOptions> = {}) => {
 	const {streamSeparator = STREAM_SEPARATOR} = options;
 
-	const outputJSON = data => {
+	const outputJSON = data => setImmediate(() => {
 		output.write(JSON.stringify(data));
 		output.write(streamSeparator);
-	};
+	});
 
 	const t0 = Date.now();
 
@@ -152,11 +152,13 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 
 	options.logger.append("advancedEngraver.profile.engraving", {cost: tn - t0});
 
-	outputJSON({
+	await new Promise(resolve => setImmediate(resolve));
+
+	output.write(JSON.stringify({
 		logs: engraving.logs,
 		logger: options.logger,
 		errorLevel: engraving.errorLevel,
-	});
+	}));
 };
 
 

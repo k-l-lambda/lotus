@@ -22,6 +22,8 @@
 
 *	2020.11.6
 
+	+	advancedEngraver.ts: refined output stream in callbacks.
+
 	+	pianoRhythm.ts: fixed for interpreter.mainScore.
 
 	+	lilyDocument.ts: relocate from source text implemented.
