@@ -211,6 +211,7 @@ export class Notation {
 			measureLayout: this.measureLayout,
 			measures: this.measures,
 			idTrackMap: this.idTrackMap,
+			trackNames: this.trackNames,
 			ripe: this.ripe,
 		};
 	}
