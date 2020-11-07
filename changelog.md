@@ -20,6 +20,11 @@
 
 
 
+*	2020.11.7
+
+	+	lilyInterpreter.ts: enhanced MusicTrack.flatten to spread music blocks.
+
+
 *	2020.11.6
 
 	+	lilyInterpreter.ts: reservedVariables added.

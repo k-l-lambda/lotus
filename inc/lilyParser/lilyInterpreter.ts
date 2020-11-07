@@ -255,11 +255,26 @@ export class MusicTrack {
 	}
 
 
-	spreadRelativeBlocks () {
+	spreadMusicBlocks (): boolean {
+		let has = false;
+
+		this.transform((term) => {
+			if (term instanceof MusicBlock) {
+				has = true;
+				return term.body;
+			}
+			else
+				return [term];
+		});
+
+		return has;
+	}
+
+
+	spreadRelativeBlocks (): boolean {
 		// check if traverse is nessary
-		const term = this.block.findFirst(Relative);
-		if (!term)
-			return;
+		if (!this.block.findFirst(Relative))
+			return false;
 
 		this.transform((term, context) => {
 			if (term instanceof Relative) {
@@ -282,14 +297,15 @@ export class MusicTrack {
 			else
 				return [term];
 		});
+
+		return true;
 	}
 
 
-	spreadRepeatBlocks ({ignoreRepeat = true, keepTailPass = false} = {}) {
+	spreadRepeatBlocks ({ignoreRepeat = true, keepTailPass = false} = {}): boolean {
 		// check if traverse is nessary
-		const term = this.block.findFirst(Repeat);
-		if (!term)
-			return;
+		if (!this.block.findFirst(Repeat))
+			return false;
 
 		this.transform(term => {
 			if (term instanceof Repeat) {
@@ -300,9 +316,13 @@ export class MusicTrack {
 				else
 					return term.getPlainTerms();
 			}
+			else if (term instanceof Variable && term.name === "lotusRepeatABA")
+				return [];
 			else
 				return [term];
 		});
+
+		return true;
 	}
 
 
@@ -310,8 +330,12 @@ export class MusicTrack {
 		this.splitLongRests();
 		this.spreadRelativeBlocks();
 
-		if (spreadRepeats)
+		if (spreadRepeats) {
 			this.spreadRepeatBlocks();
+
+			// expand all music blocks
+			while (this.spreadMusicBlocks());
+		}
 	}
 
 
