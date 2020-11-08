@@ -3,15 +3,15 @@ import jisonWrapperWorker from "comlink-loader!../inc/jisonWrapper";
 
 
 
-let parser = null;
+const parsers = new Map();
 
 
 
-export default async function load () {
-	if (!parser) {
+export default async function load (grammarModule) {
+	if (!parsers.get(grammarModule)) {
 		const t0 = performance.now();
 
-		const {default: grammarURL} = await import("../jison/lilypond.jison");
+		const {default: grammarURL} = await grammarModule;
 		const grammar = await (await fetch(grammarURL)).text();
 		//console.log("grammar:", grammar);
 
@@ -19,12 +19,12 @@ export default async function load () {
 
 		const jisonWrapper = new jisonWrapperWorker();
 
-		parser = await new jisonWrapper.Parser(grammar);
+		parsers.set(grammarModule, await new jisonWrapper.Parser(grammar));
 		//console.log("parser:", parser, parser.parse);
 
 		const t2 = performance.now();
-		console.debug("lilyParser loading cost:", t1 - t0, t2 - t1);
+		console.debug("Jison parser loading cost:", t1 - t0, t2 - t1);
 	}
 
-	return parser;
+	return parsers.get(grammarModule);
 };

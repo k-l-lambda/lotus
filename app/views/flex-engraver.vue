@@ -73,7 +73,7 @@
 
 	import {downloadUrl} from "../utils.js";
 	import {mutexDelay} from "../delay.js";
-	import loadLilyParser from "../loadLilyParser.js";
+	import loadJisonParser from "../loadJisonParser.js";
 	import {LilyDocument} from "../../inc/lilyParser";
 	import {recoverJSON} from "../../inc/jsonRecovery.ts";
 	import {StaffToken, SheetDocument} from "../../inc/staffSvg";
@@ -176,7 +176,7 @@
 
 			this.loadSource();
 
-			this.lilyParser = await loadLilyParser();
+			this.lilyParser = await loadJisonParser(import("../../jison/lilypond.jison"));
 			console.log("Lilypond parser loaded.");
 
 			this.updateStaffSamples();

@@ -61,6 +61,14 @@
 					</span>
 				</span>
 			</fieldset>
+			<fieldset>
+				<button @click="updateMeasureLayoutCode" title="update measure layout code" >*[]</button>
+				<input v-if="measureLayoutCode" class="measure-layout-code" type="text"
+					v-model="measureLayoutCode"
+					@change="measureLayoutCodeDirty = true"
+				/>
+				<button v-if="measureLayoutCodeDirty" @click="applyUpdateMeasureLayoutCode">apply</button>
+			</fieldset>
 		</header>
 		<main>
 			<div class="source-container" :class="{loading: sourceIsLoading, 'drag-hover': sourceDragHover, connected: sourceEditorConnected}"
@@ -289,7 +297,7 @@
 	import * as LilyNotation from "../../inc/lilyNotation";
 	import LogRecorder from "../../inc/logRecorder.ts";
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
-	import loadLilyParser from "../loadLilyParser.js";
+	import loadJisonParser from "../loadJisonParser.js";
 	import {LilyDocument, replaceSourceToken, createPianoRhythm, LilyTerms} from "../../inc/lilyParser";
 	import {CM_TO_PX} from "../../inc/constants.ts";
 	import TextSource from "../../inc/textSource.ts";
@@ -402,6 +410,7 @@
 					raggedLast: true,
 				},
 				lilyParser: null,
+				measuresParser: null,
 				lilyDocumentDirty: false,
 				lilyTextSourceDirty: false,
 				bakingSheet: false,
@@ -420,6 +429,8 @@
 				sourceEditorConnected: false,
 				sourceEditorLoading: false,
 				measureLayoutType: "ordinary",
+				measureLayoutCode: null,
+				measureLayoutCodeDirty: false,
 				articulateMIDI: false,
 			};
 		},
@@ -465,7 +476,7 @@
 		async created () {
 			window.$main = this;
 
-			if (!window.$liyad) {
+			/*if (!window.$liyad) {
 				Object.defineProperty(window, "$liyad", {
 					get: async () => {
 						window.liyad = await import("liyad");
@@ -474,15 +485,20 @@
 						return window.liyad;
 					},
 				});
-			}
+			}*/
 
 			if (MidiAudio.WebAudio.empty())
 				MidiAudio.loadPlugin({soundfontUrl: "/soundfont/", api: "webaudio"}).then(() => console.log("Soundfont loaded."));
 
+			loadJisonParser(import("../../jison/measureLayout.jison")).then(parser => {
+				this.measuresParser = parser;
+				console.debug("measureLayout parser loaded.");
+			});
+
 			this.loadingLilyParser = true;
-			this.lilyParser = await loadLilyParser();
+			this.lilyParser = await loadJisonParser(import("../../jison/lilypond.jison"));
 			this.loadingLilyParser = false;
-			console.log("lily parser loaded.");
+			console.debug("lily parser loaded.");
 
 			this.updateLilyDocument();
 		},
@@ -1328,6 +1344,27 @@
 						this.highlightSourcePosition(position.map(Number));
 				}
 			},
+
+
+			async updateMeasureLayoutCode () {
+				await this.updateLilyDocument();
+				this.measureLayoutCode = this.lilyDocument.interpret().layoutMusic.measureLayoutCode;
+				this.measureLayoutCodeDirty = false;
+			},
+
+
+			async applyUpdateMeasureLayoutCode () {
+				if (!this.measureLayoutCode)
+					return;
+
+				try {
+					const measures = await this.measuresParser.parse(this.measureLayoutCode);
+					console.log("measures:", measures);
+				}
+				catch (err) {
+					console.warn("measure layout code parse error:", err);
+				}
+			},
 		},
 
 
@@ -1336,6 +1373,8 @@
 				this.engraverDirty = true;
 				this.lilyDocumentDirty = true;
 				this.lilyTextSourceDirty = true;
+				this.engraverLogs = null;
+				this.measureLayoutCode = null;
 
 				if (!this.sourceEditorConnected)
 					this.sourceEditorFilePath = null;
@@ -1431,6 +1470,11 @@
 					display: inline-block;
 					margin-left: .6em;
 				}
+			}
+
+			.measure-layout-code
+			{
+				width: 22em;
 			}
 		}
 

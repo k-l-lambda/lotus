@@ -20,6 +20,11 @@
 
 
 
+*	2020.11.8
+
+	+	playground.vue: UI for measure layout code added.
+
+
 *	2020.11.7
 
 	+	lilyInterpreter.ts: enhanced MusicTrack.flatten to spread music blocks.
