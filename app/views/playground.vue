@@ -62,12 +62,15 @@
 				</span>
 			</fieldset>
 			<fieldset>
-				<button @click="updateMeasureLayoutCode" title="update measure layout code" >*[]</button>
+				<button @click="updateMeasureLayoutCode" title="update measure layout code" :disabled="loadingLilyParser">*[]</button>
 				<input v-if="measureLayoutCode" class="measure-layout-code" type="text"
+					:class="{error: measureLayoutCodeError}"
 					v-model="measureLayoutCode"
+					:title="measureLayoutCodeError"
+					@input="validateMeasureLayoutCode"
 					@change="measureLayoutCodeDirty = true"
 				/>
-				<button v-if="measureLayoutCodeDirty" @click="applyUpdateMeasureLayoutCode">apply</button>
+				<button v-if="measureLayoutCodeDirty && !measureLayoutCodeError" class="apply" @click="applyUpdateMeasureLayoutCode">apply</button>
 			</fieldset>
 		</header>
 		<main>
@@ -303,6 +306,7 @@
 	import TextSource from "../../inc/textSource.ts";
 	import * as SheetBaker from "../sheetBaker.ts";
 	import {PitchContextTable} from "../../inc/pitchContext.ts";
+	//import * as measureLayout from "../../inc/measureLayout";
 	import npmPackage from "../../package.json";
 
 	import {MidiRoll} from "@k-l-lambda/web-widgets";
@@ -431,6 +435,7 @@
 				measureLayoutType: "ordinary",
 				measureLayoutCode: null,
 				measureLayoutCodeDirty: false,
+				measureLayoutCodeError: null,
 				articulateMIDI: false,
 			};
 		},
@@ -1353,17 +1358,28 @@
 			},
 
 
-			async applyUpdateMeasureLayoutCode () {
+			async validateMeasureLayoutCode () {
 				if (!this.measureLayoutCode)
 					return;
 
+				this.measureLayoutCodeError = null;
+
 				try {
-					const measures = await this.measuresParser.parse(this.measureLayoutCode);
-					console.log("measures:", measures);
+					/*const result =*/ await this.measuresParser.parse(this.measureLayoutCode);
+					//const measures = recoverJSON(result.data, measureLayout);
+					//console.log("measures:", measures);
+
+					// TODO: validate measure indices
 				}
 				catch (err) {
-					console.warn("measure layout code parse error:", err);
+					//console.warn("measure layout code parse error:", err);
+					this.measureLayoutCodeError = err;
 				}
+			},
+
+
+			applyUpdateMeasureLayoutCode () {
+				// TODO:
 			},
 		},
 
@@ -1475,6 +1491,16 @@
 			.measure-layout-code
 			{
 				width: 22em;
+
+				&.error
+				{
+					outline: red 1px solid;
+				}
+			}
+
+			.apply
+			{
+				font-size: 70%;
 			}
 		}
 
