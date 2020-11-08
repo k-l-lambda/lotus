@@ -371,6 +371,8 @@ export class MusicTrack {
 
 		const chunks = this.block.measureChunkMap;
 		this.block.body = constructMusicFromMeasureLayout(layout, chunks).terms;
+
+		this.redivide();
 	}
 
 

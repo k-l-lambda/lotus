@@ -64,7 +64,7 @@
 			<fieldset>
 				<button @click="updateMeasureLayoutCode" title="update measure layout code" :disabled="loadingLilyParser">*[]</button>
 				<input v-if="measureLayoutCode" class="measure-layout-code" type="text"
-					:class="{error: measureLayoutCodeError}"
+					:class="{error: measureLayoutCodeError, dirty: measureLayoutCodeDirty}"
 					v-model="measureLayoutCode"
 					:title="measureLayoutCodeError"
 					@input="validateMeasureLayoutCode"
@@ -305,6 +305,7 @@
 	import * as StaffNotation from "../../inc/staffSvg/staffNotation.ts";
 	import loadJisonParser from "../loadJisonParser.js";
 	import {LilyDocument, replaceSourceToken, createPianoRhythm, LilyTerms} from "../../inc/lilyParser";
+	import {MusicTrack} from "../../inc/lilyParser/lilyInterpreter";
 	import {CM_TO_PX} from "../../inc/constants.ts";
 	import TextSource from "../../inc/textSource.ts";
 	import * as SheetBaker from "../sheetBaker.ts";
@@ -1390,11 +1391,19 @@
 					const layout = recoverJSON(result.data, measureLayout);
 
 					await this.updateLilyDocument();
-					const interpreter = this.lilyDocument.interpret();
+					/*const interpreter = this.lilyDocument.interpret();
 
 					interpreter.layoutMusic.applyMeasureLayout(layout);
+					this.lilySource = interpreter.toDocument().toString();*/
+					this.lilyDocument.interpret();
 
-					this.lilySource = interpreter.toDocument().toString();
+					const tracks = this.lilyDocument.root.sections.filter(section =>
+						section instanceof LilyTerms.Assignment && section.value instanceof LilyTerms.Relative && section.value.measureLayout)
+						.map(assignment => assignment.value.args)
+						.map(args => MusicTrack.fromBlockAnchor(args[1], args[0]));
+					tracks.forEach(track => track.applyMeasureLayout(layout));
+
+					this.lilySource = this.lilyDocument.toString();
 
 					this.measureLayoutCodeDirty = false;
 				}
@@ -1516,7 +1525,13 @@
 
 				&.error
 				{
-					outline: red 1px solid;
+					border: red 1px solid;
+					background-color: #fcc;
+				}
+
+				&.dirty
+				{
+					outline: black 2px solid;
 				}
 			}
 

@@ -1,6 +1,5 @@
 
 ## TODO
-	playground: apply measure layout code on original lily document
 	track-measure lilypond section editor
 		duration checker
 	MIDI post processing
@@ -22,6 +21,8 @@
 
 
 *	2020.11.8
+
+	+	playground.vue: apply measure layout code on original lily document.
 
 	+	lilyTerms.ts: constructMusicFromMeasureLayout implemented.
 
