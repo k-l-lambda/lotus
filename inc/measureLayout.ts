@@ -19,7 +19,7 @@ interface MeasureLayout {
 };
 
 
-type MeasureSeq = MeasureLayout[];
+export type MeasureSeq = MeasureLayout[];
 
 
 const spreadMeasureSeq = (seq: MeasureSeq, type: LayoutType = LayoutType.Ordinary): number[] => [].concat(...seq.map(layout => layout.serialize(type)));

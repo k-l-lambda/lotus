@@ -22,6 +22,8 @@
 
 *	2020.11.8
 
+	+	lilyTerms.ts: constructMusicFromMeasureLayout implemented.
+
 	+	playground.vue: UI for measure layout code added.
 
 

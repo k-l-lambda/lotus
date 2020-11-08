@@ -1400,6 +1400,7 @@
 				}
 				catch (err) {
 					this.measureLayoutCodeError = err;
+					console.error(err);
 				}
 			},
 		},

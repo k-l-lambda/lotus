@@ -1,7 +1,7 @@
 
 import {romanize} from "../romanNumeral";
 import {WHOLE_DURATION_MAGNITUDE, GRACE_DURATION_FACTOR, FUNCTIONAL_VARIABLE_NAME_PATTERN, MAIN_SCORE_NAME, lcmMulti, lcm} from "./utils";
-import {parseRaw, getDurationSubdivider, MusicChunk} from "./lilyTerms";
+import {parseRaw, getDurationSubdivider, MusicChunk, constructMusicFromMeasureLayout} from "./lilyTerms";
 import LogRecorder from "../logRecorder";
 import {StaffContext, PitchContextTable} from "../pitchContext";
 import * as idioms from "./idioms";
@@ -365,8 +365,12 @@ export class MusicTrack {
 
 
 	applyMeasureLayout (layout: MeasureLayout) {
-		console.log("applyMeasureLayout:", this, layout);
-		// TODO:
+		//console.log("applyMeasureLayout:", this, layout);
+
+		this.flatten({spreadRepeats: true});
+
+		const chunks = this.block.measureChunkMap;
+		this.block.body = constructMusicFromMeasureLayout(layout, chunks).terms;
 	}
 
 

@@ -58,9 +58,9 @@ export class MusicChunk {
 	}
 
 
-	constructor (parent: MusicBlock) {
+	constructor (parent: MusicBlock, terms: BaseTerm[] = []) {
 		this.parent = parent;
-		this.terms = [];
+		this.terms = terms;
 	}
 
 
@@ -84,6 +84,9 @@ interface MusicVoice {
 	name?: string;
 	body: MusicChunk[];
 };
+
+
+type MusicChunkMap = Map<number, MusicChunk>;
 
 
 const isNullItem = item => item === "" || item === undefined || item === null || (Array.isArray(item) && !item.length);
@@ -113,6 +116,46 @@ export const getDurationSubdivider = (term: BaseTerm): number => {
 		console.warn("[getDurationSubdivider]	unexpected music term:", term);
 
 	return 1;
+};
+
+
+export const constructMusicFromMeasureLayout = (layout: measureLayout.MeasureLayout, chunks: MusicChunkMap): MusicChunk => {
+	const joinMeasureSeq = (seq: measureLayout.MeasureSeq): BaseTerm[] => MusicChunk.join(seq.map(sublayout => constructMusicFromMeasureLayout(sublayout, chunks)));
+	/*const joinMeasureSeq = (seq: measureLayout.MeasureSeq): BaseTerm[] => {
+		const cs = seq.map(sublayout => constructMusicFromMeasureLayout(sublayout, chunks));
+		debugger;
+
+		return MusicChunk.join(cs);
+	};*/
+
+	if (layout instanceof measureLayout.SingleMLayout) {
+		const chunk = chunks.get(layout.measure);
+		console.assert(!!chunk, "no chunk for measure:", layout.measure);
+
+		return chunk;
+	}
+	else if (layout instanceof measureLayout.BlockMLayout) {
+		const terms = joinMeasureSeq(layout.seq);
+
+		return new MusicChunk(null, terms);
+	}
+	else if (layout instanceof measureLayout.VoltaMLayout) {
+		const bodyTerms = joinMeasureSeq(layout.body);
+		const alternative = layout.alternates && layout.alternates.map(alternate => new MusicBlock({body: joinMeasureSeq(alternate)}));
+
+		const repeat = Repeat.createVolta(layout.times.toString(), new MusicBlock({body: bodyTerms}), alternative);
+
+		return new MusicChunk(null, [repeat]);
+	}
+	else if (layout instanceof measureLayout.ABAMLayout) {
+		const mainList = constructMusicFromMeasureLayout(layout.main, chunks);
+		const main = mainList.terms.length === 1 ? mainList.terms[0] : new MusicBlock({body: mainList.terms});
+		const restTerms = joinMeasureSeq(layout.rest);
+
+		const block = new MusicBlock({body: [main, ...restTerms]});
+
+		return new MusicChunk(null, [new Variable({name: "lotusRepeatABA"}), block]);
+	}
 };
 
 
@@ -734,6 +777,24 @@ export class MarkupCommand extends Command {
 
 
 export class Repeat extends Command {
+	static createVolta (times: string, body: MusicBlock, alternative?: MusicBlock[]): Repeat {
+		const args: any[] = [
+			"volta",
+			times,
+			body,
+		];
+
+		if (alternative) {
+			args.push(new Command({
+				cmd: "alternative",
+				args: [new MusicBlock({body: alternative})],
+			}));
+		}
+
+		return new Repeat({cmd: "repeat", args});
+	}
+
+
 	get type (): string {
 		return this.args[0];
 	}
@@ -1309,6 +1370,22 @@ export class MusicBlock extends BaseTerm {
 		}
 
 		return measureLayout.BlockMLayout.fromSeq(seq);
+	}
+
+
+	get measureChunkMap (): MusicChunkMap {
+		const map = new Map<number, MusicChunk>();
+		this.body.forEach(term => {
+			if (Number.isInteger(term._measure) && !(term instanceof Divide)) {
+				if (!map.get(term._measure))
+					map.set(term._measure, new MusicChunk(this));
+
+				const chunk = map.get(term._measure);
+				chunk.terms.push(term);
+			}
+		});
+
+		return map;
 	}
 
 
