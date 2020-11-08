@@ -70,7 +70,10 @@
 					@input="validateMeasureLayoutCode"
 					@change="measureLayoutCodeDirty = true"
 				/>
-				<button v-if="measureLayoutCodeDirty && !measureLayoutCodeError" class="apply" @click="applyUpdateMeasureLayoutCode">apply</button>
+				<button v-if="measureLayoutCodeDirty && !measureLayoutCodeError" class="apply"
+					:disabled="loadingLilyParser"
+					@click="applyUpdateMeasureLayoutCode"
+				>apply</button>
 			</fieldset>
 		</header>
 		<main>
@@ -306,7 +309,7 @@
 	import TextSource from "../../inc/textSource.ts";
 	import * as SheetBaker from "../sheetBaker.ts";
 	import {PitchContextTable} from "../../inc/pitchContext.ts";
-	//import * as measureLayout from "../../inc/measureLayout";
+	import * as measureLayout from "../../inc/measureLayout";
 	import npmPackage from "../../package.json";
 
 	import {MidiRoll} from "@k-l-lambda/web-widgets";
@@ -1378,8 +1381,26 @@
 			},
 
 
-			applyUpdateMeasureLayoutCode () {
-				// TODO:
+			async applyUpdateMeasureLayoutCode () {
+				if (!this.measureLayoutCode)
+					return;
+
+				try {
+					const result = await this.measuresParser.parse(this.measureLayoutCode);
+					const layout = recoverJSON(result.data, measureLayout);
+
+					await this.updateLilyDocument();
+					const interpreter = this.lilyDocument.interpret();
+
+					interpreter.layoutMusic.applyMeasureLayout(layout);
+
+					this.lilySource = interpreter.toDocument().toString();
+
+					this.measureLayoutCodeDirty = false;
+				}
+				catch (err) {
+					this.measureLayoutCodeError = err;
+				}
 			},
 		},
 

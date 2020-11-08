@@ -14,6 +14,7 @@ import {
 	KeySignature, OctaveShift, Duration, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version,
 	ChordMode, LyricMode, ChordElement, Language, PostEvent, Transposition, ParallelMusic,
 } from "./lilyTerms";
+import {MeasureLayout} from "../measureLayout";
 
 
 
@@ -204,10 +205,6 @@ export class MusicTrack {
 		return code;
 	}
 
-	set measureLayoutCode (_: string) {
-		// TODO:
-	}
-
 
 	transform (transformer: MusicTransformer) {
 		new TrackContext(this, {transformer}).execute(this.music);
@@ -364,6 +361,12 @@ export class MusicTrack {
 
 	redivide () {
 		this.block.redivide({measureHeads: this.measureHeads});
+	}
+
+
+	applyMeasureLayout (layout: MeasureLayout) {
+		console.log("applyMeasureLayout:", this, layout);
+		// TODO:
 	}
 
 
@@ -917,8 +920,9 @@ class MusicPerformance {
 		return this.mainTrack && this.mainTrack.measureLayoutCode;
 	}
 
-	set measureLayoutCode (value: string) {
-		this.musicTracks.forEach(track => track.measureLayoutCode = value);
+
+	applyMeasureLayout (layout: MeasureLayout) {
+		this.musicTracks.forEach(track => track.applyMeasureLayout(layout));
 	}
 
 
