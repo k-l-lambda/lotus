@@ -121,12 +121,6 @@ export const getDurationSubdivider = (term: BaseTerm): number => {
 
 export const constructMusicFromMeasureLayout = (layout: measureLayout.MeasureLayout, chunks: MusicChunkMap): MusicChunk => {
 	const joinMeasureSeq = (seq: measureLayout.MeasureSeq): BaseTerm[] => MusicChunk.join(seq.map(sublayout => constructMusicFromMeasureLayout(sublayout, chunks)));
-	/*const joinMeasureSeq = (seq: measureLayout.MeasureSeq): BaseTerm[] => {
-		const cs = seq.map(sublayout => constructMusicFromMeasureLayout(sublayout, chunks));
-		debugger;
-
-		return MusicChunk.join(cs);
-	};*/
 
 	if (layout instanceof measureLayout.SingleMLayout) {
 		const chunk = chunks.get(layout.measure);

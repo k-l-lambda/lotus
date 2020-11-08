@@ -1,5 +1,6 @@
 
 ## TODO
+	playground: apply measure layout code on original lily document
 	track-measure lilypond section editor
 		duration checker
 	MIDI post processing
