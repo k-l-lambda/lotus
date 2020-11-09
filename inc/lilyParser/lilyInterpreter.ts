@@ -1179,6 +1179,9 @@ export default class LilyInterpreter {
 
 					return term;
 				}
+				else if (this.reservedVariables.includes(term.name)) {
+					// ignore reserved variables
+				}
 				else
 					console.warn("uninitialized variable is referred:", term);
 			}
