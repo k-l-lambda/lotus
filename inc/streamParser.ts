@@ -44,7 +44,7 @@ export default class StreamParser extends EventEmitter {
 		}
 
 		if (buffer) {
-			console.log("last buffer:", buffer);
+			//console.debug("last buffer:", buffer);
 			this.emit("data", buffer);
 		}
 	}
