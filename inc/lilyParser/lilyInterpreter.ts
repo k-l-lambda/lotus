@@ -1217,8 +1217,11 @@ export default class LilyInterpreter {
 			return new SimultaneousList({list});
 		}
 		else if (term instanceof ContextedMusic) {
-			if (term.contextDict && typeof term.contextDict.Staff === "string")
+			if (term.contextDict && typeof term.contextDict.Staff === "string") {
+				if (!term.contextDict.Staff)
+					console.warn("[LilyInterpreter]	Empty context staff name may result in error pitchContextTable.");
 				this.staffNames.push(term.contextDict.Staff);
+			}
 
 			return new ContextedMusic({
 				head: this.execute(term.head),
