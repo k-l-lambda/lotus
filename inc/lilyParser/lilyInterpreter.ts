@@ -1076,6 +1076,8 @@ export default class LilyInterpreter {
 			this.staffNames.forEach(name => {
 				if (!this.musicPerformance.staffNames.some(sn => sn === name))
 					this.musicPerformance.staffNames.push(name);
+				else if (!name)
+					console.warn("[LilyInterpreter]	Multiple empty context staff name may cause error pitchContextTable:", this.musicPerformance.staffNames);
 			});
 			this.musicTracks.forEach(track => this.musicPerformance.musicTracks.push(track));
 
@@ -1217,11 +1219,8 @@ export default class LilyInterpreter {
 			return new SimultaneousList({list});
 		}
 		else if (term instanceof ContextedMusic) {
-			if (term.contextDict && typeof term.contextDict.Staff === "string") {
-				if (!term.contextDict.Staff)
-					console.warn("[LilyInterpreter]	Empty context staff name may result in error pitchContextTable.");
+			if (term.contextDict && typeof term.contextDict.Staff === "string")
 				this.staffNames.push(term.contextDict.Staff);
-			}
 
 			return new ContextedMusic({
 				head: this.execute(term.head),
