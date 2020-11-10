@@ -4,7 +4,7 @@ import {MusicNotation} from "@k-l-lambda/web-widgets";
 import npmPackage from "../package.json";
 import {recoverJSON} from "../inc/jsonRecovery";
 import {StaffToken, SheetDocument} from "../inc/staffSvg";
-import {PitchContextTable} from "../inc/pitchContext";
+import {PitchContextTable, PitchContext} from "../inc/pitchContext";
 import * as LilyNotation from "../inc/lilyNotation";
 import * as SheetBaker from "./sheetBaker";
 import DictArray from "../inc/DictArray";
@@ -26,6 +26,17 @@ const parseVersion = (ver: string): number => {
 };
 
 
+const classDict = {
+	StaffToken,
+	SheetDocument,
+	LilyNotation: LilyNotation.Notation,
+	...LilyNotation.MLayoutClasses,
+	DictArray,
+	PitchContextTable,
+	PitchContext,
+};
+
+
 
 export default class ScoreBundle {
 	scoreJSON: ScoreJSON;
@@ -40,7 +51,7 @@ export default class ScoreBundle {
 	static fromJSON (source: string, {measureLayout = LilyNotation.LayoutType.Full, onStatus = ((..._) => _), jsonHandle = json => json} = {}): ScoreBundle {
 		const bundle = new ScoreBundle({onStatus});
 
-		bundle.scoreJSON = jsonHandle(recoverJSON(source, {StaffToken, SheetDocument, LilyNotation: LilyNotation.Notation, ...LilyNotation.MLayoutClasses, DictArray}));
+		bundle.scoreJSON = jsonHandle(recoverJSON(source, classDict));
 		bundle.checkVersion();
 
 		bundle.onStatus("json loaded");
