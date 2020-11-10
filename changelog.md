@@ -20,6 +20,11 @@
 
 
 
+*	2020.11.10
+
+	+	lilyNotation: assign staffTrack in toPerformingNotationWithEvents.
+
+
 *	2020.11.8
 
 	+	playground.vue: apply measure layout code on original lily document.

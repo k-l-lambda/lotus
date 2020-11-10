@@ -293,6 +293,7 @@ export class Notation {
 			ticks?: number;
 			measure?: number;
 			ids?: string[];
+			staffTrack?: number;
 		};
 		type MidiTrack = MidiEvent[];
 
@@ -340,6 +341,7 @@ export class Notation {
 						channel: note.channel,
 						noteNumber: subnote.pitch,
 						velocity: subnote.velocity,
+						staffTrack: note.staffTrack,
 					});
 
 					track.push({
@@ -351,6 +353,7 @@ export class Notation {
 						channel: note.channel,
 						noteNumber: subnote.pitch,
 						velocity: 0,
+						staffTrack: note.staffTrack,
 					});
 				});
 			});
@@ -578,7 +581,7 @@ export const assignNotationEventsIds = (midiNotation: MusicNotation.NotationData
 };
 
 
-const assignNotationNoteDataFromEvents = (midiNotation: MusicNotation.NotationData, fields = ["ids", "measure"]) => {
+const assignNotationNoteDataFromEvents = (midiNotation: MusicNotation.NotationData, fields = ["ids", "measure", "staffTrack"]) => {
 	const noteId = (channel: number, pitch: number, tick: number): string => `${channel}|${pitch}|${tick}`;
 
 	const noteMap = midiNotation.notes.reduce((map, note) => {
