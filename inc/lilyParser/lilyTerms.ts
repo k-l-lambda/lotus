@@ -2542,6 +2542,14 @@ export class Tempo extends BaseTerm {
 	text?: string;
 
 
+	static fromNoteBpm (note: number, bpm: number): Tempo {
+		return new Tempo ({
+			unit: new Duration({number: note.toString(), dots: 0}),
+			beatsPerMinute: bpm,
+		});
+	}
+
+
 	serialize () {
 		const assignment = Number.isFinite(this.beatsPerMinute) ? [...BaseTerm.optionalSerialize(this.unit), "=", this.beatsPerMinute] : [];
 

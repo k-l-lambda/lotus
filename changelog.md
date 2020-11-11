@@ -20,6 +20,11 @@
 
 
 
+*	2020.11.11
+
+	+	lilyTerms.ts: Tempo.fromNoteBpm added.
+
+
 *	2020.11.10
 
 	+	lilyNotation: assign staffTrack in toPerformingNotationWithEvents.
