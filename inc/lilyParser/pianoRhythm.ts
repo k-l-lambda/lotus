@@ -99,9 +99,9 @@ const isPianoStaff = term => term instanceof ContextedMusic && term.type === "Pi
 export const createPianoRhythm = (interpreter: LilyInterpreter, {dotTracks = true, numberTrack, colored}: PianoRhythmOptions = {}) => {
 	console.assert(interpreter.scores.length, "interpreter.scores is empty.");
 
-	let pianoMusic = interpreter.mainScore.findFirst(isPianoStaff) as ContextedMusic;
+	let pianoMusic = interpreter.mainScore && interpreter.mainScore.findFirst(isPianoStaff) as ContextedMusic;
 	if (!pianoMusic)
-		pianoMusic = interpreter.scores[0].findFirst(isPianoStaff) as ContextedMusic;
+		pianoMusic = interpreter.scores[0] && interpreter.scores[0].findFirst(isPianoStaff) as ContextedMusic;
 	//console.log("pianoMusic:", pianoMusic);
 	if (!pianoMusic)
 		throw new Error("[createPianoRhythm] no pianoMusic");
