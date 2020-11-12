@@ -117,12 +117,12 @@ export default class LilyDocument {
 		else
 			staffSize = staffSize || {value: LILY_STAFF_SIZE_DEFAULT};
 
-		const paperPropertyCommon = key => ({
+		const blockPropertyCommon = (block: Block, key: string) => ({
 			get value () {
-				if (!paper)
+				if (!block)
 					return undefined;
 
-				const item = paper.getField(key);
+				const item = block.getField(key);
 				if (!item)
 					return undefined;
 
@@ -130,15 +130,20 @@ export default class LilyDocument {
 			},
 
 			set value (value) {
-				console.assert(!!paper, "paper is null.");
+				console.assert(!!block, "block is null.");
 
-				const item = paper.getField(key);
-				if (item)
-					item.value = parseRaw(value);
-				else
-					paper.body.push(new Assignment({key, value}));
+				if (value === undefined)	// delete field
+					block.body = block.body.filter(assign => !(assign instanceof Assignment) || assign.key !== key);
+				else {
+					const item = block.getField(key);
+					if (item)
+						item.value = parseRaw(value);
+					else
+						block.body.push(new Assignment({key, value}));
+				}
 			},
 		});
+		const paperPropertyCommon = key => blockPropertyCommon(paper, key);
 
 		const paperPropertySchemeToken = key => ({
 			get value () {
@@ -197,11 +202,14 @@ export default class LilyDocument {
 		const assignments = this.root.entries.filter(term => term instanceof Assignment) as Assignment[];
 		const assignmentTable = assignments.reduce((table, assign) => ((table[assign.key.toString()] = assign.query(assign.key)), table), {});
 
+		const headerFields = [
+			"title", "subtitle", "subsubtitle", "composer", "poet", "arranger", "opus", "copyright", "instrument", "dedication", "tagline",
+		].reduce((dict, field) => ((dict[field] = blockPropertyCommon(header, field)), dict), {});
+
 		const attributes = {
 			staffSize,
 			midiTempo,
-			title: header && header.getField("title"),
-			composer: header && header.getField("composer"),
+			...headerFields,
 			paperWidth: paperPropertyCommon("paper-width"),
 			paperHeight: paperPropertyCommon("paper-height"),
 			topMargin: paperPropertyCommon("top-margin"),
@@ -219,6 +227,14 @@ export default class LilyDocument {
 
 		if (readonly)
 			Object.keys(attributes).forEach(key => attributes[key] = attributes[key] && attributes[key].value);
+
+		return attributes;
+	}
+
+
+	globalAttributesReadOnly (): LilyDocumentAttributeReadOnly {
+		const attributes = this.globalAttributes() as any;
+		Object.keys(attributes).forEach(key => attributes[key] = attributes[key] && attributes[key].value);
 
 		return attributes;
 	}

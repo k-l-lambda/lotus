@@ -22,6 +22,8 @@
 
 *	2020.11.12
 
+	+	lilyDocument.ts: refined global attributes.
+
 	+	scoreBundle.ts: classDict exported.
 
 
