@@ -26,17 +26,6 @@ const parseVersion = (ver: string): number => {
 };
 
 
-const classDict = {
-	StaffToken,
-	SheetDocument,
-	LilyNotation: LilyNotation.Notation,
-	...LilyNotation.MLayoutClasses,
-	DictArray,
-	PitchContextTable,
-	PitchContext,
-};
-
-
 
 export default class ScoreBundle {
 	scoreJSON: ScoreJSON;
@@ -48,10 +37,21 @@ export default class ScoreBundle {
 	bakingImages: string[];
 
 
+	static classDict = {
+		StaffToken,
+		SheetDocument,
+		LilyNotation: LilyNotation.Notation,
+		...LilyNotation.MLayoutClasses,
+		DictArray,
+		PitchContextTable,
+		PitchContext,
+	};
+
+
 	static fromJSON (source: string, {measureLayout = LilyNotation.LayoutType.Full, onStatus = ((..._) => _), jsonHandle = json => json} = {}): ScoreBundle {
 		const bundle = new ScoreBundle({onStatus});
 
-		bundle.scoreJSON = jsonHandle(recoverJSON(source, classDict));
+		bundle.scoreJSON = jsonHandle(recoverJSON(source, ScoreBundle.classDict));
 		bundle.checkVersion();
 
 		bundle.onStatus("json loaded");

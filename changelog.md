@@ -20,6 +20,11 @@
 
 
 
+*	2020.11.12
+
+	+	scoreBundle.ts: classDict exported.
+
+
 *	2020.11.11
 
 	+	lilyTerms.ts: Tempo.fromNoteBpm added.

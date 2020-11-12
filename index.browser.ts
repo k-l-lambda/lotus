@@ -7,7 +7,7 @@ import LogRecorder from "./inc/logRecorder";
 import * as constants from "./inc/constants";
 import * as LilyNotation from "./inc/lilyNotation";
 import StreamParser from "./inc/streamParser";
-import {PitchContextTable} from "./inc/pitchContext";
+import {PitchContextTable, PitchContext} from "./inc/pitchContext";
 import ScoreJSON from "./inc/scoreJSON";
 
 import SheetLive from "./app/components/sheet-live.vue";
@@ -31,5 +31,6 @@ export {
 	SheetBaker,
 	ScoreBundle,
 	PitchContextTable,
+	PitchContext,
 	ScoreJSON,
 };
