@@ -1363,10 +1363,10 @@
 
 
 			async validateMeasureLayoutCode () {
+				this.measureLayoutCodeError = null;
+
 				if (!this.measureLayoutCode)
 					return;
-
-				this.measureLayoutCodeError = null;
 
 				try {
 					/*const result =*/ await this.measuresParser.parse(this.measureLayoutCode);
@@ -1422,6 +1422,7 @@
 				this.lilyTextSourceDirty = true;
 				this.engraverLogs = null;
 				this.measureLayoutCode = null;
+				this.measureLayoutCodeError = null;
 
 				if (!this.sourceEditorConnected)
 					this.sourceEditorFilePath = null;
@@ -1522,6 +1523,7 @@
 			.measure-layout-code
 			{
 				width: 22em;
+				font-size: 20px;
 
 				&.error
 				{
