@@ -500,6 +500,7 @@
 					return;
 
 				if (this.showPagesProgressively) {
+					await this.pageLoadingLock.wait();
 					this.pageLoadingLock.lock();
 
 					for (let i = 0; i < this.doc.pages.length; ++i) {
