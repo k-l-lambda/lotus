@@ -237,7 +237,8 @@ export class BaseTerm {
 
 	relocate (source: string = this.join()) {
 		const words = this.serialize()
-			.filter(word => word && (typeof word !== "string" || (/\S/.test(word) && !word.includes("\b"))))
+			.filter(word => word !== null && word !== undefined
+				&& (typeof word !== "string" || (/\S/.test(word) && !word.includes("\b"))))
 			.map(word => typeof word === "string" ? word.replace(/\n/g, "") : word);
 
 		const chars = source.split("");
