@@ -40,7 +40,7 @@ export default class LilyDocument {
 
 	cacheInterpreter?: LilyInterpreter;
 
-	reservedVariables?: string[];
+	reservedVariables?: Set<string>;
 
 
 	constructor (data: object) {

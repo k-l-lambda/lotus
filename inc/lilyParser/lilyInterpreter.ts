@@ -1023,7 +1023,7 @@ export default class LilyInterpreter {
 
 	functionalCommand?: Variable;
 
-	reservedVariables: string[] = [];
+	reservedVariables: Set<string> = new Set();
 
 
 	static trackName (index: number): string {
@@ -1181,7 +1181,7 @@ export default class LilyInterpreter {
 
 					return term;
 				}
-				else if (this.reservedVariables.includes(term.name)) {
+				else if (this.reservedVariables.has(term.name)) {
 					// ignore reserved variables
 				}
 				else
@@ -1320,8 +1320,9 @@ export default class LilyInterpreter {
 	}
 
 
-	appendReservedVariables (names: string[]) {
-		this.reservedVariables.push(...names);
+	appendReservedVariables (names: Iterable<string>) {
+		for (const name of names)
+			this.reservedVariables.add(name);
 	}
 
 
