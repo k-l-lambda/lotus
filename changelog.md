@@ -20,6 +20,11 @@
 
 
 
+*	2020.11.13
+
+	+	notation.ts: added method of Notation.setTempo.
+
+
 *	2020.11.12
 
 	+	lilyDocument.ts: refined global attributes.

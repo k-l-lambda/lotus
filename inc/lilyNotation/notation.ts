@@ -531,6 +531,22 @@ export class Notation {
 
 		return this;
 	}
+
+
+	// find the MIDI event of setTempo in measures data, and change the value of microsecondsPerBeat
+	setTempo (bpm: number): boolean {
+		let found = false;
+		for (const measure of this.measures) {
+			for (const event of measure.events) {
+				if (event.data.subtype === "setTempo") {
+					event.data.microsecondsPerBeat = 60e+6 / bpm;
+					found = true;
+				}
+			}
+		}
+
+		return found;
+	}
 };
 
 
