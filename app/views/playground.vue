@@ -63,7 +63,7 @@
 			</fieldset>
 			<fieldset>
 				<button @click="updateMeasureLayoutCode" title="update measure layout code" :disabled="loadingLilyParser">*[]</button>
-				<input v-if="measureLayoutCode" class="measure-layout-code" type="text"
+				<input v-if="measureLayoutCode || measureLayoutCode===''" class="measure-layout-code" type="text"
 					:class="{error: measureLayoutCodeError, dirty: measureLayoutCodeDirty}"
 					v-model="measureLayoutCode"
 					:title="measureLayoutCodeError"
