@@ -18,7 +18,7 @@ let MIDI2LY_PATH;
 let LILYPOND_PATH;
 
 
-let env;
+let env;	// setEnvironment must be called before use commands
 const setEnvironment = e => {
 	env = e;
 

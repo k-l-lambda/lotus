@@ -22,6 +22,8 @@
 
 *	2020.11.13
 
+	+	lilyDocument.ts: method of LilyDocument.markup added.
+
 	+	notation.ts: added method of Notation.setTempo.
 
 

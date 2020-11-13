@@ -240,6 +240,43 @@ export default class LilyDocument {
 	}
 
 
+	markup (docMarkup: LilyDocument) {
+		// copy attributes
+		const attrS = this.globalAttributes() as LilyDocumentAttribute;
+		const attrM = docMarkup.globalAttributesReadOnly();
+
+		[
+			"staffSize", "paperWidth", "paperHeight",
+			"topMargin", "bottomMargin", "leftMargin", "rightMargin",
+			"systemSpacing", "topMarkupSpacing", "raggedLast", "raggedBottom", "raggedLastBottom",
+			"printPageNumber",
+		].forEach(field => {
+			if (attrM[field] !== undefined) {
+				if (typeof attrS[field].value === "object" && attrS[field].value && (attrS[field].value as any).set)
+					(attrS[field].value as any).set(attrM[field]);
+				else
+					attrS[field].value = attrM[field];
+			}
+		});
+
+		// execute commands list
+		const commands = docMarkup.root.getField("LotusCommands");
+		const cmdList = commands && commands.value && commands.value.args && commands.value.args[0].body;
+		if (cmdList && Array.isArray(cmdList)) {
+			for (const command of cmdList) {
+				if (command.exp && this[command.exp])
+					this[command.exp]();
+				else
+					console.warn("unexpected markup command:", command);
+			}
+		}
+
+		// copy LotusOption assignments
+		const assignments = docMarkup.root.entries.filter(term => term instanceof Assignment && /^LotusOption\..+/.test(term.key.toString()));
+		assignments.forEach(assignment => this.root.sections.push(assignment.clone()));
+	}
+
+
 	getVariables (): Set<string> {
 		return new Set(this.root.findAll(Variable).map(variable => variable.name));
 	}

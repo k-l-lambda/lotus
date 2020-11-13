@@ -6,6 +6,7 @@ import YAML from "yaml";
 import {MIDI} from "@k-l-lambda/web-widgets";
 
 import "../env.js";
+import {setEnvironment} from "../backend";
 import * as ScoreMaker from "../backend/scoreMaker";
 import walkDir from "../backend/walkDir";
 import loadLilyParser from "../backend/loadLilyParserNode";
@@ -42,6 +43,11 @@ interface Arguments {
 };
 
 const argv = yargs.argv as Arguments;
+
+
+// disabled lilypond node addon
+process.env.LILYPOND_ADDON && delete process.env.LILYPOND_ADDON;
+setEnvironment(process.env);
 
 
 const main = async () => {

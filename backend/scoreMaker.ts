@@ -14,7 +14,7 @@ import * as LilyNotation from "../inc/lilyNotation";
 import {svgToPng} from "./canvas";
 import LogRecorder from "../inc/logRecorder";
 import ScoreJSON from "../inc/scoreJSON";
-import {LilyDocumentAttribute, LilyDocumentAttributeReadOnly} from "../inc/lilyParser/lilyDocument";
+import {LilyDocumentAttributeReadOnly} from "../inc/lilyParser/lilyDocument";
 import {Block} from "../inc/lilyParser/lilyTerms";
 
 
@@ -28,7 +28,7 @@ const markupLily = (source: string, markup: string, lilyParser: GrammarParser): 
 	const docMarkup = new LilyDocument(lilyParser.parse(markup));
 	const docSource = new LilyDocument(lilyParser.parse(source));
 
-	// copy attributes
+	/*// copy attributes
 	const attrS = docSource.globalAttributes() as LilyDocumentAttribute;
 	const attrM = docMarkup.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
 
@@ -60,7 +60,8 @@ const markupLily = (source: string, markup: string, lilyParser: GrammarParser): 
 
 	// copy LotusOption assignments
 	const assignments = docMarkup.root.entries.filter(term => term instanceof LilyTerms.Assignment && /^LotusOption\..+/.test(term.key.toString()));
-	assignments.forEach(assignment => docSource.root.sections.push(assignment.clone()));
+	assignments.forEach(assignment => docSource.root.sections.push(assignment.clone()));*/
+	docSource.markup(docMarkup);
 
 	return docSource.toString();
 };
