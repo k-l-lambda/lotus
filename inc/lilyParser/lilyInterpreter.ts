@@ -220,7 +220,7 @@ export class MusicTrack {
 			const duration = term.durationValue;
 			const denominator = Math.max(duration.denominator, timeDenominator);
 
-			const isR = (term as Rest).name === "r";
+			const isR = !(term as Rest).isSpacer;
 
 			if (term.withMultiplier) {
 				const factor = duration.multipliers.reduce((factor, multiplier) => factor * Number(multiplier), 1);
