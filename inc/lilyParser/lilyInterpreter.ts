@@ -392,7 +392,8 @@ export class MusicTrack {
 		const tailIndex = Math.max(...indices) + 1;
 		const tailChunk = chunks.get(tailIndex);
 		if (tailChunk && !tailChunk.durationMagnitude && layout instanceof BlockMLayout)
-			layout.seq.push(SingleMLayout.from(tailIndex));
+			//layout.seq.push(SingleMLayout.from(tailIndex));
+			layout = BlockMLayout.fromSeq([...layout.seq, SingleMLayout.from(tailIndex)]);
 
 		this.block.body = constructMusicFromMeasureLayout(layout, chunks).terms;
 
