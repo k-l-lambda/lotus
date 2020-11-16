@@ -1419,6 +1419,20 @@
 			},
 
 
+			async flattenTracks () {
+				await this.updateLilyDocument();
+				this.lilyDocument.interpret();
+
+				const tracks = this.lilyDocument.root.sections.filter(section =>
+					section instanceof LilyTerms.Assignment && section.value instanceof LilyTerms.Relative && section.value.measureLayout)
+					.map(assignment => assignment.value.args)
+					.map(args => MusicTrack.fromBlockAnchor(args[1], args[0]));
+				tracks.forEach(track => track.flatten({spreadRepeats: true}));
+
+				this.lilySource = this.lilyDocument.toString();
+			},
+
+
 			// 's: 1 n*[x]' => 's: n*[x+1]'
 			async mergeSingleVoltaMLayout () {
 				await this.updateLilyDocument();
