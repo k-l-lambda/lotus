@@ -14,7 +14,7 @@ import {
 	KeySignature, OctaveShift, Duration, Chord, MusicBlock, Assignment, Variable, Command, SimultaneousList, ContextedMusic, Primitive, Version,
 	ChordMode, LyricMode, ChordElement, Language, PostEvent, Transposition, ParallelMusic,
 } from "./lilyTerms";
-import {MeasureLayout} from "../measureLayout";
+import {MeasureLayout, BlockMLayout, SingleMLayout} from "../measureLayout";
 
 
 
@@ -377,10 +377,17 @@ export class MusicTrack {
 		const chunks = this.block.measureChunkMap;
 
 		// validate layout value
-		layout.serialize(LilyNotation.LayoutType.Ordinary).forEach(index => {
+		const indices = layout.serialize(LilyNotation.LayoutType.Ordinary);
+		indices.forEach(index => {
 			if (!chunks.get(index))
 				throw new Error(`applyMeasureLayout: measure[${index}] missed in chunk map.`);
 		});
+
+		// append zero-duration tail chunk, e.g. \bar "|."
+		const tailIndex = Math.max(...indices) + 1;
+		const tailChunk = chunks.get(tailIndex);
+		if (tailChunk && !tailChunk.durationMagnitude && layout instanceof BlockMLayout)
+			layout.seq.push(SingleMLayout.from(tailIndex));
 
 		this.block.body = constructMusicFromMeasureLayout(layout, chunks).terms;
 

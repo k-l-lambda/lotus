@@ -22,6 +22,8 @@
 
 *	2020.11.16
 
+	+	lilyInterpreter.ts: append tail chunk in applyMeasureLayout.
+
 	+	lilyInterpreter.ts: reserved 'r' rest in MusicTrack.splitLongRests.
 
 	+	lilyInterpreter.ts: validate layout in applyMeasureLayout.
