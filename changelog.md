@@ -22,6 +22,8 @@
 
 *	2020.11.16
 
+	+	lilyInterpreter.ts: validate layout in applyMeasureLayout.
+
 	+	batchMarkup.ts: markup of merge-single-volta added.
 
 	+	playground.vue: mergeSingleVoltaMLayout added.

@@ -370,6 +370,13 @@ export class MusicTrack {
 		this.flatten({spreadRepeats: true});
 
 		const chunks = this.block.measureChunkMap;
+
+		// validate layout value
+		layout.serialize(LilyNotation.LayoutType.Ordinary).forEach(index => {
+			if (!chunks.get(index))
+				throw new Error(`applyMeasureLayout: measure[${index}] missed in chunk map.`);
+		});
+
 		this.block.body = constructMusicFromMeasureLayout(layout, chunks).terms;
 
 		this.redivide();
