@@ -250,8 +250,13 @@ export class MusicTrack {
 				if (isR && restCount > 1)
 					console.warn("splitLongRests: 'r' was splitted into", restCount, "parts.", term._location);
 
-				return Array(restCount).fill(null).map(() =>
+				const list = Array(restCount).fill(null).map(() =>
 					new Rest({name: isR ? "r" : "s", duration: new Duration({number: divider, dots: 0})}));
+
+				if (term.post_events)
+					list[list.length - 1].post_events = term.post_events.map(e => e.clone());
+
+				return list;
 			}
 		});
 	}
