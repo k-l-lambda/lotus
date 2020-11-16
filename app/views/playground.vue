@@ -1397,13 +1397,7 @@
 					this.lilySource = interpreter.toDocument().toString();*/
 					this.lilyDocument.interpret();
 
-					const tracks = this.lilyDocument.root.sections.filter(section =>
-						section instanceof LilyTerms.Assignment && section.value instanceof LilyTerms.Relative && section.value.measureLayout)
-						.map(assignment => assignment.value.args)
-						.map(args => MusicTrack.fromBlockAnchor(args[1], args[0]));
-					tracks.forEach(track => track.applyMeasureLayout(layout));
-
-					this.lilySource = this.lilyDocument.toString();
+					this.applyMeasureLayout(layout);
 
 					this.measureLayoutCodeDirty = false;
 				}
@@ -1411,6 +1405,48 @@
 					this.measureLayoutCodeError = err;
 					console.error(err);
 				}
+			},
+
+
+			applyMeasureLayout (layout) {
+				const tracks = this.lilyDocument.root.sections.filter(section =>
+					section instanceof LilyTerms.Assignment && section.value instanceof LilyTerms.Relative && section.value.measureLayout)
+					.map(assignment => assignment.value.args)
+					.map(args => MusicTrack.fromBlockAnchor(args[1], args[0]));
+				tracks.forEach(track => track.applyMeasureLayout(layout));
+
+				this.lilySource = this.lilyDocument.toString();
+			},
+
+
+			// 's: 1 n*[x]' => 's: n*[x+1]'
+			async mergeSingleVoltaMLayout () {
+				await this.updateLilyDocument();
+				const interpreter = this.lilyDocument.interpret();
+
+				const layout = interpreter.layoutMusic.mainTrack.block.measureLayout;
+				let index = 1;
+				for (; index < layout.seq.length - 1; ++index) {
+					const found = !(layout.seq[index - 1] instanceof measureLayout.SingleMLayout)
+						&& layout.seq[index] instanceof measureLayout.SingleMLayout
+						&& layout.seq[index + 1] instanceof measureLayout.VoltaMLayout;
+
+					if (found)
+						break;
+				}
+
+				if (index < layout.seq.length - 1) {
+					const [single] = layout.seq.splice(index, 1);
+					const volta = layout.seq[index];
+					volta.body.unshift(single);
+					//console.log("code:", layout.code);
+
+					this.applyMeasureLayout(layout);
+
+					return true;
+				}
+
+				return false;
 			},
 		},
 

@@ -20,6 +20,11 @@
 
 
 
+*	2020.11.16
+
+	+	playground.vue: mergeSingleVoltaMLayout added.
+
+
 *	2020.11.13
 
 	+	lilyDocument.ts: method of LilyDocument.markup added.
