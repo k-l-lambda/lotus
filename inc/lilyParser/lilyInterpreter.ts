@@ -220,6 +220,8 @@ export class MusicTrack {
 			const duration = term.durationValue;
 			const denominator = Math.max(duration.denominator, timeDenominator);
 
+			const isR = (term as Rest).name === "r";
+
 			if (term.withMultiplier) {
 				const factor = duration.multipliers.reduce((factor, multiplier) => factor * Number(multiplier), 1);
 				if (!Number.isInteger(factor) || factor <= 0) {
@@ -245,8 +247,11 @@ export class MusicTrack {
 				const restCount = term.durationMagnitude * divider / WHOLE_DURATION_MAGNITUDE;
 				console.assert(Number.isInteger(restCount), "rest count is not an integer:", restCount);
 
+				if (isR && restCount > 1)
+					console.warn("splitLongRests: 'r' was splitted into", restCount, "parts.", term._location);
+
 				return Array(restCount).fill(null).map(() =>
-					new Rest({name: "s", duration: new Duration({number: divider, dots: 0})}));
+					new Rest({name: isR ? "r" : "s", duration: new Duration({number: divider, dots: 0})}));
 			}
 		});
 	}

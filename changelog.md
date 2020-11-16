@@ -22,6 +22,8 @@
 
 *	2020.11.16
 
+	+	lilyInterpreter.ts: reserved 'r' rest in MusicTrack.splitLongRests.
+
 	+	lilyInterpreter.ts: validate layout in applyMeasureLayout.
 
 	+	batchMarkup.ts: markup of merge-single-volta added.
