@@ -182,7 +182,7 @@ export class BaseTerm {
 
 
 	join (): string {
-		let words = this.serialize().filter(word => ["string", "number"].includes(typeof word)) as string[];
+		let words = this.serialize().filter(word => ["string", "number"].includes(typeof word)).map(word => word.toString()) as string[];
 		words = words.filter((word, i) => !(i && words[i - 1] === "\n" && word === "\n"));
 
 		let indent = 0;
@@ -2576,7 +2576,10 @@ export class PostEvent extends BaseTerm {
 
 
 	serialize () {
-		return [DIRECTION_CHAR[this.direction], "\b", ...BaseTerm.optionalSerialize(this.arg)];
+		const dir = DIRECTION_CHAR[this.direction];
+		const prefix = dir ? [dir, "\b"] : [];
+
+		return prefix.concat(BaseTerm.optionalSerialize(this.arg));
 	}
 
 
