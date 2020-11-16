@@ -7,6 +7,8 @@ import "../env.js";
 import walkDir from "../backend/walkDir";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import {LilyDocument, LilyTerms} from "../inc/lilyParser";
+import * as measureLayout from "../inc/measureLayout";
+import {MusicTrack} from "../inc/lilyParser/lilyInterpreter";
 
 
 
@@ -64,6 +66,35 @@ const main = async () => {
 							}
 						}
 					});
+				}
+
+					break;
+				case "merge-single-volta": {
+					const interpreter = lilyDocument.interpret();
+					const layout = interpreter.layoutMusic.mainTrack.block.measureLayout;
+					let index = 1;
+					for (; index < layout.seq.length - 1; ++index) {
+						const found = !(layout.seq[index - 1] instanceof measureLayout.SingleMLayout)
+							&& layout.seq[index] instanceof measureLayout.SingleMLayout
+							&& layout.seq[index + 1] instanceof measureLayout.VoltaMLayout;
+
+						if (found)
+							break;
+					}
+
+					if (index < layout.seq.length - 1) {
+						const [single] = layout.seq.splice(index, 1);
+						const volta = layout.seq[index] as measureLayout.VoltaMLayout;
+						volta.body.unshift(single);
+
+						const tracks = lilyDocument.root.sections.filter(section =>
+							section instanceof LilyTerms.Assignment && section.value instanceof LilyTerms.Relative && section.value.measureLayout)
+							.map(assignment => (assignment as any).value.args)
+							.map(args => MusicTrack.fromBlockAnchor(args[1], args[0]));
+						tracks.forEach(track => track.applyMeasureLayout(layout));
+
+						++changes;
+					}
 				}
 
 					break;
