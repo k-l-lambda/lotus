@@ -1581,7 +1581,7 @@ export class MusicBlock extends BaseTerm {
 						return [term];
 					}
 
-					const rest = new Rest({name: "s", duration, post_events: [...post_events]});
+					const rest = new Rest({name: "s", duration, post_events: post_events && [...post_events]});
 					rest._measure = nextMeasure;
 					rest._lastMeasure = nextMeasure;
 					rests.push(rest);
