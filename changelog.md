@@ -4,9 +4,6 @@
 		duration checker
 	MIDI post processing
 		arpeggio
-	implicit notes matching with sheet document
-		tremolo type note match
-		setTempo missing issue in Once measure layout
 	lyrics in music normalization
 	lyrics hilighting
 		match chord with voice in the same staff
@@ -16,7 +13,6 @@
 			add partial on standalone block
 		treble_8
 		system splitting, chord mode symbol affiliation
-		remove empty track	(6.1 落叶.ly)
 
 
 
