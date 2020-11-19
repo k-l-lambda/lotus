@@ -562,17 +562,22 @@
 
 			updatePageVisibility () {
 				//console.log("pages:", this.$refs.pages);
-				const dirtyPages = [];
+				//const dirtyPages = [];
+				if (!this.$refs.pages) {
+					console.log("[updatePageVisibility] $refs.pages is null:", this.$refs.pages);
+					return;
+				}
+
 				this.$refs.pages.forEach((pageElem, i) => {
 					const rect = pageElem.getBoundingClientRect();
 
 					const page = this.shownPages[i];
 					const hidden = rect.top > window.innerHeight || rect.bottom < 0 || rect.left > window.innerWidth || rect.right < 0;
-					if (!!page.hidden !== hidden) {
+					if (!!page.hidden !== hidden)
 						Vue.set(page, "hidden", hidden);
-						if (!hidden)
-							dirtyPages.push(pageElem);
-					}
+						//if (!hidden)
+						//	dirtyPages.push(pageElem);
+					
 					//console.log("page:", i, rect, window.innerWidth, window.innerHeight, page.hidden);
 				});
 
