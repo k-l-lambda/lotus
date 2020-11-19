@@ -16,6 +16,11 @@
 
 
 
+*	2020.11.19
+
+	+	sheetDocument.ts: added optional argument of 'partial' for alignTokensWithNotation.
+
+
 *	2020.11.16
 
 	+	lilyInterpreter.ts: fixed post_events missing issue for MusicTrack.splitLongRests.

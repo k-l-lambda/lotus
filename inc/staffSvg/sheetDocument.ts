@@ -392,7 +392,7 @@ class SheetDocument {
 	}
 
 
-	alignTokensWithNotation (notation: LilyNotation.Notation) {
+	alignTokensWithNotation (notation: LilyNotation.Notation, {partial = false} = {}) {
 		const shortId = (href: string): string => href.split(":").slice(0, 2).join(":");
 
 		const noteheads = this.getNoteHeads();
@@ -420,7 +420,7 @@ class SheetDocument {
 			const token = tokenMap.get(shortId(note.id));
 			if (token)
 				token.href = note.id;
-			else
+			else if (!partial)
 				note.overlapped = true;
 		}));
 
