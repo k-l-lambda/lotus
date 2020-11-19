@@ -279,7 +279,9 @@ class PitchContextTable {
 
 
 	lookup (tick: number): PitchContext {
-		return this.items.find(item => tick >= item.tick && tick < item.endTick).context;
+		const item = this.items.find(item => tick >= item.tick && tick < item.endTick);
+
+		return item && item.context;
 	}
 };
 
