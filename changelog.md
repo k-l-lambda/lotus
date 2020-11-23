@@ -16,6 +16,11 @@
 
 
 
+*	2020.11.23
+
+	+	batchMarkup.ts: markup of spacing-16 added.
+
+
 *	2020.11.19
 
 	+	sheetDocument.ts: added optional argument of 'partial' for alignTokensWithNotation.

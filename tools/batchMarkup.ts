@@ -9,6 +9,7 @@ import loadLilyParser from "../backend/loadLilyParserNode";
 import {LilyDocument, LilyTerms} from "../inc/lilyParser";
 import * as measureLayout from "../inc/measureLayout";
 import {MusicTrack} from "../inc/lilyParser/lilyInterpreter";
+import {parseRaw, Block} from "../inc/lilyParser/lilyTerms";
 
 
 
@@ -19,6 +20,9 @@ interface Arguments {
 };
 
 const argv = yargs.argv as Arguments;
+
+
+const SPACING16 = {proto:"Block",block:"context",head:"\\context",body:[{proto:"Command",cmd:"Score",args:[]},{proto:"Command",cmd:"override",args:[{proto:"Assignment",key:"SpacingSpanner.base-shortest-duration",value:{proto:"Scheme",exp:{proto:"SchemeFunction",func:"ly:make-moment",args:["1/16"]}}}]}]};
 
 
 const main = async () => {
@@ -103,6 +107,18 @@ const main = async () => {
 							.map(assignment => (assignment as any).value.args)
 							.map(args => MusicTrack.fromBlockAnchor(args[1], args[0]));
 						tracks.forEach(track => track.applyMeasureLayout(layout));
+					}
+				}
+
+					break;
+				case "spacing-16": {
+					const score = lilyDocument.root.getBlock("score");
+					if (score) {
+						const layout = score.findFirst(term => term instanceof LilyTerms.Block && term.head === "\\layout") as Block;
+						if (layout) {
+							layout.body.push(parseRaw(SPACING16));
+							++changes;
+						}
 					}
 				}
 
