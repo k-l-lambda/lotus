@@ -16,6 +16,11 @@
 
 
 
+*	2020.12.8
+
+	+	sheet-live.vue: added null protection for setNoteStatus.
+
+
 *	2020.11.23
 
 	+	batchMarkup.ts: markup of spacing-16 added.

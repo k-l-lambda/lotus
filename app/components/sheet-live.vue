@@ -343,8 +343,17 @@
 				if (this.midiNotation) {
 					const note = this.midiNotation.notes[noteIndex];
 					if (note) {
-						if (note.ids)
-							note.ids.forEach(on ? id => this.statusMap.get(id).add(className) : id => this.statusMap.get(id).remove(className));
+						if (note.ids) {
+							note.ids.forEach(id => {
+								const list = this.statusMap.get(id);
+								if (list) {
+									if (on)
+										list.add(className);
+									else
+										list.remove(className);
+								}
+							});
+						}
 					}
 					else
 						console.warn("invalid note index:", noteIndex, this.midiNotation.notes.length);
