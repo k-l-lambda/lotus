@@ -16,6 +16,11 @@
 
 
 
+*	2020.12.16
+
+	+	sheet-live.vue: added slots of system & page.
+
+
 *	2020.12.8
 
 	+	sheet-live.vue: added null protection for setNoteStatus.

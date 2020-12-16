@@ -18,49 +18,9 @@
 						@click="onClickPad(row, $event)"
 					>
 						<rect :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top" />
-						<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
-							:transform="`translate(${staff.x}, ${staff.y})`"
-						>
-							<g v-if="showMarkLocators" class="locator">
-								<rect class="head" :x="0" :y="-2" :width="staff.headWidth" :height="4" />
-								<circle />
-								<line v-if="Number.isFinite(staff.top)" :x1="0" :y1="staff.top" :x2="row.width" :y2="staff.top" />
-								<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4" :class="measure.class">
-									<rect :x="measure.lineX" :y="-2" :width="measure.noteRange.end - measure.lineX" :height="4"/>
-									<text :x="measure.headX">'{{measure.index}}</text>
-								</g>
-							</g>
-							<g v-if="showMarkPitchContexts && pitchContextMarks[row.index] && pitchContextMarks[row.index][iii]" class="pitch-context">
-								<g v-for="(item, i4) of pitchContextMarks[row.index][iii]" :key="i4" :transform="`translate(${item.x}, 0)`">
-									<line class="base-line" x1="0" x2="0" y1="-3" y2="3" />
-									<g transform="translate(0.2, 0.5)">
-										<g v-for="(pitch, i5) of item.names[0]" :key="i5" class="pitch"
-											:transform="`translate(0, ${pitch.y})`"
-											:class="{
-												sharp: pitch.alter > 0,
-												flat: pitch.alter < 0,
-											}"
-										>
-											<rect class="bg" />
-											<text>{{pitch.name}}</text>
-										</g>
-									</g>
-									<g transform="translate(1.6, 0.5)">
-										<g v-for="(pitch, i5) of item.names[1]" :key="i5" class="pitch"
-											:transform="`translate(0, ${pitch.y})`"
-											:class="{
-												sharp: pitch.alter > 0,
-												flat: pitch.alter < 0,
-											}"
-										>
-											<rect class="bg" />
-											<text>{{pitch.name}}</text>
-										</g>
-									</g>
-								</g>
-							</g>
-						</g>
+						<slot name="system" :row="row"></slot>
 					</g>
+					<slot name="page" :page="page"></slot>
 				</g>
 				<g v-if="!bakingMode">
 					<g class="page-tokens">
@@ -269,36 +229,6 @@
 			isPlaying () {
 				return this.midiPlayer && this.midiPlayer.isPlaying;
 			},
-
-
-			/*
-				[	system
-					[	staff
-						[context]
-					]
-				]
-			*/
-			pitchContextMarks () {
-				if (!this.pitchContextGroup || !this.scheduler)
-					return [];
-
-				return this.pitchContextGroup.map(table => table.items.map(item => {
-					const context = item.context;
-					const yToName = y => ({y, alter: context.alterOnNote(context.yToNote(y)), name: context.yToPitchName(y)});
-
-					const {row, x} = this.scheduler.lookupPosition(item.tick);
-					const names = [
-						[-2, -1, 0, 1, 2].map(yToName),
-						[-1.5, -0.5, 0.5, 1.5].map(yToName),
-					];
-
-					return {row, x, names};
-				})).reduce((result, table, staff) => (table.forEach(({row, ...item}) => {
-					result[row] = result[row] || [];
-					result[row][staff] = result[row][staff] || [];
-					result[row][staff].push(item);
-				}), result), []);
-			},
 		},
 
 
@@ -412,7 +342,6 @@
 						this.scheduler = SheetScheduler.createFromNotation(this.midiNotation, tokenMap);
 					}
 				}
-				
 			},
 
 
