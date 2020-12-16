@@ -566,6 +566,11 @@
 				if (!value)
 					this.schedulePool.clear();
 			},
+
+
+			scheduler (value) {
+				this.$emit("update:scheduler", value);
+			},
 		},
 	};
 </script>
