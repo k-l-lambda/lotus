@@ -126,8 +126,6 @@
 						:pitchContextGroup="pitchContextGroup"
 						:midiPlayer.sync="midiPlayer"
 						:showMark="true"
-						:showMarkLocators="enabledChromatic && chromaticMode === 'symbols'"
-						:showMarkPitchContexts="enabledChromatic && chromaticMode === 'pitch'"
 						:enablePointer="enabledPointer"
 						:showCursor="showCursor"
 						:bakingMode="bakingSheet"

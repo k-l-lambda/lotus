@@ -141,8 +141,6 @@
 			midiNotation: Object,
 			pitchContextGroup: Array,
 			showMark: Boolean,
-			showMarkLocators: Boolean,
-			showMarkPitchContexts: Boolean,
 			showCursor: {
 				type: Boolean,
 				default: true,
