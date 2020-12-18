@@ -401,8 +401,8 @@ export class Notation {
 
 		notation.measures = measureIndices.map(index => ({
 			index,
-			startTick: this.measures[index].tick,
-			endTick: this.measures[index].tick + this.measures[index].duration,
+			startTick: this.measures[index - 1].tick,
+			endTick: this.measures[index - 1].tick + this.measures[index].duration,
 		}));
 
 		return notation;
