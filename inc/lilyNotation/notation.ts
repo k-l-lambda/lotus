@@ -399,6 +399,12 @@ export class Notation {
 	
 		assignNotationNoteDataFromEvents(notation);
 
+		notation.measures = measureIndices.map(index => ({
+			index,
+			startTick: this.measures[index].tick,
+			endTick: this.measures[index].tick + this.measures[index].duration,
+		}));
+
 		return notation;
 	}
 

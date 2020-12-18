@@ -16,6 +16,11 @@
 
 
 
+*	2020.12.18
+
+	+	lilyNotation: added measure range data in toPerformingNotationWithEvents.
+
+
 *	2020.12.16
 
 	+	sheet-live.vue: added slots of system & page.
