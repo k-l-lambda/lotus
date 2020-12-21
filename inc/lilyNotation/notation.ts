@@ -403,7 +403,7 @@ export class Notation {
 
 		notation.measures = measureIndices.map(index => {
 			const startTick = tick;
-			tick += this.measures[index].duration;
+			tick += this.measures[index - 1].duration;
 
 			return {
 				index,
