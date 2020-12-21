@@ -76,10 +76,16 @@ const createPianoNumberTrack = ({durationMagnitude, subdivider, measureTicks, tr
 		++number;
 	}
 
-	const body = [].concat(...words.map(({number, type}, i) => [
+	let body = [].concat(...words.map(({number, type}, i) => [
 		colored ? new Variable({name: COLOR_NAMES[type]}) : null,
 		new Lyric({content: LiteralString.fromString(number.toString()), duration: i === 0 ? duration.clone() : null}),
 	])).map(term => term);
+
+	if (denominator !== subdivider) {
+		const fraction = new FractionNumber(denominator, subdivider).reduced;
+		const times = new Times({cmd: "times", args: [fraction.toString(), new MusicBlock({body})]});
+		body = [times];
+	}
 
 	return new LyricMode({cmd: "lyricmode", args: [new MusicBlock({body})]});
 };
