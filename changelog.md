@@ -16,6 +16,11 @@
 
 
 
+*	2020.12.21
+
+	+	lilyInterpreter.ts: fixed MusicTrack.isLyricMode.
+
+
 *	2020.12.18
 
 	+	lilyNotation: added measure range data in toPerformingNotationWithEvents.

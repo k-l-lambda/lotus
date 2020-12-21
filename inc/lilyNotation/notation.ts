@@ -396,7 +396,7 @@ export class Notation {
 
 		const midi = this.toPerformingMIDI(measureIndices, options);
 		const notation = MusicNotation.Notation.parseMidi(midi);
-	
+
 		assignNotationNoteDataFromEvents(notation);
 
 		notation.measures = measureIndices.map(index => ({

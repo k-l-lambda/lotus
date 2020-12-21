@@ -188,12 +188,12 @@ export class MusicTrack {
 
 
 	get isLyricMode (): boolean {
-		return !!this.block.findFirst(term => term instanceof LyricMode);
+		return (this.music instanceof LyricMode) || !!this.block.findFirst(term => term instanceof LyricMode);
 	}
 
 
 	get isChordMode (): boolean {
-		return !!this.block.findFirst(term => term instanceof ChordMode);
+		return (this.music instanceof ChordMode) || !!this.block.findFirst(term => term instanceof ChordMode);
 	}
 
 
