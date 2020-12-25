@@ -2833,6 +2833,8 @@ scheme_expression
 		{$$ = schemePointer($2);}
 	| "#" "{" lilypond "#" "}"
 		{$$ = schemeEmbed($3);}
+	| "*"
+		{$$ = $1;}
 	;
 
 scheme_args
