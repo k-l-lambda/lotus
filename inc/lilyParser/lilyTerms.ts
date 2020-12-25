@@ -2190,6 +2190,10 @@ export class Chord extends MusicEvent {
 		const clarified = this.clone();
 		clarified.pitches = this.pitchesValue.map(pitch => pitch.clone());
 
+		// remove octaves in base pitch
+		if (clarified.basePitch.octave)
+			clarified.basePitch.pitch = clarified.basePitch.pitch.replace(/[,']/g, "");
+
 		return clarified;
 	}
 

@@ -18,6 +18,8 @@
 
 *	2020.12.25
 
+	+	lilyParser: fixed Chord.clarifiedChord octave problem.
+
 	+	lilyParser: MusicBlock.fromTerms added.
 
 
