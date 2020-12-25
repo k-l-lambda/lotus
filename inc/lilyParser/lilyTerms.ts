@@ -1187,6 +1187,22 @@ export class MusicBlock extends BaseTerm {
 	body: BaseTerm[];
 
 
+	static fromTerms (terms: BaseTerm[]): MusicBlock {
+		// clarify the first music event content
+		const firstEventIndex = terms.findIndex(term => term instanceof MusicEvent);
+		const firstEvent = terms[firstEventIndex] as MusicEvent;
+		//console.log("firstEvent:", firstEvent);
+		if (firstEvent._previous) {
+			const clarified = firstEvent.clarified;
+
+			terms.splice(firstEventIndex, 1, clarified);
+			//console.log("terms:", firstEventIndex, terms, clarified);
+		}
+
+		return new MusicBlock({body: terms.map(term => term.clone())});
+	}
+
+
 	constructor (data) {
 		super(data);
 
@@ -2054,6 +2070,14 @@ export class MusicEvent extends BaseTerm {
 
 		return ImplicitType.None;
 	}
+
+
+	get clarified (): MusicEvent {
+		const clarified = this instanceof Chord ? this.clarifiedChord : this.clone();
+		clarified.duration = this.durationValue && this.durationValue.clone();
+
+		return clarified;
+	}
 };
 
 
@@ -2151,6 +2175,22 @@ export class Chord extends MusicEvent {
 
 	get completeTied (): boolean {
 		return this.pitchElements.filter(pitch => !pitch._tied).length === 0;
+	}
+
+
+	get pitchesValue (): (ChordElement | Command)[] {
+		if (this._previous instanceof Chord && this.basePitch.pitch === "q")
+			return this._previous.pitchesValue;
+
+		return this.pitches;
+	}
+
+
+	get clarifiedChord (): Chord {
+		const clarified = this.clone();
+		clarified.pitches = this.pitchesValue.map(pitch => pitch.clone());
+
+		return clarified;
 	}
 
 

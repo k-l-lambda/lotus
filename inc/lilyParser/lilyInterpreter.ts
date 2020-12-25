@@ -363,7 +363,7 @@ export class MusicTrack {
 		}
 
 		const terms = context.declarations.concat(this.block.body.filter(term => term._measure >= start && term._measure < start + count));
-		const newBlock = new MusicBlock({body: terms.map(term => term.clone())});
+		const newBlock = MusicBlock.fromTerms(terms);
 
 		return MusicTrack.fromBlockAnchor(newBlock, context.pitch);
 	}
