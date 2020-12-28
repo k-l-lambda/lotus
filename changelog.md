@@ -1,5 +1,6 @@
 
 ## TODO
+	MusicTrack.sliceMeasures: fill rests for tied chord
 	restart matcher navigator when interrupted
 	track-measure lilypond section editor
 		duration checker

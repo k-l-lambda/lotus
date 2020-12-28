@@ -1661,7 +1661,7 @@ export class MusicBlock extends BaseTerm {
 				}
 			}
 		}
-		else {
+		else if (head) {
 			const block = head.findFirst(MusicBlock) as MusicBlock;
 			if (block)
 				block.clarifyHead();
