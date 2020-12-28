@@ -19,6 +19,8 @@
 
 *	2020.12.28
 
+	+	lilyTerms.ts: MusicBlock.clarifyHead added.
+
 	+	lilyTerms.ts: fixed Chord.clarifiedChord.
 
 

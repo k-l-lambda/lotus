@@ -1188,18 +1188,10 @@ export class MusicBlock extends BaseTerm {
 
 
 	static fromTerms (terms: BaseTerm[]): MusicBlock {
-		// clarify the first music event content
-		const firstEventIndex = terms.findIndex(term => term instanceof MusicEvent);
-		const firstEvent = terms[firstEventIndex] as MusicEvent;
-		//console.log("firstEvent:", firstEvent);
-		if (firstEvent._previous) {
-			const clarified = firstEvent.clarified;
+		const block = new MusicBlock({body: [...terms]});
+		block.clarifyHead();
 
-			terms.splice(firstEventIndex, 1, clarified);
-			//console.log("terms:", firstEventIndex, terms, clarified);
-		}
-
-		return new MusicBlock({body: terms.map(term => term.clone())});
+		return block;
 	}
 
 
@@ -1648,6 +1640,34 @@ export class MusicBlock extends BaseTerm {
 		});
 
 		this.body = body.reverse();
+	}
+
+
+	clarifyHead () {
+		const terms = this.body;
+
+		const head = terms.find(term => term.isMusic);
+		if (head instanceof MusicEvent) {
+			// clarify the first music event content
+			const firstEventIndex = terms.indexOf(head);
+			if (firstEventIndex >= 0) {
+				const firstEvent = terms[firstEventIndex] as MusicEvent;
+				//console.log("firstEvent:", firstEvent);
+				if (firstEvent._previous) {
+					const clarified = firstEvent.clarified;
+	
+					terms.splice(firstEventIndex, 1, clarified);
+					//console.log("terms:", firstEventIndex, terms, clarified);
+				}
+			}
+		}
+		else {
+			const block = head.findFirst(MusicBlock) as MusicBlock;
+			if (block)
+				block.clarifyHead();
+			else
+				console.warn("[MusicBlock.clarifyHead] unexpected music head:", head);
+		}
 	}
 };
 
