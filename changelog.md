@@ -1,5 +1,6 @@
 
 ## TODO
+	restart matcher navigator when interrupted
 	track-measure lilypond section editor
 		duration checker
 	MIDI post processing
@@ -14,6 +15,11 @@
 		treble_8
 		system splitting, chord mode symbol affiliation
 
+
+
+*	2020.12.28
+
+	+	lilyTerms.ts: fixed Chord.clarifiedChord.
 
 
 *	2020.12.25
