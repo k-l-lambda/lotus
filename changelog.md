@@ -1,7 +1,6 @@
 
 ## TODO
-	MusicTrack.sliceMeasures: fill rests for tied chord
-	restart matcher navigator when interrupted
+	MusicTrack.sliceMeasures: fill rests for head tied chord
 	track-measure lilypond section editor
 		duration checker
 	MIDI post processing
