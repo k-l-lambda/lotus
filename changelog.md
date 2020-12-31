@@ -17,6 +17,11 @@
 
 
 
+*	2020.12.31
+
+	+	lilyTerms.ts: replace by rest for tied pitches in clarifiedChord.
+
+
 *	2020.12.28
 
 	+	lilyTerms.ts: MusicBlock.clarifyHead added.

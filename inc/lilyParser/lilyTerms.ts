@@ -2200,7 +2200,13 @@ export class Chord extends MusicEvent {
 
 	get pitchesValue (): (ChordElement | Command)[] {
 		if (this._previous instanceof Chord && this.basePitch.pitch === "q") {
-			const pitches = this._previous.pitchesValue.map(pitch => pitch.clone());
+			const pitches = this._previous.pitchesValue.map(pitch => {
+				const newPitch = pitch.clone();
+				if (newPitch instanceof ChordElement)
+					newPitch._tied = this.basePitch._tied;
+
+				return newPitch;
+			});
 			const base = pitches.find(pitch => pitch instanceof ChordElement) as ChordElement;
 			if (base)
 				base.pitch = base.pitch.replace(/[,']/g, "");
@@ -2212,9 +2218,13 @@ export class Chord extends MusicEvent {
 	}
 
 
-	get clarifiedChord (): Chord {
+	get clarifiedChord (): MusicEvent {
 		const clarified = this.clone();
-		clarified.pitches = this.pitchesValue.map(pitch => pitch.clone());
+		clarified.pitches = this.pitchesValue.filter(pitch => !(pitch as ChordElement)._tied).map(pitch => pitch.clone());
+
+		// replace by rest if all pitches tied
+		if (!clarified.pitches.length)
+			return new Rest({name: "r", duration: this.duration});
 
 		return clarified;
 	}
