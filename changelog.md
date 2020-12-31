@@ -19,6 +19,8 @@
 
 *	2020.12.31
 
+	+	lilyTerms.ts: connect pitches in clarifiedChord.
+
 	+	lilyTerms.ts: replace by rest for tied pitches in clarifiedChord.
 
 

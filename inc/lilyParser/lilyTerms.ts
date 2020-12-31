@@ -2114,6 +2114,11 @@ export class Chord extends MusicEvent {
 	constructor (data) {
 		super(data);
 
+		this.connectPitches();
+	}
+
+
+	connectPitches () {
 		if (this.basePitch)
 			this.basePitch._parent = this;
 		for (let i = 1; i < this.pitchElements.length; ++i)
@@ -2221,6 +2226,7 @@ export class Chord extends MusicEvent {
 	get clarifiedChord (): MusicEvent {
 		const clarified = this.clone();
 		clarified.pitches = this.pitchesValue.filter(pitch => !(pitch as ChordElement)._tied).map(pitch => pitch.clone());
+		clarified.connectPitches();
 
 		// replace by rest if all pitches tied
 		if (!clarified.pitches.length)
