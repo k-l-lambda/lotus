@@ -46,12 +46,12 @@
 					<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
 				</fieldset>
 			</fieldset>
-			<fieldset>
+			<fieldset v-show="tokenizeStaff">
 				<BoolStoreInput v-show="false" v-model="bakingSheet" sessionKey="lotus-bakingSheet" />
 				<CheckButton content="&#x1f35e;" v-model="bakingSheet" title="baking sheet" />
 				<CheckButton v-show="bakingSheet" content="&#x1f9b2;" v-model="hideBakingImages" title="hide baking images" />
 			</fieldset>
-			<fieldset>
+			<fieldset v-show="tokenizeStaff">
 				<BoolStoreInput v-show="false" v-model="enabledPointer" sessionKey="lotus-enabledPointer" />
 				<CheckButton content="&#x2196;" v-model="enabledPointer" />
 				<span class="pointer-info" v-if="enabledPointer">
