@@ -16,6 +16,11 @@
 
 
 
+*	2021.1.7
+
+	+	sheetDocuemnt.ts: enhanced alignTokensWithNotation to fix overlapped token ids (phonet q).
+
+
 *	2020.12.31
 
 	+	lilyTerms.ts: connect pitches in clarifiedChord.

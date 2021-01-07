@@ -397,12 +397,15 @@ class SheetDocument {
 
 		const noteheads = this.getNoteHeads();
 		const tokenMap = noteheads.reduce((map, token) => {
+			const sid = token.href && shortId(token.href);
+			const tokens = map.get(sid) || [];
+
 			// shift column for command chord element
 			if (/^\\/.test(token.source)) {
 				const spaceCapture = token.source.match(/(?<=\s+)(\S|$)/);
 				if (spaceCapture) {
 					const [line, column] = token.href.match(/\d+/g).map(Number);
-					map.set(`${line}:${column + spaceCapture.index}`, token);
+					map.set(`${line}:${column + spaceCapture.index}`, [token]);
 
 					return map;
 				}
@@ -410,16 +413,17 @@ class SheetDocument {
 					console.warn("unresolved command chord element:", token.source, token);
 			}
 
-			token.href && map.set(shortId(token.href), token);
+			tokens.push(token);
+			token.href && map.set(sid, tokens);
 
 			return map;
 		}, new Map());
-		console.assert(tokenMap.size === noteheads.length, "tokens noteheads count dismatch:", tokenMap.size, noteheads.length);
+		//console.assert(tokenMap.size === noteheads.length, "tokens noteheads count dismatch:", tokenMap.size, noteheads.length);
 
 		notation.measures.forEach(measure => measure.notes.forEach(note => {
-			const token = tokenMap.get(shortId(note.id));
-			if (token)
-				token.href = note.id;
+			const tokens = tokenMap.get(shortId(note.id));
+			if (tokens)
+				tokens.forEach(token => token.href = note.id);
 			else if (!partial)
 				note.overlapped = true;
 		}));
