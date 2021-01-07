@@ -115,15 +115,41 @@
 
 
 
-	class PlaceholderTokenList extends Set {
+	class PlaceholderTokenList {
+		add () {}
 		remove () {}
 	};
 
-	const placeholderElement = () => ({
-		classList: new PlaceholderTokenList(),
-	});
 
-	const elemById = (id, parent = document) => parent.querySelector(`.token *[data-href='${id}']`) || placeholderElement();
+	class MultiClassList {
+		constructor (elems) {
+			this.elems = elems;
+		}
+
+		/*has (name) {
+			return this.elems[0].has(name);
+		}*/
+
+		add (name) {
+			this.elems.forEach(elem => elem.classList.add(name));
+		}
+
+		remove (name) {
+			this.elems.forEach(elem => elem.classList.remove(name));
+		}
+	};
+
+
+	const elemClassById = (id, parent = document) => {
+		const elems = parent.querySelectorAll(`.token *[data-href='${id}']`);
+		if (elems.length === 0)
+			return new PlaceholderTokenList();
+
+		if (elems.length === 1)
+			return elems[0].classList;
+
+		return new MultiClassList(elems);
+	};
 
 
 
@@ -359,7 +385,7 @@
 				if (this.midiNotation) {
 					this.midiNotation.notes.forEach(note => note.ids && note.ids.forEach(id => {
 						if (!this.statusMap.get(id))
-							this.statusMap.set(id, elemById(id, this.$el).classList);
+							this.statusMap.set(id, elemClassById(id, this.$el));
 					}));
 				}
 			},
@@ -369,7 +395,8 @@
 				const tokens = page.querySelectorAll(".token *[data-href]");
 				tokens.forEach(token => {
 					const id = token.dataset.href;
-					this.statusMap.set(id, token.classList);
+					//this.statusMap.set(id, token.classList);
+					this.statusMap.set(id, elemClassById(id, page));
 				});
 			},
 
