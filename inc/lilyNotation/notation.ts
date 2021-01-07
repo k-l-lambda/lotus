@@ -450,7 +450,7 @@ export class Notation {
 			console.assert(!!measure, "cannot find measure for c note:", cn, this.measures.length);
 
 			//const mn = measure.notes.find(note => note.tick === cn.startTick - measure.tick && note.pitch === cn.pitch);
-			const mn = measure.notes.find(note => note.id === cn.id);
+			const mn = measure.notes.find(note => note.id === cn.id && note.pitch === cn.pitch);
 			console.assert(!!mn, "cannot find measure note for c note:", cn, measure);
 
 			const snotes = indices

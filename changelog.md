@@ -18,6 +18,8 @@
 
 *	2021.1.7
 
+	+	notation.ts: fixed overlapped id problem in matching.
+
 	+	sheetDocuemnt.ts: enhanced alignTokensWithNotation to fix overlapped token ids (phonet q).
 
 

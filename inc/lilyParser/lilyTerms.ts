@@ -2207,8 +2207,12 @@ export class Chord extends MusicEvent {
 		if (this._previous instanceof Chord && this.basePitch.pitch === "q") {
 			const pitches = this._previous.pitchesValue.map(pitch => {
 				const newPitch = pitch.clone();
-				if (newPitch instanceof ChordElement)
+				if (newPitch instanceof ChordElement) {
+					newPitch._location = this.basePitch._location;
 					newPitch._tied = this.basePitch._tied;
+					newPitch._parent = (pitch as ChordElement)._parent;
+					newPitch._previous = (pitch as ChordElement)._previous;
+				}
 
 				return newPitch;
 			});

@@ -436,7 +436,7 @@ export class MusicTrack {
 			if (term instanceof Chord) {
 				const pcTerm = getCurrentTerm(track.staffName);
 				pcTerm.event = term;
-				pcTerm.pitches = term.pitchElements;
+				pcTerm.pitches = term.pitchesValue.filter(pitch => pitch instanceof ChordElement) as ChordElement[];
 
 				if (track.tickBias)
 					pcTerm.tickBias = track.tickBias;
