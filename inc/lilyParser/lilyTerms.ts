@@ -2210,7 +2210,7 @@ export class Chord extends MusicEvent {
 				if (newPitch instanceof ChordElement) {
 					newPitch._location = this.basePitch._location;
 					newPitch._tied = this.basePitch._tied;
-					newPitch._parent = (pitch as ChordElement)._parent;
+					newPitch._parent = (pitch as ChordElement)._parent && this;
 					newPitch._previous = (pitch as ChordElement)._previous;
 				}
 
