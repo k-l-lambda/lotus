@@ -157,9 +157,7 @@ const bakeLiveSheetGen = async function* ({sheetDocument, signs, hashTable, matc
 
 		// remove matched tokens
 		matchedIds.forEach(id => {
-			const token = svg.querySelector(`g[data-href='${id}']`);
-			if (token)
-				token.parentElement.removeChild(token);
+			svg.querySelectorAll(`g[data-href='${id}']`).forEach(token => token.parentElement.removeChild(token));
 		});
 
 		replaceSigns(svg, signDict);
