@@ -16,6 +16,11 @@
 
 
 
+*	2021.1.12
+
+	+	sheet-live.vue: added css variable of --lotus-token-tied-color.
+
+
 *	2021.1.7
 
 	+	sheet-live.md: refined statusMap for overlapped href elements.

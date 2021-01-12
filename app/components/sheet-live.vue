@@ -80,6 +80,7 @@
 								<g v-for="(token, i5) of measure.matchedTokens" :key="i5"
 									:transform="`translate(${token.x + token.musicFontNoteOffset}, ${token.y})` + (token.scale && token.scale !== 1 ? ` scale(${token.scale})` : '')"
 									class="token matched"
+									:class="{tied: token.tied}"
 									:data-track="token.track"
 								>
 									<text :data-href="token.href">{{token.fontChar}}</text>
@@ -687,6 +688,11 @@
 						stroke-width: 0.1;
 						stroke: var(--lotus-token-on-color);
 					}
+				}
+
+				&.tied
+				{
+					fill: var(--lotus-token-tied-color);
 				}
 			}
 		}

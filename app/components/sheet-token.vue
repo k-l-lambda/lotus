@@ -50,5 +50,13 @@
 				stroke: var(--lotus-token-on-color);
 			}
 		}
+
+		&.tied
+		{
+			use
+			{
+				fill: var(--lotus-token-tied-color);
+			}
+		}
 	}
 </style>
