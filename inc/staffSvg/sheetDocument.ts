@@ -464,7 +464,7 @@ class SheetDocument {
 						};
 
 						measure.tokens = measure.matchedTokens.map(token => new StaffToken(_.pick(token, [
-							"x", "y", "symbol", "href", "scale",
+							"x", "y", "symbol", "href", "scale", "tied",
 						])));
 						delete measure.matchedTokens;
 					});

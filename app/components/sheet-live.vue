@@ -692,7 +692,15 @@
 
 				&.tied
 				{
-					fill: var(--lotus-token-tied-color);
+					text
+					{
+						fill: var(--lotus-token-tied-color);
+
+						&.on
+						{
+							fill: var(--lotus-token-on-color);
+						}
+					}
 				}
 			}
 		}
