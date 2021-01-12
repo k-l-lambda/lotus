@@ -1820,6 +1820,14 @@
 					{
 						fill: lightblue;
 					}
+
+					.token.tied
+					{
+						text, use
+						{
+							fill-opacity: 0.6;
+						}
+					}
 				}
 
 				&.inspecting

@@ -2,7 +2,7 @@
 :root
 {
 	--lotus-token-default-color: black;
-	--lotus-token-tied-color: #777;
+	/*--lotus-token-tied-color: #777;*/
 	--lotus-token-on-color: #0af;
 
 	--music-font-size: 2.2px;

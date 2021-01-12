@@ -689,19 +689,6 @@
 						stroke: var(--lotus-token-on-color);
 					}
 				}
-
-				&.tied
-				{
-					text
-					{
-						fill: var(--lotus-token-tied-color);
-
-						&.on
-						{
-							fill: var(--lotus-token-on-color);
-						}
-					}
-				}
 			}
 		}
 	}
