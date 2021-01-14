@@ -16,6 +16,11 @@
 
 
 
+*	2021.1.14
+
+	+	scheduler.ts: refined tickTable for empty measure.
+
+
 *	2021.1.12
 
 	+	sheet-live.vue: added css variable of --lotus-token-tied-color.

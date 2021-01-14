@@ -74,7 +74,7 @@ export default class Scheduler {
 			item.endTick = nextItem ? nextItem.tick : midiNotation.endTick;
 			console.assert(item.endTick > item.tick, "invalid tick item, tick span is non-positive:", item, tokenTable[item.tick]);
 
-			if (nextItem && item.row === nextItem.row && [0, 1].includes(nextItem.measure - item.measure))
+			if (nextItem && item.row === nextItem.row && nextItem.measure >= item.measure)
 				item.endX = nextItem.x;
 		});
 
