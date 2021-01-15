@@ -16,6 +16,11 @@
 
 
 
+*	2021.1.15
+
+	+	lilyInterpreter.ts: append duration of tied notes to root note in MusicPerformance.getNotation.
+
+
 *	2021.1.14
 
 	+	scheduler.ts: refined tickTable for empty measure.

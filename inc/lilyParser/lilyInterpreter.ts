@@ -994,6 +994,20 @@ class MusicPerformance {
 			.concat(...staffContexts.map(context => context.notes))
 			.sort((n1, n2) => n1.startTick - n2.startTick);
 
+		// append duration of tied notes to root note
+		const pitchMap = {};
+		notes.forEach(note => {
+			if (note.tied) {
+				const root = pitchMap[note.pitch];
+				if (root) {
+					root.endTick = Math.max(root.endTick, note.endTick);
+					root.duration = root.endTick - root.startTick;
+				}
+			}
+			else
+				pitchMap[note.pitch] = note;
+		});
+
 		const pitchContextGroup = staffContexts.map(context => context.pitchContextTable);
 
 		const mainTrack = this.mainTrack;
