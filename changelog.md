@@ -16,6 +16,8 @@
 
 *	2021.1.15
 
+	*	To fix 'pure rest measure' scheduler issue, replace 'r' with pitched rest (\rest modified chord).
+
 	+	sheetDocument.ts: enhanced alignTokensWithNotation by note tokens (include rests).
 
 	+	sheet-live.vue: added property of scheduler.
