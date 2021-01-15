@@ -35,6 +35,7 @@ export default class ScoreBundle {
 	matchedIds: Set<string>;
 	onStatus: (...args: any) => any;
 	bakingImages: string[];
+	scheduler: LilyNotation.Scheduler;
 
 
 	static classDict = {
@@ -80,6 +81,9 @@ export default class ScoreBundle {
 
 			this.midiNotation = lilyNotation.toPerformingNotationWithEvents(measureIndices, {trackList});
 			this.pitchContextGroup = lilyNotation.getContextGroup(measureIndices);
+
+			const notation = lilyNotation.toPerformingNotation(measureIndices, {withRestTied: true});
+			this.scheduler = LilyNotation.Scheduler.createFromNotation(notation, this.scoreJSON.doc.getTokenMap());
 
 			this.onStatus("notation loaded");
 		}

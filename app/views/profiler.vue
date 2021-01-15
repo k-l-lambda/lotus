@@ -19,6 +19,7 @@
 				:midiNotation="midiNotation"
 				:pitchContextGroup="pitchContextGroup"
 				:midiPlayer.sync="midiPlayer"
+				:scheduler="scheduler"
 				:showCursor="showCursor"
 				:noteHighlight="noteHighlight"
 				:bakingMode="bakingSheet"
@@ -70,6 +71,7 @@
 				sheetDocument: null,
 				svgHashTable: null,
 				midiNotation: null,
+				scheduler: null,
 				pitchContextGroup: null,
 				midiPlayer: null,
 				showCursor: true,
@@ -213,6 +215,7 @@
 			async loadSheet () {
 				this.sheetDocument = null;
 				this.midiNotation = null;
+				this.scheduler = null;
 				this.pitchContextGroup = null;
 				this.bakingImages = null;
 
@@ -223,6 +226,7 @@
 					this.sheetDocument = scoreBundle.scoreJSON.doc;
 					this.pitchContextGroup = scoreBundle.pitchContextGroup;
 					this.midiNotation = scoreBundle.midiNotation;
+					this.scheduler = scoreBundle.scheduler;
 					this.svgHashTable = scoreBundle.scoreJSON.hashTable;
 
 					this.logTime("bundle parsed");
@@ -257,6 +261,7 @@
 			async constructSheetFromStream (parser) {
 				this.sheetDocument = null;
 				this.midiNotation = null;
+				this.scheduler = null;
 				this.pitchContextGroup = null;
 				this.bakingImages = null;
 				this.svgHashTable = {};
@@ -284,6 +289,9 @@
 						const measureIndices = lilyNotation.getMeasureIndices(LilyNotation.LayoutType.Full);
 						this.midiNotation = lilyNotation.toPerformingNotationWithEvents(measureIndices);
 						this.pitchContextGroup = lilyNotation.getContextGroup(measureIndices);
+
+						const notation = lilyNotation.toPerformingNotation(measureIndices, {withRestTied: true});
+						this.scheduler = LilyNotation.Scheduler.createFromNotation(notation, this.sheetDocument.getTokenMap());
 					}
 				});
 
