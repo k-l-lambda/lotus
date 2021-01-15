@@ -18,6 +18,8 @@
 
 *	2021.1.15
 
+	+	lilyNotation: arpeggio time bias added.
+
 	+	lilyParser: note properties for arpeggio added.
 
 	+	lilyInterpreter.ts: append duration of tied notes to root note in MusicPerformance.getNotation.

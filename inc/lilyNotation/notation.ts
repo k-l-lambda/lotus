@@ -14,6 +14,8 @@ import npmPackage from "../../package.json";
 
 const TICKS_PER_BEAT = WHOLE_DURATION_MAGNITUDE / 4;
 
+const ARPEGGIO_REFERENCE_DURATION = 240;
+
 // import WHOLE_DURATION_MAGNITUDE from "../lilyParser" may result in null error in nodejs
 console.assert(Number.isFinite(TICKS_PER_BEAT), "TICKS_PER_BEAT is invalid:", TICKS_PER_BEAT);
 
@@ -232,8 +234,6 @@ export class Notation {
 			console.assert(!!measure, "invalid measure index:", index, this.measures.length);
 
 			const notes = measure.notes.map(mnote => {
-				// TODO: process arpeggio note time
-
 				return {
 					startTick: measureTick + mnote.tick,
 					endTick: measureTick + mnote.tick + mnote.duration,
@@ -463,6 +463,14 @@ export class Notation {
 			const mn = measure.notes.find(note => note.id === cn.id && note.pitch === cn.pitch);
 			console.assert(!!mn, "cannot find measure note for c note:", cn, measure);
 
+			let bias = 0;
+
+			// arpeggio time bias
+			if (mn.implicitType === "arpeggio" && mn.chordPosition) {
+				const referenceDuration = Math.min(mn.duration * 0.5, ARPEGGIO_REFERENCE_DURATION);
+				bias = Math.round(mn.chordPosition.index * referenceDuration / mn.chordPosition.count);
+			}
+
 			const snotes = indices
 				.map(si => matcher.sample.notes[si])
 				.filter((sn, i) => Math.abs(sn.startTick - cn.startTick) < WHOLE_DURATION_MAGNITUDE
@@ -473,7 +481,7 @@ export class Notation {
 
 				mn.subNotes = [{
 					//track,
-					startTick: 0,
+					startTick: bias,
 					endTick: mn.duration,
 					pitch: mn.pitch,
 					velocity: velocities[mn.track] || 90,
@@ -494,7 +502,7 @@ export class Notation {
 
 					return {
 						//track: sn.track,
-						startTick: Math.round(sn.startTick - sn0.startTick),
+						startTick: Math.round(sn.startTick - sn0.startTick + bias),
 						endTick: Math.round(sn.endTick - sn0.startTick),
 						pitch: sn.pitch,
 						velocity: sn.velocity,

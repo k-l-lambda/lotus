@@ -115,6 +115,7 @@ class LilyStaffContext extends StaffContext {
 				implicitType: event.implicitType,
 				staffTrack: this.staffTrack,
 				contextIndex,
+				// TODO: consider connected arpeggio & downward arpeggio
 				chordPosition: {
 					index,
 					count: term.pitches.length,
