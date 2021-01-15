@@ -381,6 +381,16 @@ class SheetDocument {
 	}
 
 
+	getNotes (): StaffToken[] {
+		return this.rows.reduce((tokens, row) => {
+			row.staves.forEach(staff => staff.measures.forEach(measure =>
+				tokens.push(...measure.tokens.filter(token => token.is("NOTE")))));
+
+			return tokens;
+		}, []);
+	}
+
+
 	getTokenMap (): Map<string, StaffToken> {
 		return this.rows.reduce((tokenMap, row) => {
 			row.staves.forEach(staff => staff.measures.forEach(measure => measure.tokens
@@ -395,8 +405,8 @@ class SheetDocument {
 	alignTokensWithNotation (notation: LilyNotation.Notation, {partial = false} = {}) {
 		const shortId = (href: string): string => href.split(":").slice(0, 2).join(":");
 
-		const noteheads = this.getNoteHeads();
-		const tokenMap = noteheads.reduce((map, token) => {
+		const noteTokens = this.getNotes();
+		const tokenMap = noteTokens.reduce((map, token) => {
 			const sid = token.href && shortId(token.href);
 			const tokens = map.get(sid) || [];
 
@@ -418,7 +428,7 @@ class SheetDocument {
 
 			return map;
 		}, new Map());
-		//console.assert(tokenMap.size === noteheads.length, "tokens noteheads count dismatch:", tokenMap.size, noteheads.length);
+		//console.assert(tokenMap.size === noteTokens.length, "tokens noteTokens count dismatch:", tokenMap.size, noteTokens.length);
 
 		notation.measures.forEach(measure => measure.notes.forEach(note => {
 			const tokens = tokenMap.get(shortId(note.id));
@@ -430,7 +440,7 @@ class SheetDocument {
 
 		// assign tracks
 		if (notation.idTrackMap) {
-			noteheads.forEach(token => {
+			noteTokens.forEach(token => {
 				const track = notation.idTrackMap[token.href];
 				if (Number.isInteger(track))
 					token.track = track;

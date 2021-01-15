@@ -16,6 +16,8 @@
 
 *	2021.1.15
 
+	+	sheetDocument.ts: enhanced alignTokensWithNotation by note tokens (include rests).
+
 	+	sheet-live.vue: added property of scheduler.
 
 	+	lilyNotation: arpeggio time bias added.
