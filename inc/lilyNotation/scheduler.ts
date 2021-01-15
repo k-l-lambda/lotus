@@ -29,7 +29,7 @@ export default class Scheduler {
 	tickTable: TickItem[];
 
 
-	static createFromNotation (midiNotation, tokenMap: Map<string, StaffToken>) {
+	static createFromNotation (midiNotation, tokenMap: Map<string, StaffToken>): Scheduler {
 		const tokenTable: {[key: number]: StaffToken[]} = {};
 		const idSet = new Set<string>();
 		let measureIndex = 0;
@@ -51,6 +51,11 @@ export default class Scheduler {
 		});
 		//console.log("tokenTable:", tokenTable);
 
+		return Scheduler.createFromTokenTable(tokenTable, midiNotation.endTick);
+	}
+
+
+	static createFromTokenTable (tokenTable: {[key: number]: StaffToken[]}, endTick: number): Scheduler {
 		const tickTable: TickItem[] = Object.entries(tokenTable).map(([tick, tokens]) => {
 			if (!tokens.length)
 				return null;
@@ -71,7 +76,7 @@ export default class Scheduler {
 		tickTable.forEach((item, i) => {
 			const nextItem = tickTable[i + 1];
 
-			item.endTick = nextItem ? nextItem.tick : midiNotation.endTick;
+			item.endTick = nextItem ? nextItem.tick : endTick;
 			console.assert(item.endTick > item.tick, "invalid tick item, tick span is non-positive:", item, tokenTable[item.tick]);
 
 			if (nextItem && item.row === nextItem.row && nextItem.measure >= item.measure)
@@ -84,14 +89,14 @@ export default class Scheduler {
 	}
 
 
-	constructor ({tickTable}) {
+	constructor ({tickTable}: {tickTable: TickItem[]}) {
 		console.assert(tickTable.length > 0, "invalid tick table:", tickTable);
 
 		this.tickTable = tickTable;
 	}
 
 
-	get startTick () {
+	get startTick (): number {
 		if (!this.tickTable[0])
 			return null;
 
@@ -99,7 +104,7 @@ export default class Scheduler {
 	}
 
 
-	get endTick () {
+	get endTick (): number {
 		if (!this.tickTable[0])
 			return null;
 

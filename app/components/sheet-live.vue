@@ -107,7 +107,7 @@
 	import Vue from "vue";
 	import {MidiPlayer} from "@k-l-lambda/web-widgets";
 
-	import SheetScheduler from "../../inc/staffSvg/scheduler.ts";
+	import SheetScheduler from "../../inc/lilyNotation/scheduler.ts";
 	import {animationDelay} from "../delay.js";
 	import {SingleLock} from "../../inc/mutex.ts";
 	import SchedulePool from "../../inc/schedulePool.ts";

@@ -2,8 +2,6 @@
 ## TODO
 	track-measure lilypond section editor
 		duration checker
-	MIDI post processing
-		arpeggio
 	lyrics in music normalization
 	lyrics hilighting
 		match chord with voice in the same staff
