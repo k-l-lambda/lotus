@@ -160,6 +160,7 @@ export class Notation {
 			staffTrack: note.staffTrack,
 			contextIndex: note.contextIndex,
 			implicitType: note.implicitType,
+			chordPosition: note.chordPosition,
 		}));
 
 		const noteMap = notes.reduce((map, note) => {
@@ -263,8 +264,10 @@ export class Notation {
 		const abNotes = this.toAbsoluteNotes(measureIndices);
 		const notes = Notation.performAbsoluteNotes(abNotes);
 
-		const lastNote = notes[notes.length - 1];
-		const endTime = lastNote ? (lastNote.start + lastNote.duration) : 0;
+		//const lastNote = notes[notes.length - 1];
+		const endTime = Math.max(...notes.map(note => note.start + note.duration));
+
+		const endTick = measureIndices.reduce((tick, index) => tick + this.measures[index - 1].duration, 0);
 
 		const notation = new MusicNotation.Notation({
 			ticksPerBeat: TICKS_PER_BEAT,
@@ -272,6 +275,7 @@ export class Notation {
 			tempos: [],	// TODO
 			channels: [notes],
 			endTime,
+			endTick,
 		});
 
 		return notation;
