@@ -18,12 +18,19 @@ const TICKS_PER_BEAT = WHOLE_DURATION_MAGNITUDE / 4;
 console.assert(Number.isFinite(TICKS_PER_BEAT), "TICKS_PER_BEAT is invalid:", TICKS_PER_BEAT);
 
 
+interface ChordPosition {
+	index: number;
+	count: number;
+};
+
+
 interface StaffNoteProperties {
 	rest: boolean;
 	tied: boolean;
 	overlapped: boolean;
 	implicitType: ImplicitType;
 	afterGrace: boolean;
+	chordPosition: ChordPosition;
 
 	contextIndex: number;
 	staffTrack: number;
@@ -49,6 +56,7 @@ interface MeasureNote extends Partial<StaffNoteProperties> {
 	tick: number;
 	pitch: number;
 	duration: number;
+	chordPosition: ChordPosition;
 
 	track: number;
 	channel: number;
@@ -81,7 +89,7 @@ interface Measure {
 };*/
 
 
-const EXTRA_NOTE_FIELDS = ["rest", "tied", "overlapped", "implicitType", "afterGrace", "contextIndex", "staffTrack"];
+const EXTRA_NOTE_FIELDS = ["rest", "tied", "overlapped", "implicitType", "afterGrace", "contextIndex", "staffTrack", "chordPosition"];
 const COMMON_NOTE_FIELDS = ["id", "ids", "pitch", "velocity", "track", "channel", ...EXTRA_NOTE_FIELDS];
 
 
@@ -223,14 +231,18 @@ export class Notation {
 			const measure = this.measures[index - 1];
 			console.assert(!!measure, "invalid measure index:", index, this.measures.length);
 
-			const notes = measure.notes.map(mnote => ({
-				startTick: measureTick + mnote.tick,
-				endTick: measureTick + mnote.tick + mnote.duration,
-				start: measureTick + mnote.tick,
-				duration: mnote.duration,
-				measure: index,
-				..._.pick(mnote, COMMON_NOTE_FIELDS),
-			}) as Note);
+			const notes = measure.notes.map(mnote => {
+				// TODO: process arpeggio note time
+
+				return {
+					startTick: measureTick + mnote.tick,
+					endTick: measureTick + mnote.tick + mnote.duration,
+					start: measureTick + mnote.tick,
+					duration: mnote.duration,
+					measure: index,
+					..._.pick(mnote, COMMON_NOTE_FIELDS),
+				} as Note;
+			});
 
 			measureTick += measure.duration;
 
@@ -436,8 +448,6 @@ export class Notation {
 			}
 		});
 		assignNotationEventsIds(matcher.sample, ["ids", "measure"]);
-
-		// TODO: post process MIDI events for arpeggio
 
 		// assign sub notes
 		const c2sIndices = Array(matcher.criterion.notes.length).fill(null).map(() => []);

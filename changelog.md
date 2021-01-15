@@ -18,6 +18,8 @@
 
 *	2021.1.15
 
+	+	lilyParser: note properties for arpeggio added.
+
 	+	lilyInterpreter.ts: append duration of tied notes to root note in MusicPerformance.getNotation.
 
 

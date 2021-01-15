@@ -97,7 +97,7 @@ class LilyStaffContext extends StaffContext {
 			const event = term.event;
 			const contextIndex = this.snapshot({tick: event._tick});
 
-			this.notes.push(...term.pitches.map(pitch => ({
+			this.notes.push(...term.pitches.map((pitch, index) => ({
 				track: term.track,
 				channel: this.channelMap[term.track] || 0,
 				measure: event._measure,
@@ -115,6 +115,10 @@ class LilyStaffContext extends StaffContext {
 				implicitType: event.implicitType,
 				staffTrack: this.staffTrack,
 				contextIndex,
+				chordPosition: {
+					index,
+					count: term.pitches.length,
+				},
 			})));
 
 			term.pitches.forEach(pitch => {
@@ -437,6 +441,7 @@ export class MusicTrack {
 				const pcTerm = getCurrentTerm(track.staffName);
 				pcTerm.event = term;
 				pcTerm.pitches = term.pitchesValue.filter(pitch => pitch instanceof ChordElement) as ChordElement[];
+				pcTerm.pitches = [...pcTerm.pitches].sort((p1, p2) => p1.absolutePitchValue - p2.absolutePitchValue);
 
 				if (track.tickBias)
 					pcTerm.tickBias = track.tickBias;

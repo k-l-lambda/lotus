@@ -2081,8 +2081,8 @@ export class MusicEvent extends BaseTerm {
 						return ImplicitType.Prall;
 
 					// Arpeggio is not implemented in 'articulate.ly' yet
-					//case "arpeggio":
-					//	return ImplicitType.Arpeggio;
+					case "arpeggio":
+						return ImplicitType.Arpeggio;
 					}
 				}
 			}
