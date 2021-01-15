@@ -193,13 +193,14 @@
 				type: Boolean,
 				default: true,
 			},
+			scheduler: Object,
 		},
 
 
 		data () {
 			return {
 				midiPlayer: null,
-				scheduler: null,
+				//scheduler: null,
 				statusMap: new Map(),
 				shownPages: [],
 			};
@@ -342,7 +343,7 @@
 
 			async preparePlayer () {
 				//console.log("t1:", performance.now());
-				this.scheduler = null;
+				//this.scheduler = null;
 				this.statusMap.clear();
 
 				if (this.midiPlayer) {
@@ -359,12 +360,15 @@
 
 					this.updateStatusMap();
 
-					const tokenMap = this.doc && this.doc.getTokenMap();
-					if (tokenMap) {
-						for (const token of tokenMap.values())
-							Vue.set(token, "on", token.on || false);
+					if (!this.scheduler) {
+						const tokenMap = this.doc && this.doc.getTokenMap();
+						if (tokenMap) {
+							for (const token of tokenMap.values())
+								Vue.set(token, "on", token.on || false);
 
-						this.scheduler = SheetScheduler.createFromNotation(this.midiNotation, tokenMap);
+							const scheduler = SheetScheduler.createFromNotation(this.midiNotation, tokenMap);
+							this.$emit("update:scheduler", scheduler);
+						}
 					}
 				}
 			},
@@ -591,11 +595,6 @@
 			isPlaying (value) {
 				if (!value)
 					this.schedulePool.clear();
-			},
-
-
-			scheduler (value) {
-				this.$emit("update:scheduler", value);
 			},
 		},
 	};

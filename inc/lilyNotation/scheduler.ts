@@ -34,7 +34,7 @@ export default class Scheduler {
 		const idSet = new Set<string>();
 		let measureIndex = 0;
 
-		midiNotation.notes.forEach(note => {
+		midiNotation.notes.filter(note => !note.chordPosition || note.chordPosition.index === 0).forEach(note => {
 			if (note.ids) {
 				if (note.measure !== measureIndex) {
 					idSet.clear();

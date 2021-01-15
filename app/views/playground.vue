@@ -130,6 +130,7 @@
 						:showCursor="showCursor"
 						:bakingMode="bakingSheet"
 						:backgroundImages="hideBakingImages ? null : bakingImages"
+						:scheduler.sync="scheduler"
 						@midi="onMidi"
 						@cursorPageShift="onCursorPageShift"
 						@pointerUpdate="onPointerUpdate"
@@ -433,6 +434,7 @@
 				svgHashTable: null,
 				midi: null,
 				midiNotation: null,
+				scheduler: null,
 				pitchContextGroup: null,
 				enabledChromatic: false,
 				chromaticMode: "symbols",
@@ -534,15 +536,15 @@
 				]
 			*/
 			pitchContextMarks () {
-				const scheduler = this.$refs.sheet && this.$refs.sheet.scheduler;
-				if (!this.pitchContextGroup || !scheduler)
+				//const scheduler = this.$refs.sheet && this.$refs.sheet.scheduler;
+				if (!this.pitchContextGroup || !this.scheduler)
 					return [];
 
 				return this.pitchContextGroup.map(table => table.items.map(item => {
 					const context = item.context;
 					const yToName = y => ({y, alter: context.alterOnNote(context.yToNote(y)), name: context.yToPitchName(y)});
 
-					const {row, x} = scheduler.lookupPosition(item.tick);
+					const {row, x} = this.scheduler.lookupPosition(item.tick);
 					const names = [
 						[-2, -1, 0, 1, 2].map(yToName),
 						[-1.5, -0.5, 0.5, 1.5].map(yToName),
@@ -780,6 +782,7 @@
 				this.lilyNotation = null;
 				this.midi = null;
 				this.midiNotation = null;
+				this.scheduler = null;
 				this.pitchContextGroup = null;
 				this.midiPlayer = null;
 				this.matcherNotations = null;
@@ -1038,6 +1041,8 @@
 					this.pitchContextGroup = this.lilyNotation.getContextGroup(measureIndices);
 
 					this.matchedIds = this.lilyNotation.idSet;
+
+					this.scheduler = LilyNotation.Scheduler.createFromNotation(this.lilyNotation.toPerformingNotation(measureIndices, {withRestTied: true}), this.sheetDocument.getTokenMap());
 				}
 
 				this.sheetDocument.updateMatchedTokens(this.matchedIds);

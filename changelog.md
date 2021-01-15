@@ -16,6 +16,8 @@
 
 *	2021.1.15
 
+	+	sheet-live.vue: added property of scheduler.
+
 	+	lilyNotation: arpeggio time bias added.
 
 	+	lilyParser: note properties for arpeggio added.

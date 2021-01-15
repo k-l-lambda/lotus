@@ -85,6 +85,11 @@ interface Measure {
 };
 
 
+interface PerformOptions {
+	withRestTied?: boolean;
+};
+
+
 /*interface NotationData {
 	pitchContextGroup: PitchContextTable[];
 	measures: Measure[];
@@ -144,8 +149,8 @@ export class Notation {
 	}
 
 
-	static performAbsoluteNotes (abNotes: Note[]): MusicNotation.Note[] {
-		const notes = abNotes.filter(note => !note.rest && !note.tied && !note.overlapped).map(note => ({
+	static performAbsoluteNotes (abNotes: Note[], {withRestTied = false}: PerformOptions = {}): MusicNotation.Note[] {
+		const notes = abNotes.filter(note => (withRestTied || (!note.rest && !note.tied)) && !note.overlapped).map(note => ({
 			measure: note.measure,
 			channel: note.channel,
 			track: note.track,
@@ -259,10 +264,10 @@ export class Notation {
 	}
 
 
-	toPerformingNotation (measureIndices: number[] = this.ordinaryMeasureIndices): MusicNotation.Notation {
+	toPerformingNotation (measureIndices: number[] = this.ordinaryMeasureIndices, options: PerformOptions = {}): MusicNotation.Notation {
 		//console.debug("toPerformingNotation:", this, measureIndices);
 		const abNotes = this.toAbsoluteNotes(measureIndices);
-		const notes = Notation.performAbsoluteNotes(abNotes);
+		const notes = Notation.performAbsoluteNotes(abNotes, options);
 
 		//const lastNote = notes[notes.length - 1];
 		const endTime = Math.max(...notes.map(note => note.start + note.duration));
