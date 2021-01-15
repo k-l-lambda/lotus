@@ -216,7 +216,7 @@ export class Notation {
 
 	get idSet (): Set<string> {
 		return this.measures.reduce((set, measure) =>
-			(measure.notes.forEach(note => note.ids.forEach(id => set.add(id))), set), new Set<string>());
+			(measure.notes.filter(note => !note.rest).forEach(note => note.ids.forEach(id => set.add(id))), set), new Set<string>());
 	}
 
 
@@ -346,6 +346,9 @@ export class Notation {
 
 			measure.notes.forEach(note => {
 				if (trackList && !trackList[note.track])
+					return;
+
+				if (note.rest)
 					return;
 
 				const tick = measureTick + note.tick;
