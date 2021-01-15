@@ -2,9 +2,9 @@
 // eslint-disable-next-line
 declare class StaffToken {
 	row?: number;
-	measure: number;
+	measure?: number;
 	x: number;
-	endX: number;
+	endX?: number;
 };
 
 
