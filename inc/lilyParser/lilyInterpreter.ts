@@ -216,7 +216,21 @@ export class MusicTrack {
 	}
 
 
+	clarifyDurations () {
+		this.transform(term => {
+			if (term instanceof MusicEvent) {
+				if (!term.duration)
+					term.duration = term.durationValue;
+			}
+
+			return [term];
+		});
+	}
+
+
 	splitLongRests () {
+		this.clarifyDurations();
+
 		this.transform((term, context) => {
 			if (!(term instanceof MusicEvent) || (!term.withMultiplier && !(term instanceof Rest)))
 				return [term];

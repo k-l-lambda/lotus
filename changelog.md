@@ -14,6 +14,11 @@
 
 
 
+*	2021.1.18
+
+	+	lilyInterpreter.ts: fixed implicit duration issue in splitLongRests.
+
+
 *	2021.1.15
 
 	+	scoreBundle.ts: added scheduler loading.
