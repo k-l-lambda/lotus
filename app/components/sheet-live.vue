@@ -330,10 +330,12 @@
 						if (note.ids) {
 							note.ids.forEach(id => {
 								const status = this.statusMap.get(id);
-								if (on)
-									status.add("on");
-								else
-									status.remove("on");
+								if (status) {
+									if (on)
+										status.add("on");
+									else
+										status.remove("on");
+								}
 							});
 						}
 					}
