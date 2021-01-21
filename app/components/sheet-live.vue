@@ -138,6 +138,14 @@
 		remove (name) {
 			this.elems.forEach(elem => elem.classList.remove(name));
 		}
+
+		get value () {
+			return this.elems[0] && this.elems[0].value;
+		}
+
+		set value (value) {
+			this.elems.forEach(elem => elem.value = value);
+		}
 	};
 
 
