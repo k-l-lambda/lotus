@@ -435,6 +435,10 @@
 				}
 
 				const context = contextTable.lookup(tick);
+				if (!context) {
+					console.warn("no context at tick:", tick, contextTable);
+					return null;
+				}
 				const {y, alter} = context.pitchToY(pitch);
 
 				return this.doc.addMarking(position.row, staffIndex, {x: position.x + xoffset, y, text, alter, id, cls});
