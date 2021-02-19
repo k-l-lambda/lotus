@@ -169,6 +169,9 @@
 	};
 
 
+	const DEFAULT_WATERMARK = process.env.VUE_APP_DEFAULT_WATERMARK;
+
+
 
 	export default {
 		name: "sheet-live",
@@ -210,7 +213,10 @@
 				default: true,
 			},
 			scheduler: Object,
-			watermark: String,
+			watermark: {
+				type: String,
+				default: DEFAULT_WATERMARK,
+			},
 		},
 
 
