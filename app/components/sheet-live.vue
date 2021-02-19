@@ -23,6 +23,14 @@
 					<slot name="page" :page="page"></slot>
 				</g>
 				<g v-if="!bakingMode">
+					<g v-if="watermark" class="wm">
+						<image :xlink:href="watermark"
+							:x="(doc.pageSize.width - watermarkSize.width) / 2 / svgScale"
+							:y="(doc.pageSize.height - watermarkSize.height) / 2 / svgScale"
+							:width="watermarkSize.width / 2 / svgScale"
+							:height="watermarkSize.height / 2 / svgScale"
+						/>
+					</g>
 					<g class="page-tokens">
 						<SheetToken v-for="(token, ii) of page.tokens" :key="ii" :token="token" />
 					</g>
@@ -202,6 +210,7 @@
 				default: true,
 			},
 			scheduler: Object,
+			watermark: String,
 		},
 
 
@@ -211,6 +220,10 @@
 				//scheduler: null,
 				statusMap: new Map(),
 				shownPages: [],
+				watermarkSize: {
+					width: 256,
+					height: 256,
+				},
 			};
 		},
 
@@ -273,6 +286,15 @@
 			this.preparePlayer();
 
 			this.showPages();
+
+			if (this.watermark) {
+				const img = new Image();
+				img.src = this.watermark;
+				img.onload = () => {
+					this.watermarkSize.width = img.naturalWidth;
+					this.watermarkSize.height = img.naturalHeight;
+				};
+			}
 		},
 
 
@@ -639,6 +661,11 @@
 			{
 				fill: transparent;
 			}
+		}
+
+		.wm
+		{
+			pointer-events: none;
 		}
 
 		.cursor
