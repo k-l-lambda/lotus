@@ -24,7 +24,7 @@
 				</g>
 				<g v-if="!bakingMode">
 					<g v-if="watermark" class="wm">
-						<image :xlink:href="watermark"
+						<image :href="watermark"
 							:x="(doc.pageSize.width - watermarkSize.width) / 2 / svgScale"
 							:y="(doc.pageSize.height - watermarkSize.height) / 2 / svgScale"
 							:width="watermarkSize.width / 2 / svgScale"
