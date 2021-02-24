@@ -131,9 +131,9 @@ const parseAdditionalLineStacks = (tokens: StaffToken[]): LineStack[] => {
 };
 
 
-const tokensRowsSplit = (tokens, logger) => {
+const tokensSystemsSplit = (tokens, logger) => {
 	if (!tokens.length) {
-		logger.append("tokensRowsSplit.emptyTokens");
+		logger.append("tokensSystemsSplit.emptyTokens");
 		return [];
 	}
 
@@ -144,13 +144,13 @@ const tokensRowsSplit = (tokens, logger) => {
 
 	const connections = tokens.filter(token => token.is("STAVES_CONNECTION"));
 	if (!connections.length) {
-		// single line row, split by staff lines
+		// single line system, split by staff lines
 		const lines = tokens.filter(token => token.is("STAFF_LINE"));
 		lines.forEach(line => pageTile[Math.round(line.y)] = 0);
 
 		// non-staff page
 		if (!lines.length) {
-			logger.append("tokensRowsSplit.noConnetionsOrLines", {tokens});
+			logger.append("tokensSystemsSplit.noConnetionsOrLines", {tokens});
 			return [];
 		}
 
@@ -191,8 +191,8 @@ const tokensRowsSplit = (tokens, logger) => {
 		});
 	}
 
-	//logger.append("tokensRowsSplit.pageTile.0", [...pageTile]);
-	//logger.append("tokensRowsSplit.connections", connections);
+	//logger.append("tokensSystemsSplit.pageTile.0", [...pageTile]);
+	//logger.append("tokensSystemsSplit.connections", connections);
 
 	const lineStacks = parseAdditionalLineStacks(tokens);
 	lineStacks.forEach(stack => {
@@ -201,12 +201,12 @@ const tokensRowsSplit = (tokens, logger) => {
 				break;
 		}
 	});
-	//logger.append("tokensRowsSplit.lineStacks", lineStacks);
+	//logger.append("tokensSystemsSplit.lineStacks", lineStacks);
 	const validLineStacks = lineStacks.filter(stack => stack.systemIndex >= 0);
 	if (validLineStacks.length < lineStacks.length)
-		logger.append("tokensRowsSplit.invalidLineStacks", lineStacks.filter(stack => !(stack.systemIndex >= 0)));
+		logger.append("tokensSystemsSplit.invalidLineStacks", lineStacks.filter(stack => !(stack.systemIndex >= 0)));
 
-	// fill interval between 8va and row top
+	// fill interval between 8va and system top
 	const octaveAs = tokens.filter(token => token.is("OCTAVE A"));
 	octaveAs.forEach(token => {
 		const nextIndex = pageTile.find((index, y) => y > token.y && index >= 0);
@@ -217,24 +217,24 @@ const tokensRowsSplit = (tokens, logger) => {
 			pageTile[y] = nextIndex;
 		}
 	});
-	//logger.append("tokensRowsSplit.octaveAs", octaveAs);
+	//logger.append("tokensSystemsSplit.octaveAs", octaveAs);
 
-	//logger.append("tokensRowsSplit.pageTile.2", pageTile);
+	//logger.append("tokensSystemsSplit.pageTile.2", pageTile);
 
-	const rowBoundaries = pageTile.reduce((boundaries, index, y) => {
+	const systemBoundaries = pageTile.reduce((boundaries, index, y) => {
 		if (index >= boundaries.length)
 			boundaries.push(y - 1);
 
 		return boundaries;
 	}, []);
 
-	rowBoundaries[0] = -Infinity;
-	//logger.append("tokensRowsSplit.rowBoundaries", rowBoundaries);
+	systemBoundaries[0] = -Infinity;
+	//logger.append("tokensSystemsSplit.systemBoundaries", systemBoundaries);
 
-	const systems = Array(rowBoundaries.length).fill(null).map(() => ({tokens: [], stacks: []}));
+	const systems = Array(systemBoundaries.length).fill(null).map(() => ({tokens: [], stacks: []}));
 
 	validLineStacks.forEach(stack => systems[stack.systemIndex] && systems[stack.systemIndex].stacks.push(stack));
-	//logger.append("tokensRowsSplit.validLineStacks", {systems, validLineStacks});
+	//logger.append("tokensSystemsSplit.validLineStacks", {systems, validLineStacks});
 
 	tokens.forEach(token => {
 		for (const stack of validLineStacks) {
@@ -244,20 +244,20 @@ const tokensRowsSplit = (tokens, logger) => {
 					return;
 				}
 				else
-					logger.append("tokensRowsSplit.invalidStackSystemIndex", {stack, systems});
+					logger.append("tokensSystemsSplit.invalidStackSystemIndex", {stack, systems});
 			}
 		}
 
 		const y = Math.max(token.logicY, token.logicY + (token.height || 0) * 0.8);
-		for (let i = 0; i < rowBoundaries.length; ++i) {
-			if (y >= rowBoundaries[i] && (i >= rowBoundaries.length - 1 || y < rowBoundaries[i + 1])) {
+		for (let i = 0; i < systemBoundaries.length; ++i) {
+			if (y >= systemBoundaries[i] && (i >= systemBoundaries.length - 1 || y < systemBoundaries[i + 1])) {
 				systems[i].tokens.push(token);
 				return;
 			}
 		}
 	});
 
-	systems.forEach(row => row.tokens = row.tokens.sort((t1, t2) => t1.logicX - t2.logicX));
+	systems.forEach(system => system.tokens = system.tokens.sort((t1, t2) => t1.logicX - t2.logicX));
 
 	return systems;
 };
@@ -315,16 +315,16 @@ const parseChordsByStems = (tokens, logger) => {
 };
 
 
-const isRowToken = token => token.is("STAVES_CONNECTION") || token.is("BRACE") || token.is("VERTICAL_LINE");
+const isSystemToken = token => token.is("STAVES_CONNECTION") || token.is("BRACE") || token.is("VERTICAL_LINE");
 
 //const roundJoin = (x, y) => `${Math.round(x)},${Math.round(y)}`;
 
 
-const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
+const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 	const separatorYs : Set<number> = new Set();
 	const meanSeparators = tokens.filter(token => token.is("MEASURE_SEPARATOR"));
 	meanSeparators.forEach(token => separatorYs.add(token.ry));
-	//logger.append("parseTokenRow.meanSeparators", Array.from(meanSeparators));
+	//logger.append("parseTokenSystem.meanSeparators", Array.from(meanSeparators));
 
 	// remove separator Y from fake MEASURE_SEPARATOR
 	for (const y of Array.from(separatorYs).sort()) {
@@ -338,13 +338,13 @@ const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 		}
 	}
 
-	//logger.append("parseTokenRow.separatorYs", Array.from(separatorYs));
+	//logger.append("parseTokenSystem.separatorYs", Array.from(separatorYs));
 
 	const staffLines = tokens.filter(token => token.is("STAFF_LINE")).reduce((lines, token) => {
 		lines[token.ry] = token;
 		return lines;
 	}, {});
-	//logger.append("parseTokenRow.staffLines", Object.keys(staffLines));
+	//logger.append("parseTokenSystem.staffLines", Object.keys(staffLines));
 
 	// construct staff Y from staff lines when no separators
 	if (!separatorYs.size) {
@@ -359,27 +359,27 @@ const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 		.map(y => staffLines[y] ? y : y + POS_PRECISION).map(y => y + 2)
 		.sort((y1, y2) => y1 - y2)
 		.filter(y => staffLines[y - 2] && staffLines[y] && staffLines[y + 2]);
-	//logger.append("parseTokenRow.staffYs", staffYs);
+	//logger.append("parseTokenSystem.staffYs", staffYs);
 
 	const additionalLines = tokens.filter(token => token.is("ADDITIONAL_LINE")).sort((l1, l2) => l1.y - l2.y);
 	const additionalLinesYs = additionalLines.reduce((ys, token) => {
 		ys.add(token.ry);
 		return ys;
 	}, new Set());
-	//logger.append("parseTokenRow.additionalLinesYs", Array.from(additionalLinesYs));
+	//logger.append("parseTokenSystem.additionalLinesYs", Array.from(additionalLinesYs));
 
 	/*for (const y of staffYs) {
 		console.assert(staffLines[y - 2] && staffLines[y] && staffLines[y + 2],
 			"no corresponding staff lines for separator", y - 2, Object.keys(staffLines));
 	}*/
 
-	const rowY = staffYs[0] - 2;
-	const rowX = staffLines[rowY] && staffLines[rowY].rx;
+	const systemY = staffYs[0] - 2;
+	const systemX = staffLines[systemY] && staffLines[systemY].rx;
 
 	const noteYs = tokens.filter(token => token.is("NOTE")).map(token => token.ry).concat(Object.keys(staffLines).map(Number));
 
-	const top = Math.min(...noteYs) - rowY;
-	const bottom = Math.max(...noteYs) - rowY;
+	const top = Math.min(...noteYs) - systemY;
+	const bottom = Math.max(...noteYs) - systemY;
 
 	//console.log("additionalLinesYs:", additionalLinesYs);
 	const splitters = [];
@@ -392,11 +392,11 @@ const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 		while (additionalLinesYs.has(down - 1))
 			--down;
 
-		//const splitter = Math.min(Math.max((staffYs[i] + staffYs[i + 1]) / 2, up + 1), down - 1) - rowY;
-		const splitter = (up + down) / 2 - rowY;
+		//const splitter = Math.min(Math.max((staffYs[i] + staffYs[i + 1]) / 2, up + 1), down - 1) - systemY;
+		const splitter = (up + down) / 2 - systemY;
 		splitters.push(splitter);
 
-		//logger.append("parseTokenRow.splitter", {splitter, up, down, rowY});
+		//logger.append("parseTokenSystem.splitter", {splitter, up, down, systemY});
 	}
 	splitters.push(Infinity);
 
@@ -429,7 +429,7 @@ const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 			markLineIndex(line, base);
 	});
 
-	//logger.append("parseTokenRow.indicesMap", indicesMap);*/
+	//logger.append("parseTokenSystem.indicesMap", indicesMap);*/
 
 	stacks.forEach(stack => {
 		for (let i = 0; i < staffYs.length; ++i) {
@@ -450,13 +450,13 @@ const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 	const appendToken = token => {
 		let index = 0;
 		const y = token.logicY;
-		//const indexInMap = indicesMap[roundJoin(token.x + rowX, y + rowY)];
+		//const indexInMap = indicesMap[roundJoin(token.x + systemX, y + systemY)];
 		const indexByStacks = findStaffByStacks(token);
 		if (Number.isInteger(indexByStacks))
 			index = indexByStacks;
 		else {
 			//if (token.is("NOTEHEAD"))
-			//	console.log("omit note:", token.href, roundJoin(token.x + rowX, y + rowY));
+			//	console.log("omit note:", token.href, roundJoin(token.x + systemX, y + systemY));
 			while (y > splitters[index])
 				++index;
 		}
@@ -465,14 +465,14 @@ const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 		staffTokens[index].push(token);
 	};
 
-	const localTokens = tokens.map(token => token.translate({x: -rowX, y: -rowY}));
-	stacks.forEach(stack => stack.translate({x: rowX, y: rowY}));
-	//logger.append("parseTokenRow.stacks", stacks);
+	const localTokens = tokens.map(token => token.translate({x: -systemX, y: -systemY}));
+	stacks.forEach(stack => stack.translate({x: systemX, y: systemY}));
+	//logger.append("parseTokenSystem.stacks", stacks);
 
 	parseChordsByStems(localTokens, logger);
 
 	localTokens
-		.filter(token => !isRowToken(token))
+		.filter(token => !isSystemToken(token))
 		.forEach(appendToken);
 
 	// measure ranges
@@ -496,18 +496,18 @@ const parseTokenRow = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 		headX: notes[0].x - 1.5,
 		noteRange: {begin: notes[0].x, end: x},
 	}));
-	//logger.append("parseTokenRow.measureRanges", measureRanges);
+	//logger.append("parseTokenSystem.measureRanges", measureRanges);
 
 	return {
-		x: rowX,
-		y: rowY,
+		x: systemX,
+		y: systemY,
 		top,
 		bottom,
-		tokens: localTokens.filter(isRowToken),
+		tokens: localTokens.filter(isSystemToken),
 		staves: staffYs.map((y, i) => staffTokens[i] && parseTokenStaff({
 			tokens: staffTokens[i],
-			y: y - rowY,
-			top: splitters[i] - (y - rowY),
+			y: y - systemY,
+			top: splitters[i] - (y - systemY),
 			measureRanges,
 			logger,
 		})),
@@ -672,10 +672,10 @@ const organizeTokens = (tokens, source: TextSource, {logger, viewBox, width, hei
 		note.addSymbol("TEMPO_NOTEHEAD");
 	});
 
-	const rowDatas = tokensRowsSplit(meaningfulTokens.filter(token => !isPageToken(token)), logger);
-	//logger.append("organizeTokens.rowDatas", rowDatas);
+	const systemDatas = tokensSystemsSplit(meaningfulTokens.filter(token => !isPageToken(token)), logger);
+	//logger.append("organizeTokens.systemDatas", systemDatas);
 
-	const systems = rowDatas.map(({tokens, stacks}) => parseTokenRow(tokens, stacks, logger));
+	const systems = systemDatas.map(({tokens, stacks}) => parseTokenSystem(tokens, stacks, logger));
 
 	return {
 		tokens: pageTokens,

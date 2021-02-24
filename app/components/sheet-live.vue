@@ -262,11 +262,17 @@
 			},
 
 
-			cursorRowIndex () {
+			cursorSystemIndex () {
 				if (!this.cursorPosition || !this.doc)
 					return null;
 
 				return this.cursorPosition.system;
+			},
+
+
+			// DEPRECATED
+			cursorRowIndex () {
+				return this.cursorSystemIndex;
 			},
 
 
@@ -535,7 +541,7 @@
 			},
 
 
-			eventToRowPosition (system, event) {
+			eventToSystemPosition (system, event) {
 				return {
 					x: event.offsetX / this.svgScale - system.x,
 					y: event.offsetY / this.svgScale - system.y,
@@ -544,13 +550,13 @@
 
 
 			eventToPointer (system, event) {
-				const pos = this.eventToRowPosition(system, event);
-				const rowIndex = system.index;
-				const measureIndex = this.doc.lookupMeasureIndex(rowIndex, pos.x);
-				const tick = this.scheduler && this.scheduler.lookupTick({system: rowIndex, x: pos.x});
+				const pos = this.eventToSystemPosition(system, event);
+				const systemIndex = system.index;
+				const measureIndex = this.doc.lookupMeasureIndex(systemIndex, pos.x);
+				const tick = this.scheduler && this.scheduler.lookupTick({system: systemIndex, x: pos.x});
 
 				return {
-					rowIndex, measureIndex, tick, ...pos,
+					systemIndex, measureIndex, tick, ...pos,
 				};
 			},
 
@@ -629,8 +635,8 @@
 			},
 
 
-			cursorRowIndex (value) {
-				this.$emit("cursorRowShift", value);
+			cursorSystemIndex (value) {
+				this.$emit("cursorSystemShift", value);
 			},
 
 

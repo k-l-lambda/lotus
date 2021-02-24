@@ -144,7 +144,7 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 		logger.append("parsePage", document.pages.indexOf(page));
 
 		for (const system of page.systems) {
-			logger.append("parseRow", page.systems.indexOf(system));
+			logger.append("parseSystem", page.systems.indexOf(system));
 
 			console.assert(system.staves.length === contexts.length, "staves size mismatched:", contexts.length, system.staves.length);
 			if (system.staves.length !== contexts.length)

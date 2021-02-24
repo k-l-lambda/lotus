@@ -245,10 +245,10 @@ class SheetDocument {
 	}
 
 
-	addMarking (rowIndex: number, staffIndex: number, data: Partial<SheetMarkingData>): SheetMarking {
-		const system = this.systems[rowIndex];
+	addMarking (systemIndex: number, staffIndex: number, data: Partial<SheetMarkingData>): SheetMarking {
+		const system = this.systems[systemIndex];
 		if (!system) {
-			console.warn("system index out of range:", rowIndex, this.systems.length);
+			console.warn("system index out of range:", systemIndex, this.systems.length);
 			return;
 		}
 
@@ -306,8 +306,8 @@ class SheetDocument {
 	}
 
 
-	lookupMeasureIndex (rowIndex: number, x: number): number {
-		const system = this.systems[rowIndex];
+	lookupMeasureIndex (systemIndex: number, x: number): number {
+		const system = this.systems[systemIndex];
 		if (!system || !system.measureIndices)
 			return null;
 
@@ -317,8 +317,8 @@ class SheetDocument {
 	}
 
 
-	tokensInRow (rowIndex: number): StaffToken[] {
-		const system = this.systems[rowIndex];
+	tokenInSystem (systemIndex: number): StaffToken[] {
+		const system = this.systems[systemIndex];
 		if (!system)
 			return null;
 
@@ -339,7 +339,7 @@ class SheetDocument {
 			return null;
 
 		return page.systems.reduce((tokens, system) => {
-			tokens.push(...this.tokensInRow(system.index).map(token => token.translate({x: system.x, y: system.y})));
+			tokens.push(...this.tokenInSystem(system.index).map(token => token.translate({x: system.x, y: system.y})));
 			return tokens;
 		}, withPageTokens ? [...page.tokens] : []);
 	}
