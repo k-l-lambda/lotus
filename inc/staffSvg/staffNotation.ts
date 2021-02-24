@@ -143,14 +143,14 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 	for (const page of document.pages) {
 		logger.append("parsePage", document.pages.indexOf(page));
 
-		for (const row of page.rows) {
-			logger.append("parseRow", page.rows.indexOf(row));
+		for (const system of page.systems) {
+			logger.append("parseRow", page.systems.indexOf(system));
 
-			console.assert(row.staves.length === contexts.length, "staves size mismatched:", contexts.length, row.staves.length);
-			if (row.staves.length !== contexts.length)
-				logger.append("mismatchedStaves", {contextLen: contexts.length, stavesLen: row.staves.length, row});
+			console.assert(system.staves.length === contexts.length, "staves size mismatched:", contexts.length, system.staves.length);
+			if (system.staves.length !== contexts.length)
+				logger.append("mismatchedStaves", {contextLen: contexts.length, stavesLen: system.staves.length, system});
 
-			row.staves.forEach((staff, i) => {
+			system.staves.forEach((staff, i) => {
 				logger.append("parseStaff", i);
 				if (contexts[i])
 					parseNotationInStaff(contexts[i], staff);

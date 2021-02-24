@@ -78,10 +78,13 @@ export interface SheetPage {
 		height: number,
 	};
 
-	rows: SheetSystem[];
+	systems: SheetSystem[];
 	tokens: StaffToken[];
 
 	hidden?: boolean;
+
+	// DEPRECATED
+	rows?: SheetSystem[];
 };
 
 
@@ -154,13 +157,19 @@ class SheetDocument {
 	}
 
 
+	get systems (): SheetSystem[] {
+		return [].concat(...this.pages.map(page => page.systems));
+	}
+
+
+	// DEPRECATED
 	get rows (): SheetSystem[] {
-		return [].concat(...this.pages.map(page => page.rows));
+		return this.systems;
 	}
 
 
 	get trackCount (): number{
-		return Math.max(...this.rows.map(row => row.staves.length), 0);
+		return Math.max(...this.systems.map(system => system.staves.length), 0);
 	}
 
 
@@ -180,25 +189,25 @@ class SheetDocument {
 		// remove null pages for broken document
 		this.pages = this.pages.filter(page => page);
 
-		this.pages.forEach((page, index) => page.rows.forEach(row => row.pageIndex = index));
+		this.pages.forEach((page, index) => page.systems.forEach(system => system.pageIndex = index));
 
 		let rowMeasureIndex = 1;
 
-		this.rows.forEach((row, index) => {
-			row.index = index;
-			row.width = row.tokens.concat(...row.staves.map(staff => staff.tokens))
+		this.systems.forEach((system, index) => {
+			system.index = index;
+			system.width = system.tokens.concat(...system.staves.map(staff => staff.tokens))
 				.reduce((max, token) => Math.max(max, token.x), 0);
 
-			row.measureIndices = [];
+			system.measureIndices = [];
 
-			row.staves = row.staves.filter(s => s);
-			row.staves.forEach((staff, t) => {
+			system.staves = system.staves.filter(s => s);
+			system.staves.forEach((staff, t) => {
 				staff.measures.forEach((measure, i) => {
 					measure.index = rowMeasureIndex + i;
 					measure.class = {};
 
 					measure.tokens.forEach(token => {
-						token.row = index;
+						token.system = index;
 						token.measure = measure.index;
 						token.endX = measure.noteRange.end;
 					});
@@ -208,21 +217,21 @@ class SheetDocument {
 						staff.measures[i + 1].lineX = measure.noteRange.end;
 
 					if (t === 0)
-						row.measureIndices.push([measure.noteRange.end, measure.index]);
+						system.measureIndices.push([measure.noteRange.end, measure.index]);
 				});
 
 				staff.markings = [];
 				staff.yRoundOffset = 0;
 			});
 
-			rowMeasureIndex += Math.max(...row.staves.map(staff => staff.measures.length));
+			rowMeasureIndex += Math.max(...system.staves.map(staff => staff.measures.length));
 		});
 	}
 
 
 	updateMatchedTokens (matchedIds: Set<string>) {
-		this.rows.forEach(row => {
-			row.staves.forEach(staff =>
+		this.systems.forEach(system => {
+			system.staves.forEach(staff =>
 				staff.measures.forEach(measure => {
 					measure.matchedTokens = measure.tokens.filter(token => token.href && matchedIds.has(token.href));
 
@@ -237,15 +246,15 @@ class SheetDocument {
 
 
 	addMarking (rowIndex: number, staffIndex: number, data: Partial<SheetMarkingData>): SheetMarking {
-		const row = this.rows[rowIndex];
-		if (!row) {
-			console.warn("row index out of range:", rowIndex, this.rows.length);
+		const system = this.systems[rowIndex];
+		if (!system) {
+			console.warn("system index out of range:", rowIndex, this.systems.length);
 			return;
 		}
 
-		const staff = row.staves[staffIndex];
+		const staff = system.staves[staffIndex];
 		if (!staff) {
-			console.warn("staff index out of range:", staffIndex, row.staves.length);
+			console.warn("staff index out of range:", staffIndex, system.staves.length);
 			return;
 		}
 
@@ -257,13 +266,13 @@ class SheetDocument {
 
 
 	removeMarking (id: string) {
-		this.rows.forEach(row => row.staves.forEach(staff =>
+		this.systems.forEach(system => system.staves.forEach(staff =>
 			staff.markings = staff.markings.filter(marking => marking.id !== id)));
 	}
 
 
 	clearMarkings () {
-		this.rows.forEach(row => row.staves.forEach(staff => staff.markings = []));
+		this.systems.forEach(system => system.staves.forEach(staff => staff.markings = []));
 	}
 
 
@@ -278,7 +287,7 @@ class SheetDocument {
 	getLocationTable (): MeasureLocationTable {
 		const table = {};
 
-		this.rows.forEach(row => row.staves.forEach(staff => staff.measures.forEach(measure => {
+		this.systems.forEach(system => system.staves.forEach(staff => staff.measures.forEach(measure => {
 			measure.tokens.forEach(token => {
 				if (token.href) {
 					const location = token.href.match(/\d+/g);
@@ -298,29 +307,29 @@ class SheetDocument {
 
 
 	lookupMeasureIndex (rowIndex: number, x: number): number {
-		const row = this.rows[rowIndex];
-		if (!row || !row.measureIndices)
+		const system = this.systems[rowIndex];
+		if (!system || !system.measureIndices)
 			return null;
 
-		const [_, index] = row.measureIndices.find(([end]) => x < end) || [null, null];
+		const [_, index] = system.measureIndices.find(([end]) => x < end) || [null, null];
 
 		return index;
 	}
 
 
 	tokensInRow (rowIndex: number): StaffToken[] {
-		const row = this.rows[rowIndex];
-		if (!row)
+		const system = this.systems[rowIndex];
+		if (!system)
 			return null;
 
-		return row.staves.reduce((tokens, staff) => {
+		return system.staves.reduce((tokens, staff) => {
 			const translate = token => token.translate({x: staff.x, y: staff.y});
 
 			tokens.push(...staff.tokens.map(translate));
 			staff.measures.forEach(measure => tokens.push(...measure.tokens.map(translate)));
 
 			return tokens;
-		}, [...row.tokens]);
+		}, [...system.tokens]);
 	}
 
 
@@ -329,8 +338,8 @@ class SheetDocument {
 		if (!page)
 			return null;
 
-		return page.rows.reduce((tokens, row) => {
-			tokens.push(...this.tokensInRow(row.index).map(token => token.translate({x: row.x, y: row.y})));
+		return page.systems.reduce((tokens, system) => {
+			tokens.push(...this.tokensInRow(system.index).map(token => token.translate({x: system.x, y: system.y})));
 			return tokens;
 		}, withPageTokens ? [...page.tokens] : []);
 	}
@@ -343,7 +352,7 @@ class SheetDocument {
 		const svgScale = this.pageSize.width / this.pages[0].viewBox.width;
 
 		this.pages.forEach((page, i) => {
-			const rects = page.rows.map(row => [row.x, row.x + row.width, row.y + row.top, row.y + row.bottom ]);
+			const rects = page.systems.map(system => [system.x, system.x + system.width, system.y + system.top, system.y + system.bottom ]);
 
 			const tokens = this.tokensInPage(i, {withPageTokens: pageTokens}) || [];
 			const tokenXs = tokens.map(token => token.x);
@@ -372,8 +381,8 @@ class SheetDocument {
 
 
 	getNoteHeads (): StaffToken[] {
-		return this.rows.reduce((tokens, row) => {
-			row.staves.forEach(staff => staff.measures.forEach(measure =>
+		return this.systems.reduce((tokens, system) => {
+			system.staves.forEach(staff => staff.measures.forEach(measure =>
 				tokens.push(...measure.tokens.filter(token => token.is("NOTEHEAD")))));
 
 			return tokens;
@@ -382,8 +391,8 @@ class SheetDocument {
 
 
 	getNotes (): StaffToken[] {
-		return this.rows.reduce((tokens, row) => {
-			row.staves.forEach(staff => staff.measures.forEach(measure =>
+		return this.systems.reduce((tokens, system) => {
+			system.staves.forEach(staff => staff.measures.forEach(measure =>
 				tokens.push(...measure.tokens.filter(token => token.is("NOTE")))));
 
 			return tokens;
@@ -392,8 +401,8 @@ class SheetDocument {
 
 
 	getTokenMap (): Map<string, StaffToken> {
-		return this.rows.reduce((tokenMap, row) => {
-			row.staves.forEach(staff => staff.measures.forEach(measure => measure.tokens
+		return this.systems.reduce((tokenMap, system) => {
+			system.staves.forEach(staff => staff.measures.forEach(measure => measure.tokens
 				.filter(token => token.href)
 				.forEach(token => tokenMap.set(token.href, token))));
 
@@ -455,11 +464,11 @@ class SheetDocument {
 		this.pages.forEach(page => {
 			page.tokens = [];
 
-			page.rows.forEach(row => {
-				row.tokens = [];
-				row.measureIndices = row.measureIndices && row.measureIndices.map(([x, i]) => [round(x), i]);
+			page.systems.forEach(system => {
+				system.tokens = [];
+				system.measureIndices = system.measureIndices && system.measureIndices.map(([x, i]) => [round(x), i]);
 
-				row.staves.forEach(staff => {
+				system.staves.forEach(staff => {
 					staff.tokens = [];
 					staff.yRoundOffset = round(staff.yRoundOffset);
 					delete staff.top;

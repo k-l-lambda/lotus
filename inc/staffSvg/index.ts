@@ -128,8 +128,8 @@ const turnRawSvgWithSheetDocument = (svgText: string, page: SheetPage, {DOMParse
 	svg.setAttribute("height", page.height);
 	svg.setAttribute("viewBox", `${page.viewBox.x} ${page.viewBox.y} ${page.viewBox.width} ${page.viewBox.height}`);
 
-	const ids = page.rows.reduce((ids, row) => {
-		row.staves.forEach(staff => staff.measures.forEach(measure =>
+	const ids = page.systems.reduce((ids, system) => {
+		system.staves.forEach(staff => staff.measures.forEach(measure =>
 			ids.push(...measure.tokens.filter(token => token.is("NOTEHEAD")).map(token => token.href.replace(/:\d+$/, "")))));
 
 		return ids;

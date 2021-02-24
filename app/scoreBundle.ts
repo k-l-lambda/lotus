@@ -116,5 +116,9 @@ export default class ScoreBundle {
 
 		if (version > apiVersion)
 			console.warn(`The current Lotus API version[${npmPackage.version}] is behind this score bundle[${this.scoreJSON.version}]. If any score problem encountered, try to upgrade Lotus API.`);
+
+		// compatible conversion
+		if (version < parseVersion("0.8.0"))
+			this.scoreJSON.doc.pages.forEach(page => page.systems = page.rows);
 	}
 };

@@ -1,7 +1,7 @@
 
 // eslint-disable-next-line
 declare class StaffToken {
-	row?: number;
+	system?: number;
 	measure?: number;
 	x: number;
 	endX?: number;
@@ -11,7 +11,7 @@ declare class StaffToken {
 interface TickItem {
 	tick: number;
 	endTick?: number;
-	row: number;
+	system: number;
 	measure: number;
 	x: number;
 	endX: number;
@@ -19,7 +19,7 @@ interface TickItem {
 
 
 interface SheetPosition {
-	row: number,
+	system: number,
 	x: number,
 };
 
@@ -60,12 +60,12 @@ export default class Scheduler {
 			if (!tokens.length)
 				return null;
 	
-			tokens.sort((t1, t2) => t1.row === t2.row ? t1.x - t2.x : t1.row - t2.row);
+			tokens.sort((t1, t2) => t1.system === t2.system ? t1.x - t2.x : t1.system - t2.system);
 			const token = tokens[0];
 	
 			return {
 				tick: Number(tick),
-				row: token.row,
+				system: token.system,
 				measure: token.measure,
 				x: token.x,
 				endX: token.endX,
@@ -79,7 +79,7 @@ export default class Scheduler {
 			item.endTick = nextItem ? nextItem.tick : endTick;
 			console.assert(item.endTick > item.tick, "invalid tick item, tick span is non-positive:", item, tokenTable[item.tick]);
 
-			if (nextItem && item.row === nextItem.row && [0, 1].includes(nextItem.measure - item.measure))
+			if (nextItem && item.system === nextItem.system && [0, 1].includes(nextItem.measure - item.measure))
 				item.endX = nextItem.x;
 		});
 
@@ -124,14 +124,14 @@ export default class Scheduler {
 		const x = item.x + (tick - item.tick) * (item.endX - item.x) / (item.endTick - item.tick);
 
 		return {
-			row: item.row,
+			system: item.system,
 			x,
 		};
 	}
 
 
 	lookupTick (position: SheetPosition): number {
-		const rowItems = this.tickTable.filter(item => item.row === position.row).sort((i1, i2) => i1.x - i2.x);
+		const rowItems = this.tickTable.filter(item => item.system === position.system).sort((i1, i2) => i1.x - i2.x);
 		let item = rowItems.find(item => item.x <= position.x && item.endX >= position.x);
 		if (!item) {
 			const firstItem = rowItems[0];

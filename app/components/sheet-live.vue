@@ -11,14 +11,14 @@
 		>
 			<g v-if="!partialVisible || !page.hidden">
 				<g v-if="showMark" class="mark">
-					<g class="row" v-for="(row, ii) of page.rows" :key="ii"
-						:transform="`translate(${row.x}, ${row.y})`"
-						@mousemove="enablePointer && onMousemovePad(row, $event)"
-						@mouseleave="enablePointer && onMouseleavePad(row, $event)"
-						@click="onClickPad(row, $event)"
+					<g class="system" v-for="(system, ii) of page.systems" :key="ii"
+						:transform="`translate(${system.x}, ${system.y})`"
+						@mousemove="enablePointer && onMousemovePad(system, $event)"
+						@mouseleave="enablePointer && onMouseleavePad(system, $event)"
+						@click="onClickPad(system, $event)"
 					>
-						<rect :x="0" :y="row.top" :width="row.width" :height="row.bottom - row.top" />
-						<slot name="system" :row="row"></slot>
+						<rect :x="0" :y="system.top" :width="system.width" :height="system.bottom - system.top" />
+						<slot name="system" :system="system"></slot>
 					</g>
 					<slot name="page" :page="page"></slot>
 				</g>
@@ -34,16 +34,16 @@
 					<g class="page-tokens">
 						<SheetToken v-for="(token, ii) of page.tokens" :key="ii" :token="token" />
 					</g>
-					<g class="row" v-for="(row, ii) of page.rows" :key="ii"
-						:transform="`translate(${row.x}, ${row.y})`"
+					<g class="system" v-for="(system, ii) of page.systems" :key="ii"
+						:transform="`translate(${system.x}, ${system.y})`"
 					>
-						<rect class="cursor" v-if="showCursor && cursorPosition && cursorPosition.row === row.index"
-							:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
+						<rect class="cursor" v-if="showCursor && cursorPosition && cursorPosition.system === system.index"
+							:x="cursorPosition.x" :y="system.top - 0.5" width="1" :height="system.bottom - system.top + 1"
 						/>
 						<g>
-							<SheetToken v-for="(token, i5) of row.tokens" :key="i5" :token="token" />
+							<SheetToken v-for="(token, i5) of system.tokens" :key="i5" :token="token" />
 						</g>
-						<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
+						<g class="staff" v-for="(staff, iii) of system.staves" :key="iii"
 							:transform="`translate(${staff.x}, ${staff.y})`"
 						>
 							<g>
@@ -75,13 +75,13 @@
 					</g>
 				</g>
 				<g v-if="bakingMode" class="bake">
-					<g class="row" v-for="(row, ii) of page.rows" :key="ii"
-						:transform="`translate(${row.x}, ${row.y})`"
+					<g class="system" v-for="(system, ii) of page.systems" :key="ii"
+						:transform="`translate(${system.x}, ${system.y})`"
 					>
-						<rect class="cursor" v-if="showCursor && cursorPosition && cursorPosition.row === row.index"
-							:x="cursorPosition.x" :y="row.top - 0.5" width="1" :height="row.bottom - row.top + 1"
+						<rect class="cursor" v-if="showCursor && cursorPosition && cursorPosition.system === system.index"
+							:x="cursorPosition.x" :y="system.top - 0.5" width="1" :height="system.bottom - system.top + 1"
 						/>
-						<g class="staff" v-for="(staff, iii) of row.staves" :key="iii"
+						<g class="staff" v-for="(staff, iii) of system.staves" :key="iii"
 							:transform="`translate(${staff.x}, ${staff.y})`"
 						>
 							<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
@@ -252,13 +252,13 @@
 				if (!this.cursorPosition || !this.doc)
 					return null;
 
-				const row = this.doc.rows[this.cursorPosition.row];
-				console.assert(row, "invalid cursor row index:", this.cursorPosition);
+				const system = this.doc.systems[this.cursorPosition.system];
+				console.assert(system, "invalid cursor system index:", this.cursorPosition);
 
-				if (!row)
+				if (!system)
 					return null;
 
-				return row.pageIndex;
+				return system.pageIndex;
 			},
 
 
@@ -266,7 +266,7 @@
 				if (!this.cursorPosition || !this.doc)
 					return null;
 
-				return this.cursorPosition.row;
+				return this.cursorPosition.system;
 			},
 
 
@@ -469,7 +469,7 @@
 				}
 				const {y, alter} = context.pitchToY(pitch);
 
-				return this.doc.addMarking(position.row, staffIndex, {x: position.x + xoffset, y, text, alter, id, cls});
+				return this.doc.addMarking(position.system, staffIndex, {x: position.x + xoffset, y, text, alter, id, cls});
 			},
 
 
@@ -535,19 +535,19 @@
 			},
 
 
-			eventToRowPosition (row, event) {
+			eventToRowPosition (system, event) {
 				return {
-					x: event.offsetX / this.svgScale - row.x,
-					y: event.offsetY / this.svgScale - row.y,
+					x: event.offsetX / this.svgScale - system.x,
+					y: event.offsetY / this.svgScale - system.y,
 				};
 			},
 
 
-			eventToPointer (row, event) {
-				const pos = this.eventToRowPosition(row, event);
-				const rowIndex = row.index;
+			eventToPointer (system, event) {
+				const pos = this.eventToRowPosition(system, event);
+				const rowIndex = system.index;
 				const measureIndex = this.doc.lookupMeasureIndex(rowIndex, pos.x);
-				const tick = this.scheduler && this.scheduler.lookupTick({row: rowIndex, x: pos.x});
+				const tick = this.scheduler && this.scheduler.lookupTick({system: rowIndex, x: pos.x});
 
 				return {
 					rowIndex, measureIndex, tick, ...pos,
@@ -555,8 +555,8 @@
 			},
 
 
-			onMousemovePad (row, event) {
-				this.$emit("pointerUpdate", this.eventToPointer(row, event));
+			onMousemovePad (system, event) {
+				this.$emit("pointerUpdate", this.eventToPointer(system, event));
 			},
 
 
@@ -565,8 +565,8 @@
 			},
 
 
-			onClickPad (row, event) {
-				this.$emit("pointerClick", this.eventToPointer(row, event), event);
+			onClickPad (system, event) {
+				this.$emit("pointerClick", this.eventToPointer(system, event), event);
 			},
 
 

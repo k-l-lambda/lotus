@@ -231,35 +231,35 @@ const tokensRowsSplit = (tokens, logger) => {
 	rowBoundaries[0] = -Infinity;
 	//logger.append("tokensRowsSplit.rowBoundaries", rowBoundaries);
 
-	const rows = Array(rowBoundaries.length).fill(null).map(() => ({tokens: [], stacks: []}));
+	const systems = Array(rowBoundaries.length).fill(null).map(() => ({tokens: [], stacks: []}));
 
-	validLineStacks.forEach(stack => rows[stack.systemIndex] && rows[stack.systemIndex].stacks.push(stack));
-	//logger.append("tokensRowsSplit.validLineStacks", {rows, validLineStacks});
+	validLineStacks.forEach(stack => systems[stack.systemIndex] && systems[stack.systemIndex].stacks.push(stack));
+	//logger.append("tokensRowsSplit.validLineStacks", {systems, validLineStacks});
 
 	tokens.forEach(token => {
 		for (const stack of validLineStacks) {
 			if (stack.contains(token)) {
-				if (rows[stack.systemIndex]) {
-					rows[stack.systemIndex].tokens.push(token);
+				if (systems[stack.systemIndex]) {
+					systems[stack.systemIndex].tokens.push(token);
 					return;
 				}
 				else
-					logger.append("tokensRowsSplit.invalidStackSystemIndex", {stack, rows});
+					logger.append("tokensRowsSplit.invalidStackSystemIndex", {stack, systems});
 			}
 		}
 
 		const y = Math.max(token.logicY, token.logicY + (token.height || 0) * 0.8);
 		for (let i = 0; i < rowBoundaries.length; ++i) {
 			if (y >= rowBoundaries[i] && (i >= rowBoundaries.length - 1 || y < rowBoundaries[i + 1])) {
-				rows[i].tokens.push(token);
+				systems[i].tokens.push(token);
 				return;
 			}
 		}
 	});
 
-	rows.forEach(row => row.tokens = row.tokens.sort((t1, t2) => t1.logicX - t2.logicX));
+	systems.forEach(row => row.tokens = row.tokens.sort((t1, t2) => t1.logicX - t2.logicX));
 
-	return rows;
+	return systems;
 };
 
 
@@ -675,11 +675,11 @@ const organizeTokens = (tokens, source: TextSource, {logger, viewBox, width, hei
 	const rowDatas = tokensRowsSplit(meaningfulTokens.filter(token => !isPageToken(token)), logger);
 	//logger.append("organizeTokens.rowDatas", rowDatas);
 
-	const rows = rowDatas.map(({tokens, stacks}) => parseTokenRow(tokens, stacks, logger));
+	const systems = rowDatas.map(({tokens, stacks}) => parseTokenRow(tokens, stacks, logger));
 
 	return {
 		tokens: pageTokens,
-		rows,
+		systems,
 
 		viewBox,
 		width,

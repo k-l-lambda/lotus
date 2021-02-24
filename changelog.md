@@ -16,6 +16,8 @@
 
 *	2021.2.24
 
+	+	staffSvg: renamed code terminology of 'row' into 'system'.
+
 	+	organizeTokens.ts: reverse the definition of StaffToken.stemUp.
 
 
