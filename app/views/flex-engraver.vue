@@ -28,7 +28,7 @@
 			</div>
 		</header>
 		<main>
-			<SourceEditor :source.sync="currentSource && currentSource.content" />
+			<SourceEditor v-if="currentSource" :source.sync="currentSource.content" />
 			<div class="viewer">
 				<div class="sheet-container" ref="sheetContainer"
 					:style="{
@@ -288,20 +288,20 @@
 
 					console.assert(resultH.svgs.length === 1, "invalid page count:", resultH);
 					const sheetDocumentH = recoverJSON(resultH.doc, {StaffToken, SheetDocument});
-					const row = sheetDocumentH.pages[0].rows[0];
+					const system = sheetDocumentH.pages[0].systems[0];
 					const sizeFactor = (PAPER_WIDTH / sheetDocumentH.pages[0].viewBox.width) / TEST_STAFF_SIZE;
-					const naturalWidth = row.width * sizeFactor;
-					const naturalHeight = (row.bottom - row.top) * sizeFactor;
+					const naturalWidth = system.width * sizeFactor;
+					const naturalHeight = (system.bottom - system.top) * sizeFactor;
 					//console.log("natural size:", naturalWidth, naturalHeight, sheetDocumentH);
 
 					globalAttributes.paperWidth.value.number = PAPER_WIDTH_NARROW;
 					const resultV = await this.engrave(lilyDocument.toString(), {tokenize: true});
 					console.assert(resultV.svgs.length === 1, "invalid page count:", resultV);
 					const sheetDocumentV = recoverJSON(resultV.doc, {StaffToken, SheetDocument});
-					const rows = sheetDocumentV.pages[0].rows;
-					const heights = Array(rows.length - 1).fill(null).map((_, i) => rows[i + 1].y - rows[i].y);
+					const systems = sheetDocumentV.pages[0].systems;
+					const heights = Array(systems.length - 1).fill(null).map((_, i) => systems[i + 1].y - systems[i].y);
 					//console.log("heights:", heights);
-					const systemSpacing = Math.max(row.bottom - row.top, ...heights) * sizeFactor - naturalHeight;
+					const systemSpacing = Math.max(system.bottom - system.top, ...heights) * sizeFactor - naturalHeight;
 					//console.log("systemSpacing:", systemSpacing);
 
 					const newLiy = new LilyDocument(await this.lilyParser.parse(this.currentSourceContent));

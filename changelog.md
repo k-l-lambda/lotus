@@ -20,6 +20,13 @@
 			afad9dbdaa44e54908c76e7d44ea7a9a5f350bae [["d","M222 135c53 0 104 -27 104 -86c0 -71 -56 -120 -103 -148c-36 -22 -76 -36 -118 -36c-53 0 -105 27 -105 86c0 71 57 120 104 148c36 22 76 36 118 36z"],["scale",{"x":0.004,"y":-0.004}],["stroke-width",null],["type","path"]]
 
 
+*	2021.2.24
+
+	+	staffSvg: renamed code terminology of 'row' into 'system'.
+
+	+	organizeTokens.ts: reverse the definition of StaffToken.stemUp.
+
+
 *	2021.1.18
 
 	+	lilyInterpreter.ts: fixed implicit duration issue in splitLongRests.

@@ -27,7 +27,7 @@ export default class StaffToken {
 	stemUp?: boolean;
 	track?: number;
 
-	row?: number;
+	system?: number;
 	measure?: number;
 	endX?: number;
 
@@ -50,6 +50,15 @@ export default class StaffToken {
 			..._.pick(this, ["rx", "ry", "sw", "start", "target", "source", "tied",
 				"symbol", "hash", "href", "scale", "width", "height", "text", "stemX", "stemUp", "track"]),
 		};
+	}
+
+
+	// DEPRECATED
+	get row (): number {
+		return this.system;
+	}
+	set row (value: number) {
+		this.system = value;
 	}
 
 
