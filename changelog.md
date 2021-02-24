@@ -14,6 +14,11 @@
 
 
 
+*	2021.2.24
+
+	+	organizeTokens.ts: reverse the definition of StaffToken.stemUp.
+
+
 *	2021.1.18
 
 	+	lilyInterpreter.ts: fixed implicit duration issue in splitLongRests.
