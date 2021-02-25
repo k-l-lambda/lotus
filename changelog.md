@@ -1,7 +1,5 @@
 
 ## TODO
-	setup symbol hash - emmentaler font unicode mapping
-	StaffToken: glyph field
 	track-measure lilypond section editor
 		duration checker
 	lyrics in music normalization
