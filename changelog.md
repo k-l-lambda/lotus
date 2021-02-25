@@ -17,6 +17,8 @@
 
 *	2021.2.25
 
+	+	staffSvg: query tokens' glyph from glyph hash table.
+
 	+	tools/glyphHashTable.ts created.
 
 

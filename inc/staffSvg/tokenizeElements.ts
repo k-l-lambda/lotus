@@ -5,6 +5,7 @@ import {POS_PRECISION, SIZE_PRECISION, STROKE_PRECISION, roundNumber, sizeToStro
 import {identityHash, symbolize} from "./svgSymbols";
 import StaffToken from "./staffToken";
 import LogRecorder from "../logRecorder";
+import glyphHash from "./glyph-hash.json";
 
 
 
@@ -176,8 +177,10 @@ const tokenizeElements = (elements: StaffElement[], attributes: StaffAttributes,
 
 	const tokens = es.map(elem => {
 		const {x, y, rx, ry, sw, href, hash} = elem;
+		const glyph = glyphHash[hash];
+
 		return new StaffToken({
-			x, y, rx, ry, sw, href, hash,
+			x, y, rx, ry, sw, href, hash, glyph,
 			...symbolize(elem),
 		});
 	});

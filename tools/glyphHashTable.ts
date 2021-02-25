@@ -20,7 +20,7 @@ const processFontSvg = (text: string, table: Dict) => {
 			//console.log("glyph:", node);
 			const name = node.getAttribute("glyph-name");
 			const d = node.getAttribute("d");
-			const hash = sha1(`[["d","${d}"],["scale",{"x":0.004,"y":-0.004}],["stroke-width",null],["type","path"]]`);
+			const hash = sha1(JSON.stringify([["d",d],["scale",{x:0.004,y:-0.004}],["stroke-width",null],["type","path"]]));
 
 			if (!table[hash] || name < table[hash])
 				table[hash] = name;
