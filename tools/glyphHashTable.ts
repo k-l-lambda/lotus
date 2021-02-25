@@ -22,7 +22,8 @@ const processFontSvg = (text: string, table: Dict) => {
 			const d = node.getAttribute("d");
 			const hash = sha1(`[["d","${d}"],["scale",{"x":0.004,"y":-0.004}],["stroke-width",null],["type","path"]]`);
 
-			table[hash] = name;
+			if (!table[hash] || name < table[hash])
+				table[hash] = name;
 		}
 
 			break;
@@ -43,6 +44,14 @@ const main = () => {
 		"emmentaler-20.svg",
 		"emmentaler-23.svg",
 		"emmentaler-26.svg",
+		"ly2.21/emmentaler-11.svg",
+		"ly2.21/emmentaler-13.svg",
+		"ly2.21/emmentaler-14.svg",
+		"ly2.21/emmentaler-16.svg",
+		"ly2.21/emmentaler-18.svg",
+		"ly2.21/emmentaler-20.svg",
+		"ly2.21/emmentaler-23.svg",
+		"ly2.21/emmentaler-26.svg",
 	].map(filename => {
 		const svg = fs.readFileSync("./footages/" + filename).toString();
 		processFontSvg(svg, table);
@@ -50,7 +59,7 @@ const main = () => {
 
 	//console.log("table:", table);
 
-	fs.writeFileSync("./glyphHash.json", JSON.stringify(table));
+	fs.writeFileSync("./glyph-hash.json", JSON.stringify(table));
 };
 
 
