@@ -2,6 +2,7 @@
 import _ from "lodash";
 
 import {constants, roundNumber} from "./utils";
+import Glyph from "./glyph";
 
 
 
@@ -26,6 +27,7 @@ export default class StaffToken {
 	stemX?: number;
 	stemUp?: boolean;
 	track?: number;
+	glyph?: Glyph;
 
 	system?: number;
 	measure?: number;
