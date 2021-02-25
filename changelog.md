@@ -1,5 +1,6 @@
 
 ## TODO
+	sheet-live: options of output font
 	track-measure lilypond section editor
 		duration checker
 	lyrics in music normalization
@@ -14,6 +15,8 @@
 
 
 *	2021.2.25
+
+	+	scoreMaker.ts: added option of ignoreNotation on MakerOptions.
 
 	+	staffSvg: query tokens' glyph from glyph hash table.
 

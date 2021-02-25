@@ -195,6 +195,7 @@ interface MakerOptions {
 	logger: LogRecorder;
 	includeFolders: string[];
 	baking: boolean;
+	ignoreNotation: boolean;
 };
 
 
@@ -207,7 +208,7 @@ interface MakerResult {
 const makeScore = async (
 	source: string,
 	lilyParser: GrammarParser,
-	{midi, logger, baking = false, includeFolders}: Partial<MakerOptions> = {},
+	{midi, logger, baking = false, includeFolders, ignoreNotation = false}: Partial<MakerOptions> = {},
 ): Promise<MakerResult> => {
 	const t0 = Date.now();
 
@@ -215,14 +216,16 @@ const makeScore = async (
 	const {meta, doc, hashTable, bakingImages, lilyDocument} = foldData;
 
 	midi = midi || foldData.midi;
-	const lilyNotation = lilyDocument.interpret().getNotation();
+	const lilyNotation = !ignoreNotation && lilyDocument.interpret().getNotation();
 
-	if (!midi || !lilyNotation) {
-		if (!midi)
-			console.warn("Neither lilypond or external arguments did not offer MIDI data, score maker finished incompletely.");
+	if (ignoreNotation || !midi || !lilyNotation) {
+		if (!ignoreNotation) {
+			if (!midi)
+				console.warn("Neither lilypond or external arguments did not offer MIDI data, score maker finished incompletely.");
 
-		if (!lilyNotation)
-			console.warn("lilyNotation parsing failed, score maker finished incompletely.");
+			if (!lilyNotation)
+				console.warn("lilyNotation parsing failed, score maker finished incompletely.");
+		}
 
 		return {
 			score: {
