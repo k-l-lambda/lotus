@@ -12,6 +12,7 @@ import LilyDocument from "../lilyParser/lilyDocument";
 import {LilyDocumentAttribute, LilyDocumentAttributeReadOnly} from "../lilyParser/lilyDocument";
 import {Scheme, SchemePair} from "../lilyParser/lilyTerms";
 import {SheetPage, SheetSystem, SheetStaff, SheetMeasure} from "./sheetDocument";
+import Glyph from "./glyph";
 
 
 
@@ -177,4 +178,5 @@ export {
 	HashTable,
 	LilyDocumentAttribute,
 	LilyDocumentAttributeReadOnly,
+	Glyph,
 };
