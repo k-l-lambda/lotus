@@ -37,12 +37,6 @@ const identitySymbol = (symbol, obj) => {
 };
 
 
-/*const pathSymbol = (symbol, d) => elem => {
-	if (elem.identity.d === d)
-		return {symbol};
-};*/
-
-
 const simplifyPath = (d: string): string => d.replace(/\s+/g, " ").replace(/\d/g, "");
 
 
@@ -64,14 +58,6 @@ const pathFramesSymbol = (symbol: string, frames: string[]): SymbolizeRule => el
 const elemScale = (elem: Element, scale: number): boolean => elem.identity.scale
 	&& (Math.abs(elem.identity.scale.x) === scale)
 	&& (Math.abs(elem.identity.scale.y) === scale);
-
-
-/*const pathFramesScaleSymbol = (symbol, frames, scale) => elem => {
-	if (elem.identity.type === "path"
-		&& frames.includes(simplifyPath(elem.identity.d))
-		&& elemScale(elem, scale))
-		return {symbol};
-};*/
 
 
 const conditionSymbol = (symbol: string, condition: (elem: Element) => boolean, fields: (x: any) => object = () => ({})) => elem => {

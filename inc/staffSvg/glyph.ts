@@ -1,4 +1,8 @@
 
+import glyphHash from "./glyph-hash.json";
+
+
+
 enum Glyph {
 	"rests.0",
 	"rests.1",
@@ -577,5 +581,17 @@ enum Glyph {
 };
 
 
+const slashGlyphName = (glyph: Glyph): string => {
+	if (!glyph)
+		return null;
 
-export default Glyph;
+	return (glyph as any).replace(/\./g, "-").replace("*", "star");
+};
+
+
+
+export {
+	Glyph,
+	glyphHash,
+	slashGlyphName,
+};

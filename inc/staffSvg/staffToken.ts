@@ -2,7 +2,7 @@
 import _ from "lodash";
 
 import {constants, roundNumber} from "./utils";
-import Glyph from "./glyph";
+import {Glyph, slashGlyphName} from "./glyph";
 
 
 
@@ -230,6 +230,7 @@ export default class StaffToken {
 	}
 
 
+	// DEPRECATED
 	get fontChar (): string {
 		if (this.is("NOTEHEAD")) {
 			if (this.is("DIAMOND"))
@@ -246,6 +247,11 @@ export default class StaffToken {
 		}
 
 		return null;
+	}
+
+
+	get glyphClass (): string {
+		return slashGlyphName(this.glyph);
 	}
 
 
