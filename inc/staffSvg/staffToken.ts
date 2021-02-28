@@ -275,6 +275,7 @@ export default class StaffToken {
 	}
 
 
+	// DEPRECATED
 	get musicFontNoteOffset (): number {
 		return constants.MUSIC_FONT_NOTE_OFFSETS[this.noteType];
 	}

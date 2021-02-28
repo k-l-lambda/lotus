@@ -1,6 +1,5 @@
 
 ## TODO
-	sheet-live: options of output font
 	track-measure lilypond section editor
 		duration checker
 	lyrics in music normalization
@@ -15,6 +14,8 @@
 
 
 *	2021.2.28
+
+	+	sheet-live.vue: use font unicode for baking tokens.
 
 	+	sheet-signs.vue: glyph unicode added.
 

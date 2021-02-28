@@ -6,7 +6,7 @@
 			<g class="sign" v-for="sign of signs" :key="sign.id" :id="`sign-${sign.id}`"
 				:transform="sign.def.scale && !sign.glyph && `scale(${sign.def.scale.x}, ${sign.def.scale.y})`"
 			>
-				<text v-if="sign.glyph" class="font-char" font-size="4px" text-anchor="start" v-html="sign.glyph"></text>
+				<text v-if="sign.glyph" class="font-char" text-anchor="start" v-html="sign.glyph"></text>
 				<path v-if="sign.def.type === 'path' && !sign.glyph" :d="sign.def.d" :stroke-width="sign.def['stroke-width']" />
 				<rect v-if="sign.def.type === 'rect'"
 					x="0" y="0"
@@ -84,6 +84,12 @@
 		{
 			stroke: inherit;
 			fill: inherit;
+		}
+
+		.font-char
+		{
+			font-family: var(--music-font-family);
+			font-size: var(--music-font-size);
 		}
 	}
 </style>

@@ -115,7 +115,9 @@
 					@clickCNote="onClickMatcherNote"
 					@clickSNote="onClickMatcherNote"
 				/>
-				<div class="sheet-container font-Emmentaler" ref="sheetContainer" v-resize="onResize">
+				<div class="sheet-container" ref="sheetContainer" v-resize="onResize"
+					:style="{'--music-font-family': 'Emmentaler-26', '--music-font-size': '4px'}"
+				>
 					<SheetSimple v-if="svgDocuments && !tokenizeStaff"
 						:documents="svgDocuments"
 						@linkClick="onSheetLink"
