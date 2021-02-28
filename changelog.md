@@ -14,6 +14,11 @@
 		system splitting, chord mode symbol affiliation
 
 
+*	2021.2.28
+
+	+	staffSvg: move glyph indexing into svgSymbols.
+
+
 *	2021.2.25
 
 	+	scoreMaker.ts: added option of ignoreNotation on MakerOptions.
