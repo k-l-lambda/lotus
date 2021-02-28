@@ -12,6 +12,8 @@ type Element = {[key: string]: any};
 interface SymbolizeResult {
 	symbol?: string;
 	glyph?: string;
+
+	[key: string]: any;
 };
 
 
@@ -41,25 +43,25 @@ const identitySymbol = (symbol, obj) => {
 };*/
 
 
-const simplifyPath = d => d.replace(/\s+/g, " ").replace(/\d/g, "");
+const simplifyPath = (d: string): string => d.replace(/\s+/g, " ").replace(/\d/g, "");
 
 
-const pointsSize = points => points.split(" ").length;
+const pointsSize = (points: string): number => points.split(" ").length;
 
 
-const pathFrameSymbol = (symbol, frame) => elem => {
+const pathFrameSymbol = (symbol: string, frame: string): SymbolizeRule => elem => {
 	if (elem.identity.type === "path" && simplifyPath(elem.identity.d) === frame)
 		return {symbol, glyph: elem.glyph};
 };
 
 
-const pathFramesSymbol = (symbol, frames) => elem => {
+const pathFramesSymbol = (symbol: string, frames: string[]): SymbolizeRule => elem => {
 	if (elem.identity.type === "path" && frames.includes(simplifyPath(elem.identity.d)))
 		return {symbol, glyph: elem.glyph};
 };
 
 
-const elemScale = (elem, scale: number) => elem.identity.scale
+const elemScale = (elem: Element, scale: number): boolean => elem.identity.scale
 	&& (Math.abs(elem.identity.scale.x) === scale)
 	&& (Math.abs(elem.identity.scale.y) === scale);
 
@@ -72,7 +74,7 @@ const elemScale = (elem, scale: number) => elem.identity.scale
 };*/
 
 
-const conditionSymbol = (symbol, condition, fields: (any) => object = () => ({})) => elem => {
+const conditionSymbol = (symbol: string, condition: (elem: Element) => boolean, fields: (x: any) => object = () => ({})) => elem => {
 	if (condition(elem))
 		return {symbol, ...fields(elem)};
 };
@@ -198,14 +200,14 @@ const symbolRules: SymbolizeRule[] = [
 pathSymbols.forEach(({symbol, ds}) => symbolRules.push(pathFramesSymbol(symbol, ds)));
 
 
-const postSymbolProcess = (symbol, process) => (elem, result) => {
+const postSymbolProcess = (symbol: string, process: PostSymbolizeRule): PostSymbolizeRule => (elem, result) => {
 	const symbols = result.symbol && result.symbol.split(" ");
 	if (symbols && symbols.includes(symbol))
 		process(elem, result);
 };
 
 
-const postConditionSymbol = (symbol, condition, addSymbol): PostSymbolizeRule => (elem, result) => {
+const postConditionSymbol = (symbol: string, condition: (elem: Element) => boolean, addSymbol: string): PostSymbolizeRule => (elem, result) => {
 	const symbols = result.symbol && result.symbol.split(" ");
 	if (symbols && symbols.includes(symbol) && condition(elem))
 		result.symbol = [...symbols, addSymbol].join(" ");
