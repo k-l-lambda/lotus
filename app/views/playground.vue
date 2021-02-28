@@ -48,6 +48,7 @@
 			</fieldset>
 			<fieldset v-show="tokenizeStaff">
 				<BoolStoreInput v-show="false" v-model="bakingSheet" sessionKey="lotus-bakingSheet" />
+				<CheckButton content="&#x5b57;" v-model="enabledMusicFont" title="enabled music font" />
 				<CheckButton content="&#x1f35e;" v-model="bakingSheet" title="baking sheet" />
 				<CheckButton v-show="bakingSheet" content="&#x1f9b2;" v-model="hideBakingImages" title="hide baking images" />
 			</fieldset>
@@ -114,12 +115,12 @@
 					@clickCNote="onClickMatcherNote"
 					@clickSNote="onClickMatcherNote"
 				/>
-				<div class="sheet-container" ref="sheetContainer" v-resize="onResize">
+				<div class="sheet-container font-Emmentaler" ref="sheetContainer" v-resize="onResize">
 					<SheetSimple v-if="svgDocuments && !tokenizeStaff"
 						:documents="svgDocuments"
 						@linkClick="onSheetLink"
 					/>
-					<SheetSigns v-if="svgHashTable" v-show="false" :hashTable="svgHashTable" />
+					<SheetSigns v-if="svgHashTable" v-show="false" :hashTable="svgHashTable" :enabledFont="enabledMusicFont" />
 					<SheetLive v-if="tokenizeStaff && sheetDocument" ref="sheet"
 						:doc="sheetDocument"
 						:midiNotation="midiNotation"
@@ -470,6 +471,7 @@
 				lilyTextSourceDirty: false,
 				bakingSheet: false,
 				bakingImages: null,
+				enabledMusicFont: false,
 				hideBakingImages: false,
 				lilyMarkupMethods: Object.getOwnPropertyNames(LilyDocument.prototype),
 				chosenLilyMarkupMethod: null,
@@ -1597,7 +1599,9 @@
 	@import "../styles/common.scss";
 	@import "../styles/chromatic.scss";
 
-	
+	@import "../styles/emmentaler-font.scss";
+
+
 	.drag-hover
 	{
 		&[data-hover-type="text/x-lilypond"], &[data-hover-type="text/lilypond-source"]

@@ -16,6 +16,8 @@
 
 *	2021.2.28
 
+	+	sheet-signs.vue: glyph unicode added.
+
 	+	sheet-signs.vue: font option added.
 
 	+	staffSvg: move glyph indexing into svgSymbols.

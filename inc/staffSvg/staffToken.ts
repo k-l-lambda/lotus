@@ -2,7 +2,7 @@
 import _ from "lodash";
 
 import {constants, roundNumber} from "./utils";
-import {Glyph, slashGlyphName} from "./glyph";
+import {Glyph, slashGlyphName, GlyphUnicode} from "./glyph";
 
 
 
@@ -252,6 +252,11 @@ export default class StaffToken {
 
 	get glyphClass (): string {
 		return slashGlyphName(this.glyph);
+	}
+
+
+	get fontUnicode (): string {
+		return GlyphUnicode[this.glyph];
 	}
 
 

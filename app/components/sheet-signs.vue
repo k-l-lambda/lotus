@@ -4,9 +4,9 @@
 	>
 		<defs>
 			<g class="sign" v-for="sign of signs" :key="sign.id" :id="`sign-${sign.id}`"
-				:transform="sign.def.scale && `scale(${sign.def.scale.x}, ${sign.def.scale.y})`"
+				:transform="sign.def.scale && !sign.glyph && `scale(${sign.def.scale.x}, ${sign.def.scale.y})`"
 			>
-				<text v-if="sign.glyph" :class="sign.glyph"></text>
+				<text v-if="sign.glyph" class="font-char" font-size="4px" text-anchor="start" v-html="sign.glyph"></text>
 				<path v-if="sign.def.type === 'path' && !sign.glyph" :d="sign.def.d" :stroke-width="sign.def['stroke-width']" />
 				<rect v-if="sign.def.type === 'rect'"
 					x="0" y="0"
@@ -58,7 +58,10 @@
 				if (!this.hashTable)
 					return [];
 
-				return Object.entries(this.hashTable).map(([id, def]) => ({id, def, glyph: this.enabledFont ? glyph.slashGlyphName(glyph.glyphHash[id]) : null}));
+				return Object.entries(this.hashTable).map(([id, def]) => ({
+					id, def,
+					glyph: this.enabledFont ? (glyph.glyphHash[id] && glyph.GlyphUnicode[glyph.glyphHash[id]]) : null,
+				}));
 			},
 		},
 	};
