@@ -45,13 +45,13 @@ const pointsSize = (points: string): number => points.split(" ").length;
 
 const pathFrameSymbol = (symbol: string, frame: string): SymbolizeRule => elem => {
 	if (elem.identity.type === "path" && simplifyPath(elem.identity.d) === frame)
-		return {symbol, glyph: elem.glyph};
+		return {symbol};
 };
 
 
 const pathFramesSymbol = (symbol: string, frames: string[]): SymbolizeRule => elem => {
 	if (elem.identity.type === "path" && frames.includes(simplifyPath(elem.identity.d)))
-		return {symbol, glyph: elem.glyph};
+		return {symbol};
 };
 
 
@@ -242,6 +242,8 @@ const postSymbolRules: PostSymbolizeRule[] = [
 
 
 const postSymbolize = (elem: Element, result: SymbolizeResult): SymbolizeResult => {
+	result.glyph = result.glyph || elem.glyph;
+
 	for (const rule of postSymbolRules) 
 		rule(elem, result);
 
@@ -252,13 +254,16 @@ const postSymbolize = (elem: Element, result: SymbolizeResult): SymbolizeResult 
 const symbolize = (elem: Element): SymbolizeResult => {
 	elem.glyph = glyphHash[elem.hash];
 
+	let result = {};
 	for (const rule of symbolRules) {
-		const result = rule(elem);
-		if (result)
-			return postSymbolize(elem, result);
+		const r = rule(elem);
+		if (r) {
+			result = r;
+			break;
+		}
 	}
 
-	return {};
+	return postSymbolize(elem, result);
 };
 
 
