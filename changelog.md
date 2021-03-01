@@ -15,6 +15,8 @@
 
 *	2021.3.1
 
+	+	organizeTokens.ts: mark volta dot symbols in parseTokenStaff.
+
 	+	glyphHashTable.ts: added minor scale token (0.0028) hashes.
 
 
