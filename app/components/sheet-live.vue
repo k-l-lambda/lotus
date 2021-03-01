@@ -59,6 +59,7 @@
 										attached: Number.isFinite(token.stemX),
 									}"
 									:showTitle="showMark"
+									:scale="enabledFont ? token.scale : null"
 									@click="$emit('click-token', token, $event)"
 								/>
 							</g>
@@ -217,6 +218,7 @@
 				type: String,
 				default: DEFAULT_WATERMARK,
 			},
+			enabledFont: Boolean,
 		},
 
 

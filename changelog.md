@@ -1,6 +1,5 @@
 
 ## TODO
-	notehead with scale 0.0028 in \grace
 	track-measure lilypond section editor
 		duration checker
 	lyrics in music normalization
@@ -12,6 +11,11 @@
 			add partial on standalone block
 		treble_8
 		system splitting, chord mode symbol affiliation
+
+
+*	2021.3.1
+
+	+	glyphHashTable.ts: added minor scale token (0.0028) hashes.
 
 
 *	2021.2.28

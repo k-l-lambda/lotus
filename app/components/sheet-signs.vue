@@ -9,8 +9,9 @@
 				<text v-if="sign.glyph" class="font-char" text-anchor="start" v-html="sign.glyph"></text>
 				<path v-if="sign.def.type === 'path' && !sign.glyph" :d="sign.def.d" :stroke-width="sign.def['stroke-width']" />
 				<rect v-if="sign.def.type === 'rect'"
-					x="0" :y="sign.def.height >= 0 ? 0 : sign.def.height"
-					:width="sign.def.width"
+					:x="sign.def.width >= 0 ? 0 : sign.def.width"
+					:y="sign.def.height >= 0 ? 0 : sign.def.height"
+					:width="Math.abs(sign.def.width)"
 					:height="Math.abs(sign.def.height)"
 				/>
 				<line v-if="sign.def.type === 'line'"

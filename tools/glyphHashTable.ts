@@ -10,6 +10,10 @@ import * as domUtils from "../inc/domUtils";
 type Dict = {[key: string]: string};
 
 
+const NORMAL_SCALE = 0.004;
+const MINOR_SCALE = 0.0028;
+
+
 const processFontSvg = (text: string, table: Dict) => {
 	const doc = new DOMParser().parseFromString(text, "text/xml");
 	//console.log("doc:", doc);
@@ -20,10 +24,15 @@ const processFontSvg = (text: string, table: Dict) => {
 			//console.log("glyph:", node);
 			const name = node.getAttribute("glyph-name");
 			const d = node.getAttribute("d");
-			const hash = sha1(JSON.stringify([["d",d],["scale",{x:0.004,y:-0.004}],["stroke-width",null],["type","path"]]));
 
-			if (!table[hash] || name < table[hash])
-				table[hash] = name;
+			const isNotehead = /^noteheads/.test(name);
+			const scales = isNotehead ? [NORMAL_SCALE, MINOR_SCALE] : [NORMAL_SCALE];
+			scales.forEach(scale => {
+				const hash = sha1(JSON.stringify([["d",d],["scale",{x:scale,y:-scale}],["stroke-width",null],["type","path"]]));
+
+				if (!table[hash] || name < table[hash])
+					table[hash] = name;
+			});
 		}
 
 			break;

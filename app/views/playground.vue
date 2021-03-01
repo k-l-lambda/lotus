@@ -122,7 +122,10 @@
 						:documents="svgDocuments"
 						@linkClick="onSheetLink"
 					/>
-					<SheetSigns v-if="svgHashTable" v-show="false" :hashTable="svgHashTable" :enabledFont="enabledMusicFont" />
+					<SheetSigns v-if="svgHashTable" v-show="false"
+						:hashTable="svgHashTable"
+						:enabledFont="enabledMusicFont"
+					/>
 					<SheetLive v-if="tokenizeStaff && sheetDocument" ref="sheet"
 						:doc="sheetDocument"
 						:midiNotation="midiNotation"
@@ -134,6 +137,7 @@
 						:bakingMode="bakingSheet"
 						:backgroundImages="hideBakingImages ? null : bakingImages"
 						:scheduler.sync="scheduler"
+						:enabledFont="enabledMusicFont"
 						@midi="onMidi"
 						@cursorPageShift="onCursorPageShift"
 						@pointerUpdate="onPointerUpdate"
