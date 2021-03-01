@@ -1,5 +1,6 @@
 
 ## TODO
+	notehead with scale 0.0028 in \grace
 	track-measure lilypond section editor
 		duration checker
 	lyrics in music normalization
