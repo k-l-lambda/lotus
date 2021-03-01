@@ -1,4 +1,5 @@
 
+import npmPackage from "./package.json";
 import * as staffSvg from "./inc/staffSvg";
 import * as lilyParser from "./inc/lilyParser";
 import * as backend from "./backend";
@@ -11,7 +12,12 @@ import ScoreJSON from "./inc/scoreJSON";
 
 
 
+const version = npmPackage.version;
+
+
+
 export {
+	version,
 	staffSvg,
 	lilyParser,
 	LilyNotation,

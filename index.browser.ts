@@ -1,4 +1,5 @@
 
+import npmPackage from "./package.json";
 import * as staffSvg from "./inc/staffSvg";
 import * as staffNotation from "./inc/staffSvg/staffNotation";
 import {recoverJSON} from "./inc/jsonRecovery";
@@ -17,7 +18,12 @@ import ScoreBundle from "./app/scoreBundle";
 
 
 
+const version = npmPackage.version;
+
+
+
 export {
+	version,
 	staffSvg,
 	staffNotation,
 	recoverJSON,
