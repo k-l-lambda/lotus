@@ -241,8 +241,28 @@ const postSymbolRules: PostSymbolizeRule[] = [
 ];
 
 
+const glyphToSymbols: {[key: string]: string} = {
+	zero: "NUMBER 0",
+	one: "NUMBER 1",
+	two: "NUMBER 2",
+	three: "NUMBER 3",
+	four: "NUMBER 4",
+	five: "NUMBER 5",
+	six: "NUMBER 6",
+	seven: "NUMBER 7",
+	eight: "NUMBER 8",
+	nine: "NUMBER 9",
+};
+
+
 const postSymbolize = (elem: Element, result: SymbolizeResult): SymbolizeResult => {
 	result.glyph = result.glyph || elem.glyph;
+
+	if (result.glyph) {
+		const glyphSymbols = glyphToSymbols[result.glyph];
+		if (glyphSymbols)
+			result.symbol = [result.symbol, glyphSymbols].filter(Boolean).join(" ");
+	}
 
 	for (const rule of postSymbolRules) 
 		rule(elem, result);

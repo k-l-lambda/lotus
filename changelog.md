@@ -1,5 +1,6 @@
 
 ## TODO
+	deduce time signature symbol from glyph
 	track-measure lilypond section editor
 		duration checker
 	lyrics in music normalization
@@ -14,6 +15,8 @@
 
 
 *	2021.3.1
+
+	+	svgSymbols.ts: table of glyphToSymbols added.
 
 	+	organizeTokens.ts: mark volta dot symbols in parseTokenStaff.
 
