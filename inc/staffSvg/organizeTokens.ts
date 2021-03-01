@@ -563,48 +563,6 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 	});
 	//logger.append("measureRanges:", {measureRanges, accs});
 
-	/*// mark tied notes
-	const ties = localTokens.filter(token => token.is("SLUR") && token.source && (token.source[0] === "~" || token.source[1] === "~"));
-	//logger.append("parseTokenStaff.ties", ties);
-
-	const tieCondidateNotes = notes.filter(note => note.is("TIE"));
-
-	ties.forEach(tie => {
-		let offsetY = 0;
-		if (tie.is("UP"))
-			offsetY = 0.3;
-		if (tie.is("DOWN"))
-			offsetY = -0.3;
-
-		const position = {
-			x: tie.x + tie.target.x - 0.3,
-			y: tie.y + tie.target.y + offsetY,
-		};
-
-		const nearest = tieCondidateNotes.reduce((best, note) => {
-			if (!note.tied) {
-				//const distance = note.sourceProgress - tie.sourceProgress;
-				if (note.sourceProgress > tie.sourceProgress) {
-					const dx = note.x + constants.NOTE_TYPE_WIDTHS[note.noteType] * 0.5 - position.x;
-					const dy = (note.y - position.y) * 2;
-					//const distance = Math.sqrt(dx * dx + dy * dy) + (note.sourcePosition.line - tie.sourcePosition.line) * 0.2;
-					const distance = Math.sqrt(dx * dx + dy * dy);
-					if (dx > -2 && distance < best.distance) {
-						//logger.append("nearNote", {tipDistance, tie: tie.sourceProgress, note: note.sourceProgress});
-						return {distance, note};
-					}
-				}
-			}
-
-			return best;
-		}, {distance: Infinity});
-		if (nearest.note)
-			nearest.note.tied = true;
-			//logger.append("parseTokenStaff.tiedNote", {nearest, tie});
-		else
-			logger.append("parseTokenStaff.omitTie", {tie});
-	});*/
-
 	const measures = measureRanges.map((range, i) => {
 		const left = i > 0 ? measureRanges[i - 1].noteRange.end : -Infinity;
 
@@ -612,20 +570,12 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 			&& (token.logicX < range.noteRange.end || i === measureRanges.length - 1))
 			.sort((t1, t2) => t1.logicX - t2.logicX);
 
-		/*// shift fore headX by alters
-		const measureAlters = alters.filter(alter => !alter.is("NOTICE") && tokens.includes(alter));
-		//logger.append("measure.alters", {measureAlters, range});
-
-		let xbegin = range.noteRange.begin;
-		for (const alter of measureAlters) {
-			if (alter.x + constants.ALTER_WIDTHS[alter.alterValue] >= xbegin) {
-				range.headX = Math.min(range.headX, alter.x);
-				xbegin = Math.min(range.noteRange.begin, alter.x);
-			}
-			else
-				break;
-		}*/
-		//logger.append("measure.xbegin", {xbegin, headX: range.headX});
+		// mark volta repeat dots
+		const dots = tokens.filter(token => token.is("DOT"));
+		dots.forEach(dot  => {
+			if (Math.abs(dot.ry) === 0.5 && dot.x - left < 0.8 || dot.x - range.noteRange.end > -0.8)
+				dot.addSymbol("VOLTA");
+		});
 
 		return {
 			tokens,
