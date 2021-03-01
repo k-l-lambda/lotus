@@ -86,12 +86,12 @@
 						>
 							<g class="measure" v-for="(measure, i4) of staff.measures" :key="i4">
 								<g v-for="(token, i5) of measure.matchedTokens" :key="i5"
-									:transform="`translate(${token.x + token.musicFontNoteOffset}, ${token.y})` + (token.scale && token.scale !== 1 ? ` scale(${token.scale})` : '')"
+									:transform="`translate(${token.x}, ${token.y})` + (token.scale && token.scale !== 1 ? ` scale(${token.scale})` : '')"
 									class="token matched"
 									:class="{tied: token.tied}"
 									:data-track="token.track"
 								>
-									<text :data-href="token.href">{{token.fontChar}}</text>
+									<text :data-href="token.href">{{token.fontUnicode}}</text>
 								</g>
 							</g>
 							<g class="markings">
@@ -687,7 +687,7 @@
 
 		.bake
 		{
-			font-family: lotus-music;
+			font-family: var(--music-font-family);
 
 			.token
 			{
@@ -704,7 +704,7 @@
 		{
 			text
 			{
-				font-family: lotus-music;
+				font-family: var(--music-font-family);
 				user-select: none;
 				font-size: var(--music-font-size);
 			}

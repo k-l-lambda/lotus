@@ -3,7 +3,22 @@ import sha1 from "sha1";
 
 import {NOTEHEAD_BASE_SCALE, POS_PRECISION, roundNumber} from "./utils";
 import pathSymbols from "./path-symbols.json";
+import glyphHash from "./glyph-hash.json";
 
+
+
+type Element = {[key: string]: any};
+
+interface SymbolizeResult {
+	symbol?: string;
+	glyph?: string;
+
+	[key: string]: any;
+};
+
+
+type SymbolizeRule = (elem: Element) => SymbolizeResult;
+type PostSymbolizeRule = (elem: Element, result: SymbolizeResult) => void;
 
 
 const identityHash = obj => {
@@ -22,50 +37,36 @@ const identitySymbol = (symbol, obj) => {
 };
 
 
-/*const pathSymbol = (symbol, d) => elem => {
-	if (elem.identity.d === d)
-		return {symbol};
-};*/
+const simplifyPath = (d: string): string => d.replace(/\s+/g, " ").replace(/\d/g, "");
 
 
-const simplifyPath = d => d.replace(/\s+/g, " ").replace(/\d/g, "");
+const pointsSize = (points: string): number => points.split(" ").length;
 
 
-const pointsSize = points => points.split(" ").length;
-
-
-const pathFrameSymbol = (symbol, frame) => elem => {
+const pathFrameSymbol = (symbol: string, frame: string): SymbolizeRule => elem => {
 	if (elem.identity.type === "path" && simplifyPath(elem.identity.d) === frame)
-		return {symbol};
+		return {symbol, glyph: elem.glyph};
 };
 
 
-const pathFramesSymbol = (symbol, frames) => elem => {
+const pathFramesSymbol = (symbol: string, frames: string[]): SymbolizeRule => elem => {
 	if (elem.identity.type === "path" && frames.includes(simplifyPath(elem.identity.d)))
-		return {symbol};
+		return {symbol, glyph: elem.glyph};
 };
 
 
-const elemScale = (elem, scale: number) => elem.identity.scale
+const elemScale = (elem: Element, scale: number): boolean => elem.identity.scale
 	&& (Math.abs(elem.identity.scale.x) === scale)
 	&& (Math.abs(elem.identity.scale.y) === scale);
 
 
-/*const pathFramesScaleSymbol = (symbol, frames, scale) => elem => {
-	if (elem.identity.type === "path"
-		&& frames.includes(simplifyPath(elem.identity.d))
-		&& elemScale(elem, scale))
-		return {symbol};
-};*/
-
-
-const conditionSymbol = (symbol, condition, fields: (any) => object = () => ({})) => elem => {
+const conditionSymbol = (symbol: string, condition: (elem: Element) => boolean, fields: (x: any) => object = () => ({})) => elem => {
 	if (condition(elem))
 		return {symbol, ...fields(elem)};
 };
 
 
-const symbolRules = [
+const symbolRules: SymbolizeRule[] = [
 	pathFramesSymbol("NOTE NOTEHEAD CROSS", [
 		"M163 31l125 101c2 2 5 3 8 3s6 -1 8 -3l18 -14c3 -2 4 -6 4 -10s-1 -8 -4 -10l-121 -98l121 -98c3 -2 4 -6 4 -10s-1 -8 -4 -10l-18 -14c-2 -2 -5 -3 -8 -3s-6 1 -8 3l-125 101l-125 -101c-2 -2 -5 -3 -8 -3s-6 1 -8 3l-17 14c-3 2 -5 6 -5 10s2 8 5 10l120 98l-120 98		c-3 2 -5 6 -5 10s2 8 5 10l17 14c2 2 5 3 8 3s6 -1 8 -3z",
 	].map(simplifyPath)),
@@ -185,21 +186,21 @@ const symbolRules = [
 pathSymbols.forEach(({symbol, ds}) => symbolRules.push(pathFramesSymbol(symbol, ds)));
 
 
-const postSymbolProcess = (symbol, process) => (elem, result) => {
+const postSymbolProcess = (symbol: string, process: PostSymbolizeRule): PostSymbolizeRule => (elem, result) => {
 	const symbols = result.symbol && result.symbol.split(" ");
 	if (symbols && symbols.includes(symbol))
 		process(elem, result);
 };
 
 
-const postConditionSymbol = (symbol, condition, addSymbol) => (elem, result) => {
+const postConditionSymbol = (symbol: string, condition: (elem: Element) => boolean, addSymbol: string): PostSymbolizeRule => (elem, result) => {
 	const symbols = result.symbol && result.symbol.split(" ");
 	if (symbols && symbols.includes(symbol) && condition(elem))
 		result.symbol = [...symbols, addSymbol].join(" ");
 };
 
 
-const postSymbolRules = [
+const postSymbolRules: PostSymbolizeRule[] = [
 	postConditionSymbol("NUMBER", elem => elemScale(elem, 0.004), "TIME_SIG"),
 
 	postConditionSymbol("CLOSE", elem => elem.identity.height > 0, "UP"),
@@ -240,7 +241,7 @@ const postSymbolRules = [
 ];
 
 
-const postSymbolize = (elem, result) => {
+const postSymbolize = (elem: Element, result: SymbolizeResult): SymbolizeResult => {
 	for (const rule of postSymbolRules) 
 		rule(elem, result);
 
@@ -248,7 +249,9 @@ const postSymbolize = (elem, result) => {
 };
 
 
-const symbolize = elem => {
+const symbolize = (elem: Element): SymbolizeResult => {
+	elem.glyph = glyphHash[elem.hash];
+
 	for (const rule of symbolRules) {
 		const result = rule(elem);
 		if (result)

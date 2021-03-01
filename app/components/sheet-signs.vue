@@ -4,9 +4,10 @@
 	>
 		<defs>
 			<g class="sign" v-for="sign of signs" :key="sign.id" :id="`sign-${sign.id}`"
-				:transform="sign.def.scale && `scale(${sign.def.scale.x}, ${sign.def.scale.y})`"
+				:transform="sign.def.scale && !sign.glyph && `scale(${sign.def.scale.x}, ${sign.def.scale.y})`"
 			>
-				<path v-if="sign.def.type === 'path'" :d="sign.def.d" :stroke-width="sign.def['stroke-width']" />
+				<text v-if="sign.glyph" class="font-char" text-anchor="start" v-html="sign.glyph"></text>
+				<path v-if="sign.def.type === 'path' && !sign.glyph" :d="sign.def.d" :stroke-width="sign.def['stroke-width']" />
 				<rect v-if="sign.def.type === 'rect'"
 					x="0" y="0"
 					:width="sign.def.width"
@@ -38,12 +39,17 @@
 </template>
 
 <script>
+	import {glyph} from "../../inc/staffSvg";
+
+
+
 	export default {
 		name: "sheet-signs",
 
 
 		props: {
 			hashTable: Object,
+			enabledFont: Boolean,
 		},
 
 
@@ -52,7 +58,10 @@
 				if (!this.hashTable)
 					return [];
 
-				return Object.entries(this.hashTable).map(([id, def]) => ({id, def}));
+				return Object.entries(this.hashTable).map(([id, def]) => ({
+					id, def,
+					glyph: this.enabledFont ? (glyph.glyphHash[id] && glyph.GlyphUnicode[glyph.glyphHash[id]]) : null,
+				}));
 			},
 		},
 	};
@@ -75,6 +84,12 @@
 		{
 			stroke: inherit;
 			fill: inherit;
+		}
+
+		.font-char
+		{
+			font-family: var(--music-font-family);
+			font-size: var(--music-font-size);
 		}
 	}
 </style>

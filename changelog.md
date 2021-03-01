@@ -1,6 +1,5 @@
 
 ## TODO
-	sheet-live: options of output font
 	track-measure lilypond section editor
 		duration checker
 	lyrics in music normalization
@@ -12,6 +11,17 @@
 			add partial on standalone block
 		treble_8
 		system splitting, chord mode symbol affiliation
+
+
+*	2021.2.28
+
+	+	sheet-live.vue: use font unicode for baking tokens.
+
+	+	sheet-signs.vue: glyph unicode added.
+
+	+	sheet-signs.vue: font option added.
+
+	+	staffSvg: move glyph indexing into svgSymbols.
 
 
 *	2021.2.25
