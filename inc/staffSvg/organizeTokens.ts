@@ -574,12 +574,12 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 		const dots = tokens.filter(token => token.is("DOT"));
 		dots.forEach(dot  => {
 			if (Math.abs(dot.ry) === 0.5) {
-				if (dot.x - left < 1.2) {	// double lines will enlarge left line interval
+				if (dot.x - left < 2.9) {	// double lines will enlarge left line interval
 					dot.addSymbol("LEFT");
 					dot.addSymbol("VOLTA");
 				}
 
-				if (dot.x - range.noteRange.end > -0.8) {
+				if (dot.x - range.noteRange.end > -1.0) {
 					dot.addSymbol("RIGHT");
 					dot.addSymbol("VOLTA");
 				}
