@@ -1,7 +1,7 @@
 
 import sha1 from "sha1";
 
-import {NOTEHEAD_BASE_SCALE, POS_PRECISION, roundNumber} from "./utils";
+import {GLYPH_BASE_SCALE, POS_PRECISION, roundNumber} from "./utils";
 import pathSymbols from "./path-symbols.json";
 import glyphHash from "./glyph-hash.json";
 
@@ -217,9 +217,9 @@ const postSymbolRules: PostSymbolizeRule[] = [
 		}
 	}),
 
-	postSymbolProcess("NOTEHEAD", (elem, result) => {
-		result.scale = elem.identity.scale.x / NOTEHEAD_BASE_SCALE;
-	}),
+	/*postSymbolProcess("NOTEHEAD", (elem, result) => {
+		result.scale = elem.identity.scale.x / GLYPH_BASE_SCALE;
+	}),*/
 
 	postSymbolProcess("TEXT", (elem, result) => {
 		result.text = elem.identity.text;
@@ -257,6 +257,12 @@ const glyphToSymbols: {[key: string]: string} = {
 
 const postSymbolize = (elem: Element, result: SymbolizeResult): SymbolizeResult => {
 	result.glyph = result.glyph || elem.glyph;
+
+	if (result.glyph && elem.identity.scale) {
+		const scale = elem.identity.scale.x / GLYPH_BASE_SCALE;
+		if (scale !== 1)
+			result.scale = scale;
+	}
 
 	if (result.glyph) {
 		const glyphSymbols = glyphToSymbols[result.glyph];
