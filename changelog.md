@@ -1,6 +1,5 @@
 
 ## TODO
-	deduce time signature symbol from glyph
 	track-measure lilypond section editor
 		duration checker
 	lyrics in music normalization
@@ -12,6 +11,11 @@
 			add partial on standalone block
 		treble_8
 		system splitting, chord mode symbol affiliation
+
+
+*	2021.3.2
+
+	+	glyphHashTable.ts: added tiny scale for number glyphes.
 
 
 *	2021.3.1

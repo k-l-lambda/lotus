@@ -12,6 +12,7 @@ type Dict = {[key: string]: string};
 
 const NORMAL_SCALE = 0.004;
 const MINOR_SCALE = 0.0028;
+const TINY_SCALE = 0.0022;
 
 
 const processFontSvg = (text: string, table: Dict) => {
@@ -24,9 +25,14 @@ const processFontSvg = (text: string, table: Dict) => {
 			//console.log("glyph:", node);
 			const name = node.getAttribute("glyph-name");
 			const d = node.getAttribute("d");
+			const unicode = node.getAttribute("unicode");
 
-			const isNotehead = /^noteheads/.test(name);
-			const scales = isNotehead ? [NORMAL_SCALE, MINOR_SCALE] : [NORMAL_SCALE];
+			const scales = [NORMAL_SCALE];
+			if (/^noteheads/.test(name))
+				scales.push(MINOR_SCALE);
+			if (/^\d$/.test(unicode))
+				scales.push(TINY_SCALE);
+
 			scales.forEach(scale => {
 				const hash = sha1(JSON.stringify([["d",d],["scale",{x:scale,y:-scale}],["stroke-width",null],["type","path"]]));
 
