@@ -463,7 +463,7 @@
 				enabledFuzzyMatcher: true,
 				enabledSheetNotation: false,
 				lilyMarkups: {
-					enabled: false,
+					enabled: true,
 					staffSize: null,
 					autoPaperSize: true,
 					pageCount: 2,
