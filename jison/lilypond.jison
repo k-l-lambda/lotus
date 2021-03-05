@@ -266,6 +266,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\once"							return 'CMD_ONCE';
 "\\accidentalStyle"					return 'CMD_ACCIDENTALSTYLE';
 "\\numericTimeSignature"			return 'CMD_NUMERICTIMESIGNATURE';
+"\\defaultTimeSignature"			return 'CMD_DEFAULTTIMESIGNATURE';
 "\\bendAfter"						return 'CMD_BENDAFTER';
 "\\compoundMeter"					return 'CMD_COMPOUNDMETER';
 "\\transposition"					return 'CMD_TRANSPOSITION';
@@ -1513,6 +1514,8 @@ lyricmode_music_identifier
 		{$$ = command($1, $2);}
 	| CMD_NUMERICTIMESIGNATURE lyricmode_music_identifier
 		{$$ = command($1, $2);}
+	| CMD_DEFAULTTIMESIGNATURE
+		{$$ = command($1);}
 	| CMD_BENDAFTER scm_identifier
 		{$$ = command($1, $2);}
 	| CMD_COMPOUNDMETER scm_identifier
@@ -1974,6 +1977,8 @@ music_identifier
 		{$$ = command($1, $2);}
 	| CMD_NUMERICTIMESIGNATURE music_identifier
 		{$$ = command($1, $2);}
+	| CMD_DEFAULTTIMESIGNATURE
+		{$$ = command($1);}
 	| CMD_BENDAFTER scm_identifier
 		{$$ = command($1, $2);}
 	| CMD_COMPOUNDMETER scm_identifier
