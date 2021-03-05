@@ -270,12 +270,12 @@ const parseChordsByStems = (tokens, logger) => {
 	stems.forEach(stem => {
 		const rightAttached = notes.filter(note => stem.stemAttached({
 			x: note.x,
-			y: note.y + constants.NOTE_TYPE_JOINT_Y[note.noteType] * note.scale,
+			y: note.y + constants.NOTE_TYPE_JOINT_Y[note.noteType] * (note.scale || 1),
 			href: note.href,
 		}));
 		const leftAttached = notes.filter(note => stem.stemAttached({
-			x: note.x + constants.NOTE_TYPE_WIDTHS[note.noteType] * note.scale,
-			y: note.y - constants.NOTE_TYPE_JOINT_Y[note.noteType] * note.scale,
+			x: note.x + constants.NOTE_TYPE_WIDTHS[note.noteType] * (note.scale || 1),
+			y: note.y - constants.NOTE_TYPE_JOINT_Y[note.noteType] * (note.scale || 1),
 			href: note.href,
 		}));
 
