@@ -452,7 +452,7 @@
 			},
 
 
-			addMarkingByTick (tick, pitch, staffIndex, {id, cls, text = "\u0174", xoffset = 0} = {}) {
+			addMarkingByTick (tick, pitch, staffIndex, {id, cls, text = "\ue0a9", xoffset = 0} = {}) {
 				if (!this.pitchContextGroup) {
 					console.warn("[addMarkingByTick]	pitchContextGroup is required.");
 					return;
@@ -481,7 +481,7 @@
 			},
 
 
-			addMarkingByNote (noteIndex, pitch, {id = null, cls, text = "\u0174"} = {}) {
+			addMarkingByNote (noteIndex, pitch, {id = null, cls, text = "\ue0a9"} = {}) {
 				console.assert(this.midiNotation, "[addMarkingByNote]	midiNotation is null.");
 
 				const note = this.midiNotation.notes[noteIndex];
