@@ -98,11 +98,11 @@ export interface SheetPage {
 
 // char codes defined in music font
 const ALTER_PREFIXES = {
-	[-2]: "\u0125",
-	[-1]: "\u0122",
-	[0]: "\u0123",
-	[1]: "\u0121",
-	[2]: "\u0124",
+	[-2]: "\ue02a",
+	[-1]: "\ue021",
+	[0]: "\ue01d",
+	[1]: "\ue013",
+	[2]: "\ue01c",
 };
 
 

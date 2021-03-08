@@ -230,26 +230,6 @@ export default class StaffToken {
 	}
 
 
-	// DEPRECATED
-	get fontChar (): string {
-		if (this.is("NOTEHEAD")) {
-			if (this.is("DIAMOND"))
-				return "\u014f";
-
-			if (this.is("WHOLE"))
-				return "\u0141";
-			else if (this.is("HALF"))
-				return "\u017c";
-			else if (this.is("SOLID"))
-				return "\u0174";
-			else if (this.is("CROSS"))
-				return "\u014e";
-		}
-
-		return null;
-	}
-
-
 	get glyphClass (): string {
 		return slashGlyphName(this.glyph);
 	}
