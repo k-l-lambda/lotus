@@ -66,6 +66,12 @@ const conditionSymbol = (symbol: string, condition: (elem: Element) => boolean, 
 };
 
 
+const glyphSymbol = (symbol: string, glyph: string) => elem => {
+	if (elem.glyph === glyph)
+		return {symbol};
+};
+
+
 const symbolRules: SymbolizeRule[] = [
 	pathFramesSymbol("NOTE NOTEHEAD CROSS", [
 		"M163 31l125 101c2 2 5 3 8 3s6 -1 8 -3l18 -14c3 -2 4 -6 4 -10s-1 -8 -4 -10l-121 -98l121 -98c3 -2 4 -6 4 -10s-1 -8 -4 -10l-18 -14c-2 -2 -5 -3 -8 -3s-6 1 -8 3l-125 101l-125 -101c-2 -2 -5 -3 -8 -3s-6 1 -8 3l-17 14c-3 2 -5 6 -5 10s2 8 5 10l120 98l-120 98		c-3 2 -5 6 -5 10s2 8 5 10l17 14c2 2 5 3 8 3s6 -1 8 -3z",
@@ -180,6 +186,15 @@ const symbolRules: SymbolizeRule[] = [
 	conditionSymbol("NULL ENGRAVER_SIG", elem => elem.identity.type === "text" && /www\.lilypond\.org/.test(elem.identity.text)),
 
 	conditionSymbol("TEXT", elem => elem.identity.type === "text"),
+
+	glyphSymbol("ALTER FLAT", "accidentals.flat"),
+	glyphSymbol("ALTER FLATFLAT", "accidentals.flatflat"),
+	glyphSymbol("ALTER SHARP", "accidentals.sharp"),
+	glyphSymbol("ALTER SHARPSHARP", "accidentals.doublesharp"),
+	glyphSymbol("CLEF TREBLE", "clefs.G"),
+	glyphSymbol("CLEF TREBLE", "clefs.G_change"),
+	glyphSymbol("CLEF BASS", "clefs.F"),
+	glyphSymbol("CLEF BASS", "clefs.F_change"),
 ];
 
 

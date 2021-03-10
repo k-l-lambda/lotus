@@ -13,6 +13,11 @@
 		system splitting, chord mode symbol affiliation
 
 
+*	2021.3.10
+
+	+	svgSymbols.ts: added glyph to symbol rules.
+
+
 *	2021.3.2
 
 	+	glyphHashTable.ts: added tiny scale for number glyphes.
