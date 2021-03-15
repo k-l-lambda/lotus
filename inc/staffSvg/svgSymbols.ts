@@ -175,7 +175,7 @@ const symbolRules: SymbolizeRule[] = [
 		"stroke-dasharray": "0.362351432995067,0.537648567004933",
 	}),
 	conditionSymbol("OCTAVE CLOSE LINE", elem => elem.identity.type === "line" && Math.abs(elem.identity.height) === 0.8
-		&& elem.identity.width === 0 && elem.identity["stroke-dasharray"] === "1.0,0.0" && elem.identity["stroke-width"] < 0.2),
+		&& elem.identity.width === 0 /*&& elem.identity["stroke-dasharray"] === "1.0,0.0"*/ && elem.identity["stroke-width"] < 0.2),
 
 	pathFrameSymbol("DOT", "M c     s -  -s- - - -s-  - z"),
 
