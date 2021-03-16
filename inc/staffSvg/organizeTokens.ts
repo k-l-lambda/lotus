@@ -445,17 +445,29 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 		}
 	};
 
+	const localTokens = tokens.map(token => token.translate({x: -systemX, y: -systemY}));
+	const stems = localTokens.filter(token => token.is("NOTE_STEM"));
+
 	const staffTokens = [];
 	//console.log("splitters:", splitters);
 	const appendToken = token => {
 		let index = 0;
-		const y = token.logicY;
+		let y = token.logicY;
 		//const indexInMap = indicesMap[roundJoin(token.x + systemX, y + systemY)];
 		const indexByStacks = findStaffByStacks(token);
 		if (Number.isInteger(indexByStacks))
 			index = indexByStacks;
 		else {
-			// TODO: beam logic Y
+			// affiliate beam to a stem
+			if (token.is("NOTETAIL") && token.is("JOINT")) {
+				const stem = stems.find(stem => Math.abs(stem.x - token.x) < 0.1
+					&& token.y > stem.y - 0.1 && token.y < stem.y + stem.height + 0.1);
+
+				if (!stem)
+					console.debug("isolated beam:", token);
+				else
+					y = stem.logicY;
+			}
 
 			//if (token.is("NOTEHEAD"))
 			//	console.log("omit note:", token.href, roundJoin(token.x + systemX, y + systemY));
@@ -467,7 +479,6 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 		staffTokens[index].push(token);
 	};
 
-	const localTokens = tokens.map(token => token.translate({x: -systemX, y: -systemY}));
 	stacks.forEach(stack => stack.translate({x: systemX, y: systemY}));
 	//logger.append("parseTokenSystem.stacks", stacks);
 

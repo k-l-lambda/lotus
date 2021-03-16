@@ -15,6 +15,8 @@
 
 *	2021.3.16
 
+	+	organizeTokens.ts: affiliate beam to stem token to compute logic Y for staves splitting.
+
 	+	staffToken.ts: added logic Y offset for NOTE_STEM.
 
 
