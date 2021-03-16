@@ -463,10 +463,10 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 				const stem = stems.find(stem => Math.abs(stem.x - token.x) < 0.1
 					&& token.y > stem.y - 0.1 && token.y < stem.y + stem.height + 0.1);
 
-				if (!stem)
-					console.debug("isolated beam:", token);
-				else
+				if (stem)
 					y = stem.logicY;
+				//else
+				//	console.debug("isolated beam:", token);
 			}
 
 			//if (token.is("NOTEHEAD"))
