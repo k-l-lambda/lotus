@@ -121,6 +121,9 @@ export default class StaffToken {
 		if (this.is("OCTAVE CLOSE DOWN"))
 			return -3;
 
+		if (this.is("NOTE_STEM"))
+			return this.height / 2;
+
 		if (this.source) {
 			if (/^\^/.test(this.source))
 				return 3;

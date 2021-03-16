@@ -13,6 +13,11 @@
 		system splitting, chord mode symbol affiliation
 
 
+*	2021.3.16
+
+	+	staffToken.ts: added logic Y offset for NOTE_STEM.
+
+
 *	2021.3.10
 
 	+	svgSymbols.ts: added glyph to symbol rules.

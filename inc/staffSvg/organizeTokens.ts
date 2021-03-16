@@ -455,6 +455,8 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 		if (Number.isInteger(indexByStacks))
 			index = indexByStacks;
 		else {
+			// TODO: beam logic Y
+
 			//if (token.is("NOTEHEAD"))
 			//	console.log("omit note:", token.href, roundJoin(token.x + systemX, y + systemY));
 			while (y > splitters[index])
