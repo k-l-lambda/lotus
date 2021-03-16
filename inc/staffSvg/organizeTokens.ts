@@ -293,8 +293,8 @@ const parseChordsByStems = (tokens, logger) => {
 		const bottom = Math.abs(stem.y + stem.height - Math.max(...ys));
 
 		const up = top < bottom;
-		console.assert(up || leftAttached.length, "unexpected stem, downwards but no left-attached notes.");
-		console.assert(!up || rightAttached.length, "unexpected stem, upwards but no right-attached notes.");
+		//console.assert(up || leftAttached.length, "unexpected stem, downwards but no left-attached notes.");
+		//console.assert(!up || rightAttached.length, "unexpected stem, upwards but no right-attached notes.");
 
 		const anchorNote = up ? rightAttached[0] : leftAttached[0];
 		const anchorToken = anchorNote || stem;
