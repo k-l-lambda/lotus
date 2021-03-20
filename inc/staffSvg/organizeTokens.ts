@@ -206,6 +206,15 @@ const tokensSystemsSplit = (tokens, logger) => {
 	if (validLineStacks.length < lineStacks.length)
 		logger.append("tokensSystemsSplit.invalidLineStacks", lineStacks.filter(stack => !(stack.systemIndex >= 0)));
 
+	// fill page tile by line stacks
+	validLineStacks.forEach(stack => {
+		const {top, bottom} = stack.rect;
+		for (let y = Math.floor(top) - 1; y < Math.ceil(bottom); ++y) {
+			if (pageTile[y] < 0)
+				pageTile[y] = stack.systemIndex;
+		}
+	});
+
 	// fill interval between 8va and system top
 	const octaveAs = tokens.filter(token => token.is("OCTAVE A"));
 	octaveAs.forEach(token => {

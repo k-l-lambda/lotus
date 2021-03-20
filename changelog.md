@@ -13,6 +13,11 @@
 		system splitting, chord mode symbol affiliation
 
 
+*	2021.3.20
+
+	+	organizeTokens.ts: fill page tile by line stacks in tokensSystemsSplit.
+
+
 *	2021.3.16
 
 	+	organizeTokens.ts: affiliate beam to stem token to compute logic Y for staves splitting.
