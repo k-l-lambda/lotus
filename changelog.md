@@ -13,6 +13,11 @@
 		system splitting, chord mode symbol affiliation
 
 
+*	2021.3.24
+
+	+	svgSymbols.ts: added glyph rules of sustain pedals.
+
+
 *	2021.3.20
 
 	+	organizeTokens.ts: fill page tile by line stacks in tokensSystemsSplit.

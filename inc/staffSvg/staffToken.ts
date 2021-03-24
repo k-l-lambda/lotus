@@ -132,6 +132,9 @@ export default class StaffToken {
 				return -3;
 		}
 
+		if (this.is("SUSTAIN"))
+			return -3;
+
 		return 0;
 	}
 

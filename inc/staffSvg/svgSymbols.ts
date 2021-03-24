@@ -218,6 +218,8 @@ const symbolRules: SymbolizeRule[] = [
 	glyphSymbol("REST", "rests.7"),
 	glyphSymbol("REST", "rests.8"),
 	glyphSymbol("TIME_SIG C_BAR", "timesig.C22"),
+	glyphSymbol("SUSTAIN ON", "pedal.Ped"),
+	glyphSymbol("SUSTAIN OFF", "pedal.*"),
 ];
 
 
