@@ -135,6 +135,10 @@ export default class StaffToken {
 		if (this.is("SUSTAIN"))
 			return -3;
 
+		// 'dportato' is actually the UP version of Portato
+		if (this.glyph === "scripts.dportato" as any)
+			return 3;
+
 		return 0;
 	}
 
