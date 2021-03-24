@@ -220,6 +220,15 @@ const symbolRules: SymbolizeRule[] = [
 	glyphSymbol("TIME_SIG C_BAR", "timesig.C22"),
 	glyphSymbol("SUSTAIN ON", "pedal.Ped"),
 	glyphSymbol("SUSTAIN OFF", "pedal.*"),
+	glyphSymbol("EXPRESSIVE PORTATO UP", "scripts.dportato"),	// 'portato' glyph direction seems inversed in emmentaler v2017
+	glyphSymbol("EXPRESSIVE PORTATO DOWN", "scripts.uportato"),
+	glyphSymbol("EXPRESSIVE DMARCATO DOWN", "scripts.dmarcato"),
+	glyphSymbol("EXPRESSIVE DMARCATO UP", "scripts.umarcato"),
+	glyphSymbol("EXPRESSIVE TENUTO", "scripts.tenuto"),
+	glyphSymbol("EXPRESSIVE PRALL", "scripts.prall"),
+	glyphSymbol("EXPRESSIVE MORDENT", "scripts.mordent"),
+	glyphSymbol("EXPRESSIVE SHORTFERMATA UP", "scripts.ushortfermata"),
+	glyphSymbol("EXPRESSIVE SHORTFERMATA DOWN", "scripts.dshortfermata"),
 ];
 
 
