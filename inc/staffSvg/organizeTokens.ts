@@ -226,6 +226,17 @@ const tokensSystemsSplit = (tokens, logger) => {
 			pageTile[y] = nextIndex;
 		}
 	});
+
+	// enlarge page tile by intersection stems
+	const interStems = tokens.filter(token => token.is("NOTE_STEM") && pageTile[Math.round(token.y)] !== pageTile[Math.round(token.y + token.height)]);
+	interStems.forEach(stem => {
+		const bottomIndex = pageTile[Math.round(stem.y + stem.height)];
+		if (bottomIndex > 0) {
+			for (let y = Math.round(stem.y + stem.height) - 1; y >= Math.round(stem.y); --y)
+				pageTile[y] = bottomIndex;
+		}
+	});
+
 	//logger.append("tokensSystemsSplit.octaveAs", octaveAs);
 
 	//logger.append("tokensSystemsSplit.pageTile.2", pageTile);

@@ -15,6 +15,8 @@
 
 *	2021.3.25
 
+	+	organizeTokens.ts: enlarge page tile by intersection stems.
+
 	+	sheet-live.vue: added null protection in onPlayerMidi.
 
 
