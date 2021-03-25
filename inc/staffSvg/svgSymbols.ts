@@ -145,9 +145,9 @@ const symbolRules: SymbolizeRule[] = [
 		"M. .C. . . . . .C. . . . . .z",
 	]),
 
-	pathFramesSymbol("ATTACHED FERMATA", [
+	/*pathFramesSymbol("ATTACHED FERMATA", [
 		"M-69 -48c0 38 31 68 69 68s69 -30 69 -68s-31 -69 -69 -69s-69 31 -69 69zM0 -364c-157 0 -333 176 -333 367c0 10 10 17 20 17c9 0 19 -6 21 -20c26 -147 145 -261 292 -261s266 114 292 261c2 14 12 20 21 20c10 0 20 -7 20 -17c0 -191 -175 -367 -333 -367z",
-	].map(simplifyPath)),
+	].map(simplifyPath)),*/
 
 	conditionSymbol("STAVES_CONNECTION",
 		elem => elem.identity.type === "rect" && elem.sw === 0.16 && elem.identity.height >= 10,
@@ -221,16 +221,18 @@ const symbolRules: SymbolizeRule[] = [
 	glyphSymbol("TIME_SIG C_BAR", "timesig.C22"),
 	glyphSymbol("SUSTAIN ON", "pedal.Ped"),
 	glyphSymbol("SUSTAIN OFF", "pedal.*"),
-	glyphSymbol("EXPRESSIVE PORTATO UP", "scripts.dportato"),	// 'portato' glyph direction seems inversed in emmentaler v2017
-	glyphSymbol("EXPRESSIVE PORTATO DOWN", "scripts.uportato"),
-	glyphSymbol("EXPRESSIVE DMARCATO DOWN", "scripts.dmarcato"),
-	glyphSymbol("EXPRESSIVE DMARCATO UP", "scripts.umarcato"),
-	glyphSymbol("EXPRESSIVE TENUTO", "scripts.tenuto"),
-	glyphSymbol("EXPRESSIVE PRALL", "scripts.prall"),
-	glyphSymbol("EXPRESSIVE MORDENT", "scripts.mordent"),
-	glyphSymbol("EXPRESSIVE SHORTFERMATA UP", "scripts.ushortfermata"),
-	glyphSymbol("EXPRESSIVE SHORTFERMATA DOWN", "scripts.dshortfermata"),
-	glyphSymbol("EXPRESSIVE SFORZATO", "scripts.sforzato"),
+	glyphSymbol("ATTACHED PORTATO UP", "scripts.dportato"),	// 'portato' glyph direction seems inversed in emmentaler v2017
+	glyphSymbol("ATTACHED PORTATO DOWN", "scripts.uportato"),
+	glyphSymbol("ATTACHED DMARCATO DOWN", "scripts.dmarcato"),
+	glyphSymbol("ATTACHED DMARCATO UP", "scripts.umarcato"),
+	glyphSymbol("ATTACHED TENUTO", "scripts.tenuto"),
+	glyphSymbol("ATTACHED PRALL", "scripts.prall"),
+	glyphSymbol("ATTACHED MORDENT", "scripts.mordent"),
+	glyphSymbol("ATTACHED FERMATA UP", "scripts.ufermata"),
+	glyphSymbol("ATTACHED FERMATA DOWN", "scripts.dfermata"),
+	glyphSymbol("ATTACHED SHORTFERMATA UP", "scripts.ushortfermata"),
+	glyphSymbol("ATTACHED SHORTFERMATA DOWN", "scripts.dshortfermata"),
+	glyphSymbol("ATTACHED SFORZATO", "scripts.sforzato"),
 ];
 
 

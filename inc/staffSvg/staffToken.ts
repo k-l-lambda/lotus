@@ -121,6 +121,11 @@ export default class StaffToken {
 		if (this.is("OCTAVE CLOSE DOWN"))
 			return -3;
 
+		if (this.is("ATTACHED UP"))
+			return 3;
+		else if (this.is("ATTACHED DOWN"))
+			return -3;
+
 		if (this.is("NOTE_STEM"))
 			return this.height / 2;
 
@@ -134,10 +139,6 @@ export default class StaffToken {
 
 		if (this.is("SUSTAIN"))
 			return -3;
-
-		// 'dportato' is actually the UP version of Portato
-		if (this.glyph === "scripts.dportato" as any)
-			return 3;
 
 		return 0;
 	}
