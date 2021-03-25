@@ -323,11 +323,17 @@
 
 						switch (data.subtype) {
 						case "noteOn":
-							task = () => ids.forEach(id => this.statusMap.get(id).add("on"));
+							task = () => ids.forEach(id => {
+								const status = this.statusMap.get(id);
+								status && status.add("on");
+							});
 
 							break;
 						case "noteOff":
-							task = () => ids.forEach(id => this.statusMap.get(id).remove("on"));
+							task = () => ids.forEach(id => {
+								const status = this.statusMap.get(id);
+								status && status.remove("on");
+							});
 
 							break;
 						}

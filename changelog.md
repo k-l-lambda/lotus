@@ -13,6 +13,11 @@
 		system splitting, chord mode symbol affiliation
 
 
+*	2021.3.25
+
+	+	sheet-live.vue: added null protection in onPlayerMidi.
+
+
 *	2021.3.24
 
 	+	svgSymbols.ts: added glyph rules of sustain pedals.
