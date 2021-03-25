@@ -15,6 +15,8 @@
 
 *	2021.3.25
 
+	+	svgSymbols.ts: enhanced symbol rules of BRACE.
+
 	+	organizeTokens.ts: enlarge page tile by intersection stems.
 
 	+	sheet-live.vue: added null protection in onPlayerMidi.
