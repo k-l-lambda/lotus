@@ -71,8 +71,8 @@ export default class StaffToken {
 	}
 
 
-	addSymbol (symbol: string) {
-		this.symbols.add(symbol);
+	addSymbol (...symbols: string[]) {
+		symbols.forEach(symbol => this.symbols.add(symbol));
 		this.symbol = Array.from(this.symbols).join(" ");
 	}
 

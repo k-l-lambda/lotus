@@ -657,11 +657,20 @@ const organizeTokens = (tokens, source: TextSource, {logger, viewBox, width, hei
 
 	const pageTokens = meaningfulTokens.filter(isPageToken);
 
-	// process tempo noteheads
-	const tempoNotes = meaningfulTokens.filter(token => token.source && token.source.substr(0, 6) === "\\tempo" && token.is("NOTEHEAD"));
-	tempoNotes.forEach(note => {
-		note.removeSymbol("NOTEHEAD");
-		note.addSymbol("TEMPO_NOTEHEAD");
+	meaningfulTokens.forEach(token => {
+		if (token.source) {
+			// process tempo noteheads
+			if (token.source.substr(0, 6) === "\\tempo" && token.is("NOTEHEAD")) {
+				token.removeSymbol("NOTEHEAD");
+				token.addSymbol("TEMPO_NOTEHEAD");
+			}
+
+			// process ped dot
+			if (token.is("DOT") && /\\sustain/.test(token.source)) {
+				token.removeSymbol("DOT");
+				token.addSymbol("SUSTAIN", "PED_DOT");
+			}
+		}
 	});
 
 	const systemDatas = tokensSystemsSplit(meaningfulTokens.filter(token => !isPageToken(token)), logger);
