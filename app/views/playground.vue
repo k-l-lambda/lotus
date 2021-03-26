@@ -1874,6 +1874,8 @@
 
 					.staff-peak
 					{
+						pointer-events: none;
+
 						path
 						{
 							stroke-width: 0.1;

@@ -132,10 +132,10 @@ export default class StaffToken {
 
 		if (this.source) {
 			if (/^\^/.test(this.source))
-				return 4;
+				return 2;
 
 			if (/^_/.test(this.source))
-				return -4;
+				return -2;
 		}
 
 		if (this.is("SUSTAIN"))
