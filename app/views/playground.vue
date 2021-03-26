@@ -190,6 +190,22 @@
 								</g>
 							</g>
 						</template>
+						<template v-slot:staff="staffSlot">
+							<g v-if="enabledChromatic && chromaticMode === 'symbols'">
+								<g v-if="staffTopToken(staffSlot.staff)">
+									<g class="staff-peak" :transform="`translate(${staffTopToken(staffSlot.staff).x}, ${staffTopToken(staffSlot.staff).y})`">
+										<path d="M-1.2,0 L1.2,0 M-0.6,0.5 L0,0 L0.6,0.5" />
+										<line :x1="0" :x2="0" :y1="0" :y2="-staffTopToken(staffSlot.staff).y" />
+										<circle />
+									</g>
+									<g class="staff-peak" :transform="`translate(${staffBottomToken(staffSlot.staff).x}, ${staffBottomToken(staffSlot.staff).y})`">
+										<path d="M-1.2,0 L1.2,0 M-0.6,-0.5 L0,0 L0.6,-0.5" />
+										<line :x1="0" :x2="0" :y1="0" :y2="-staffBottomToken(staffSlot.staff).y" />
+										<circle />
+									</g>
+								</g>
+							</g>
+						</template>
 					</SheetLive>
 				</div>
 				<Loading v-show="engraving" />
@@ -1551,6 +1567,18 @@
 
 				return false;
 			},
+
+
+			staffTopToken (staff) {
+				const tokens = [].concat(...staff.measures.map(measure => measure.tokens));
+				return tokens.reduce((top, token) => !top || token.y < top.y ? token : top, null);
+			},
+
+
+			staffBottomToken (staff) {
+				const tokens = [].concat(...staff.measures.map(measure => measure.tokens));
+				return tokens.reduce((bottom, token) => !bottom || token.y > bottom.y ? token : bottom, null);
+			},
 		},
 
 
@@ -1841,6 +1869,29 @@
 						text, use
 						{
 							fill-opacity: 0.6;
+						}
+					}
+
+					.staff-peak
+					{
+						path
+						{
+							stroke-width: 0.1;
+							stroke: #055;
+							fill: none;
+						}
+
+						line
+						{
+							stroke-width: 0.1;
+							stroke: #000a;
+							stroke-dasharray: 0.2 0.2;
+						}
+
+						circle
+						{
+							r: 0.2;
+							fill: red;
 						}
 					}
 				}

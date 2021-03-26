@@ -63,6 +63,9 @@
 									@click="$emit('click-token', token, $event)"
 								/>
 							</g>
+							<g v-if="showMark" class="mark">
+								<slot name="staff" :staff="staff"></slot>
+							</g>
 							<g class="markings">
 								<g v-for="marking of staff.markings" :key="marking.index"
 									:transform="`translate(${marking.x}, ${marking.y + staff.yRoundOffset})`"

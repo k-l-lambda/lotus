@@ -15,6 +15,8 @@
 
 *	2021.3.26
 
+	+	playground.vue: added staff peak marks.
+
 	+	staffToken.ts: refined logicOffsetY for note tail.
 
 
