@@ -110,35 +110,35 @@ export default class StaffToken {
 	// to assist staves splitting
 	get logicOffsetY (): number {
 		if (this.is("OCTAVE A"))
-			return 3;
+			return 4;
 
 		if (this.is("OCTAVE B"))
-			return -3;
+			return -4;
 
 		if (this.is("OCTAVE CLOSE UP"))
-			return 3;
+			return 4;
 
 		if (this.is("OCTAVE CLOSE DOWN"))
-			return -3;
+			return -4;
 
 		if (this.is("ATTACHED UP"))
-			return 3;
+			return 4;
 		else if (this.is("ATTACHED DOWN"))
-			return -3;
+			return -4;
 
 		if (this.is("NOTE_STEM"))
 			return this.height / 2;
 
 		if (this.source) {
 			if (/^\^/.test(this.source))
-				return 3;
+				return 4;
 
 			if (/^_/.test(this.source))
-				return -3;
+				return -4;
 		}
 
 		if (this.is("SUSTAIN"))
-			return -3;
+			return -4;
 
 		return 0;
 	}
