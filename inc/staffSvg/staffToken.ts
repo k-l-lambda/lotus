@@ -64,24 +64,20 @@ export default class StaffToken {
 	}
 
 
-	is (symbol): boolean {
+	is (symbol: string): boolean {
 		const queries = symbol.split(" ");
-		for (const query of queries) {
-			if (!this.symbols.has(query))
-				return false;
-		}
 
-		return true;
+		return queries.every(query => this.symbols.has(query));
 	}
 
 
-	addSymbol (symbol) {
+	addSymbol (symbol: string) {
 		this.symbols.add(symbol);
 		this.symbol = Array.from(this.symbols).join(" ");
 	}
 
 
-	removeSymbol (symbol) {
+	removeSymbol (symbol: string) {
 		this.symbols.delete(symbol);
 		this.symbol = Array.from(this.symbols).join(" ");
 	}
@@ -124,6 +120,11 @@ export default class StaffToken {
 		if (this.is("ATTACHED UP"))
 			return 4;
 		else if (this.is("ATTACHED DOWN"))
+			return -4;
+
+		if (this.is("NOTETAIL UP"))
+			return 4;
+		else if (this.is("NOTETAIL DOWN"))
 			return -4;
 
 		if (this.is("NOTE_STEM"))

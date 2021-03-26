@@ -13,6 +13,11 @@
 		system splitting, chord mode symbol affiliation
 
 
+*	2021.3.26
+
+	+	staffToken.ts: refined logicOffsetY for note tail.
+
+
 *	2021.3.25
 
 	+	svgSymbols.ts: enhanced symbol rules of BRACE.
