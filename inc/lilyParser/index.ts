@@ -1,7 +1,7 @@
 
 import {termDictionary, getDurationSubdivider} from "./lilyTerms";
 import LilyDocument from "./lilyDocument";
-import LilyInterpreter from "./lilyInterpreter";
+import LilyInterpreter, {MusicTrack} from "./lilyInterpreter";
 import {replaceSourceToken, WHOLE_DURATION_MAGNITUDE} from "./utils";
 
 import * as measures from "./measures";
@@ -17,6 +17,7 @@ export {
 	replaceSourceToken,
 	LilyDocument,
 	LilyInterpreter,
+	MusicTrack,
 	LilyTerms,
 	getDurationSubdivider,
 	measures,
