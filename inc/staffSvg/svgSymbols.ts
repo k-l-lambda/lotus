@@ -265,6 +265,7 @@ const postConditionSymbol = (symbol: string, condition: (elem: Element) => boole
 
 const postSymbolRules: PostSymbolizeRule[] = [
 	postConditionSymbol("NUMBER", elem => elemScale(elem, 0.004), "TIME_SIG"),
+	postConditionSymbol("NUMBER", elem => elemScale(elem, 0.0025), "ALTERNATIVE"),
 
 	postConditionSymbol("CLOSE", elem => elem.identity.height > 0, "UP"),
 	postConditionSymbol("CLOSE", elem => elem.identity.height < 0, "DOWN"),
