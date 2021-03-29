@@ -194,12 +194,12 @@
 							<g v-if="enabledChromatic && chromaticMode === 'symbols'">
 								<g v-if="staffTopToken(staffSlot.staff)">
 									<g class="staff-peak" :transform="`translate(${staffTopToken(staffSlot.staff).x}, ${staffTopToken(staffSlot.staff).y})`">
-										<path d="M-1.2,0 L1.2,0 M-0.6,0.5 L0,0 L0.6,0.5" />
+										<path d="M-1.2,0 L1.2,0 M-0.9,0.6 L0,0 L0.9,0.6" />
 										<line :x1="0" :x2="0" :y1="0" :y2="-staffTopToken(staffSlot.staff).y" />
 										<circle />
 									</g>
 									<g class="staff-peak" :transform="`translate(${staffBottomToken(staffSlot.staff).x}, ${staffBottomToken(staffSlot.staff).y})`">
-										<path d="M-1.2,0 L1.2,0 M-0.6,-0.5 L0,0 L0.6,-0.5" />
+										<path d="M-1.2,0 L1.2,0 M-0.9,-0.6 L0,0 L0.9,-0.6" />
 										<line :x1="0" :x2="0" :y1="0" :y2="-staffBottomToken(staffSlot.staff).y" />
 										<circle />
 									</g>
@@ -1879,21 +1879,21 @@
 						path
 						{
 							stroke-width: 0.1;
-							stroke: #055;
+							stroke: #f00a;
 							fill: none;
 						}
 
 						line
 						{
 							stroke-width: 0.1;
-							stroke: #000a;
+							stroke: #f00a;
 							stroke-dasharray: 0.2 0.2;
 						}
 
 						circle
 						{
-							r: 0.2;
-							fill: red;
+							r: 0.6;
+							fill: #f004;
 						}
 					}
 				}
