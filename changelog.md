@@ -15,6 +15,8 @@
 
 *	2021.3.26
 
+	+	buildJisonParser.ts: added measure layout parser.
+
 	+	organizeTokens.ts: PED dot symbol added.
 
 	+	playground.vue: added staff peak marks.
