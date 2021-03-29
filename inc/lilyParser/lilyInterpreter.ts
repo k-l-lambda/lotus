@@ -393,10 +393,11 @@ export class MusicTrack {
 	}
 
 
-	applyMeasureLayout (layout: MeasureLayout) {
+	applyMeasureLayout (layout: MeasureLayout, {flatten = true} = {}) {
 		//console.log("applyMeasureLayout:", this, layout);
 
-		this.flatten({spreadRepeats: true});
+		if (flatten)
+			this.flatten({spreadRepeats: true});
 
 		const chunks = this.block.measureChunkMap;
 

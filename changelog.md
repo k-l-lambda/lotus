@@ -15,6 +15,8 @@
 
 *	2021.3.26
 
+	+	lilyInterpreter.ts: added option of flatten in applyMeasureLayout.
+
 	+	buildJisonParser.ts: added measure layout parser.
 
 	+	organizeTokens.ts: PED dot symbol added.
