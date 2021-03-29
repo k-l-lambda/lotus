@@ -10,6 +10,7 @@ import * as LilyNotation from "./inc/lilyNotation";
 import StreamParser from "./inc/streamParser";
 import {PitchContextTable, PitchContext} from "./inc/pitchContext";
 import ScoreJSON from "./inc/scoreJSON";
+import * as measureLayout from "./inc/measureLayout";
 
 import SheetLive from "./app/components/sheet-live.vue";
 import SheetSigns from "./app/components/sheet-signs.vue";
@@ -27,6 +28,7 @@ export {
 	staffSvg,
 	staffNotation,
 	recoverJSON,
+	measureLayout,
 	lilyParser,
 	LogRecorder,
 	constants,

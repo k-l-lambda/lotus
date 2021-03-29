@@ -9,6 +9,7 @@ import * as LilyNotation from "./inc/lilyNotation";
 import {recoverJSON} from "./inc/jsonRecovery";
 import {PitchContextTable, PitchContext} from "./inc/pitchContext";
 import ScoreJSON from "./inc/scoreJSON";
+import * as measureLayout from "./inc/measureLayout";
 
 
 
@@ -25,6 +26,7 @@ export {
 	backend,
 	constants,
 	recoverJSON,
+	measureLayout,
 	PitchContextTable,
 	PitchContext,
 	ScoreJSON,
