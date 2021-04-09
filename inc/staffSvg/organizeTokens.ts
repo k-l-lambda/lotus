@@ -472,27 +472,34 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 	//console.log("splitters:", splitters);
 	const appendToken = token => {
 		let index = 0;
-		let y = token.logicY;
-		//const indexInMap = indicesMap[roundJoin(token.x + systemX, y + systemY)];
-		const indexByStacks = findStaffByStacks(token);
-		if (Number.isInteger(indexByStacks))
-			index = indexByStacks;
+
+		if (token.withUp || token.withDown) {
+			const upStavesCount = staffYs.filter(sy => sy < token.y).length;
+			index = token.withUp ? upStavesCount : upStavesCount - 1;
+		}
 		else {
-			// affiliate beam to a stem
-			if (token.is("NOTETAIL") && token.is("JOINT")) {
-				const stem = stems.find(stem => Math.abs(stem.x - token.x) < 0.1
-					&& token.y > stem.y - 0.1 && token.y < stem.y + stem.height + 0.1);
-
-				if (stem)
-					y = stem.logicY;
-				//else
-				//	console.debug("isolated beam:", token);
+			let y = token.logicY;
+			//const indexInMap = indicesMap[roundJoin(token.x + systemX, y + systemY)];
+			const indexByStacks = findStaffByStacks(token);
+			if (Number.isInteger(indexByStacks))
+				index = indexByStacks;
+			else {
+				// affiliate beam to a stem
+				if (token.is("NOTETAIL") && token.is("JOINT")) {
+					const stem = stems.find(stem => Math.abs(stem.x - token.x) < 0.1
+						&& token.y > stem.y - 0.1 && token.y < stem.y + stem.height + 0.1);
+	
+					if (stem)
+						y = stem.logicY;
+					//else
+					//	console.debug("isolated beam:", token);
+				}
+	
+				//if (token.is("NOTEHEAD"))
+				//	console.log("omit note:", token.href, roundJoin(token.x + systemX, y + systemY));
+				while (y > splitters[index])
+					++index;
 			}
-
-			//if (token.is("NOTEHEAD"))
-			//	console.log("omit note:", token.href, roundJoin(token.x + systemX, y + systemY));
-			while (y > splitters[index])
-				++index;
 		}
 
 		staffTokens[index] = staffTokens[index] || [];

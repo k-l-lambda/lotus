@@ -145,6 +145,16 @@ export default class StaffToken {
 	}
 
 
+	get withUp (): boolean {
+		return this.source && /^\^/.test(this.source);
+	}
+
+
+	get withDown (): boolean {
+		return this.source && /^_/.test(this.source);
+	}
+
+
 	get logicY (): number {
 		return this.y + this.logicOffsetY;
 	}

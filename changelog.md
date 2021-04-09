@@ -13,6 +13,11 @@
 		system splitting, chord mode symbol affiliation
 
 
+*	2021.4.9
+
+	+	organizeTokens.ts: split staff tokens by source direction decorator.
+
+
 *	2021.3.26
 
 	+	lilyInterpreter.ts: added option of flatten in applyMeasureLayout.
