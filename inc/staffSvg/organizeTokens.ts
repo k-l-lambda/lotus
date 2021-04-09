@@ -268,6 +268,16 @@ const tokensSystemsSplit = (tokens, logger) => {
 			}
 		}
 
+		if (token.withUp || token.withDown) {
+			let index = 0;
+			if (token.withUp)
+				index = connections.filter(c => c.y + c.height < token.y).length;
+			else
+				index = Math.max(connections.filter(c => c.y < token.y).length - 1, 0);
+
+			systems[index].tokens.push(token);
+		}
+
 		const y = Math.max(token.logicY, token.logicY + (token.height || 0) * 0.8);
 		for (let i = 0; i < systemBoundaries.length; ++i) {
 			if (y >= systemBoundaries[i] && (i >= systemBoundaries.length - 1 || y < systemBoundaries[i + 1])) {
