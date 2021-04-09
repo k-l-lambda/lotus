@@ -15,6 +15,7 @@
 
 *	2021.4.9
 
+	+	organizeTokens.ts: refined system splitting by up direction tokens.
 	+	organizeTokens.ts: split staff tokens by source direction decorator.
 
 

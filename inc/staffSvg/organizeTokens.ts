@@ -215,9 +215,9 @@ const tokensSystemsSplit = (tokens, logger) => {
 		}
 	});
 
-	// fill interval between 8va and system top
-	const octaveAs = tokens.filter(token => token.is("OCTAVE A"));
-	octaveAs.forEach(token => {
+	// fill interval between '^' tokens and system top
+	const upTokens = tokens.filter(token => token.is("OCTAVE A") || token.withUp);
+	upTokens.forEach(token => {
 		const nextIndex = pageTile.find((index, y) => y > token.y && index >= 0);
 		for (let y = Math.floor(token.y) - 1; y < pageHeight; ++y) {
 			if (pageTile[y] >= 0)
