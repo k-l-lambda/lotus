@@ -474,8 +474,10 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 		let index = 0;
 
 		if (token.withUp || token.withDown) {
-			const upStavesCount = staffYs.filter(sy => sy < token.y).length;
-			index = token.withUp ? upStavesCount : upStavesCount - 1;
+			if (token.withUp)
+				index = staffYs.filter(sy => sy + 2 < token.y + systemY).length;
+			else if (token.withDown)
+				index = Math.max(staffYs.filter(sy => sy - 2 < token.y + systemY).length - 1, 0);
 		}
 		else {
 			let y = token.logicY;
