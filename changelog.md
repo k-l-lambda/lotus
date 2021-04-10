@@ -10,7 +10,9 @@
 		fix partial measures
 			add partial on standalone block
 		treble_8
-		system splitting, chord mode symbol affiliation
+		system splitting
+			beam error affiliation
+			chord mode symbol affiliation
 
 
 *	2021.4.10
