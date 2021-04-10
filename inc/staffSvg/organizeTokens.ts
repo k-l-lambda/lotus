@@ -239,7 +239,7 @@ const tokensSystemsSplit = (tokens: StaffToken[], logger) => {
 	interStems.forEach(stem => {
 		const bottomIndex = pageTile[Math.round(stem.y + stem.height)];
 		if (bottomIndex > 0) {
-			for (let y = Math.round(stem.y + stem.height) - 1; y >= Math.round(stem.y); --y)
+			for (let y = Math.round(stem.y + stem.height) - 1; y > Math.round(stem.y); --y)
 				pageTile[y] = bottomIndex;
 		}
 	});
