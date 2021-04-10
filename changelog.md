@@ -13,6 +13,11 @@
 		system splitting, chord mode symbol affiliation
 
 
+*	2021.4.10
+
+	+	organizeTokens.ts: fixed tokensSystemsSplit stem error.
+
+
 *	2021.4.9
 
 	+	organizeTokens.ts: refined system splitting by direction decorator tokens.

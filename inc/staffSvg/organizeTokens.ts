@@ -16,6 +16,9 @@ interface Rect {
 };
 
 
+type IConnection = {y: number, height: number};
+
+
 class LineStack {
 	lines: StaffToken[];
 	translation = {x: 0, y: 0};
@@ -66,7 +69,7 @@ class LineStack {
 	}
 
 
-	tryAttachConnection (connection: {y: number, height: number}, index: number): boolean {
+	tryAttachConnection (connection: IConnection, index: number): boolean {
 		const {top, bottom} = this.rect;
 
 		//console.log("connection:", connection.y + connection.height, top - 1.2);
@@ -131,7 +134,7 @@ const parseAdditionalLineStacks = (tokens: StaffToken[]): LineStack[] => {
 };
 
 
-const tokensSystemsSplit = (tokens, logger) => {
+const tokensSystemsSplit = (tokens: StaffToken[], logger) => {
 	if (!tokens.length) {
 		logger.append("tokensSystemsSplit.emptyTokens");
 		return [];
@@ -142,7 +145,7 @@ const tokensSystemsSplit = (tokens, logger) => {
 
 	let crossedCount = 0;
 
-	const connections = tokens.filter(token => token.is("STAVES_CONNECTION"));
+	const connections: IConnection[] = tokens.filter(token => token.is("STAVES_CONNECTION")) as IConnection[];
 	if (!connections.length) {
 		// single line system, split by staff lines
 		const lines = tokens.filter(token => token.is("STAFF_LINE"));
@@ -227,8 +230,12 @@ const tokensSystemsSplit = (tokens, logger) => {
 		}
 	});
 
+	//logger.append("tokensSystemsSplit.octaveAs", octaveAs);
+
 	// enlarge page tile by intersection stems
-	const interStems = tokens.filter(token => token.is("NOTE_STEM") && pageTile[Math.round(token.y)] !== pageTile[Math.round(token.y + token.height)]);
+	const interStems = tokens.filter(token => token.is("NOTE_STEM")
+		&& pageTile[Math.round(token.y)] === -1
+		&& pageTile[Math.round(token.y)] !== pageTile[Math.round(token.y + token.height)]);
 	interStems.forEach(stem => {
 		const bottomIndex = pageTile[Math.round(stem.y + stem.height)];
 		if (bottomIndex > 0) {
@@ -236,8 +243,6 @@ const tokensSystemsSplit = (tokens, logger) => {
 				pageTile[y] = bottomIndex;
 		}
 	});
-
-	//logger.append("tokensSystemsSplit.octaveAs", octaveAs);
 
 	//logger.append("tokensSystemsSplit.pageTile.2", pageTile);
 
@@ -278,7 +283,7 @@ const tokensSystemsSplit = (tokens, logger) => {
 			systems[index].tokens.push(token);
 		}
 
-		const y = Math.max(token.logicY, token.logicY + (token.height || 0) * 0.8);
+		const y = token.logicY;
 		for (let i = 0; i < systemBoundaries.length; ++i) {
 			if (y >= systemBoundaries[i] && (i >= systemBoundaries.length - 1 || y < systemBoundaries[i + 1])) {
 				systems[i].tokens.push(token);
