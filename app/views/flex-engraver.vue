@@ -69,8 +69,6 @@
 </template>
 
 <script>
-	import resize from "vue-resize-directive";
-
 	import {downloadUrl} from "../utils.js";
 	import {mutexDelay} from "../delay.js";
 	import loadJisonParser from "../loadJisonParser.js";
@@ -111,11 +109,6 @@
 
 	export default {
 		name: "flex-engraver",
-
-
-		directives: {
-			resize,
-		},
 
 
 		components: {

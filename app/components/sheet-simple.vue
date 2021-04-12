@@ -5,17 +5,8 @@
 </template>
 
 <script>
-	import resize from "vue-resize-directive";
-
-
-
 	export default {
 		name: "sheet-simple",
-
-
-		directives: {
-			resize,
-		},
 
 
 		props: {
