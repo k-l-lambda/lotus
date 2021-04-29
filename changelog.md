@@ -1,6 +1,5 @@
 
 ## TODO
-	glyph of scale 0.36 (tempo noteheads)
 	track-measure lilypond section editor
 		duration checker
 	lyrics in music normalization
@@ -17,6 +16,8 @@
 
 
 *	2021.4.29
+
+	+	glyph-hash.json: added tempo notehead scale 0.0036.
 
 	+	staffToken.ts: property of scale2 added.
 

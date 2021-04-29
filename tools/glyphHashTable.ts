@@ -11,7 +11,8 @@ type Dict = {[key: string]: string};
 
 
 const NORMAL_SCALE = 0.004;
-const MINOR_SCALE = 0.0028;
+const MINOR_SCALE = 0.0028;		// for grace
+const MINOR_SCALE2 = 0.0036;	// for tempo
 const SCALE22 = 0.0022;
 const SCALE25 = 0.0025;
 
@@ -29,8 +30,10 @@ const processFontSvg = (text: string, table: Dict) => {
 			const unicode = node.getAttribute("unicode");
 
 			const scales = [NORMAL_SCALE];
-			if (/^noteheads/.test(name))
+			if (/^noteheads/.test(name)) {
 				scales.push(MINOR_SCALE);
+				scales.push(MINOR_SCALE2);
+			}
 			if (/^\d$/.test(unicode)) {
 				scales.push(SCALE22);
 				scales.push(SCALE25);
