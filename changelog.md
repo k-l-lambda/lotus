@@ -1,5 +1,6 @@
 
 ## TODO
+	glyph of scale 0.36 (tempo noteheads)
 	track-measure lilypond section editor
 		duration checker
 	lyrics in music normalization
@@ -13,6 +14,11 @@
 		system splitting
 			beam error affiliation
 			chord mode symbol affiliation
+
+
+*	2021.4.29
+
+	+	organizeTokens.ts: fixed tokensSystemsSplit repeating tokens issue.
 
 
 *	2021.4.10

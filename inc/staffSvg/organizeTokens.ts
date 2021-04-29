@@ -281,6 +281,7 @@ const tokensSystemsSplit = (tokens: StaffToken[], logger) => {
 				index = Math.max(connections.filter(c => c.y < token.y).length - 1, 0);
 
 			systems[index].tokens.push(token);
+			return;
 		}
 
 		const y = token.logicY;
