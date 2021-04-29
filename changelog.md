@@ -18,6 +18,8 @@
 
 *	2021.4.29
 
+	+	staffToken.ts: property of scale2 added.
+
 	+	organizeTokens.ts: fixed tokensSystemsSplit repeating tokens issue.
 
 

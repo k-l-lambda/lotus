@@ -17,6 +17,7 @@ export default class StaffToken {
 	hash: string;
 	href: string;
 	scale?: number;
+	scaleX?: number;
 	width?: number;
 	height?: number;
 	text?: string;
@@ -50,7 +51,7 @@ export default class StaffToken {
 			__prototype: "StaffToken",
 			x, y,
 			..._.pick(this, ["rx", "ry", "sw", "start", "target", "source", "tied",
-				"symbol", "hash", "href", "scale", "width", "height", "text", "stemX", "stemUp", "track", "glyph"]),
+				"symbol", "hash", "href", "scale", "scaleX", "width", "height", "text", "stemX", "stemUp", "track", "glyph"]),
 		};
 	}
 
@@ -61,6 +62,17 @@ export default class StaffToken {
 	}
 	set row (value: number) {
 		this.system = value;
+	}
+
+
+	get scale2 (): {x: number, y: number} {
+		if (!Number.isFinite(this.scale))
+			return null;
+
+		return {
+			x: this.scale * (this.scaleX || 1),
+			y: this.scale,
+		};
 	}
 
 

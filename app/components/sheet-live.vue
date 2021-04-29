@@ -59,7 +59,7 @@
 										attached: Number.isFinite(token.stemX),
 									}"
 									:showTitle="showMark"
-									:scale="enabledFont ? token.scale : null"
+									:scale="enabledFont ? token.scale2 : null"
 									@click="$emit('click-token', token, $event)"
 								/>
 							</g>

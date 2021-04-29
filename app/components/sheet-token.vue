@@ -1,6 +1,6 @@
 <template>
 	<g class="token"
-		:transform="`translate(${token.x}, ${token.y})` + (Number.isFinite(scale) && scale !== 1 ? ` scale(${token.scale})` : '')"
+		:transform="`translate(${token.x}, ${token.y})` + (scale ? ` scale(${scale.x}, ${scale.y})` : '')"
 		:class="classes"
 		:data-href="token.href"
 		:data-track="token.track"
@@ -20,7 +20,7 @@
 			token: Object,
 			classes: Object,
 			showTitle: Boolean,
-			scale: Number,
+			scale: Object,
 		},
 	};
 </script>
