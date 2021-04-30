@@ -13,6 +13,7 @@
 	"include": [
 		"index.ts",
 		"inc/**/*.ts",
+		"inc/**/*.json",
 		"backend/**/*.ts"
 	],
 }
