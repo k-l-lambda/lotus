@@ -13,6 +13,7 @@ type Dict = {[key: string]: string};
 const NORMAL_SCALE = 0.004;
 const MINOR_SCALE = 0.0028;		// for grace
 const MINOR_SCALE2 = 0.0036;	// for tempo
+const SCRIPT_SCALE = 0.005;
 const SCALE22 = 0.0022;
 const SCALE25 = 0.0025;
 
@@ -38,6 +39,8 @@ const processFontSvg = (text: string, table: Dict) => {
 				scales.push(SCALE22);
 				scales.push(SCALE25);
 			}
+			if (/^scripts\./.test(name))
+				scales.push(SCRIPT_SCALE);
 
 			scales.forEach(scale => {
 				const hash = sha1(JSON.stringify([["d",d],["scale",{x:scale,y:-scale}],["stroke-width",null],["type","path"]]));
