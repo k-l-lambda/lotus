@@ -17,6 +17,8 @@
 
 *	2021.5.17
 
+	+	sheetDocument.ts: compute yRoundOffset by staff line.
+
 	+	sheet-live.vue: added more properties on slots.
 
 

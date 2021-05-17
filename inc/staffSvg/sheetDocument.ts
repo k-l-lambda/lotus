@@ -222,6 +222,10 @@ class SheetDocument {
 
 				staff.markings = [];
 				staff.yRoundOffset = 0;
+
+				const line = staff.tokens.find(token => token.is("STAFF_LINE"));
+				if (line)
+					staff.yRoundOffset = line.y - line.ry;
 			});
 
 			rowMeasureIndex += Math.max(...system.staves.map(staff => staff.measures.length));
