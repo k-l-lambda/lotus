@@ -18,7 +18,7 @@
 						@click="onClickPad(system, $event)"
 					>
 						<rect :x="0" :y="system.top" :width="system.width" :height="system.bottom - system.top" />
-						<slot name="system" :system="system"></slot>
+						<slot name="system" :system="system" :page="page"></slot>
 					</g>
 					<slot name="page" :page="page"></slot>
 				</g>
@@ -64,7 +64,7 @@
 								/>
 							</g>
 							<g v-if="showMark" class="mark">
-								<slot name="staff" :staff="staff"></slot>
+								<slot name="staff" :staff="staff" :system="system" :page="page"></slot>
 							</g>
 							<g class="markings">
 								<g v-for="marking of staff.markings" :key="marking.index"

@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.5.17
+
+	+	sheet-live.vue: added more properties on slots.
+
+
 *	2021.4.29
 
 	+	glyph-hash.json: added tempo notehead scale 0.0036.
