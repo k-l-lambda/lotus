@@ -163,6 +163,12 @@ const symbolRules: SymbolizeRule[] = [
 		elem => elem.identity.type === "rect" && elem.sw === 0.16 && elem.identity.height >= 10,
 		elem => ({height: elem.identity.height})),
 
+	conditionSymbol("BRACE BRACE_BAR", elem => elem.identity.type === "rect" && elem.identity.width === 0.45 && elem.identity.height >= 4),
+	pathFramesSymbol("BRACE BRACE_WING", [
+		"M0 -56v91c0 12 10 21 22 21h43c164 0 281 136 377 272c10 14 32 -1 22 -15c-103 -145 -222 -369 -399 -369h-65z",
+		"M0 56h65c177 0 296 -224 399 -369c10 -14 -12 -29 -22 -15c-96 136 -213 272 -377 272h-43c-12 0 -22 9 -22 21v91z",
+	].map(simplifyPath)),
+
 	conditionSymbol("VERTICAL_LINE", elem => elem.identity.type === "rect"
 		&& (elem.sw === 0.19 || elem.sw === 0.6) && elem.identity.height >= 1),
 

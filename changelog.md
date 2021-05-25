@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.5.25
+
+	+	staffSvg: added symbol for grouping braces.
+
+
 *	2021.5.17
 
 	+	sheetDocument.ts: compute yRoundOffset by staff line.
