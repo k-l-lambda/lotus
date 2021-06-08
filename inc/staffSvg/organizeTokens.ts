@@ -280,7 +280,11 @@ const tokensSystemsSplit = (tokens: StaffToken[], logger) => {
 			else
 				index = Math.max(connections.filter(c => c.y < token.y).length - 1, 0);
 
-			systems[index].tokens.push(token);
+			if (systems[index])
+				systems[index].tokens.push(token);
+			else
+				console.warn("tokensSystemsSplit: invalid system index:", index, systems.length, token.source);
+
 			return;
 		}
 

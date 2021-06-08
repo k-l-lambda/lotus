@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.6.8
+
+	+	organizeTokens.ts: added systems indexing protection in tokensSystemsSplit.
+
+
 *	2021.5.25
 
 	+	staffSvg: added symbol for grouping braces.
