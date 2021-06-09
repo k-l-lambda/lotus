@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.6.9
+
+	+	lilyDocument.ts: added field of midiTempo in LilyDocument.markup.
+
+
 *	2021.6.8
 
 	+	organizeTokens.ts: added systems indexing protection in tokensSystemsSplit.

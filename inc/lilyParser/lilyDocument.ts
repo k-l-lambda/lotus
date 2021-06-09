@@ -246,7 +246,7 @@ export default class LilyDocument {
 		const attrM = docMarkup.globalAttributesReadOnly();
 
 		[
-			"staffSize", "paperWidth", "paperHeight",
+			"staffSize", "midiTempo", "paperWidth", "paperHeight",
 			"topMargin", "bottomMargin", "leftMargin", "rightMargin",
 			"systemSpacing", "topMarkupSpacing", "raggedLast", "raggedBottom", "raggedLastBottom",
 			"printPageNumber",
