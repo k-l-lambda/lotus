@@ -104,7 +104,7 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 
 	const t0 = Date.now();
 
-	type ParserArguments = {attributes: LilyDocumentAttributeReadOnly, tieLocations: Set<string>};
+	type ParserArguments = {attributes: LilyDocumentAttributeReadOnly, tieLocations: Set<string>, briefChordLocations: Set<string>};
 
 	const argsGen = new SingleLock<ParserArguments>(true);
 
@@ -121,8 +121,9 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 			const attributes = lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
 
 			const tieLocations = docLocationSet(lilyDocument.getTiedNoteLocations2());
+			const briefChordLocations = docLocationSet(lilyDocument.getBriefChordLocations());
 
-			argsGen.release({attributes, tieLocations});
+			argsGen.release({attributes, tieLocations, briefChordLocations});
 			//console.log("tp.1:", Date.now() - t0);
 		},
 		onMidiRead: midi_ => {
