@@ -10,6 +10,7 @@ import TextSource from "../textSource";
 import * as domUtils from "../domUtils";
 import LilyDocument from "../lilyParser/lilyDocument";
 import {LilyDocumentAttribute, LilyDocumentAttributeReadOnly} from "../lilyParser/lilyDocument";
+import {docLocationSet} from "../lilyParser";
 import {Scheme, SchemePair} from "../lilyParser/lilyTerms";
 import {SheetPage, SheetSystem, SheetStaff, SheetMeasure} from "./sheetDocument";
 import * as glyph from "./glyph";
@@ -21,6 +22,7 @@ interface SvgPageParserOptions {
 	logger?: LogRecorder;
 	attributes?: StaffAttributes;
 	tieLocations?: {[key: string]: boolean};
+	briefChordLocations?: Set<string>;
 
 	DOMParser?: any;
 };
@@ -31,6 +33,7 @@ const parseSvgPage = (dom, source: string | TextSource, {
 	logger = new LogRecorder(),
 	attributes,
 	tieLocations,
+	briefChordLocations,
 	...options
 }: SvgPageParserOptions = {}) => {
 	if (!(source instanceof TextSource))
@@ -65,6 +68,16 @@ const parseSvgPage = (dom, source: string | TextSource, {
 		//logger.append("tieTokens:", tieTokens.map(token => token.href));
 	}
 
+	if (briefChordLocations) {
+		tokens.forEach(token => {
+			if (token.sourcePosition) {
+				const {line, start} = token.sourcePosition;
+				if (briefChordLocations.has(`${line}:${start}`))
+					token.addSymbol("CHORD_TEXT");
+			}
+		});
+	}
+
 	return {
 		structure: organizeTokens(tokens, source, {logger, viewBox, width: elem.width, height: elem.height}),
 		hashTable,
@@ -81,8 +94,9 @@ const createSheetDocumentFromSvgs = (svgs: string[], ly: string, lilyDocument: L
 	const source = new TextSource(ly);
 	const tieLocations = lilyDocument.getTiedNoteLocations2().reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
 	//logger.append("tieLocations:", Object.keys(tieLocations));
+	const briefChordLocations = docLocationSet(lilyDocument.getBriefChordLocations());
 
-	const pages = svgs.map(svg => parseSvgPage(svg, source, {DOMParser, logger, attributes, tieLocations}));
+	const pages = svgs.map(svg => parseSvgPage(svg, source, {DOMParser, logger, attributes, tieLocations, briefChordLocations}));
 	const doc = new SheetDocument({
 		pages: pages.map(page => page.structure),
 	});

@@ -17,6 +17,8 @@
 
 *	2021.6.9
 
+	+	lilyDocument.ts: LilyDocument.getBriefChordLocations added.
+
 	+	lilyDocument.ts: added field of midiTempo in LilyDocument.markup.
 
 

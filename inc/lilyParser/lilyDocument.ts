@@ -10,7 +10,7 @@ import {
 	SchemePointer, Comment, Language, StemDirection,
 } from "./lilyTerms";
 import LilyInterpreter from "./lilyInterpreter";
-import {MAIN_SCORE_NAME} from "./utils";
+import {MAIN_SCORE_NAME, DocLocation} from "./utils";
 
 // eslint-disable-next-line
 import {Root} from "./lilyTerms";
@@ -702,7 +702,7 @@ export default class LilyDocument {
 
 	// [deprecated]
 	// generate tied notehead location candidates
-	getTiedNoteLocations (source: TextSource): [number, number][] {
+	getTiedNoteLocations (source: TextSource): DocLocation[] {
 		const chordPairs: [Chord, Chord][] = [];
 
 		const hasMusicBlock = term => {
@@ -786,13 +786,23 @@ export default class LilyDocument {
 
 
 	// generate tied notehead location candidates
-	getTiedNoteLocations2 (): [number, number][] {
+	getTiedNoteLocations2 (): DocLocation[] {
 		const locations = [];
 
 		this.root.forEachTerm(Chord, chord => chord.pitches.forEach(pitch => {
 			if (pitch._tied)
 				locations.push([pitch._location.lines[0], pitch._location.columns[0]]);
 		}));
+
+		return locations;
+	}
+
+
+	getBriefChordLocations (): DocLocation[] {
+		const locations = [];
+
+		this.root.forEachTerm(BriefChord,
+			chord => locations.push([chord._location.lines[0], chord._location.columns[0]]));
 
 		return locations;
 	}

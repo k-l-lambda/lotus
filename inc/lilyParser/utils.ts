@@ -81,6 +81,13 @@ const replaceSourceToken = (source: string, token: string): string => {
 };
 
 
+type DocLocation = [number, number];
+
+
+const docLocationSet = (locations: DocLocation[]): Set<string> =>
+	locations.reduce((set, [line, col]) => (set.add(`${line}:${col}`), set), new Set<string>());
+
+
 
 export {
 	WHOLE_DURATION_MAGNITUDE,
@@ -92,4 +99,6 @@ export {
 	lcmMulti,
 	FractionNumber,
 	replaceSourceToken,
+	DocLocation,
+	docLocationSet,
 };
