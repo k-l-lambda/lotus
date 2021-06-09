@@ -7,7 +7,7 @@ import {Readable} from "stream";
 
 import npmPackage from "../package.json";
 import {xml2ly, engraveSvg, LilyProcessOptions} from "./lilyCommands";
-import {LilyDocument, LilyTerms} from "../inc/lilyParser";
+import {LilyDocument, LilyTerms, docLocationSet} from "../inc/lilyParser";
 import * as staffSvg from "../inc/staffSvg";
 import {SingleLock} from "../inc/mutex";
 import * as LilyNotation from "../inc/lilyNotation";
@@ -104,7 +104,7 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 
 	const t0 = Date.now();
 
-	type ParserArguments = {attributes: LilyDocumentAttributeReadOnly, tieLocations: {[key: string]: boolean}};
+	type ParserArguments = {attributes: LilyDocumentAttributeReadOnly, tieLocations: Set<string>};
 
 	const argsGen = new SingleLock<ParserArguments>(true);
 
@@ -120,8 +120,7 @@ const makeSheetNotation = async (source: string, lilyParser: GrammarParser, {wit
 
 			const attributes = lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
 
-			const tieLocations = lilyDocument.getTiedNoteLocations2()
-				.reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
+			const tieLocations = docLocationSet(lilyDocument.getTiedNoteLocations2());
 
 			argsGen.release({attributes, tieLocations});
 			//console.log("tp.1:", Date.now() - t0);

@@ -17,6 +17,8 @@
 
 *	2021.6.9
 
+	+	staffSvg: refined argument of tieLocations to string set.
+
 	+	staffSvg: refined tokensSystemsSplit by system top tokens.
 
 	+	lilyDocument.ts: LilyDocument.getBriefChordLocations added.

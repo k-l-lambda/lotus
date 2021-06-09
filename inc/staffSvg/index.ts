@@ -21,7 +21,7 @@ interface SvgPageParserOptions {
 	lilyDocument?: LilyDocument;
 	logger?: LogRecorder;
 	attributes?: StaffAttributes;
-	tieLocations?: {[key: string]: boolean};
+	tieLocations?: Set<string>;
 	briefChordLocations?: Set<string>;
 
 	DOMParser?: any;
@@ -53,30 +53,19 @@ const parseSvgPage = (dom, source: string | TextSource, {
 	const [x, y, width, height] = elem.viewBox.match(/[\d-.]+/g).map(Number);
 	const viewBox = {x, y, width, height};
 
-	// mark tie symbol on tokens
-	if (tieLocations) {
-		const tieTokens = tokens.filter(token => {
-			if (token.sourcePosition) {
-				const {line, start} = token.sourcePosition;
-				return tieLocations[`${line}:${start}`];
-			}
-		});
-		tieTokens.forEach(token => {
-			//token.addSymbol("TIE");
-			token.tied = true;
-		});
-		//logger.append("tieTokens:", tieTokens.map(token => token.href));
-	}
+	// mark tie & brief chord symbol on tokens
+	tokens.forEach(token => {
+		if (token.sourcePosition) {
+			const {line, start} = token.sourcePosition;
+			const loc = `${line}:${start}`;
 
-	if (briefChordLocations) {
-		tokens.forEach(token => {
-			if (token.sourcePosition) {
-				const {line, start} = token.sourcePosition;
-				if (briefChordLocations.has(`${line}:${start}`))
-					token.addSymbol("CHORD_TEXT");
-			}
-		});
-	}
+			if (briefChordLocations && briefChordLocations.has(loc))
+				token.addSymbol("CHORD_TEXT");
+
+			if (tieLocations && tieLocations.has(loc))
+				token.tied = true;
+		}
+	});
 
 	return {
 		structure: organizeTokens(tokens, source, {logger, viewBox, width: elem.width, height: elem.height}),
@@ -92,7 +81,7 @@ const createSheetDocumentFromSvgs = (svgs: string[], ly: string, lilyDocument: L
 	const attributes = lilyDocument.globalAttributes({readonly: true}) as LilyDocumentAttributeReadOnly;
 
 	const source = new TextSource(ly);
-	const tieLocations = lilyDocument.getTiedNoteLocations2().reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
+	const tieLocations = docLocationSet(lilyDocument.getTiedNoteLocations2());
 	//logger.append("tieLocations:", Object.keys(tieLocations));
 	const briefChordLocations = docLocationSet(lilyDocument.getBriefChordLocations());
 

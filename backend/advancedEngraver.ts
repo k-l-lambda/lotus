@@ -3,7 +3,7 @@ import {Writable} from "stream";
 import {MusicNotation} from "@k-l-lambda/web-widgets";
 import {DOMParser} from "xmldom";
 
-import {LilyDocument} from "../inc/lilyParser";
+import {LilyDocument, docLocationSet} from "../inc/lilyParser";
 import {engraveSvg} from "./lilyCommands";
 import {SingleLock} from "../inc/mutex";
 import * as staffSvg from "../inc/staffSvg";
@@ -12,7 +12,7 @@ import LogRecorder from "../inc/logRecorder";
 
 
 
-type StaffArguments = {attributes: staffSvg.StaffAttributes, tieLocations?: {[key: string]: boolean}};
+type StaffArguments = {attributes: staffSvg.StaffAttributes, tieLocations?: Set<string>};
 
 
 interface EngraverOptions {
@@ -81,8 +81,7 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 			if (!options.staffArgs) {
 				const attributes = lilyDocument.globalAttributes({readonly: true}) as staffSvg.StaffAttributes;
 
-				const tieLocations = lilyDocument.getTiedNoteLocations2()
-					.reduce((table, loc) => ((table[`${loc[0]}:${loc[1]}`] = true), table), {});
+				const tieLocations = docLocationSet(lilyDocument.getTiedNoteLocations2());
 
 				//console.log("tp.2:", Date.now() - t0);
 
