@@ -218,9 +218,9 @@ const tokensSystemsSplit = (tokens: StaffToken[], logger) => {
 		}
 	});
 
-	// fill interval between 8va and system top
-	const octaveAs = tokens.filter(token => token.is("OCTAVE A"));
-	octaveAs.forEach(token => {
+	// fill interval between top tokens and system top
+	const topTokens = tokens.filter(token => token.topAtSystem);
+	topTokens.forEach(token => {
 		const nextIndex = pageTile.find((index, y) => y > token.y && index >= 0);
 		for (let y = Math.floor(token.y) - 1; y < pageHeight; ++y) {
 			if (pageTile[y] >= 0)

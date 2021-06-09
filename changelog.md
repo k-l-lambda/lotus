@@ -17,6 +17,8 @@
 
 *	2021.6.9
 
+	+	staffSvg: refined tokensSystemsSplit by system top tokens.
+
 	+	lilyDocument.ts: LilyDocument.getBriefChordLocations added.
 
 	+	lilyDocument.ts: added field of midiTempo in LilyDocument.markup.
