@@ -5,6 +5,7 @@ lib/
 lib.browser/
 yarn.lock
 *.local
+*.local.*
 *.log
 
 # command line temporary directory
