@@ -253,6 +253,8 @@ const symbolRules: SymbolizeRule[] = [
 	glyphSymbol("ATTACHED SHORTFERMATA UP", "scripts.ushortfermata"),
 	glyphSymbol("ATTACHED SHORTFERMATA DOWN", "scripts.dshortfermata"),
 	glyphSymbol("ATTACHED SFORZATO", "scripts.sforzato"),
+	glyphSymbol("BRACE BRACE_WING", "brackettips.up"),
+	glyphSymbol("BRACE BRACE_WING", "brackettips.down"),
 ];
 
 
