@@ -171,7 +171,7 @@ export default class StaffToken {
 
 	get topAtSystem (): boolean {
 		return this.is("OCTAVE A") || this.is("CHORD_TEXT") || this.is("REPEAT_SIGN SEGNO")
-			|| this.is("REPEAT_SIGN CODA") || this.is("TEMPO_NOTEHEAD");
+			|| this.is("REPEAT_SIGN CODA") || this.is("TEMPO_NOTEHEAD") || this.is("TEMPO_NOTE_STEM");
 	}
 
 

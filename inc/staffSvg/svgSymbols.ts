@@ -179,6 +179,9 @@ const symbolRules: SymbolizeRule[] = [
 	conditionSymbol("NOTE_STEM", elem => elem.identity.type === "rect"
 		&& elem.sw === 0.13 && elem.identity.height >= 1),
 
+	conditionSymbol("TEMPO_NOTE_STEM", elem => elem.identity.type === "rect"
+		&& elem.sw === 0.12 && elem.identity.height >= 1),
+
 	conditionSymbol("NOTETAIL JOINT", elem => elem.identity.type === "polygon" && pointsSize(elem.identity.points) === 8),
 
 	conditionSymbol("STAFF_LINE", elem => elem.identity.type === "line" && elem.identity.height === 0 && elem.identity.width > 2 && elem.sw === 0.1 && !elem.identity["stroke-dasharray"]),

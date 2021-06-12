@@ -17,6 +17,8 @@
 
 *	2021.6.12
 
+	+	svgSymbols.ts: added symbol of TEMPO_NOTE_STEM.
+
 	+	staffSvg: added field of index in page in StaffToken.
 
 
