@@ -7,6 +7,8 @@ import {Glyph, slashGlyphName, GlyphUnicode} from "./glyph";
 
 
 export default class StaffToken {
+	index: number;	// the token index in page
+
 	x: number;
 	y: number;
 	rx: number;
@@ -50,7 +52,7 @@ export default class StaffToken {
 		return {
 			__prototype: "StaffToken",
 			x, y,
-			..._.pick(this, ["rx", "ry", "sw", "start", "target", "source", "tied",
+			..._.pick(this, ["index", "rx", "ry", "sw", "start", "target", "source", "tied",
 				"symbol", "hash", "href", "scale", "scaleX", "width", "height", "text", "stemX", "stemUp", "track", "glyph"]),
 		};
 	}

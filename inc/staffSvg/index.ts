@@ -54,7 +54,9 @@ const parseSvgPage = (dom, source: string | TextSource, {
 	const viewBox = {x, y, width, height};
 
 	// mark tie & brief chord symbol on tokens
-	tokens.forEach(token => {
+	tokens.forEach((token, index) => {
+		token.index = index;
+
 		if (token.sourcePosition) {
 			const {line, start} = token.sourcePosition;
 			const loc = `${line}:${start}`;

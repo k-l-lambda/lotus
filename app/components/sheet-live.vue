@@ -94,6 +94,7 @@
 									class="token matched"
 									:class="{tied: token.tied}"
 									:data-track="token.track"
+									:data-index="token.index"
 								>
 									<text :data-href="token.href">{{token.fontUnicode}}</text>
 								</g>

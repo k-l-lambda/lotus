@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.6.12
+
+	+	staffSvg: added field of index in page in StaffToken.
+
+
 *	2021.6.9
 
 	+	staffSvg: refined argument of tieLocations to string set.

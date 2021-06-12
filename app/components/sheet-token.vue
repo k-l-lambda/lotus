@@ -2,6 +2,7 @@
 	<g class="token"
 		:transform="`translate(${token.x}, ${token.y})` + (scale ? ` scale(${scale.x}, ${scale.y})` : '')"
 		:class="classes"
+		:data-index="token.index"
 		:data-href="token.href"
 		:data-track="token.track"
 		@click="$emit('click', $event)"
