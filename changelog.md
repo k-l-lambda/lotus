@@ -17,6 +17,8 @@
 
 *	2021.6.12
 
+	+	svgSymbols.ts: enhanced symbol of OCTAVE for va, vb non-specific.
+
 	+	svgSymbols.ts: added symbol of TEMPO_NOTE_STEM.
 
 	+	staffSvg: added field of index in page in StaffToken.

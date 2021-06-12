@@ -190,8 +190,10 @@ const symbolRules: SymbolizeRule[] = [
 
 	conditionSymbol("OCTAVE A _8", elem => elem.identity.type === "text" && /8va/.test(elem.identity.text)),
 	conditionSymbol("OCTAVE B _8", elem => elem.identity.type === "text" && /8vb/.test(elem.identity.text)),
+	conditionSymbol("OCTAVE _8", elem => elem.identity.type === "text" && elem.identity.text === "8" && elem.identity["font-style"] === "italic" && elem.identity["font-weight"] === "bold"),
 	conditionSymbol("OCTAVE A _15", elem => elem.identity.type === "text" && /15ma/.test(elem.identity.text)),
 	conditionSymbol("OCTAVE B _15", elem => elem.identity.type === "text" && /15mb/.test(elem.identity.text)),
+	conditionSymbol("OCTAVE _15", elem => elem.identity.type === "text" && elem.identity.text === "15" && elem.identity["font-style"] === "italic" && elem.identity["font-weight"] === "bold"),
 	identitySymbol("OCTAVE CLOSE LINE", {
 		type: "line",
 		width: 0,
