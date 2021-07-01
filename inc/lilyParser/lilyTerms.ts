@@ -1986,7 +1986,7 @@ export class MusicEvent extends BaseTerm {
 	post_events?: PostEvent[];
 
 	_previous?: MusicEvent;
-	_anchorPitch?: ChordElement;
+	//_anchorPitch?: ChordElement;
 	_lastMeasure?: number;
 
 
