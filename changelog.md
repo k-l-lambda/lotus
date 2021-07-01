@@ -1,5 +1,9 @@
 
 ## TODO
+	music events token language
+		N(Y)	R	R(Y)	S	Duration(N)	Dot	Time[	Time]
+		Y: [-12, 12]
+		N: [0, 6]
 	track-measure lilypond section editor
 		duration checker
 	lyrics in music normalization
@@ -13,6 +17,11 @@
 		system splitting
 			beam error affiliation
 			chord mode symbol affiliation
+
+
+*	2021.7.1
+
+	+	inc/tonote/token.ts created.
 
 
 *	2021.6.12
