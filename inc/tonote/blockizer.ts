@@ -63,6 +63,17 @@ const joinSeries = (serieses: string[][], seperator: string): string[] => series
 }, []);
 
 
+const splitPitch = (token: string): string[] => {
+	if (/^[abcdefgh]/.test(token)) {
+		const chars = token.split("");
+
+		return chars.reduce((series, char) => series.length === 1 && /[a-z]/.test(char) ? [series[0] + char] : [...series, char], []);
+	}
+
+	return [token];
+};
+
+
 const serilizeTerms = (terms: lilyParser.BaseTerm[]): string[] => {
 	const series0 = cc(terms.map(term => term.serialize()));
 	const series1 = series0.map(token => Number.isFinite(token) ? token.toString() : token);
@@ -72,12 +83,7 @@ const serilizeTerms = (terms: lilyParser.BaseTerm[]): string[] => {
 		&& token !== "\b");
 
 	// split pitch word
-	const series3: string[] = cc(series2.map(token => {
-		if (/^[abcdefgh]/.test(token))
-			return token.split("");
-
-		return [token];
-	}));
+	const series3: string[] = cc(series2.map(splitPitch));
 
 	return series3.map(token => token.replace(/\n/g, ""));
 };
@@ -91,6 +97,10 @@ const melodySeriesFromSong = (song: BlockSong): string[] => {
 
 	return serilizeAnchor(song.anchors[0]).concat(joinSeries(measures, "|"));
 };
+
+
+// TODO:
+//const encodeSeriesToLy = (tokens: string[]): string => {};
 
 
 
