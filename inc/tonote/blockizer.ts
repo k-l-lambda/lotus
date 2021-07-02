@@ -9,7 +9,11 @@ interface VoiceMeasure {
 };
 
 type SystemMeasure = VoiceMeasure[];
-type BlockSong = SystemMeasure[];
+
+interface BlockSong {
+	measures: SystemMeasure[];
+	anchors: string[];
+};
 
 
 const blockizeLily = (doc: lilyParser.LilyDocument): BlockSong => {
@@ -17,15 +21,20 @@ const blockizeLily = (doc: lilyParser.LilyDocument): BlockSong => {
 	const tracks = interpreter.layoutMusic.musicTracks;
 
 	const measureCount = Math.max(...tracks[0].block.measures);
-	const song: BlockSong = Array(measureCount).fill(null).map(() => []);
+	const song: BlockSong = {
+		anchors: [],
+		measures: Array(measureCount).fill(null).map(() => []),
+	};
 
 	tracks.forEach((track, i) => {
+		song.anchors.push(track.anchorPitch.pitch);
+
 		track.flatten({spreadRepeats: true});
 		const chunkMap = track.block.measureChunkMap;
 
 		for (const [m, chunk] of chunkMap.entries()) {
 			const mi = Number(m) - 1;
-			song[mi][i] = {
+			song.measures[mi][i] = {
 				staff: track.contextDict.Staff,
 				terms: chunk.terms,
 			};
@@ -68,10 +77,13 @@ const serilizeTerms = (terms: lilyParser.BaseTerm[]): string[] => {
 };
 
 
-const melodySeriesFromSong = (song: BlockSong): string[] => {
-	const measures = song.map(measure => serilizeTerms(measure[0].terms));
+const serilizeAnchor = (anchor: string): string[] => ["<anchor>", ...anchor.split(""), "</anchor>"];
 
-	return joinSeries(measures, "|");
+
+const melodySeriesFromSong = (song: BlockSong): string[] => {
+	const measures = song.measures.map(measure => serilizeTerms(measure[0].terms));
+
+	return serilizeAnchor(song.anchors[0]).concat(joinSeries(measures, "|"));
 };
 
 
