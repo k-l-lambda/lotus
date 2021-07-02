@@ -4,7 +4,7 @@ import fs from "fs";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import * as lilyParser from "../inc/lilyParser";
 import * as tonote from "../inc/tonote";
-import {blockizeLily} from "../inc/tonote/blocker";
+import {blockizeLily, melodySeriesFromSong} from "../inc/tonote/blocker";
 
 
 
@@ -20,6 +20,9 @@ const main = async (sourceFile: string) => {
 
 	const song = blockizeLily(doc);
 	console.log("song:", song);
+
+	const melody = melodySeriesFromSong(song);
+	console.log("melody:", melody);
 };
 
 
