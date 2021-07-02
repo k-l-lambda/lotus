@@ -17,7 +17,7 @@
 
 *	2021.7.2
 
-	+	inc/tonote/blocker.ts created.
+	+	inc/tonote/blockizer.ts created.
 
 
 *	2021.7.1
