@@ -34,12 +34,18 @@ const blockizeLily = (doc: lilyParser.LilyDocument): BlockSong => {
 
 		for (const [m, chunk] of chunkMap.entries()) {
 			const mi = Number(m) - 1;
+			if (!song.measures[mi]) {
+				console.warn("missing measure:", mi, song.measures.length);
+				break;
+			}
 			song.measures[mi][i] = {
 				staff: track.contextDict.Staff,
 				terms: chunk.terms,
 			};
 		}
 	});
+
+	song.measures = song.measures.filter(measure => measure.length);
 
 	return song;
 };

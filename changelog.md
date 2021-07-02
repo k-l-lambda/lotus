@@ -17,6 +17,8 @@
 
 *	2021.7.2
 
+	+	tools/blockizerSerializer.ts created.
+
 	+	inc/tonote/blockizer.ts created.
 
 
