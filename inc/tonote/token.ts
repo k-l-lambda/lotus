@@ -1,9 +1,7 @@
 
 enum Token {
-	MusicStart,
-	MeasureStart,
 	VoiceSeparator,
-	End,
+	MeasureSeparator,
 
 	ClefG = 0x10,
 	ClefF,
