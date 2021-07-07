@@ -20,7 +20,7 @@ const parseLy = (parser, sourceFile) => {
 const convertMelodies = async (directory: string, outputPath: string) => {
 	const parser = await loadLilyParser();
 
-	const output = fs.createWriteStream(outputPath);
+	const output = fs.createWriteStream(outputPath, {flags: "a"});
 
 	const files = walkDir(directory, /\.ly$/, {recursive: true});
 	//console.log("files:", files);

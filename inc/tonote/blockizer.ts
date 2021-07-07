@@ -27,6 +27,8 @@ const blockizeLily = (doc: lilyParser.LilyDocument): BlockSong => {
 	};
 
 	tracks.forEach((track, i) => {
+		if (!track.anchorPitch)
+			return;
 		song.anchors.push(track.anchorPitch.pitch);
 
 		track.flatten({spreadRepeats: true});
@@ -93,7 +95,8 @@ const serilizeAnchor = (anchor: string): string[] => ["<anchor>", ...anchor.spli
 
 
 const melodySeriesFromSong = (song: BlockSong): string[] => {
-	const measures = song.measures.map(measure => serilizeTerms(measure[0].terms));
+	// suppose the first track is melody track
+	const measures = song.measures.filter(measure => measure[0]).map(measure => serilizeTerms(measure[0].terms));
 
 	return serilizeAnchor(song.anchors[0]).concat(joinSeries(measures, "|"));
 };
