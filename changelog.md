@@ -17,6 +17,8 @@
 
 *	2021.7.7
 
+	+	blockizer.ts: trimChunckTerms added.
+
 	+	lilyInterpreter.ts: enhanced MusicTrack.flatten for nested repeat.
 
 

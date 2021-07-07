@@ -16,6 +16,32 @@ interface BlockSong {
 };
 
 
+const isIgnoredTerm = (term: any): boolean => {
+	if (term instanceof lilyParser.LilyTerms.MarkupCommand)
+		return true;
+
+	if (term instanceof lilyParser.LilyTerms.Tempo)
+		return true;
+
+	if (term instanceof lilyParser.LilyTerms.Command && ["barNumberCheck"].includes(term.cmd))
+		return true;
+
+	if (term instanceof lilyParser.LilyTerms.PostEvent)
+		return term.arg && isIgnoredTerm(term.arg);
+
+	return false;
+};
+
+const trimChunckTerms = (chunk: lilyParser.MusicChunk) => {
+	chunk.terms = chunk.terms.filter(term => !isIgnoredTerm(term));
+
+	chunk.terms.forEach(term => {
+		if (term instanceof lilyParser.MusicEvent && term.post_events)
+			term.post_events = term.post_events.filter(event => !event.arg || !isIgnoredTerm(event.arg));
+	});
+};
+
+
 const blockizeLily = (doc: lilyParser.LilyDocument): BlockSong => {
 	const interpreter = doc.interpret();
 	const tracks = interpreter.layoutMusic.musicTracks;
@@ -40,6 +66,9 @@ const blockizeLily = (doc: lilyParser.LilyDocument): BlockSong => {
 				console.warn("missing measure:", mi, song.measures.length);
 				break;
 			}
+
+			trimChunckTerms(chunk);
+
 			song.measures[mi][i] = {
 				staff: track.contextDict.Staff,
 				terms: chunk.terms,
