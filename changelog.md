@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.7.7
+
+	+	lilyInterpreter.ts: enhanced MusicTrack.flatten for nested repeat.
+
+
 *	2021.7.2
 
 	+	tools/blockizerSerializer.ts created.

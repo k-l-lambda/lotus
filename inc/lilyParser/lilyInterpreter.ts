@@ -357,7 +357,8 @@ export class MusicTrack {
 		this.spreadRelativeBlocks();
 
 		if (spreadRepeats) {
-			this.spreadRepeatBlocks();
+			while (this.spreadRepeatBlocks())
+				;
 
 			// expand all music blocks
 			while (this.spreadMusicBlocks());
