@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.7.7
+
+	+	lilyInterpreter.ts: enhanced MusicTrack.flatten for nested repeat.
+
+
 *	2021.6.12
 
 	+	svgSymbols.ts: enhanced symbol of OCTAVE for va, vb non-specific.
