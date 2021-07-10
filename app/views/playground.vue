@@ -1885,10 +1885,10 @@
 					.token.highlight
 					{
 						stroke-width: 0.4;
-						stroke: #fa0a;
 
 						use
 						{
+							stroke: #c70 !important;
 							fill: #c70 !important;
 						}
 					}

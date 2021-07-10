@@ -6,6 +6,10 @@ import {Glyph, slashGlyphName, GlyphUnicode} from "./glyph";
 
 
 
+type Point2 = {x: number, y: number};
+
+
+
 export default class StaffToken {
 	index: number;	// the token index in page
 
@@ -23,8 +27,8 @@ export default class StaffToken {
 	width?: number;
 	height?: number;
 	text?: string;
-	start?: object;
-	target?: object;
+	start?: Point2;
+	target?: Point2;
 	source?: string;
 	tied?: boolean;
 	stemX?: number;
@@ -154,6 +158,13 @@ export default class StaffToken {
 
 		if (this.is("SUSTAIN"))
 			return -4;
+
+		if (this.is("WEDGE")) {
+			if (this.is("CRESCENDO"))
+				return -Math.abs(this.target.y);
+			else if (this.is("DECRESCENDO BOTTOM"))
+				return this.target.y * 2;
+		}
 
 		return 0;
 	}

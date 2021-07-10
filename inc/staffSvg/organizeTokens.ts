@@ -488,9 +488,31 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 	const localTokens = tokens.map(token => token.translate({x: -systemX, y: -systemY}));
 	const stems = localTokens.filter(token => token.is("NOTE_STEM"));
 
+	const slashes = localTokens.filter(token => token.is("LINE") && token.target && token.target.x > 0 && token.target.y < 0);
+	const backSlashes = localTokens.filter(token => token.is("LINE") && token.target && token.target.x > 0 && token.target.y > 0);
+
 	const staffTokens = [];
 	//console.log("splitters:", splitters);
 	const appendToken = token => {
+		if (token.is("NOTETAIL") && token.is("JOINT")) {
+			const jointStems = stems.filter(stem => Math.abs(stem.x - token.x) < 0.1
+				&& (Math.abs(token.y - stem.y) < 0.2 || Math.abs(token.y - (stem.y + stem.height)) < 0.2));
+			if (jointStems.length)
+				token.addSymbol("CAPITAL_BEAM");
+		}
+
+		if (slashes.includes(token)) {
+			const pattern = backSlashes.find(t => t.x === token.x && t.target.y === - token.target.y);
+			if (token.y === pattern.y) {
+				token.addSymbol("WEDGE CRESCENDO TOP");
+				pattern.addSymbol("WEDGE CRESCENDO BOTTOM");
+			}
+			else if (token.y > pattern.y) {
+				token.addSymbol("WEDGE DECRESCENDO BOTTOM");
+				pattern.addSymbol("WEDGE DECRESCENDO TOP");
+			}
+		}
+
 		let index = 0;
 
 		if (token.withUp || token.withDown) {
@@ -515,13 +537,8 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 						y = stem.logicY;
 					//else
 					//	console.debug("isolated beam:", token);
-
-					const jointStems = stems.filter(stem => Math.abs(stem.x - token.x) < 0.1
-						&& (Math.abs(token.y - stem.y) < 0.2 || Math.abs(token.y - (stem.y + stem.height)) < 0.2));
-					if (jointStems.length)
-						token.addSymbol("CAPITAL_BEAM");
 				}
-	
+
 				//if (token.is("NOTEHEAD"))
 				//	console.log("omit note:", token.href, roundJoin(token.x + systemX, y + systemY));
 				while (y > splitters[index])

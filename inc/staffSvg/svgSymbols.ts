@@ -298,6 +298,11 @@ const postSymbolRules: PostSymbolizeRule[] = [
 		}
 	}),
 
+	postSymbolProcess("LINE", (elem, result) => {
+		result.start = {x: 0, y: 0};
+		result.target = {x: elem.identity.width, y: elem.identity.height};
+	}),
+
 	/*postSymbolProcess("NOTEHEAD", (elem, result) => {
 		result.scale = elem.identity.scale.x / GLYPH_BASE_SCALE;
 	}),*/
