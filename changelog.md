@@ -17,6 +17,8 @@
 
 *	2021.7.10
 
+	+	organizeToken.ts: mark symbol of CAPITAL_BEAM.
+
 	+	playground.vue: highlight symbol added.
 
 

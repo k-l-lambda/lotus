@@ -509,12 +509,17 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 				// affiliate beam to a stem
 				if (token.is("NOTETAIL") && token.is("JOINT")) {
 					const stem = stems.find(stem => Math.abs(stem.x - token.x) < 0.1
-						&& token.y > stem.y - 0.1 && token.y < stem.y + stem.height + 0.1);
+						&& token.y > stem.y - 0.2 && token.y < stem.y + stem.height + 0.2);
 	
 					if (stem)
 						y = stem.logicY;
 					//else
 					//	console.debug("isolated beam:", token);
+
+					const jointStems = stems.filter(stem => Math.abs(stem.x - token.x) < 0.1
+						&& (Math.abs(token.y - stem.y) < 0.2 || Math.abs(token.y - (stem.y + stem.height)) < 0.2));
+					if (jointStems.length)
+						token.addSymbol("CAPITAL_BEAM");
 				}
 	
 				//if (token.is("NOTEHEAD"))
