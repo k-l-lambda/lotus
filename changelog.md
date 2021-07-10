@@ -17,6 +17,8 @@
 
 *	2021.7.10
 
+	+	staffSvg: refined logic Y for wedge symbol.
+
 	+	organizeToken.ts: mark symbol of crescendo & decrescendo.
 
 	+	organizeToken.ts: mark symbol of CAPITAL_BEAM.

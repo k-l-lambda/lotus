@@ -85,6 +85,7 @@ const normalizeElement = (elem: StaffElement, attributes: StaffAttributes): Staf
 	case "line":
 		data.x = elem.x1 + elem.transform.translate.x;
 		data.y = elem.y1 + elem.transform.translate.y;
+		data.href = elem.href;
 		data.identity.width = roundNumber((elem.x2 - elem.x1) * elem.transform.scale.x, SIZE_PRECISION);
 		data.identity.height = roundNumber((elem.y2 - elem.y1) * elem.transform.scale.y, SIZE_PRECISION);
 		data.identity["stroke-width"] = elem["stroke-width"];

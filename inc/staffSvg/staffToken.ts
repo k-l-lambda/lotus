@@ -148,27 +148,29 @@ export default class StaffToken {
 		if (this.is("NOTE_STEM"))
 			return this.height / 2;
 
+		let dy = 0;
+
+		if (this.is("WEDGE DECRESCENDO"))
+			dy = this.target.y;
+		/*if (this.is("WEDGE")) {
+			if (this.is("CRESCENDO"))
+				dy = -Math.abs(this.target.y);
+			else if (this.is("DECRESCENDO BOTTOM"))
+				dy = this.target.y * 2;
+		}*/
+
 		if (this.source) {
 			if (/^\^/.test(this.source))
-				return 2;
+				dy += 2;
 
 			if (/^_/.test(this.source))
-				return -2;
+				dy -= 2;
 		}
 
 		if (this.is("SUSTAIN"))
 			return -4;
 
-		//if (this.is("WEDGE DECRESCENDO"))
-		//	return this.target.y;
-		if (this.is("WEDGE")) {
-			if (this.is("CRESCENDO"))
-				return -Math.abs(this.target.y);
-			else if (this.is("DECRESCENDO BOTTOM"))
-				return this.target.y * 2;
-		}
-
-		return 0;
+		return dy;
 	}
 
 
