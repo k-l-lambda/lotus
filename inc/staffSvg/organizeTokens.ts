@@ -503,13 +503,15 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 
 		if (slashes.includes(token)) {
 			const pattern = backSlashes.find(t => t.x === token.x && t.target.y === - token.target.y);
-			if (token.y === pattern.y) {
-				token.addSymbol("WEDGE CRESCENDO TOP");
-				pattern.addSymbol("WEDGE CRESCENDO BOTTOM");
-			}
-			else if (token.y > pattern.y) {
-				token.addSymbol("WEDGE DECRESCENDO BOTTOM");
-				pattern.addSymbol("WEDGE DECRESCENDO TOP");
+			if (pattern) {
+				if (token.y === pattern.y) {
+					token.addSymbol("WEDGE CRESCENDO TOP");
+					pattern.addSymbol("WEDGE CRESCENDO BOTTOM");
+				}
+				else if (token.y > pattern.y) {
+					token.addSymbol("WEDGE DECRESCENDO BOTTOM");
+					pattern.addSymbol("WEDGE DECRESCENDO TOP");
+				}
 			}
 		}
 

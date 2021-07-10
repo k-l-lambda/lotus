@@ -159,6 +159,8 @@ export default class StaffToken {
 		if (this.is("SUSTAIN"))
 			return -4;
 
+		//if (this.is("WEDGE DECRESCENDO"))
+		//	return this.target.y;
 		if (this.is("WEDGE")) {
 			if (this.is("CRESCENDO"))
 				return -Math.abs(this.target.y);
