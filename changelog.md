@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.7.10
+
+	+	playground.vue: highlight symbol added.
+
+
 *	2021.7.7
 
 	+	lilyInterpreter.ts: enhanced MusicTrack.flatten for nested repeat.

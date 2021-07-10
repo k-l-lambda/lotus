@@ -57,6 +57,7 @@
 										mismatched: token.is('NOTEHEAD') && !statusMap.has(token.href),
 										tied: token.tied,
 										attached: Number.isFinite(token.stemX),
+										highlight: highlightSymbol && token.is(highlightSymbol),
 									}"
 									:showTitle="showMark"
 									:scale="enabledFont ? token.scale2 : null"
@@ -223,6 +224,7 @@
 				default: DEFAULT_WATERMARK,
 			},
 			enabledFont: Boolean,
+			highlightSymbol: String,
 		},
 
 

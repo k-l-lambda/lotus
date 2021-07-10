@@ -76,6 +76,9 @@
 					@click="applyUpdateMeasureLayoutCode"
 				>apply</button>
 			</fieldset>
+			<fieldset>
+				<input class="hightlight-symbol" type="text" v-model="highlightSymbol" title="hight symbol" />
+			</fieldset>
 		</header>
 		<main>
 			<div class="source-container" :class="{loading: sourceIsLoading, 'drag-hover': sourceDragHover, connected: sourceEditorConnected}"
@@ -138,6 +141,7 @@
 						:backgroundImages="hideBakingImages ? null : bakingImages"
 						:scheduler.sync="scheduler"
 						:enabledFont="enabledMusicFont"
+						:highlightSymbol="highlightSymbol"
 						@midi="onMidi"
 						@cursorPageShift="onCursorPageShift"
 						@pointerUpdate="onPointerUpdate"
@@ -512,6 +516,7 @@
 				measureLayoutCodeDirty: false,
 				measureLayoutCodeError: null,
 				articulateMIDI: false,
+				highlightSymbol: null,
 			};
 		},
 
@@ -1710,6 +1715,11 @@
 			{
 				font-size: 70%;
 			}
+
+			.hightlight-symbol
+			{
+				border: #4441 1px solid;
+			}
 		}
 
 		& > main
@@ -1869,6 +1879,17 @@
 						text, use
 						{
 							fill-opacity: 0.6;
+						}
+					}
+
+					.token.highlight
+					{
+						stroke-width: 0.4;
+						stroke: #fa0a;
+
+						use
+						{
+							fill: #c70 !important;
 						}
 					}
 
