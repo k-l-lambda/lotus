@@ -136,14 +136,14 @@ export default class StaffToken {
 			return -4;
 
 		if (this.is("ATTACHED UP"))
-			return 4;
+			return 1.5;
 		else if (this.is("ATTACHED DOWN"))
-			return -4;
+			return -1.5;
 
 		if (this.is("NOTETAIL UP"))
-			return 4;
+			return 2;
 		else if (this.is("NOTETAIL DOWN"))
-			return -4;
+			return -2;
 
 		if (this.is("NOTE_STEM"))
 			return this.height / 2;
