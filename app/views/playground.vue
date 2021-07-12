@@ -141,7 +141,7 @@
 						:backgroundImages="hideBakingImages ? null : bakingImages"
 						:scheduler.sync="scheduler"
 						:enabledFont="enabledMusicFont"
-						:highlightSymbol="highlightSymbol"
+						:highlightSymbol="highlightSymbol.toUpperCase()"
 						@midi="onMidi"
 						@cursorPageShift="onCursorPageShift"
 						@pointerUpdate="onPointerUpdate"
