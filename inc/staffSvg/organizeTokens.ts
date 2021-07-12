@@ -504,7 +504,7 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 		if (slashes.includes(token)) {
 			const partner = backSlashes.find(t => t.x === token.x && t.target.y === - token.target.y);
 			if (partner) {
-				if (token.y === partner.y) {
+				if (token.y <= partner.y) {
 					token.addSymbol("WEDGE CRESCENDO TOP");
 					partner.addSymbol("WEDGE CRESCENDO BOTTOM");
 				}
