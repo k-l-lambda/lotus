@@ -23,6 +23,7 @@ interface SvgPageParserOptions {
 	attributes?: StaffAttributes;
 	tieLocations?: Set<string>;
 	briefChordLocations?: Set<string>;
+	lyricLocations?: Set<string>;
 
 	DOMParser?: any;
 };
@@ -34,6 +35,7 @@ const parseSvgPage = (dom, source: string | TextSource, {
 	attributes,
 	tieLocations,
 	briefChordLocations,
+	lyricLocations,
 	...options
 }: SvgPageParserOptions = {}) => {
 	if (!(source instanceof TextSource))
@@ -53,6 +55,8 @@ const parseSvgPage = (dom, source: string | TextSource, {
 	const [x, y, width, height] = elem.viewBox.match(/[\d-.]+/g).map(Number);
 	const viewBox = {x, y, width, height};
 
+	const lyricLines = new Set([...lyricLocations].map(loc => Number(loc.split(":")[0])));
+
 	// mark tie & brief chord symbol on tokens
 	tokens.forEach((token, index) => {
 		token.index = index;
@@ -63,6 +67,9 @@ const parseSvgPage = (dom, source: string | TextSource, {
 
 			if (briefChordLocations && briefChordLocations.has(loc))
 				token.addSymbol("CHORD_TEXT");
+
+			if (lyricLocations && lyricLines.has(line))
+				token.addSymbol("LYRIC_TEXT");
 
 			if (tieLocations && tieLocations.has(loc))
 				token.tied = true;
@@ -86,8 +93,9 @@ const createSheetDocumentFromSvgs = (svgs: string[], ly: string, lilyDocument: L
 	const tieLocations = docLocationSet(lilyDocument.getTiedNoteLocations2());
 	//logger.append("tieLocations:", Object.keys(tieLocations));
 	const briefChordLocations = docLocationSet(lilyDocument.getBriefChordLocations());
+	const lyricLocations = docLocationSet(lilyDocument.getLyricLocations());
 
-	const pages = svgs.map(svg => parseSvgPage(svg, source, {DOMParser, logger, attributes, tieLocations, briefChordLocations}));
+	const pages = svgs.map(svg => parseSvgPage(svg, source, {DOMParser, logger, attributes, tieLocations, briefChordLocations, lyricLocations}));
 	const doc = new SheetDocument({
 		pages: pages.map(page => page.structure),
 	});

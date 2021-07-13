@@ -17,6 +17,8 @@
 
 *	2021.7.13
 
+	+	staffSvg: mark lyric symbols.
+
 	+	lilyDocument.ts: getLyricLocations added.
 
 

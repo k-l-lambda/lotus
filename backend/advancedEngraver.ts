@@ -12,7 +12,7 @@ import LogRecorder from "../inc/logRecorder";
 
 
 
-type StaffArguments = {attributes: staffSvg.StaffAttributes, tieLocations?: Set<string>, briefChordLocations?: Set<string>};
+type StaffArguments = {attributes: staffSvg.StaffAttributes, tieLocations?: Set<string>, briefChordLocations?: Set<string>, lyricLocations?: Set<string>};
 
 
 interface EngraverOptions {
@@ -83,10 +83,11 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 
 				const tieLocations = docLocationSet(lilyDocument.getTiedNoteLocations2());
 				const briefChordLocations = docLocationSet(lilyDocument.getBriefChordLocations());
+				const lyricLocations = docLocationSet(lilyDocument.getLyricLocations());
 
 				//console.log("tp.2:", Date.now() - t0);
 
-				options.staffArgs = {attributes, tieLocations, briefChordLocations};
+				options.staffArgs = {attributes, tieLocations, briefChordLocations, lyricLocations};
 				argsGen.release(options.staffArgs);
 				//console.log("tp.3:", Date.now() - t0);
 			}
