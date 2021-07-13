@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.7.13
+
+	+	lilyDocument.ts: getLyricLocations added.
+
+
 *	2021.7.10
 
 	+	staffSvg: refined logic Y for wedge symbol.

@@ -6,7 +6,7 @@ import {LILY_STAFF_SIZE_DEFAULT} from "../constants";
 import {
 	parseRaw,
 	BaseTerm, Assignment, LiteralString, Command, Variable, MarkupCommand, Grace, AfterGrace, Include, Version, Block, InlineBlock,
-	Scheme, Chord, BriefChord, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive, ChordElement, MusicEvent,
+	Scheme, Chord, BriefChord, Lyric, MusicBlock, SimultaneousList, ContextedMusic, Divide, Tempo, PostEvent, Primitive, ChordElement, MusicEvent,
 	SchemePointer, Comment, Language, StemDirection,
 } from "./lilyTerms";
 import LilyInterpreter from "./lilyInterpreter";
@@ -803,6 +803,16 @@ export default class LilyDocument {
 
 		this.root.forEachTerm(BriefChord,
 			chord => locations.push([chord._location.lines[0], chord._location.columns[0]]));
+
+		return locations;
+	}
+
+
+	getLyricLocations (): DocLocation[] {
+		const locations = [];
+
+		this.root.forEachTerm(Lyric,
+			lyric => locations.push([lyric._location.lines[0], lyric._location.columns[0]]));
 
 		return locations;
 	}
