@@ -148,6 +148,9 @@ export default class StaffToken {
 		if (this.is("NOTE_STEM"))
 			return this.height / 2;
 
+		if (this.is("LYRIC_TEXT"))
+			return -4;
+
 		let dy = 0;
 
 		if (this.is("WEDGE DECRESCENDO"))
