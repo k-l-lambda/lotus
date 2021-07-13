@@ -183,7 +183,7 @@ export default class StaffToken {
 
 
 	get withDown (): boolean {
-		return this.source && /^_/.test(this.source);
+		return (this.source && /^_/.test(this.source)) || this.is("LYRIC_TEXT");
 	}
 
 

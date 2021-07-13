@@ -441,36 +441,6 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 	splitters.push(Infinity);
 
 
-	/*// generate 2D staves index map
-	const indicesMap = {};
-	const markLineIndex = (line, index) => {
-		for (let x = Math.round(line.x); x < Math.round(line.x + line.width); ++x) {
-			indicesMap[roundJoin(x, line.y)] = index;
-			indicesMap[roundJoin(x, line.y + 1)] = index;
-			indicesMap[roundJoin(x, line.y - 1)] = index;
-		}
-	};
-	staffYs.forEach((sy, index) => additionalLines.filter(line => Math.abs(line.ry - sy) <= 3)
-		.forEach((line: any) => (markLineIndex(line, index), line.resolved = true)));
-
-	const pendingLines = additionalLines.filter((line: any) => !line.resolved);
-
-	// down pass
-	pendingLines.forEach(line => {
-		const base = indicesMap[roundJoin(line.x, line.y - 1)];
-		if (Number.isInteger(base))
-			markLineIndex(line, base);
-	});
-
-	// up pass
-	pendingLines.reverse().forEach(line => {
-		const base = indicesMap[roundJoin(line.x, line.y + 1)];
-		if (Number.isInteger(base))
-			markLineIndex(line, base);
-	});
-
-	//logger.append("parseTokenSystem.indicesMap", indicesMap);*/
-
 	stacks.forEach(stack => {
 		for (let i = 0; i < staffYs.length; ++i) {
 			if (stack.tryAttachStaff(staffYs[i], i))
