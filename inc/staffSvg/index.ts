@@ -55,7 +55,7 @@ const parseSvgPage = (dom, source: string | TextSource, {
 	const [x, y, width, height] = elem.viewBox.match(/[\d-.]+/g).map(Number);
 	const viewBox = {x, y, width, height};
 
-	const lyricLines = new Set([...lyricLocations].map(loc => Number(loc.split(":")[0])));
+	const lyricLines = lyricLocations && new Set([...lyricLocations].map(loc => Number(loc.split(":")[0])));
 
 	// mark tie & brief chord symbol on tokens
 	tokens.forEach((token, index) => {
