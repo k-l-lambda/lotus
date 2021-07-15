@@ -48,6 +48,7 @@ interface PitchContextTerm {
 	newMeasure?: boolean;
 	pitches?: ChordElement[];
 	tickBias?: number;
+	rest?: boolean;
 };
 
 
@@ -129,6 +130,30 @@ class LilyStaffContext extends StaffContext {
 					if (note)
 						note.ids.push(pitch.href);
 				}
+			});
+		}
+		else if (term.rest) {
+			const event = term.event;
+			const contextIndex = this.snapshot({tick: event._tick});
+
+			this.notes.push({
+				track: term.track,
+				channel: this.channelMap[term.track] || 0,
+				measure: event._measure,
+				start: event._tick,
+				duration: event.durationMagnitude,
+				startTick: event._tick,
+				endTick: event._tick + event.durationMagnitude,
+				pitch: null,
+				velocity: 0,
+				id: event.href,
+				ids: [event.href],
+				tied: false,
+				rest: true,
+				afterGrace: !!term.tickBias,
+				implicitType: event.implicitType,
+				staffTrack: this.staffTrack,
+				contextIndex,
 			});
 		}
 	}
@@ -462,6 +487,13 @@ export class MusicTrack {
 
 				if (track.tickBias)
 					pcTerm.tickBias = track.tickBias;
+
+				commitTerm();
+			}
+			else if (term instanceof Rest && term.name !== "s") {
+				const pcTerm = getCurrentTerm(track.staffName);
+				pcTerm.event = term;
+				pcTerm.rest = true;
 
 				commitTerm();
 			}

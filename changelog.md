@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.7.15
+
+	+	lilyInterpreter.ts: added PitchContextTerm type of rest.
+
+
 *	2021.7.13
 
 	+	staffSvg: mark lyric symbols.
