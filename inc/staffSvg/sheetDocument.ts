@@ -445,8 +445,16 @@ class SheetDocument {
 
 		notation.measures.forEach(measure => measure.notes.forEach(note => {
 			const tokens = tokenMap.get(shortId(note.id));
-			if (tokens)
-				tokens.forEach(token => token.href = note.id);
+			if (tokens) {
+				tokens.forEach(token => {
+					token.href = note.id;
+
+					if (!Number.isFinite(token.tick)) {
+						token.tick = note.tick;
+						token.pitch = note.pitch;
+					}
+				});
+			}
 			else if (!partial)
 				note.overlapped = true;
 		}));

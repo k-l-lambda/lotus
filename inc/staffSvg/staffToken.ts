@@ -34,6 +34,8 @@ export default class StaffToken {
 	stemX?: number;
 	stemUp?: boolean;
 	track?: number;
+	tick?: number;
+	pitch?: number;
 	glyph?: Glyph;
 
 	system?: number;
@@ -57,7 +59,8 @@ export default class StaffToken {
 			__prototype: "StaffToken",
 			x, y,
 			..._.pick(this, ["index", "rx", "ry", "sw", "start", "target", "source", "tied",
-				"symbol", "hash", "href", "scale", "scaleX", "width", "height", "text", "stemX", "stemUp", "track", "glyph"]),
+				"symbol", "hash", "href", "scale", "scaleX", "width", "height", "text", "stemX", "stemUp",
+				"track", "tick", "pitch", "glyph"]),
 		};
 	}
 

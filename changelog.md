@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.7.16
+
+	+	sheetDocument.ts: save tick & pitch value on token in alignTokensWithNotation.
+
+
 *	2021.7.15
 
 	+	lilyInterpreter.ts: added PitchContextTerm type of rest.
