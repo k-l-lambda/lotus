@@ -440,8 +440,10 @@ class SheetDocument {
 			token.href && map.set(sid, tokens);
 
 			return map;
-		}, new Map());
+		}, new Map<string, StaffToken[]>());
 		//console.assert(tokenMap.size === noteTokens.length, "tokens noteTokens count dismatch:", tokenMap.size, noteTokens.length);
+
+		const tokenTickMap = new Map<StaffToken, {measureTick: number, tick: number}>();
 
 		notation.measures.forEach(measure => measure.notes.forEach(note => {
 			const tokens = tokenMap.get(shortId(note.id));
@@ -450,7 +452,7 @@ class SheetDocument {
 					token.href = note.id;
 
 					if (!Number.isFinite(token.tick)) {
-						token.tick = note.tick;
+						tokenTickMap.set(token, {measureTick: measure.tick, tick: measure.tick + note.tick});
 						token.pitch = note.pitch;
 					}
 				});
@@ -458,6 +460,15 @@ class SheetDocument {
 			else if (!partial)
 				note.overlapped = true;
 		}));
+
+		const tokenTickMapKeys = Array.from(tokenTickMap.keys());
+		this.systems.forEach(system => {
+			system.staves.forEach(staff => staff.measures.forEach(measure => {
+				const tokens = measure.tokens.filter(token => tokenTickMapKeys.includes(token));
+				const meastureTick = tokens.reduce((tick, token) => Math.min(tokenTickMap.get(token).measureTick, tick), Infinity);
+				tokens.forEach(token => token.tick = tokenTickMap.get(token).tick - meastureTick);
+			}));
+		});
 
 		// assign tracks
 		if (notation.idTrackMap) {

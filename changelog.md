@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.7.21
+
+	+	sheetDocument.ts: refined alignTokensWithNotation for hidden measure bar.
+
+
 *	2021.7.16
 
 	+	sheetDocument.ts: save tick & pitch value on token in alignTokensWithNotation.
