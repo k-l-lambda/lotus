@@ -466,6 +466,7 @@ class SheetDocument {
 
 		const tokenTickMap = new Map<StaffToken, {measureTick: number, tick: number}>();
 
+		// assign tick & track
 		notation.measures.forEach(measure => measure.notes.forEach(note => {
 			const tokens = tokenMap.get(shortId(note.id));
 			if (tokens) {
@@ -479,12 +480,12 @@ class SheetDocument {
 
 						if (token.stems) {
 							const stems = this.findTokensAround(token, token.stems);
-							const stem = stems.find(stem => stem.division === note.division);
+							const stem = stems.find(stem => stem.division === note.division && !Number.isFinite(stem.track));
 							if (stem) {
 								tokenTickMap.set(stem, {measureTick: measure.tick, tick: measure.tick + note.tick});
 								stem.track = note.track;
 							}
-							else
+							else if (!stems.find(stem => stem.division === note.division))
 								console.warn("missed stem:", note.division, stems);
 						}
 					}
