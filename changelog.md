@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.7.22
+
+	+	staffSvg: note token's property of stems added.
+
+
 *	2021.7.21
 
 	+	sheetDocument.ts: refined alignTokensWithNotation for hidden measure bar.

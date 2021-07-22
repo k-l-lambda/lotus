@@ -303,7 +303,7 @@ const tokensSystemsSplit = (tokens: StaffToken[], logger) => {
 };
 
 
-const parseChordsByStems = (tokens, logger) => {
+const parseChordsByStems = (tokens: StaffToken[], logger) => {
 	const stems = tokens.filter(token => token.is("NOTE_STEM"));
 	const notes = tokens.filter(token => token.is("NOTEHEAD") || token.is("TEMPO_NOTEHEAD"));
 
@@ -342,6 +342,9 @@ const parseChordsByStems = (tokens, logger) => {
 		const assign = note => {
 			note.stemX = anchorToken.x;
 			note.stemUp = !up;
+
+			note.stems = note.stems || [];
+			note.stems.push(stem.index);
 		};
 
 		rightAttached.forEach(assign);
@@ -469,6 +472,8 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 				&& (Math.abs(token.y - stem.y) < 0.2 || Math.abs(token.y - (stem.y + stem.height)) < 0.2));
 			if (jointStems.length)
 				token.addSymbol("CAPITAL_BEAM");
+
+			// TODO: append stem divides
 		}
 
 		if (slashes.includes(token)) {
@@ -664,7 +669,7 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 const isPageToken = token => token.is("TEXT") && !token.source;
 
 
-const organizeTokens = (tokens, source: TextSource, {logger, viewBox, width, height}: any = {}) => {
+const organizeTokens = (tokens: StaffToken[], source: TextSource, {logger, viewBox, width, height}: any = {}) => {
 	//logger.append("organizeTokens", tokens);
 
 	// added source on tokens
