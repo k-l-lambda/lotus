@@ -182,7 +182,7 @@ const symbolRules: SymbolizeRule[] = [
 	conditionSymbol("TEMPO_NOTE_STEM", elem => elem.identity.type === "rect"
 		&& elem.sw === 0.12 && elem.identity.height >= 1),
 
-	conditionSymbol("NOTETAIL JOINT", elem => elem.identity.type === "polygon" && pointsSize(elem.identity.points) === 8),
+	conditionSymbol("NOTETAIL JOINT BEAM", elem => elem.identity.type === "polygon" && pointsSize(elem.identity.points) === 8),
 
 	conditionSymbol("STAFF_LINE", elem => elem.identity.type === "line" && elem.identity.height === 0 && elem.identity.width > 2 && elem.sw === 0.1 && !elem.identity["stroke-dasharray"]),
 
@@ -222,18 +222,18 @@ const symbolRules: SymbolizeRule[] = [
 	glyphSymbol("CLEF TREBLE", "clefs.G_change"),
 	glyphSymbol("CLEF BASS", "clefs.F"),
 	glyphSymbol("CLEF BASS", "clefs.F_change"),
-	glyphSymbol("NOTETAIL UP", "flags.u3"),
-	glyphSymbol("NOTETAIL UP", "flags.u4"),
-	glyphSymbol("NOTETAIL UP", "flags.u5"),
-	glyphSymbol("NOTETAIL UP", "flags.u6"),
-	glyphSymbol("NOTETAIL UP", "flags.u7"),
-	glyphSymbol("NOTETAIL UP", "flags.u8"),
-	glyphSymbol("NOTETAIL DOWN", "flags.d3"),
-	glyphSymbol("NOTETAIL DOWN", "flags.d4"),
-	glyphSymbol("NOTETAIL DOWN", "flags.d5"),
-	glyphSymbol("NOTETAIL DOWN", "flags.d6"),
-	glyphSymbol("NOTETAIL DOWN", "flags.d7"),
-	glyphSymbol("NOTETAIL DOWN", "flags.d8"),
+	glyphSymbol("NOTETAIL UP EIGHTH", "flags.u3"),
+	glyphSymbol("NOTETAIL UP SIXTEENTH", "flags.u4"),
+	glyphSymbol("NOTETAIL UP THIRTYSECOND", "flags.u5"),
+	glyphSymbol("NOTETAIL UP SIXTYFOURTH", "flags.u6"),
+	glyphSymbol("NOTETAIL UP HUNDREDTWENTYEIGHTH", "flags.u7"),
+	glyphSymbol("NOTETAIL UP TWOHUNDREDSFIFTYSIXTH", "flags.u8"),
+	glyphSymbol("NOTETAIL DOWN EIGHTH", "flags.d3"),
+	glyphSymbol("NOTETAIL DOWN SIXTEENTH", "flags.d4"),
+	glyphSymbol("NOTETAIL DOWN THIRTYSECOND", "flags.d5"),
+	glyphSymbol("NOTETAIL DOWN SIXTYFOURTH", "flags.d6"),
+	glyphSymbol("NOTETAIL DOWN HUNDREDTWENTYEIGHTH", "flags.d7"),
+	glyphSymbol("NOTETAIL DOWN TWOHUNDREDSFIFTYSIXTH", "flags.d8"),
 	glyphSymbol("NOTE REST", "rests.0"),
 	glyphSymbol("NOTE REST", "rests.1"),
 	glyphSymbol("NOTE REST", "rests.2"),
@@ -286,6 +286,16 @@ const postSymbolRules: PostSymbolizeRule[] = [
 
 	postConditionSymbol("CLOSE", elem => elem.identity.height > 0, "UP"),
 	postConditionSymbol("CLOSE", elem => elem.identity.height < 0, "DOWN"),
+
+	postSymbolProcess("BEAM", (elem, result) => {
+		const floats = elem.identity.points.split(" ").map(Number);
+		const x1 = floats[4];
+		const x2 = floats[0];
+		const y1 = (floats[5] + floats[7]) / 2;
+		const y2 = (floats[1] + floats[3]) / 2;
+		result.start = {x: x1, y: y1};
+		result.target = {x: x2, y: y2};
+	}),
 
 	postSymbolProcess("SLUR", (elem, result) => {
 		const captures = elem.identity.d.match(/M[\d.-]+ ([\d.-]+).*L([\d.-]+) ([\d.-]+)/);

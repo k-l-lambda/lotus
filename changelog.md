@@ -17,6 +17,8 @@
 
 *	2021.7.22
 
+	+	staffSvg: added division for stem token.
+
 	+	lilyNoation: staff note property of division added.
 
 	+	staffSvg: note token's property of stems added.

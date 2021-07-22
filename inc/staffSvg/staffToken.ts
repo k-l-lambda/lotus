@@ -38,7 +38,7 @@ export default class StaffToken {
 	pitch?: number;
 	glyph?: Glyph;
 	stems?: number[];	// array of notehead stem token's index
-	divide?: number;	// stem flag counts + 2
+	division?: number;	// stem flag counts + 2
 
 	system?: number;
 	measure?: number;
@@ -62,7 +62,7 @@ export default class StaffToken {
 			x, y,
 			..._.pick(this, ["index", "rx", "ry", "sw", "start", "target", "source", "tied",
 				"symbol", "hash", "href", "scale", "scaleX", "width", "height", "text", "stemX", "stemUp",
-				"track", "tick", "pitch", "glyph", "stems", "divide"]),
+				"track", "tick", "pitch", "glyph", "stems", "division"]),
 		};
 	}
 
@@ -203,6 +203,11 @@ export default class StaffToken {
 	}
 
 
+	get centerX (): number {
+		return this.x + (Number.isFinite(this.width) ? this.width / 2 : 0);
+	}
+
+
 	get classes (): string {
 		return Array.from(this.symbols).map((s: string) => s.toLowerCase().replace(/_/g, "-")).join(" ");
 	}
@@ -317,6 +322,27 @@ export default class StaffToken {
 			return 2;
 		else if (this.is("CROSS"))
 			return 3;
+	}
+
+
+	get flagNumber (): number {
+		if (this.glyph)
+			return Number((this.glyph as any).match(/\d+/)[0]);
+
+		if (this.is("EIGHTH"))
+			return 3;
+		if (this.is("SIXTEENTH"))
+			return 4;
+		if (this.is("THIRTYSECOND"))
+			return 5;
+		if (this.is("SIXTYFOURTH"))
+			return 6;
+		if (this.is("HUNDREDTWENTYEIGHTH"))
+			return 7;
+		if (this.is("TWOHUNDREDSFIFTYSIXTH"))
+			return 8;
+
+		return null;
 	}
 
 

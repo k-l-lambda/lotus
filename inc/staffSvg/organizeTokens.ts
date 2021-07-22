@@ -460,6 +460,7 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 
 	const localTokens = tokens.map(token => token.translate({x: -systemX, y: -systemY}));
 	const stems = localTokens.filter(token => token.is("NOTE_STEM"));
+	stems.forEach(stem => stem.division = 2);
 
 	const slashes = localTokens.filter(token => token.is("LINE") && token.target && token.target.x > 0 && token.target.y < 0);
 	const backSlashes = localTokens.filter(token => token.is("LINE") && token.target && token.target.x > 0 && token.target.y > 0);
@@ -467,13 +468,40 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 	const staffTokens = [];
 	//console.log("splitters:", splitters);
 	const appendToken = token => {
-		if (token.is("NOTETAIL") && token.is("JOINT")) {
-			const jointStems = stems.filter(stem => Math.abs(stem.x - token.x) < 0.1
+		if (token.is("BEAM")) {
+			const jointStems = stems.filter(stem => Math.abs(stem.centerX - token.x) < 0.1
 				&& (Math.abs(token.y - stem.y) < 0.2 || Math.abs(token.y - (stem.y + stem.height)) < 0.2));
 			if (jointStems.length)
 				token.addSymbol("CAPITAL_BEAM");
 
-			// TODO: append stem divides
+			const k = (token.target.y - token.start.y) / (token.target.x - token.start.x);
+
+			// append stem division
+			const crossedStems = stems.filter(stem =>
+				stem.centerX > token.x - 0.1 && stem.centerX < token.x + token.target.x + 0.1
+				&& stem.y < Math.max(token.y, token.y + token.target.y) + 0.2
+				&& stem.y + stem.height > Math.min(token.y, token.y + token.target.y) - 0.2);
+			crossedStems.forEach(stem => {
+				const beamY = (stem.centerX - token.x + token.start.x) * k + token.y + token.start.y;
+				if (beamY > stem.y - 0.2 && beamY < stem.y + stem.height + 0.2)
+					++stem.division;
+			});
+		}
+
+		if (token.is("NOTETAIL UP")) {
+			const stem = stems.find(stem => Math.abs(stem.x + stem.width - token.x) < 0.04 && Math.abs(stem.y - token.y) < 0.1);
+			if (stem)
+				stem.division = token.flagNumber;
+			else
+				token.addSymbol("SUSPENDED");
+		}
+
+		if (token.is("NOTETAIL DOWN")) {
+			const stem = stems.find(stem => Math.abs(stem.x + stem.width - token.x) < 0.04 && Math.abs(stem.y + stem.height - token.y) < 0.1);
+			if (stem)
+				stem.division = token.flagNumber;
+			else
+				token.addSymbol("SUSPENDED");
 		}
 
 		if (slashes.includes(token)) {
@@ -507,7 +535,7 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 			else {
 				// affiliate beam to a stem
 				if (token.is("NOTETAIL") && token.is("JOINT")) {
-					const stem = stems.find(stem => Math.abs(stem.x - token.x) < 0.1
+					const stem = stems.find(stem => Math.abs(stem.centerX - token.x) < 0.1
 						&& token.y > stem.y - 0.2 && token.y < stem.y + stem.height + 0.2);
 	
 					if (stem)
