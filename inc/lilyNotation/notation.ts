@@ -97,7 +97,7 @@ interface PerformOptions {
 };*/
 
 
-const EXTRA_NOTE_FIELDS = ["rest", "tied", "overlapped", "implicitType", "afterGrace", "contextIndex", "staffTrack", "chordPosition"];
+const EXTRA_NOTE_FIELDS = ["rest", "tied", "overlapped", "implicitType", "afterGrace", "contextIndex", "staffTrack", "chordPosition", "division"];
 const COMMON_NOTE_FIELDS = ["id", "ids", "pitch", "velocity", "track", "channel", ...EXTRA_NOTE_FIELDS];
 
 

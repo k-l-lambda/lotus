@@ -17,6 +17,8 @@
 
 *	2021.7.22
 
+	+	sheetDocument.ts: mark tick & track on stems.
+
 	+	staffSvg: added division for stem token.
 
 	+	lilyNoation: staff note property of division added.

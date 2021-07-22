@@ -145,6 +145,9 @@ const parseUnitExp = exp => {
 type MeasureLocationTable = {[key: number]: {[key: number]: number}};
 
 
+const cc = <T>(arrays: T[][]): T[] => [].concat(...arrays);
+
+
 class SheetDocument {
 	pages: SheetPage[];
 
@@ -415,6 +418,24 @@ class SheetDocument {
 	}
 
 
+	findTokensAround (token: StaffToken, indices: number[]): StaffToken[] {
+		const system = this.systems[token.system];
+		if (system) {
+			const tokens = [
+				...system.tokens,
+				...cc(system.staves.map(staff => [
+					...staff.tokens,
+					...cc(staff.measures.map(measure => measure.tokens)),
+				])),
+			];
+
+			return tokens.filter(token => indices.includes(token.index));
+		}
+
+		return null;
+	}
+
+
 	alignTokensWithNotation (notation: LilyNotation.Notation, {partial = false} = {}) {
 		const shortId = (href: string): string => href.split(":").slice(0, 2).join(":");
 
@@ -454,6 +475,18 @@ class SheetDocument {
 					if (!Number.isFinite(token.tick)) {
 						tokenTickMap.set(token, {measureTick: measure.tick, tick: measure.tick + note.tick});
 						token.pitch = note.pitch;
+						token.track = note.track;
+
+						if (token.stems) {
+							const stems = this.findTokensAround(token, token.stems);
+							const stem = stems.find(stem => stem.division === note.division);
+							if (stem) {
+								tokenTickMap.set(stem, {measureTick: measure.tick, tick: measure.tick + note.tick});
+								stem.track = note.track;
+							}
+							else
+								console.warn("missed stem:", note.division, stems);
+						}
 					}
 				});
 			}
@@ -470,14 +503,14 @@ class SheetDocument {
 			}));
 		});
 
-		// assign tracks
+		/*// assign tracks
 		if (notation.idTrackMap) {
 			noteTokens.forEach(token => {
 				const track = notation.idTrackMap[token.href];
 				if (Number.isInteger(track))
 					token.track = track;
 			});
-		}
+		}*/
 	}
 
 

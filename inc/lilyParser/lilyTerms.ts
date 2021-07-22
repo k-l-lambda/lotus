@@ -2018,7 +2018,7 @@ export class MusicEvent extends BaseTerm {
 
 
 	get division (): number {
-		return this.durationValue.magnitude;
+		return this.durationValue.division;
 	}
 
 

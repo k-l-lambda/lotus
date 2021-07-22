@@ -354,6 +354,8 @@ const parseChordsByStems = (tokens: StaffToken[], logger) => {
 			stem.addSymbol("NOTICE");
 			logger.append("parseChordsByStems.unexpectedStem", {stem, ys, rightAttached, leftAttached});
 		}
+		else if (anchorNote.is("HALF"))
+			stem.division = 1;
 	});
 };
 
