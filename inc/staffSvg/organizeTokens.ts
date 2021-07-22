@@ -421,7 +421,10 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 	const systemY = staffYs[0] - 2;
 	const systemX = staffLines[systemY] && staffLines[systemY].rx;
 
-	const noteYs = tokens.filter(token => token.is("NOTE")).map(token => token.ry).concat(Object.keys(staffLines).map(Number));
+	const noteYs = tokens
+		.filter(token => token.is("NOTE") && !token.is("TEMPO_NOTEHEAD"))
+		.map(token => token.ry)
+		.concat(Object.keys(staffLines).map(Number));
 
 	const top = Math.min(...noteYs) - systemY;
 	const bottom = Math.max(...noteYs) - systemY;
