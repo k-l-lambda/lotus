@@ -33,6 +33,7 @@ interface StaffNoteProperties {
 	implicitType: ImplicitType;
 	afterGrace: boolean;
 	chordPosition: ChordPosition;
+	division: number;
 
 	contextIndex: number;
 	staffTrack: number;

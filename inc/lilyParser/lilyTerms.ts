@@ -2017,6 +2017,11 @@ export class MusicEvent extends BaseTerm {
 	}
 
 
+	get division (): number {
+		return this.durationValue.magnitude;
+	}
+
+
 	get withMultiplier () {
 		return this.duration && this.duration.withMultiplier;
 	}
@@ -2536,6 +2541,11 @@ export class Duration extends BaseTerm {
 		}
 
 		return Number(this.number);
+	}
+
+
+	get division (): number {
+		return Math.log2(this.denominator);
 	}
 
 

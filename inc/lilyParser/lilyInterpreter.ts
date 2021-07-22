@@ -104,6 +104,7 @@ class LilyStaffContext extends StaffContext {
 				measure: event._measure,
 				start: event._tick,
 				duration: event.durationMagnitude,
+				division: event.division,
 				startTick: event._tick,
 				endTick: event._tick + event.durationMagnitude,
 				pitch: pitch.absolutePitchValue + (pitch._transposition || 0),
