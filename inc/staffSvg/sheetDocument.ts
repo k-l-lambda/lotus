@@ -436,6 +436,12 @@ class SheetDocument {
 	}
 
 
+	findTokenAround (token: StaffToken, index: number): StaffToken {
+		const results = this.findTokensAround(token, [index]);
+		return results && results[0];
+	}
+
+
 	alignTokensWithNotation (notation: LilyNotation.Notation, {partial = false} = {}) {
 		const shortId = (href: string): string => href.split(":").slice(0, 2).join(":");
 
@@ -467,33 +473,52 @@ class SheetDocument {
 		const tokenTickMap = new Map<StaffToken, {measureTick: number, tick: number}>();
 
 		// assign tick & track
-		notation.measures.forEach(measure => measure.notes.forEach(note => {
-			const tokens = tokenMap.get(shortId(note.id));
-			if (tokens) {
-				tokens.forEach(token => {
-					token.href = note.id;
+		notation.measures.forEach(measure => {
+			const pendingStems = new Map<StaffToken, StaffToken>();	// stem -> beam
 
-					if (!Number.isFinite(token.tick)) {
-						tokenTickMap.set(token, {measureTick: measure.tick, tick: measure.tick + note.tick});
-						token.pitch = note.pitch;
-						token.track = note.track;
+			measure.notes.forEach(note => {
+				const tokens = tokenMap.get(shortId(note.id));
+				if (tokens) {
+					tokens.forEach(token => {
+						token.href = note.id;
+	
+						if (!Number.isFinite(token.tick)) {
+							tokenTickMap.set(token, {measureTick: measure.tick, tick: measure.tick + note.tick});
+							token.pitch = note.pitch;
+							token.track = note.track;
+	
+							if (token.stems) {
+								const stems = this.findTokensAround(token, token.stems);
+								const stem = stems.find(stem => stem.division === note.division && !Number.isFinite(stem.track));
+								if (stem) {
+									tokenTickMap.set(stem, {measureTick: measure.tick, tick: measure.tick + note.tick});
+									stem.track = note.track;
 
-						if (token.stems) {
-							const stems = this.findTokensAround(token, token.stems);
-							const stem = stems.find(stem => stem.division === note.division && !Number.isFinite(stem.track));
-							if (stem) {
-								tokenTickMap.set(stem, {measureTick: measure.tick, tick: measure.tick + note.tick});
-								stem.track = note.track;
+									if (stem.beam >= 0) {
+										const beam = this.findTokenAround(stem, stem.beam);
+										if (stems.length >= 2 && stems[0].division === stems[1].division)
+											pendingStems.set(stem, beam);
+										else
+											beam.track = stem.track;
+									}
+								}
+								else if (!stems.find(stem => stem.division === note.division))
+									console.warn("missed stem:", note.division, stems);
 							}
-							else if (!stems.find(stem => stem.division === note.division))
-								console.warn("missed stem:", note.division, stems);
 						}
-					}
-				});
+					});
+				}
+				else if (!partial)
+					note.overlapped = true;
+			});
+
+			//if (pendingStems.size)
+			//	console.log("pendingStems:", mi, [...pendingStems].map(s => s.index));
+			for (const [stem, beam] of pendingStems) {
+				if (Number.isFinite(beam.track))
+					stem.track = beam.track;
 			}
-			else if (!partial)
-				note.overlapped = true;
-		}));
+		});
 
 		const tokenTickMapKeys = Array.from(tokenTickMap.keys());
 		this.systems.forEach(system => {

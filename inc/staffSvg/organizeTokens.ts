@@ -336,6 +336,8 @@ const parseChordsByStems = (tokens: StaffToken[], logger) => {
 		//console.assert(up || leftAttached.length, "unexpected stem, downwards but no left-attached notes.");
 		//console.assert(!up || rightAttached.length, "unexpected stem, upwards but no right-attached notes.");
 
+		stem.stemUp = !up;
+
 		const anchorNote = up ? rightAttached[0] : leftAttached[0];
 		const anchorToken = anchorNote || stem;
 
@@ -488,8 +490,12 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 				&& stem.y + stem.height > Math.min(token.y, token.y + token.target.y) - 0.2);
 			crossedStems.forEach(stem => {
 				const beamY = (stem.centerX - token.x + token.start.x) * k + token.y + token.start.y;
-				if (beamY > stem.y - 0.2 && beamY < stem.y + stem.height + 0.2)
+				if (beamY > stem.y - 0.2 && beamY < stem.y + stem.height + 0.2) {
 					++stem.division;
+
+					if (token.is("CAPITAL_BEAM"))
+						stem.beam = token.index;
+				}
 			});
 		}
 

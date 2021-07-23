@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.7.23
+
+	+	staffSvg: refined stem track assignment by beam.
+
+
 *	2021.7.22
 
 	+	sheetDocument.ts: mark tick & track on stems.
