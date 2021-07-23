@@ -63,7 +63,7 @@ export default class StaffToken {
 			x, y,
 			..._.pick(this, ["index", "rx", "ry", "sw", "start", "target", "source", "tied",
 				"symbol", "hash", "href", "scale", "scaleX", "width", "height", "text", "stemX", "stemUp",
-				"track", "tick", "pitch", "glyph", "stems", "beam", "division"]),
+				"track", "tick", "pitch", "glyph", "stems", "beam", "division", "system"]),
 		};
 	}
 
