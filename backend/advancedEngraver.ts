@@ -130,7 +130,7 @@ const advancedEngrave = async (source: string, lilyParser: GrammarParser, output
 			const lilyNotation = options.lilyNotation || await notatioinGen.wait();
 			//console.log("ts.2:", index, Date.now() - t0);
 			if (lilyNotation) {
-				const sheetDocument = new staffSvg.SheetDocument({pages: [page.structure]}, {initialize: false});
+				const sheetDocument = new staffSvg.SheetDocument({pages: [page.structure]}, {initialize: true});
 
 				sheetDocument.alignTokensWithNotation(options.lilyNotation, {partial: true});
 				sheetDocument.updateMatchedTokens(options.lilyNotation.idSet);
