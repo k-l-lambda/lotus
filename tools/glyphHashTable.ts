@@ -39,6 +39,8 @@ const processFontSvg = (text: string, table: Dict) => {
 				scales.push(SCALE22);
 				scales.push(SCALE25);
 			}
+			if (/^flags\./.test(name))
+				scales.push(MINOR_SCALE);
 			if (/^scripts\./.test(name))
 				scales.push(SCRIPT_SCALE);
 
