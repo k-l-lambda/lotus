@@ -38,6 +38,7 @@ export default class StaffToken {
 	pitch?: number;
 	glyph?: Glyph;
 	stems?: number[];	// array of notehead stem token's index
+	stem?: number;	// stem token's index (for flags)
 	beam?: number;	// joint capital beam token's index
 	division?: number;	// stem flag counts + 2
 
@@ -63,7 +64,7 @@ export default class StaffToken {
 			x, y,
 			..._.pick(this, ["index", "rx", "ry", "sw", "start", "target", "source", "tied",
 				"symbol", "hash", "href", "scale", "scaleX", "width", "height", "text", "stemX", "stemUp",
-				"track", "tick", "pitch", "glyph", "stems", "beam", "division"]),
+				"track", "tick", "pitch", "glyph", "stems", "stem", "beam", "division"]),
 		};
 	}
 

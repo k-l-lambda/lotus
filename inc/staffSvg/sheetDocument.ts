@@ -387,23 +387,23 @@ class SheetDocument {
 	}
 
 
-	getNoteHeads (): StaffToken[] {
+	getTokensOf (symbol: string): StaffToken[] {
 		return this.systems.reduce((tokens, system) => {
 			system.staves.forEach(staff => staff.measures.forEach(measure =>
-				tokens.push(...measure.tokens.filter(token => token.is("NOTEHEAD")))));
+				tokens.push(...measure.tokens.filter(token => token.is(symbol)))));
 
 			return tokens;
 		}, []);
 	}
 
 
-	getNotes (): StaffToken[] {
-		return this.systems.reduce((tokens, system) => {
-			system.staves.forEach(staff => staff.measures.forEach(measure =>
-				tokens.push(...measure.tokens.filter(token => token.is("NOTE")))));
+	getNoteHeads (): StaffToken[] {
+		return this.getTokensOf("NOTEHEAD");
+	}
 
-			return tokens;
-		}, []);
+
+	getNotes (): StaffToken[] {
+		return this.getTokensOf("NOTE");
 	}
 
 
@@ -442,7 +442,7 @@ class SheetDocument {
 	}
 
 
-	alignTokensWithNotation (notation: LilyNotation.Notation, {partial = false} = {}) {
+	alignTokensWithNotation (notation: LilyNotation.Notation, {partial = false, assignFlags = false} = {}) {
 		const shortId = (href: string): string => href.split(":").slice(0, 2).join(":");
 
 		const noteTokens = this.getNotes();
@@ -473,7 +473,7 @@ class SheetDocument {
 		const tokenTickMap = new Map<StaffToken, {measureTick: number, tick: number}>();
 
 		// assign tick & track
-		notation.measures.forEach(measure => {
+		notation.measures.forEach((measure, mi) => {
 			const pendingStems = new Map<StaffToken, StaffToken>();	// stem -> beam
 
 			measure.notes.forEach(note => {
@@ -504,10 +504,10 @@ class SheetDocument {
 										}
 									}
 									else if (!stems.find(stem => stem.division === note.division))
-										console.warn("missed stem:", note.division, stems);
+										console.warn("missed stem:", mi, token.href, note.division, token.stems, stems.map(stem => stem.division));
 								}
 								else
-									console.warn("stems token missing:", token.system, token.stems);
+									console.warn("stems token missing:", token.system, token.stems, mi, token.href);
 							}
 						}
 					});
@@ -533,14 +533,20 @@ class SheetDocument {
 			}));
 		});
 
-		/*// assign tracks
-		if (notation.idTrackMap) {
-			noteTokens.forEach(token => {
-				const track = notation.idTrackMap[token.href];
-				if (Number.isInteger(track))
-					token.track = track;
-			});
-		}*/
+		if (assignFlags)
+			this.assignFlagsTrack();
+	}
+
+
+	assignFlagsTrack () {
+		const flags = this.getTokensOf("FLAG");
+		flags.forEach(flag => {
+			if (Number.isFinite(flag.stem)) {
+				const stem = this.findTokenAround(flag, flag.stem);
+				if (stem && Number.isFinite(stem.track))
+					flag.track = stem.track;
+			}
+		});
 	}
 
 

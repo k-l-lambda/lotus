@@ -474,7 +474,7 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 
 	const staffTokens = [];
 	//console.log("splitters:", splitters);
-	const appendToken = token => {
+	const appendToken = (token: StaffToken) => {
 		if (token.is("BEAM")) {
 			const jointStems = stems.filter(stem => Math.abs(stem.centerX - token.x) < 0.1
 				&& (Math.abs(token.y - stem.y) < 0.2 || Math.abs(token.y - (stem.y + stem.height)) < 0.2));
@@ -499,18 +499,22 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 			});
 		}
 
-		if (token.is("NOTETAIL UP")) {
+		if (token.is("FLAG UP")) {
 			const stem = stems.find(stem => Math.abs(stem.x + stem.width - token.x) < 0.04 && Math.abs(stem.y - token.y) < 0.1);
-			if (stem)
+			if (stem) {
+				token.stem = stem.index;
 				stem.division = token.flagNumber;
+			}
 			else
 				token.addSymbol("SUSPENDED");
 		}
 
-		if (token.is("NOTETAIL DOWN")) {
+		if (token.is("FLAG DOWN")) {
 			const stem = stems.find(stem => Math.abs(stem.x + stem.width - token.x) < 0.04 && Math.abs(stem.y + stem.height - token.y) < 0.1);
-			if (stem)
+			if (stem) {
+				token.stem = stem.index;
 				stem.division = token.flagNumber;
+			}
 			else
 				token.addSymbol("SUSPENDED");
 		}

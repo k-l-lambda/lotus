@@ -918,6 +918,8 @@
 						this.sheetDocument = recoverJSON(result.doc, {StaffToken, SheetDocument});
 						this.svgHashTable = result.hashTable;
 
+						this.sheetDocument.assignFlagsTrack();
+
 						if (this.articulateMIDI)
 							this.midi = await this.engraveMIDI();
 						else

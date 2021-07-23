@@ -17,6 +17,8 @@
 
 *	2021.7.23
 
+	+	staffSvg: SheetDocument.assignFlagsTrack added.
+
 	+	staffSvg: refined stem track assignment by beam.
 
 
