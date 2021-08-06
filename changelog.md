@@ -17,6 +17,8 @@
 
 *	2021.8.6
 
+	+	organizeTokens.ts: refined appendToken to remove error crossed beam-stem.
+
 	+	lilyDocument.ts: markup method of absoluteBlocksToRelative added.
 
 	+	lilyTerms.ts: MusicBlock.absoluteToRelative added.

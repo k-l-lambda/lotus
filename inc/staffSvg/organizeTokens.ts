@@ -491,10 +491,13 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 			crossedStems.forEach(stem => {
 				const beamY = (stem.centerX - token.x + token.start.x) * k + token.y + token.start.y;
 				if (beamY > stem.y - 0.2 && beamY < stem.y + stem.height + 0.2) {
-					++stem.division;
+					const atTip = stem.stemUp ? beamY < stem.y + 3.2 : beamY > stem.y + stem.height - 3.2;
+					if (atTip) {
+						++stem.division;
 
-					if (token.is("CAPITAL_BEAM"))
-						stem.beam = token.index;
+						if (token.is("CAPITAL_BEAM"))
+							stem.beam = token.index;
+					}
 				}
 			});
 		}
