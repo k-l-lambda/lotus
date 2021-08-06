@@ -17,6 +17,8 @@
 
 *	2021.8.6
 
+	+	!	Mixed CRLF/LF ly file may result in href mismatching issue.
+
 	+	organizeTokens.ts: refined appendToken to remove error crossed beam-stem.
 
 	+	lilyDocument.ts: markup method of absoluteBlocksToRelative added.
