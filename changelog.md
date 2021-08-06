@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.8.6
+
+	+	lilyTerms.ts: MusicBlock.absoluteToRelative added.
+
+
 *	2021.7.23
 
 	+	staffSvg: SheetDocument.assignFlagsTrack added.

@@ -1669,6 +1669,28 @@ export class MusicBlock extends BaseTerm {
 				console.warn("[MusicBlock.clarifyHead] unexpected music head:", head);
 		}
 	}
+
+
+	absoluteToRelative (): Relative {
+		const anchor = this.findFirst(Chord) as Chord;
+		if (!anchor)
+			return null;
+
+		const anchorPitch = anchor.absolutePitch;
+		let pitch = anchorPitch;
+
+		const newBody = this.clone();
+		newBody.forEachTerm(Chord, chord => {
+			const newPitch = chord.absolutePitch;
+			console.log("chord.0:", chord.join(), pitch.join());
+			chord.makeRelativeTo(pitch);
+			console.log("chord.1:", chord.join());
+
+			pitch = newPitch;
+		});
+
+		return Relative.makeBlock(newBody, {anchor: anchorPitch});
+	}
 };
 
 
@@ -2261,6 +2283,21 @@ export class Chord extends MusicEvent {
 		this.pitches[0]._location = _location;
 		this.pitches[0]._parent = this;
 	}
+
+
+	makeRelativeTo (from: ChordElement) {
+		const _location = this.basePitch._location;
+
+		const octave = this.basePitch.relativeOctave(from);
+		this.pitches[0] = ChordElement.from({
+			phonet: this.basePitch.phonet,
+			alters: this.basePitch.alters,
+			octave,
+		});
+
+		this.pitches[0]._location = _location;
+		this.pitches[0]._parent = this;
+	}
 };
 
 
@@ -2419,6 +2456,21 @@ export class ChordElement extends BaseTerm {
 		const shift = idioms.phonetDifferToShift(phonetDiffer);
 
 		return anchor.octave + shift + this.octave;
+	}
+
+
+	relativeOctave (from: ChordElement): number {
+		if (this.phonet === "q") {
+			if (this.anchorPitch)
+				return this.anchorPitch.relativeOctave(from);
+			else
+				return 0;
+		}
+
+		const phonetDiffer = this.phonetStep - from.phonetStep;
+		const shift = idioms.phonetDifferToShift(phonetDiffer);
+
+		return this.octave - shift - from.octave;
 	}
 
 
