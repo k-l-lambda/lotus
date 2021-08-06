@@ -1682,9 +1682,7 @@ export class MusicBlock extends BaseTerm {
 		const newBody = this.clone();
 		newBody.forEachTerm(Chord, chord => {
 			const newPitch = chord.absolutePitch;
-			console.log("chord.0:", chord.join(), pitch.join());
 			chord.makeRelativeTo(pitch);
-			console.log("chord.1:", chord.join());
 
 			pitch = newPitch;
 		});

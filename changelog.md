@@ -17,6 +17,8 @@
 
 *	2021.8.6
 
+	+	lilyDocument.ts: markup method of absoluteBlocksToRelative added.
+
 	+	lilyTerms.ts: MusicBlock.absoluteToRelative added.
 
 

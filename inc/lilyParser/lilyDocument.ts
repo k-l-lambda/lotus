@@ -1023,4 +1023,15 @@ export default class LilyDocument {
 			score.body = score.body.map(term => term === music ? new Variable({name: MAIN_SCORE_NAME}) : term);
 		}
 	}
+
+
+	absoluteBlocksToRelative () {
+		this.root.forEachTopTerm(Assignment, assignment => {
+			if (assignment.value instanceof MusicBlock) {
+				const relative = assignment.value.absoluteToRelative();
+				if (relative)
+					assignment.value = relative;
+			}
+		});
+	}
 };
