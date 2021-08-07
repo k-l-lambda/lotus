@@ -2202,6 +2202,7 @@ export class Chord extends MusicEvent {
 
 
 	get absolutePitch (): ChordElement {
+		console.assert(!!this.basePitch, "absolutePitch on non pitch:", this.join());
 		return this.basePitch.absolutePitch;
 	}
 
