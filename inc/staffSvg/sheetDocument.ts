@@ -505,7 +505,7 @@ class SheetDocument {
 
 									stems.forEach(stem => {
 										tokenTickMap.set(stem, {measureTick: measure.tick, tick: measure.tick + note.tick});
-										if (stem.beam >= 0 && !Number.isFinite(stem.track)) {
+										if (stems.length > 1 && stem.beam >= 0) {
 											const beam = this.findTokenAround(stem, stem.beam);
 											if (beam)
 												pendingStems.set(stem, beam);
