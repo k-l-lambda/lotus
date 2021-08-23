@@ -492,19 +492,25 @@ class SheetDocument {
 								if (stems) {
 									const stem = stems.find(stem => stem.division === note.division && !Number.isFinite(stem.track));
 									if (stem) {
-										tokenTickMap.set(stem, {measureTick: measure.tick, tick: measure.tick + note.tick});
 										stem.track = note.track;
 
 										if (stem.beam >= 0) {
 											const beam = this.findTokenAround(stem, stem.beam);
-											if (stems.length >= 2 && stems[0].division === stems[1].division)
-												pendingStems.set(stem, beam);
-											else
+											if (stems.length < 2 || stems[0].division !== stems[1].division)
 												beam.track = stem.track;
 										}
 									}
 									else if (!stems.find(stem => stem.division === note.division))
 										console.warn("missed stem:", mi, token.href, note.division, token.stems, stems.map(stem => stem.division));
+
+									stems.forEach(stem => {
+										tokenTickMap.set(stem, {measureTick: measure.tick, tick: measure.tick + note.tick});
+										if (stem.beam >= 0 && !Number.isFinite(stem.track)) {
+											const beam = this.findTokenAround(stem, stem.beam);
+											if (beam)
+												pendingStems.set(stem, beam);
+										}
+									});
 								}
 								else
 									console.warn("stems token missing:", token.system, token.stems, mi, token.href);

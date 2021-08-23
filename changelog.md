@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.8.23
+
+	+	sheetDocument.ts: refined stem tick assignment in alignTokensWithNotation.
+
+
 *	2021.8.6
 
 	+	!	Mixed CRLF/LF ly file may result in href mismatching issue.
