@@ -20,7 +20,7 @@ const ARPEGGIO_REFERENCE_DURATION = 240;
 console.assert(Number.isFinite(TICKS_PER_BEAT), "TICKS_PER_BEAT is invalid:", TICKS_PER_BEAT);
 
 
-interface ChordPosition {
+export interface ChordPosition {
 	index: number;
 	count: number;
 };

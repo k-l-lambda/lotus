@@ -1,5 +1,10 @@
 
-// eslint-disable-next-line
+import {MusicNotation} from "@k-l-lambda/web-widgets";
+
+import {ChordPosition} from "./notation";
+
+
+
 declare class StaffToken {
 	system?: number;
 	measure?: number;
@@ -24,12 +29,24 @@ interface SheetPosition {
 };
 
 
+interface Note extends MusicNotation.Note {
+	chordPosition?: ChordPosition;
+	measure?: number;
+};
+
+
+interface Notation {
+	notes: Note[];
+	endTick: number;
+};
+
+
 
 export default class Scheduler {
 	tickTable: TickItem[];
 
 
-	static createFromNotation (midiNotation, tokenMap: Map<string, StaffToken>): Scheduler {
+	static createFromNotation (midiNotation: Notation, tokenMap: Map<string, StaffToken>): Scheduler {
 		const tokenTable: {[key: number]: StaffToken[]} = {};
 		const idSet = new Set<string>();
 		let measureIndex = 0;
