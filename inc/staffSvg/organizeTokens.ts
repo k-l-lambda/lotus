@@ -677,11 +677,13 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 			&& (token.logicX < range.noteRange.end || i === measureRanges.length - 1))
 			.sort((t1, t2) => t1.logicX - t2.logicX);
 
+		const leftNoteX = Math.min(...tokens.filter(token => token.is("NOTE")).map(note => note.x), left + 2.9);
+
 		// mark volta repeat dots
 		const dots = tokens.filter(token => token.is("DOT"));
 		dots.forEach(dot  => {
 			if (Math.abs(dot.ry) === 0.5) {
-				if (dot.x - left < 2.9) {	// double lines will enlarge left line interval
+				if (dot.x < leftNoteX) {	// double lines will enlarge left line interval
 					dot.addSymbol("LEFT");
 					dot.addSymbol("VOLTA");
 				}

@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.9.12
+
+	+	organizeTokens.ts: refined symbol of left volta condition.
+
+
 *	2021.8.23
 
 	+	sheetDocument.ts: refined stem tick assignment in alignTokensWithNotation.
