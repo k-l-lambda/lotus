@@ -723,9 +723,21 @@ const organizeTokens = (tokens: StaffToken[], source: TextSource, {logger, viewB
 	// added source on tokens
 	tokens.forEach(token => {
 		const pos = token.sourcePosition;
-		if (pos)
+		if (pos) {
 			//token.source = lyLines[pos.line - 1].substr(pos.start, Math.max(pos.end - pos.start, 8));
 			token.source = source.slice(pos.line, [pos.start, Math.max(pos.end, pos.start + 8)]);
+
+			// enlarge token source range for command tokens
+			if (/^\\/.test(token.source)) {
+				for (let len = token.source.length + 1; len < 80; ++len) {
+					const captures = token.source.match(/\s+/g);
+					if (captures && captures.length >= 2)
+						break;
+
+					token.source = source.slice(pos.line, [pos.start, pos.start + len]);
+				}
+			}
+		}
 	});
 
 	const meaningfulTokens = tokens.filter(token => !token.is("NULL"));

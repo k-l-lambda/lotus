@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.9.14
+
+	+	organizeTokens.ts: enlarge token source range for command tokens (\parenthesize).
+
+
 *	2021.9.12
 
 	+	organizeTokens.ts: refined symbol of left volta condition.
