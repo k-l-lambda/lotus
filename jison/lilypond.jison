@@ -294,6 +294,9 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 "\\arpeggioArrowDown"				return 'CMD_ARPEGGIOARROWDOWN';
 "\\arpeggioArrowUp"					return 'CMD_ARPEGGIOARROWUP';
 "\\arpeggioNormal"					return 'CMD_ARPEGGIONORMAL';
+"\\arpeggioBracket"					return 'CMD_ARPEGGIOBRACKET';
+"\\arpeggioParenthesis"				return 'CMD_ARPEGGIOPARENTHESIS';
+"\\arpeggioParenthesisDashed"		return 'CMD_ARPEGGIOPARENTHESISDASHED';
 "\\glissando"						return 'CMD_GLISSANDO';
 "\\mordent"							return 'CMD_MORDENT';
 "\\musicglyph"						return 'CMD_MUSICGLYPH';
@@ -2050,6 +2053,12 @@ zero_command
 	| CMD_ARPEGGIOARROWUP
 		{$$ = command($1);}
 	| CMD_ARPEGGIONORMAL
+		{$$ = command($1);}
+	| CMD_ARPEGGIOBRACKET
+		{$$ = command($1);}
+	| CMD_ARPEGGIOPARENTHESIS
+		{$$ = command($1);}
+	| CMD_ARPEGGIOPARENTHESISDASHED
 		{$$ = command($1);}
 	| CMD_GLISSANDO
 		{$$ = command($1);}

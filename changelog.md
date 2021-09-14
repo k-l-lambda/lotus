@@ -17,6 +17,8 @@
 
 *	2021.9.14
 
+	+	lilypond.jison: added some more arpeggio style commands.
+
 	+	organizeTokens.ts: enlarge token source range for command tokens (\parenthesize).
 
 
