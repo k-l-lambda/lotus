@@ -4,6 +4,7 @@ import {DOMParser, XMLSerializer} from "xmldom";
 import {MusicNotation} from "@k-l-lambda/web-widgets";
 import {MIDI} from "@k-l-lambda/web-widgets";
 import {Readable} from "stream";
+import CRC32 from "crc-32";
 
 import npmPackage from "../package.json";
 import {xml2ly, engraveSvg, LilyProcessOptions} from "./lilyCommands";
@@ -218,6 +219,8 @@ const makeScore = async (
 ): Promise<MakerResult> => {
 	const t0 = Date.now();
 
+	const hash = CRC32.str(source);
+
 	const foldData = await makeSheetNotation(source, lilyParser, {logger, includeFolders, baking});
 	const {meta, doc, hashTable, bakingImages, lilyDocument} = foldData;
 
@@ -236,6 +239,7 @@ const makeScore = async (
 		return {
 			score: {
 				version: npmPackage.version,
+				hash,
 				meta,
 				doc,
 				hashTable,
@@ -276,6 +280,7 @@ const makeScore = async (
 		bakingImages,
 		score: {
 			version: npmPackage.version,
+			hash,
 			meta,
 			doc,
 			hashTable: !baking ? hashTable : null,

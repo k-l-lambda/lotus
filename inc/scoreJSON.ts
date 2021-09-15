@@ -20,6 +20,7 @@ export interface ScoreMeta {
 
 interface ScoreJSON {
 	version?: string;
+	hash: number;
 	meta: ScoreMeta;
 	doc: SheetDocument;
 	hashTable: HashTable;

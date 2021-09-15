@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.9.15
+
+	+	scoreMaker.ts: added crc-32 hash in score result.
+
+
 *	2021.9.14
 
 	+	lilypond.jison: added some more arpeggio style commands.
