@@ -274,6 +274,32 @@ export default class LilyDocument {
 		// copy LotusOption assignments
 		const assignments = docMarkup.root.entries.filter(term => term instanceof Assignment && /^LotusOption\..+/.test(term.key.toString()));
 		assignments.forEach(assignment => this.root.sections.push(assignment.clone()));
+
+		// copy score blocks
+		const layoutBody = [];
+		const midiBody = [];
+		const score = docMarkup.root.getBlock("score");
+		if (score) {
+			const layout = score.body.find(term => term instanceof Block && term.head === "\\layout") as Block;
+			if (layout)
+				layout.body.forEach(term => layoutBody.push(term.clone()));
+
+			const midi = score.body.find(term => term instanceof Block && term.head === "\\midi") as Block;
+			if (midi)
+				midi.body.forEach(term => midiBody.push(term.clone()));
+		}
+		if (layoutBody.length || midiBody.length) {
+			const thisScore = this.root.getBlock("score");
+			if (thisScore) {
+				const layout = thisScore.body.find(term => term instanceof Block && term.head === "\\layout") as Block;
+				if (layout)
+					layout.body.push(...layoutBody);
+
+				const midi = thisScore.body.find(term => term instanceof Block && term.head === "\\midi") as Block;
+				if (midi)
+					midi.body.push(...midiBody);
+			}
+		}
 	}
 
 

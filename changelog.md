@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.9.16
+
+	+	lilyDocument.ts: markup of layout & midi block added.
+
+
 *	2021.9.15
 
 	+	scoreMaker.ts: added crc-32 hash in score result.
