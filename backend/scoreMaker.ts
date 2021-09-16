@@ -212,6 +212,13 @@ interface MakerResult {
 };
 
 
+// non-negative crc-32
+const hashString = (str: string): number => {
+	const value = CRC32.str(str);
+	return value < 0 ? 0x100000000 + value : value;
+};
+
+
 const makeScore = async (
 	source: string,
 	lilyParser: GrammarParser,
@@ -219,7 +226,7 @@ const makeScore = async (
 ): Promise<MakerResult> => {
 	const t0 = Date.now();
 
-	const hash = CRC32.str(source);
+	const hash = hashString(source);
 
 	const foldData = await makeSheetNotation(source, lilyParser, {logger, includeFolders, baking});
 	const {meta, doc, hashTable, bakingImages, lilyDocument} = foldData;
