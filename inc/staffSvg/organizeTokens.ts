@@ -754,7 +754,7 @@ const organizeTokens = (tokens: StaffToken[], source: TextSource, {logger, viewB
 			}
 
 			// process ped dot
-			if (token.is("DOT") && /\\sustain/.test(token.source)) {
+			if (token.is("DOT") && /^\\sustain/.test(token.source)) {
 				token.removeSymbol("DOT");
 				token.addSymbol("SUSTAIN", "PED_DOT");
 			}
@@ -765,6 +765,12 @@ const organizeTokens = (tokens: StaffToken[], source: TextSource, {logger, viewB
 				token.removeSymbol("NOTETAIL");
 				token.removeSymbol("JOINT");
 				token.addSymbol("TREMOLO_BEAM");
+			}
+
+			// glissando
+			if (/^\\glissando/.test(token.source)) {
+				token.removeSymbol("TR_WAVE");
+				token.addSymbol("GLISSANDO");
 			}
 		}
 	});
