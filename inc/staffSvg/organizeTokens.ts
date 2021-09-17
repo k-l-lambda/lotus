@@ -758,6 +758,14 @@ const organizeTokens = (tokens: StaffToken[], source: TextSource, {logger, viewB
 				token.removeSymbol("DOT");
 				token.addSymbol("SUSTAIN", "PED_DOT");
 			}
+
+			// tremolo beams
+			if (token.is("BEAM") && /^:\d+/.test(token.source)) {
+				token.removeSymbol("BEAM");
+				token.removeSymbol("NOTETAIL");
+				token.removeSymbol("JOINT");
+				token.addSymbol("TREMOLO_BEAM");
+			}
 		}
 	});
 

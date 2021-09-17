@@ -49,19 +49,24 @@
 				stroke-width: 0.1px;
 			}
 		}
-	
+
 		.notetail
 		{
 			fill: #c0d0e0;
 		}
-	
+
+		.tremolo-beam
+		{
+			fill: LightSalmon;
+		}
+
 		.staves-connection
 		{
 			fill: dodgerblue;
 			stroke: dodgerblue;
 			stroke-width: .6px;
 		}
-	
+
 		.clef
 		{
 			fill: magenta;
