@@ -772,6 +772,10 @@ const organizeTokens = (tokens: StaffToken[], source: TextSource, {logger, viewB
 				token.removeSymbol("TR_WAVE");
 				token.addSymbol("GLISSANDO");
 			}
+
+			// arpeggio
+			if (/^\\arpeggio/.test(token.source))
+				token.addSymbol("ARPEGGIO");
 		}
 	});
 
