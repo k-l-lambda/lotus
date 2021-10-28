@@ -324,7 +324,7 @@ class SheetDocument {
 	}
 
 
-	tokenInSystem (systemIndex: number): StaffToken[] {
+	tokensInSystem (systemIndex: number): StaffToken[] {
 		const system = this.systems[systemIndex];
 		if (!system)
 			return null;
@@ -346,7 +346,7 @@ class SheetDocument {
 			return null;
 
 		return page.systems.reduce((tokens, system) => {
-			tokens.push(...this.tokenInSystem(system.index).map(token => token.translate({x: system.x, y: system.y})));
+			tokens.push(...this.tokensInSystem(system.index).map(token => token.translate({x: system.x, y: system.y})));
 			return tokens;
 		}, withPageTokens ? [...page.tokens] : []);
 	}
