@@ -676,6 +676,7 @@
 					switch (file.type) {
 					case "text/x-lilypond":
 					case "text/lilypond-source":
+					case "":
 						this.lilySource = await file.readAs("Text");
 						//console.log("content:", content);
 
