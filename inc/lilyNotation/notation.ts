@@ -292,7 +292,7 @@ export class Notation {
 		if (!measureIndices.length)
 			return null;
 
-		let measureTick = 0;
+		let measureTick = -Math.min(0, ...this.measures[0].events.map(e => e.ticks));	// to avoid begin minus tick
 		const measureEvents: MeasureEvent[][] = measureIndices.map(index => {
 			const measure = this.measures[index - 1];
 			console.assert(!!measure, "invalid measure index:", index, this.measures.length);

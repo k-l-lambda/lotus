@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.12.17
+
+	+	notation.ts: refined toPerformingMIDI to avoid minus begin tick.
+
+
 *	2021.9.16
 
 	+	lilyDocument.ts: markup of layout & midi block added.
