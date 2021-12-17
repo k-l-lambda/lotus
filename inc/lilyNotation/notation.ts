@@ -292,7 +292,10 @@ export class Notation {
 		if (!measureIndices.length)
 			return null;
 
-		let measureTick = -Math.min(0, ...this.measures[0].events.map(e => e.ticks));	// to avoid begin minus tick
+		// to avoid begin minus tick
+		const zeroTick = -Math.min(0, ...this.measures[0].events.map(e => e.ticks), ...this.measures[0].notes.map(note => note.tick));
+
+		let measureTick = zeroTick;
 		const measureEvents: MeasureEvent[][] = measureIndices.map(index => {
 			const measure = this.measures[index - 1];
 			console.assert(!!measure, "invalid measure index:", index, this.measures.length);
@@ -340,7 +343,7 @@ export class Notation {
 		});
 
 		// append note events
-		measureTick = 0;
+		measureTick = zeroTick;
 		measureIndices.map(index => {
 			const measure = this.measures[index - 1];
 			console.assert(!!measure, "invalid measure index:", index, this.measures.length);
