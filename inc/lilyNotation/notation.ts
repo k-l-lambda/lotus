@@ -293,7 +293,9 @@ export class Notation {
 			return null;
 
 		// to avoid begin minus tick
-		const zeroTick = -Math.min(0, ...this.measures[0].events.map(e => e.ticks), ...this.measures[0].notes.map(note => note.tick));
+		const zeroTick = -Math.min(0,
+			...[].concat(...this.measures.map(measure => measure.events.map(e => e.ticks))),
+			...[].concat(...this.measures.map(measure => measure.notes.map(note => note.tick))));
 
 		let measureTick = zeroTick;
 		const measureEvents: MeasureEvent[][] = measureIndices.map(index => {
