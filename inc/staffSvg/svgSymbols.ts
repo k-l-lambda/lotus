@@ -105,9 +105,9 @@ const symbolRules: SymbolizeRule[] = [
 	].map(simplifyPath)),
 
 	conditionSymbol("MEASURE_SEPARATOR", elem => elem.identity.type === "rect"
-		&& elem.sw === 0.19 && [4, 4.05, 4.1].includes(elem.identity.rh)),
+		&& elem.sw === 0.19 && elem.identity.rh >= 4 && elem.identity.rh <= 4.35),
 	conditionSymbol("MEASURE_SEPARATOR BOLD", elem => elem.identity.type === "rect"
-		&& elem.sw === 0.6 && [4, 4.05, 4.1].includes(elem.identity.rh)),
+		&& elem.sw === 0.6 && elem.identity.rh >= 4 && elem.identity.rh <= 4.35),
 
 	pathFramesSymbol("BRACE", [
 		"M- -c - - - - -c -  -  -c - - - - -c-  -  - c     c  -  - c-  -  - s   c     c  -  - c      c   -  -c- - - - - -c -  -  -c - - - - -c -  -  -z",
