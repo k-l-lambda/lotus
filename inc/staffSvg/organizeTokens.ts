@@ -369,16 +369,16 @@ const isSystemToken = token => token.is("STAVES_CONNECTION") || token.is("BRACE"
 
 const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => {
 	const separatorYs : Set<number> = new Set();
-	const meanSeparators = tokens.filter(token => token.is("MEASURE_SEPARATOR"));
-	meanSeparators.forEach(token => separatorYs.add(token.ry));
-	//logger.append("parseTokenSystem.meanSeparators", Array.from(meanSeparators));
+	const measureSeparators = tokens.filter(token => token.is("MEASURE_SEPARATOR"));
+	measureSeparators.forEach(token => separatorYs.add(token.ry));
+	//logger.append("parseTokenSystem.measureSeparators", Array.from(measureSeparators));
 
 	// remove separator Y from fake MEASURE_SEPARATOR
 	for (const y of Array.from(separatorYs).sort()) {
 		if (separatorYs.has(y - 4) && separatorYs.has(y + 4)) {
 			separatorYs.delete(y);
 
-			meanSeparators.filter(token => token.ry === y).forEach(token => {
+			measureSeparators.filter(token => token.ry === y).forEach(token => {
 				token.removeSymbol("MEASURE_SEPARATOR");
 				token.addSymbol("VERTICAL_LINE");
 			});
