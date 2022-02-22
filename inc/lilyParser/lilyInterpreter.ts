@@ -530,7 +530,7 @@ export class MusicTrack {
 };
 
 
-class TrackContext {
+export class TrackContext {
 	track: MusicTrack;
 	transformer?: MusicTransformer;
 	listener?: MusicListener;
@@ -561,6 +561,7 @@ class TrackContext {
 	event: MusicEvent = null;
 	tying: MusicEvent = null;
 	staccato: boolean = false;
+	inGrace: boolean = false;
 
 
 	constructor (track = new MusicTrack, {transformer = null, listener = null, contextDict = null}:
@@ -662,7 +663,7 @@ class TrackContext {
 	}
 
 
-	newMeasure (measureSpan) {
+	newMeasure (measureSpan: number) {
 		console.assert(Number.isFinite(this.measureHeads[this.measureIndex - 1]), "invalid measureHeads at", this.measureIndex - 1, this.measureHeads);
 		this.measureHeads[this.measureIndex] = this.measureHeads[this.measureIndex - 1] + measureSpan;
 
@@ -866,9 +867,11 @@ class TrackContext {
 			this.pop();
 		}
 		else if (term instanceof Grace) {
+			this.inGrace = true;
 			this.push({factor: {value: 0}});
 			this.execute(term.music);
 			this.pop();
+			this.inGrace = false;
 
 			this.processGrace(term.music);
 		}

@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.2.22
+
+	+	lilyInterpreter.ts: added field of TrackContext.inGrace.
+
+
 *	2021.12.17
 
 	+	notation.ts: refined toPerformingMIDI to avoid minus begin tick.
