@@ -2003,9 +2003,9 @@ export class Assignment extends BaseTerm {
 
 export class MusicEvent extends BaseTerm {
 	duration?: Duration;
-	post_events?: PostEvent[];
+	post_events?: (string | PostEvent)[];
 
-	_previous?: MusicEvent;
+	declare _previous?: MusicEvent;
 	//_anchorPitch?: ChordElement;
 	_lastMeasure?: number;
 
@@ -2053,18 +2053,28 @@ export class MusicEvent extends BaseTerm {
 
 
 	get isTying (): boolean {
-		return this.post_events && this.post_events.some(event => event.isTying);
+		return this.post_events && this.post_events.some(event => event instanceof PostEvent && event.isTying);
 	}
 
 
 	get isStaccato (): boolean {
-		return this.post_events && this.post_events.some(event => event.isStaccato);
+		return this.post_events && this.post_events.some(event => event instanceof PostEvent && event.isStaccato);
 	}
 
 
 	// to be implement in derived classes
 	get isRest (): boolean {
 		return null;
+	}
+
+
+	get beamOn (): boolean {
+		return this.post_events && this.post_events.includes("[");
+	}
+
+
+	get beamOff (): boolean {
+		return this.post_events && this.post_events.includes("]");
 	}
 
 
@@ -2090,7 +2100,7 @@ export class MusicEvent extends BaseTerm {
 	get implicitType (): ImplicitType {
 		if (this.post_events) {
 			for (const event of this.post_events) {
-				if (event.arg instanceof Command) {
+				if (event instanceof PostEvent && event.arg instanceof Command) {
 					switch (event.arg.cmd) {
 					case "startTrillSpan":
 					case "trill":
@@ -2157,7 +2167,7 @@ export class Chord extends MusicEvent {
 
 
 	get entries () {
-		const list: BaseTerm[] = [...this.pitches];
+		const list: any[] = [...this.pitches];
 		if (Array.isArray(this.post_events))
 			list.push(...this.post_events);
 
@@ -2334,8 +2344,8 @@ export class ChordElement extends BaseTerm {
 		post_events?: PostEvent[],
 	};
 
-	_parent?: Chord;
-	_previous?: ChordElement;
+	declare _parent?: Chord;
+	declare _previous?: ChordElement;
 	_tied?: MusicEvent;
 	_transposition?: number;
 

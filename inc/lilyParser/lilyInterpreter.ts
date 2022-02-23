@@ -1,7 +1,7 @@
 
 import {romanize} from "../romanNumeral";
 import {WHOLE_DURATION_MAGNITUDE, GRACE_DURATION_FACTOR, FUNCTIONAL_VARIABLE_NAME_PATTERN, MAIN_SCORE_NAME, lcmMulti, lcm} from "./utils";
-import {parseRaw, getDurationSubdivider, MusicChunk, constructMusicFromMeasureLayout} from "./lilyTerms";
+import {parseRaw, getDurationSubdivider, MusicChunk, constructMusicFromMeasureLayout, StemDirection} from "./lilyTerms";
 import LogRecorder from "../logRecorder";
 import {StaffContext, PitchContextTable} from "../pitchContext";
 import * as idioms from "./idioms";
@@ -299,7 +299,7 @@ export class MusicTrack {
 					new Rest({name: isR ? "r" : "s", duration: new Duration({number: divider, dots: 0})}));
 
 				if (term.post_events)
-					list[list.length - 1].post_events = term.post_events.map(e => e.clone());
+					list[list.length - 1].post_events = term.post_events.map(e => e instanceof BaseTerm ? e.clone() : e);
 
 				return list;
 			}
@@ -562,6 +562,8 @@ export class TrackContext {
 	tying: MusicEvent = null;
 	staccato: boolean = false;
 	inGrace: boolean = false;
+	stemDirection: string = null;
+	beamOn: boolean = false;
 
 
 	constructor (track = new MusicTrack, {transformer = null, listener = null, contextDict = null}:
@@ -764,6 +766,11 @@ export class TrackContext {
 				//console.log("chord:", term.pitches[0]);
 			}
 
+			if (term.beamOn)
+				this.beamOn = true;
+			else if (term.beamOff)
+				this.beamOn = false;
+
 			this.event = term;
 
 			this.elapse(term.durationMagnitude);
@@ -934,6 +941,8 @@ export class TrackContext {
 
 			this.execute(term.body);
 		}
+		else if (term instanceof StemDirection)
+			this.stemDirection = term.direction;
 		else {
 			if (term.isMusic)
 				console.warn("[TrackContext]	unexpected music term:", term);

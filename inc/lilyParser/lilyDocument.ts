@@ -778,7 +778,7 @@ export default class LilyDocument {
 
 							if (term.post_events) {
 								for (const event of term.post_events) {
-									if (event.arg === "~")
+									if (event instanceof PostEvent && event.arg === "~")
 										tying = true;
 								}
 							}
@@ -1019,7 +1019,8 @@ export default class LilyDocument {
 
 
 	removeInvalidExpressionsOnRests (): number {
-		const isInvalidPostEvent = (event: PostEvent): boolean => [".", "!", "_"].includes(event.arg as string);
+		const isInvalidPostEvent = (event: PostEvent | string): boolean =>
+			[".", "!", "_"].includes(event instanceof PostEvent ? event.arg as string : event);
 
 		let count = 0;
 		this.root.forEachTerm(MusicEvent, (term: MusicEvent) => {

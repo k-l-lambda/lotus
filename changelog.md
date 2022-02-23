@@ -17,6 +17,8 @@
 
 *	2021.2.22
 
+	+	lilyInterpreter.ts: added fields of stemDirection & beamOn in TrackContext.
+
 	+	lilyInterpreter.ts: added field of TrackContext.inGrace.
 
 
