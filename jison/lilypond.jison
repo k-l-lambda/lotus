@@ -30,6 +30,7 @@
 		stemUp: "StemDirection",
 		stemDown: "StemDirection",
 		stemNeutral: "StemDirection",
+		change: "Change",
 	};
 
 

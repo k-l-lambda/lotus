@@ -1126,6 +1126,18 @@ export class StemDirection extends Command {
 };
 
 
+export class Change extends Command {
+	get key (): string {
+		return this.args[0].toString();
+	}
+
+
+	get value (): string {
+		return this.args[1].toString();
+	}
+};
+
+
 export class Block extends BaseTerm {
 	block: string;
 	head: (string|string[]);
@@ -2863,6 +2875,7 @@ export const termDictionary = {
 	ChordMode,
 	Transposition,
 	StemDirection,
+	Change,
 	Block,
 	InlineBlock,
 	Scheme,

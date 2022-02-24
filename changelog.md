@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.2.24
+
+	+	lilypond.jison: added command term of Change.
+
+
 *	2021.2.22
 
 	+	lilyInterpreter.ts: added fields of stemDirection & beamOn in TrackContext.
