@@ -17,6 +17,8 @@
 
 *	2021.2.24
 
+	+	organizeTokens.ts: enhanced volta symbols marking.
+
 	+	lilypond.jison: added command term of Change.
 
 

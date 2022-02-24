@@ -680,18 +680,15 @@ const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
 		const leftNoteX = Math.min(...tokens.filter(token => token.is("NOTE")).map(note => note.x), left + 2.9);
 
 		// mark volta repeat dots
-		const dots = tokens.filter(token => token.is("DOT"));
-		dots.forEach(dot  => {
-			if (Math.abs(dot.ry) === 0.5) {
-				if (dot.x < leftNoteX) {	// double lines will enlarge left line interval
-					dot.addSymbol("LEFT");
+		const dots = tokens.filter(token => token.is("DOT") && Math.abs(token.ry) === 0.5);
+		const dotsL = dots.filter(dot => dot.x < leftNoteX);	// double lines will enlarge left line interval
+		const dotsR = dots.filter(dot => dot.x > range.noteRange.end - 1);
+		[dotsL, dotsR].forEach((pair, i) => {
+			if (pair.length === 2 && pair[0].ry * pair[1].ry < 0) {
+				pair.forEach(dot => {
+					dot.addSymbol(i ? "RIGHT" : "LEFT");
 					dot.addSymbol("VOLTA");
-				}
-
-				if (dot.x - range.noteRange.end > -1.0) {
-					dot.addSymbol("RIGHT");
-					dot.addSymbol("VOLTA");
-				}
+				});
 			}
 		});
 
