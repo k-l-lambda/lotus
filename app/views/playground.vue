@@ -366,7 +366,7 @@
 <script>
 	import _ from "lodash";
 	import resize from "vue-resize-directive";
-	import {MIDI, MidiAudio, MidiUtils, MusicNotation} from "@k-l-lambda/web-widgets";
+	import {MIDI, MidiAudio, MidiUtils, MusicNotation} from "@k-l-lambda/music-widgets";
 
 	import {downloadUrl} from "../utils.js";
 	import {mutexDelay, animationDelay} from "../delay.js";
@@ -386,7 +386,7 @@
 	import * as measureLayout from "../../inc/measureLayout";
 	import npmPackage from "../../package.json";
 
-	import {MidiRoll} from "@k-l-lambda/web-widgets";
+	import {MidiRoll} from "@k-l-lambda/music-widgets";
 	import SourceEditor from "../components/source-editor.vue";
 	import SheetSimple from "../components/sheet-simple.vue";
 	import SheetLive from "../components/sheet-live.vue";

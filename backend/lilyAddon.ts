@@ -1,6 +1,6 @@
 
 import {Writable} from "stream";
-import {MIDI} from "@k-l-lambda/web-widgets";
+import {MIDI} from "@k-l-lambda/music-widgets";
 
 import {EngraverOptions, EngraverResult, postProcessSvg} from "./lilyCommands";
 

@@ -1,7 +1,7 @@
 
 import _ from "lodash";
 
-import {MusicNotation, MIDI} from "@k-l-lambda/web-widgets";
+import {MusicNotation, MIDI} from "@k-l-lambda/music-widgets";
 
 import {WHOLE_DURATION_MAGNITUDE} from "../lilyParser/utils";
 import {PitchContextTable} from "../pitchContext";

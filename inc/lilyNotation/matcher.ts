@@ -1,6 +1,6 @@
 
-import {MusicNotation, Matcher} from "@k-l-lambda/web-widgets";
-import {MIDI} from "@k-l-lambda/web-widgets";
+import {MusicNotation, Matcher} from "@k-l-lambda/music-widgets";
+import {MIDI} from "@k-l-lambda/music-widgets";
 
 import {WHOLE_DURATION_MAGNITUDE} from "../lilyParser/utils";
 import {Notation} from "./notation";

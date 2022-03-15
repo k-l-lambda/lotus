@@ -1,8 +1,8 @@
 
 import _ from "lodash";
 import {DOMParser, XMLSerializer} from "xmldom";
-import {MusicNotation} from "@k-l-lambda/web-widgets";
-import {MIDI} from "@k-l-lambda/web-widgets";
+import {MusicNotation} from "@k-l-lambda/music-widgets";
+import {MIDI} from "@k-l-lambda/music-widgets";
 import {Readable} from "stream";
 import CRC32 from "crc-32";
 

@@ -37,7 +37,7 @@
 
 <script>
 	import _ from "lodash";
-	import {SvgPianoRoll} from "@k-l-lambda/web-widgets";
+	import {SvgPianoRoll} from "@k-l-lambda/music-widgets";
 
 
 

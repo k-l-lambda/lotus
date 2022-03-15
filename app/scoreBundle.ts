@@ -1,5 +1,5 @@
 
-import {MusicNotation} from "@k-l-lambda/web-widgets";
+import {MusicNotation} from "@k-l-lambda/music-widgets";
 
 import npmPackage from "../package.json";
 import {recoverJSON} from "../inc/jsonRecovery";

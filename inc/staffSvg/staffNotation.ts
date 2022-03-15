@@ -1,8 +1,8 @@
 
 import _ from "lodash";
-import {Matcher} from "@k-l-lambda/web-widgets";
+import {Matcher} from "@k-l-lambda/music-widgets";
 // eslint-disable-next-line
-import {MusicNotation} from "@k-l-lambda/web-widgets";
+import {MusicNotation} from "@k-l-lambda/music-widgets";
 
 import LogRecorder from "../logRecorder";
 import {roundNumber, constants} from "./utils";

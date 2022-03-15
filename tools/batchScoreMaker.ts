@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import yargs from "yargs";
 import YAML from "yaml";
-import {MIDI} from "@k-l-lambda/web-widgets";
+import {MIDI} from "@k-l-lambda/music-widgets";
 
 import "../env.js";
 import {setEnvironment} from "../backend";

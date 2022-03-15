@@ -2,7 +2,7 @@
 import fs from "fs";
 import {argv} from "yargs";
 import YAML from "yaml";
-import {MIDI, MusicNotation, Matcher} from "@k-l-lambda/web-widgets";
+import {MIDI, MusicNotation, Matcher} from "@k-l-lambda/music-widgets";
 
 import "../env.js";
 import * as ScoreMaker from "../backend/scoreMaker";

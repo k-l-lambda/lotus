@@ -1,5 +1,5 @@
 
-import {MusicNotation} from "@k-l-lambda/web-widgets";
+import {MusicNotation} from "@k-l-lambda/music-widgets";
 
 import {ChordPosition} from "./notation";
 

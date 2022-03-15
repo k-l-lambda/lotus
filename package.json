@@ -19,7 +19,7 @@
   "author": "K.L.",
   "license": "ISC",
   "dependencies": {
-    "@k-l-lambda/web-widgets": "^0.3.29",
+    "@k-l-lambda/music-widgets": "^0.3.34",
     "crc-32": "^1.2.0",
     "jison": "^0.4.18",
     "xmldom": "^0.6.0"

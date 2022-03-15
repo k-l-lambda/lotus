@@ -1,7 +1,7 @@
 
 import formidable from "formidable";
 import {DOMParser} from "xmldom";
-import {MIDI} from "@k-l-lambda/web-widgets";
+import {MIDI} from "@k-l-lambda/music-widgets";
 
 import * as lilyCommands from "./lilyCommands";
 import * as staffSvg from "../inc/staffSvg";

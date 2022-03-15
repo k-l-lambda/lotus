@@ -1,6 +1,6 @@
 
 import {Writable} from "stream";
-import {MusicNotation} from "@k-l-lambda/web-widgets";
+import {MusicNotation} from "@k-l-lambda/music-widgets";
 import {DOMParser} from "xmldom";
 
 import {LilyDocument, docLocationSet} from "../inc/lilyParser";

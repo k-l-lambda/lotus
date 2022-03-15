@@ -3,7 +3,7 @@
 import fs from "fs";
 import path from "path";
 import child_process from "child-process-promise";
-import {MIDI} from "@k-l-lambda/web-widgets";
+import {MIDI} from "@k-l-lambda/music-widgets";
 import {Writable} from "stream";
 
 import asyncCall from "../inc/asyncCall";

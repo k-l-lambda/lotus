@@ -119,7 +119,7 @@
 
 <script>
 	import Vue from "vue";
-	import {MidiPlayer} from "@k-l-lambda/web-widgets";
+	import {MidiPlayer} from "@k-l-lambda/music-widgets";
 
 	import SheetScheduler from "../../inc/lilyNotation/scheduler.ts";
 	import {animationDelay} from "../delay.js";

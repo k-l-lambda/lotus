@@ -1,7 +1,7 @@
 
 import sha1 from "sha1";
 // eslint-disable-next-line
-import {MusicNotation} from "@k-l-lambda/web-widgets";
+import {MusicNotation} from "@k-l-lambda/music-widgets";
 
 import DictArray from "./DictArray";
 // eslint-disable-next-line

@@ -26,7 +26,7 @@ module.exports = {
 			.loader("url-loader");
 
 		config.externals({
-			musicWidgets: "@k-l-lambda/web-widgets",
+			musicWidgets: "@k-l-lambda/music-widgets",
 		});
 	
 		/*// ignore third-party packed js
