@@ -288,14 +288,14 @@ export class Notation {
 	}
 
 
-	toPerformingMIDI (measureIndices: number[], {trackList}: {trackList?: boolean[]} = {}): MIDI.MidiData {
+	toPerformingMIDI (measureIndices: number[], {trackList}: {trackList?: boolean[]} = {}): MIDI.MidiData & {zeroTick: number} {
 		if (!measureIndices.length)
 			return null;
 
 		// to avoid begin minus tick
 		const zeroTick = -Math.min(0,
-			...[].concat(...this.measures.map(measure => measure.events.map(e => e.ticks))),
-			...[].concat(...this.measures.map(measure => measure.notes.map(note => note.tick))));
+			...(this.measures[0] ? this.measures[0].events.map((e) => e.ticks) : []),
+			...(this.measures[0] ? this.measures[0].notes.map((note) => note.tick) : []));
 
 		let measureTick = zeroTick;
 		const measureEvents: MeasureEvent[][] = measureIndices.map(index => {
@@ -416,6 +416,7 @@ export class Notation {
 				ticksPerBeat: TICKS_PER_BEAT,
 			},
 			tracks,
+			zeroTick,
 		};
 	}
 
@@ -424,12 +425,12 @@ export class Notation {
 		if (!measureIndices.length)
 			return null;
 
-		const midi = this.toPerformingMIDI(measureIndices, options);
+		const {zeroTick, ...midi} = this.toPerformingMIDI(measureIndices, options);
 		const notation = MusicNotation.Notation.parseMidi(midi);
 
 		assignNotationNoteDataFromEvents(notation);
 
-		let tick = 0;
+		let tick = zeroTick;
 
 		notation.measures = measureIndices.map(index => {
 			const startTick = tick;
