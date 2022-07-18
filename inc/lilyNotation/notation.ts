@@ -44,6 +44,7 @@ export interface Note extends MusicNotation.Note, Partial<StaffNoteProperties> {
 	id: string;
 	measure: number;
 	endTick: number;
+	outMeasure?: boolean;
 };
 
 
@@ -167,6 +168,7 @@ export class Notation {
 			contextIndex: note.contextIndex,
 			implicitType: note.implicitType,
 			chordPosition: note.chordPosition,
+			outMeasure: note.outMeasure,
 		}));
 
 		const noteMap = notes.reduce((map, note) => {
@@ -241,12 +243,15 @@ export class Notation {
 			console.assert(!!measure, "invalid measure index:", index, this.measures.length);
 
 			const notes = measure.notes.map(mnote => {
+				const outMeasure = mnote.tick < 0 || mnote.tick >= measure.duration;
+
 				return {
 					startTick: measureTick + mnote.tick,
 					endTick: measureTick + mnote.tick + mnote.duration,
 					start: measureTick + mnote.tick,
 					duration: mnote.duration,
 					measure: index,
+					outMeasure,
 					..._.pick(mnote, COMMON_NOTE_FIELDS),
 				} as Note;
 			});

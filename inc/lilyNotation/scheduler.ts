@@ -32,6 +32,7 @@ interface SheetPosition {
 interface Note extends MusicNotation.Note {
 	chordPosition?: ChordPosition;
 	measure?: number;
+	outMeasure?: boolean;
 };
 
 
@@ -51,7 +52,7 @@ export default class Scheduler {
 		const idSet = new Set<string>();
 		let measureIndex = 0;
 
-		midiNotation.notes.filter(note => !note.chordPosition || note.chordPosition.index === 0).forEach(note => {
+		midiNotation.notes.filter(note => !note.outMeasure && (!note.chordPosition || note.chordPosition.index === 0)).forEach(note => {
 			if (note.ids) {
 				if (note.measure !== measureIndex) {
 					idSet.clear();

@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.7.18
+
+	+	lilyNotation: exclude out measure notes in scheduler.
+
+
 *	2021.2.24
 
 	+	organizeTokens.ts: enhanced volta symbols marking.
