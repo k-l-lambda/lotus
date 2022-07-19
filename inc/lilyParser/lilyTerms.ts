@@ -2328,11 +2328,13 @@ export class Rest extends MusicEvent {
 
 	serialize () {
 		return [
+			new OpenLocator(this),
 			...compact([
 				this.name,
 				...BaseTerm.optionalSerialize(this.duration),
 			]),
 			...cc((this.post_events || []).map(BaseTerm.optionalSerialize)),
+			new CloseLocator(this),
 		];
 	}
 

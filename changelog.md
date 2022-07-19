@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2021.7.19
+
+	+	lilyTerms.ts: added locators in Rest serialization.
+
+
 *	2021.7.18
 
 	+	lilyNotation: exclude out measure notes in scheduler.
