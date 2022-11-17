@@ -388,7 +388,8 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 	//logger.append("parseTokenSystem.separatorYs", Array.from(separatorYs));
 
 	const staffLines = tokens.filter(token => token.is("STAFF_LINE")).reduce((lines, token) => {
-		lines[token.ry] = token;
+		if (!lines[token.ry] || lines[token.ry].x > token.x)
+			lines[token.ry] = token;
 		return lines;
 	}, {});
 	//logger.append("parseTokenSystem.staffLines", Object.keys(staffLines));

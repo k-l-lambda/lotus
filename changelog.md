@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2022.11.17
+
+	+	organizeTokens.ts: fixed systemX error by exceptional STAFF_LINE token.
+
+
 *	2021.7.19
 
 	+	lilyTerms.ts: added locators in Rest serialization.
