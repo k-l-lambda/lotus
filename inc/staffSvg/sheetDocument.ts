@@ -352,7 +352,7 @@ class SheetDocument {
 	}
 
 
-	fitPageViewbox ({margin = 5, verticalCrop = false, pageTokens = false} = {}) {
+	fitPageViewbox ({margin = 5, verticalCropOnly = false, pageTokens = false} = {}) {
 		if (!this.pages || !this.pages.length)
 			return;
 
@@ -362,8 +362,8 @@ class SheetDocument {
 			const rects = page.systems.map(system => [system.x, system.x + system.width, system.y + system.top, system.y + system.bottom ]);
 
 			const tokens = this.tokensInPage(i, {withPageTokens: pageTokens}) || [];
-			const tokenXs = tokens.map(token => token.x);
-			const tokenYs = tokens.map(token => token.y);
+			const tokenXs = tokens.map(token => token.x).filter(Number.isFinite);
+			const tokenYs = tokens.map(token => token.y).filter(Number.isFinite);
 			//console.debug("tokens:", i, tokens, tokenXs, tokenYs);
 
 			if (!rects.length)
@@ -374,10 +374,10 @@ class SheetDocument {
 			const top = Math.min(...rects.map(rect => rect[2]), ...tokenYs);
 			const bottom = Math.max(...rects.map(rect => rect[3]), ...tokenYs);
 
-			const x = verticalCrop ? page.viewBox.x : left - margin;
-			const y = (verticalCrop && i === 0) ? page.viewBox.y : top - margin;
-			const width = verticalCrop ? page.viewBox.width : right - left + margin * 2;
-			const height = (verticalCrop && i === 0) ? bottom + margin - y : bottom - top + margin * 2;
+			const x = verticalCropOnly ? page.viewBox.x : left - margin;
+			const y = (verticalCropOnly && i === 0) ? page.viewBox.y : top - margin;
+			const width = verticalCropOnly ? page.viewBox.width : right - left + margin * 2;
+			const height = (verticalCropOnly && i === 0) ? bottom + margin - y : bottom - top + margin * 2;
 
 			page.viewBox = {x, y, width, height};
 

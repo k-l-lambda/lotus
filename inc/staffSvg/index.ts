@@ -125,7 +125,7 @@ const postProcessSheetDocument = (sheet: SheetDocument, lilyDocument: LilyDocume
 	if (verticalCrop && verticalCrop.exp){
 		const options = schemeOption(verticalCrop);
 		//console.debug("options:", options);
-		sheet.fitPageViewbox({verticalCrop: true, ...options});
+		sheet.fitPageViewbox({verticalCropOnly: true, ...options});
 	}
 
 	const fitPageViewbox = attributes["LotusOption.fitPageViewbox"] as Scheme;
