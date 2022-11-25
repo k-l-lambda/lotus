@@ -768,7 +768,6 @@ const organizeTokens = (tokens: StaffToken[], source: TextSource, {logger, viewB
 
 			// tremolo beams pierced
 			if (token.is("BEAM") && /^:\d+/.test(token.source)) {
-				token.removeSymbol("BEAM");
 				token.removeSymbol("NOTETAIL");
 				token.removeSymbol("JOINT");
 				token.addSymbol("TREMOLO_BEAM");
