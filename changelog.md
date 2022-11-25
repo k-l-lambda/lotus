@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2022.11.25
+
+	+	oranizeTokens.ts: added paired tremolo beam symbols.
+
+
 *	2022.11.21
 
 	+	sheetDocument.ts: renamed parameter of verticalCrop to verticalCropOnly for fitPageViewbox.

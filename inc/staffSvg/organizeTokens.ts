@@ -757,12 +757,20 @@ const organizeTokens = (tokens: StaffToken[], source: TextSource, {logger, viewB
 				token.addSymbol("SUSTAIN", "PED_DOT");
 			}
 
-			// tremolo beams
+			// tremolo beams pierced
 			if (token.is("BEAM") && /^:\d+/.test(token.source)) {
 				token.removeSymbol("BEAM");
 				token.removeSymbol("NOTETAIL");
 				token.removeSymbol("JOINT");
 				token.addSymbol("TREMOLO_BEAM");
+				token.addSymbol("PIERCED");
+			}
+
+			// tremolo beams paired
+			if (token.is("BEAM") && /repeat tremolo/.test(token.source)) {
+				token.removeSymbol("NOTETAIL");
+				token.addSymbol("TREMOLO_BEAM");
+				token.addSymbol("TREMOLO_PAIR");
 			}
 
 			// glissando
