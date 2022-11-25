@@ -479,28 +479,37 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 		if (token.is("BEAM")) {
 			const jointStems = stems.filter(stem => Math.abs(stem.centerX - token.x) < 0.1
 				&& (Math.abs(token.y - stem.y) < 0.2 || Math.abs(token.y - (stem.y + stem.height)) < 0.2));
-			if (jointStems.length)
-				token.addSymbol("CAPITAL_BEAM");
+			const contactedStems = stems.filter(stem => Math.abs(stem.centerX - token.x) < 0.1
+				&& token.y - stem.y > -0.2 && token.y - (stem.y + stem.height) < 0.2);
 
-			const k = (token.target.y - token.start.y) / (token.target.x - token.start.x);
+			if (!contactedStems.length) {
+				token.removeSymbol("NOTETAIL");
+				token.removeSymbol("JOINT");
+			}
+			else {
+				if (jointStems.length)
+					token.addSymbol("CAPITAL_BEAM");
 
-			// append stem division
-			const crossedStems = stems.filter(stem =>
-				stem.centerX > token.x - 0.1 && stem.centerX < token.x + token.target.x + 0.1
+				const k = (token.target.y - token.start.y) / (token.target.x - token.start.x);
+
+				// append stem division
+				const crossedStems = stems.filter(stem =>
+					stem.centerX > token.x - 0.1 && stem.centerX < token.x + token.target.x + 0.1
 				&& stem.y < Math.max(token.y, token.y + token.target.y) + 0.2
 				&& stem.y + stem.height > Math.min(token.y, token.y + token.target.y) - 0.2);
-			crossedStems.forEach(stem => {
-				const beamY = (stem.centerX - token.x + token.start.x) * k + token.y + token.start.y;
-				if (beamY > stem.y - 0.2 && beamY < stem.y + stem.height + 0.2) {
-					const atTip = stem.stemUp ? beamY < stem.y + 3.2 : beamY > stem.y + stem.height - 3.2;
-					if (atTip) {
-						++stem.division;
+				crossedStems.forEach(stem => {
+					const beamY = (stem.centerX - token.x + token.start.x) * k + token.y + token.start.y;
+					if (beamY > stem.y - 0.2 && beamY < stem.y + stem.height + 0.2) {
+						const atTip = stem.stemUp ? beamY < stem.y + 3.2 : beamY > stem.y + stem.height - 3.2;
+						if (atTip) {
+							++stem.division;
 
-						if (token.is("CAPITAL_BEAM"))
-							stem.beam = token.index;
+							if (token.is("CAPITAL_BEAM"))
+								stem.beam = token.index;
+						}
 					}
-				}
-			});
+				});
+			}
 		}
 
 		if (token.is("FLAG UP")) {
