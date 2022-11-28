@@ -601,7 +601,7 @@ class SheetDocument {
 
 			const measure = staff.measures.find(measure => measure.noteRange.end >= token.x);
 			if (measure) {
-				const newToken = new StaffToken({...token, symbols: new Set(), y: token.y - dy});
+				const newToken = new StaffToken({...token, symbols: new Set(), y: token.y - dy, ry: token.ry - dy});
 				token.addSymbol("ACROSS_STAVES");
 				newToken.addSymbol("ACROSS_STAVES");
 				newToken.addSymbol("DUPLICATED");
