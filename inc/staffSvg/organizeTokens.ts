@@ -1,10 +1,9 @@
 
 import {POS_PRECISION, constants} from "./utils";
 
-// eslint-disable-next-line
-import StaffToken from "./staffToken";
-// eslint-disable-next-line
-import TextSource from "../textSource";
+import type StaffToken from "./staffToken";
+import type {SheetStaff} from "./sheetDocument";
+import type TextSource from "../textSource";
 
 
 
@@ -479,14 +478,21 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 		if (token.is("BEAM")) {
 			const jointStems = stems.filter(stem => Math.abs(stem.centerX - token.x) < 0.1
 				&& (Math.abs(token.y - stem.y) < 0.2 || Math.abs(token.y - (stem.y + stem.height)) < 0.2));
-			const contactedStems = stems.filter(stem => Math.abs(stem.centerX - token.x) < 0.1
-				&& token.y - stem.y > -0.2 && token.y - (stem.y + stem.height) < 0.2);
+
+			const k = (token.target.y - token.start.y) / (token.target.x - token.start.x);
+			const contactedStems = stems.filter(stem => {
+				const dy = (stem.x - (token.x + token.start.x)) * k;
+				return stem.centerX - (token.x + token.start.x) > -0.1 && stem.centerX - (token.x + token.target.x) < 0.1
+					&& token.y + dy - stem.y > -0.2 && token.y + dy - (stem.y + stem.height) < 0.2;
+			});
 
 			if (!contactedStems.length) {
 				token.removeSymbol("NOTETAIL");
 				token.removeSymbol("JOINT");
 			}
 			else {
+				token.stems = contactedStems.map(stem => stem.index);
+
 				if (jointStems.length)
 					token.addSymbol("CAPITAL_BEAM");
 
@@ -635,7 +641,7 @@ const parseTokenSystem = (tokens: StaffToken[], stacks: LineStack[], logger) => 
 const isStaffToken = token => token.is("STAFF_LINE") || token.is("MEASURE_SEPARATOR");
 
 
-const parseTokenStaff = ({tokens, y, top, measureRanges, logger}) => {
+const parseTokenStaff = ({tokens, y, top, measureRanges, logger}): SheetStaff => {
 	const localTokens = tokens.map(token => token.translate({y: -y}));
 	const notes = localTokens.filter(token => token.is("NOTE"));
 	//logger.append("parseTokenStaff.localTokens", localTokens);

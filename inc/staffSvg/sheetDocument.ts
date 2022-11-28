@@ -589,6 +589,57 @@ class SheetDocument {
 			});
 		});
 	}
+
+
+	appendLinkedTokensForStaves (): void {
+		const doneTokens = new Set();
+		const appendLink = (staff: SheetStaff, oldStaff: SheetStaff, token: StaffToken): void => {
+			if (doneTokens.has(token.index))
+				return;
+			//console.log("appendLink:", staff, oldStaff, token);
+			const dy = staff.y - oldStaff.y;
+
+			const measure = staff.measures.find(measure => measure.noteRange.end >= token.x);
+			if (measure) {
+				const newToken = new StaffToken({...token, symbols: new Set(), y: token.y - dy});
+				token.addSymbol("ACROSS_STAVES");
+				newToken.addSymbol("ACROSS_STAVES");
+				newToken.addSymbol("DUPLICATED");
+				measure.tokens.push(newToken);
+			}
+			else
+				console.warn("appendLink failed, because no fit measure:", staff.measures, token);
+
+			doneTokens.add(token.index);
+		};
+
+		this.pages.forEach(page => {
+			const tokens: StaffToken[] = page.systems
+				.map(system => system.staves
+					.map(staff => staff.measures
+						.map(measure => measure.tokens))).flat(3);
+			const tokenStaffTable: Record<number, SheetStaff> = page.systems
+				.reduce((table, system) => system.staves
+					.reduce((table, staff) => staff.measures
+						.reduce((table, measure) => measure.tokens
+							.reduce((table, token) => {
+								table[token.index] = staff;
+								return table;
+							}, table), table), table), {});
+
+			//console.log("tokenStaffTable:", tokenStaffTable);
+
+			tokens.forEach(token => {
+				if (token.stems) {
+					const staff = tokenStaffTable[token.index];
+					token.stems.forEach(stem => {
+						if (tokenStaffTable[stem] !== staff)
+							appendLink(tokenStaffTable[stem], staff, token);
+					});
+				}
+			});
+		});
+	}
 };
 
 

@@ -17,6 +17,8 @@
 
 *	2022.11.28
 
+	+	sheetDocument.ts: appendLinkedTokensForStaves added.
+
 	+	App component of midi-roll imported.
 
 
