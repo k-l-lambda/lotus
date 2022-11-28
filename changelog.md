@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2022.11.28
+
+	+	App component of midi-roll imported.
+
+
 *	2022.11.25
 
 	+	oranizeTokens.ts: added paired tremolo beam symbols.

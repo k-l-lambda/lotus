@@ -386,7 +386,7 @@
 	import * as measureLayout from "../../inc/measureLayout";
 	import npmPackage from "../../package.json";
 
-	import {MidiRoll} from "@k-l-lambda/music-widgets";
+	import MidiRoll from "../components/midi-roll.vue";
 	import SourceEditor from "../components/source-editor.vue";
 	import SheetSimple from "../components/sheet-simple.vue";
 	import SheetLive from "../components/sheet-live.vue";
