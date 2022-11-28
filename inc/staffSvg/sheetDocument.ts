@@ -614,10 +614,10 @@ class SheetDocument {
 		};
 
 		this.pages.forEach(page => {
-			const tokens: StaffToken[] = page.systems
+			const tokens: StaffToken[] = (page.systems
 				.map(system => system.staves
 					.map(staff => staff.measures
-						.map(measure => measure.tokens))).flat(3);
+						.map(measure => measure.tokens))) as any).flat(3);
 			const tokenStaffTable: Record<number, SheetStaff> = page.systems
 				.reduce((table, system) => system.staves
 					.reduce((table, staff) => staff.measures
