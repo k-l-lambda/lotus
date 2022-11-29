@@ -43,6 +43,8 @@ const processFontSvg = (text: string, table: Dict) => {
 				scales.push(MINOR_SCALE);
 			if (/^scripts\./.test(name))
 				scales.push(SCRIPT_SCALE);
+			if (/^accidentals/.test(name))
+				scales.push(SCALE25);
 
 			scales.forEach(scale => {
 				const hash = sha1(JSON.stringify([["d",d],["scale",{x:scale,y:-scale}],["stroke-width",null],["type","path"]]));
