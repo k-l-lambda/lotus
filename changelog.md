@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2022.11.30
+
+	+	organizeTokens.ts: fixed empty system error.
+
+
 *	2022.11.29
 
 	+	glyphHashTable.ts: added scale 25 for accidentals.

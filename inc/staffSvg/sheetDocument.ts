@@ -359,7 +359,8 @@ class SheetDocument {
 		const svgScale = this.pageSize.width / this.pages[0].viewBox.width;
 
 		this.pages.forEach((page, i) => {
-			const rects = page.systems.map(system => [system.x, system.x + system.width, system.y + system.top, system.y + system.bottom ]);
+			const rects = page.systems.filter(system => Number.isFinite(system.x + system.width + system.y + system.top + system.bottom))
+				.map(system => [system.x, system.x + system.width, system.y + system.top, system.y + system.bottom ]);
 
 			const tokens = this.tokensInPage(i, {withPageTokens: pageTokens}) || [];
 			const tokenXs = tokens.map(token => token.x).filter(Number.isFinite);

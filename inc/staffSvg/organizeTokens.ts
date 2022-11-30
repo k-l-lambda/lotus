@@ -802,7 +802,8 @@ const organizeTokens = (tokens: StaffToken[], source: TextSource, {logger, viewB
 	const systemDatas = tokensSystemsSplit(meaningfulTokens.filter(token => !isPageToken(token)), logger);
 	//logger.append("organizeTokens.systemDatas", systemDatas);
 
-	const systems = systemDatas.map(({tokens, stacks}) => parseTokenSystem(tokens, stacks, logger));
+	const systems = systemDatas.map(({tokens, stacks}) => parseTokenSystem(tokens, stacks, logger))
+		.filter(system => system.staves.length > 0);
 
 	return {
 		tokens: pageTokens,
