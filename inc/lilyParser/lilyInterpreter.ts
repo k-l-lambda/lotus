@@ -885,9 +885,11 @@ export class TrackContext {
 		else if (term instanceof AfterGrace) {
 			this.execute(term.body);
 
+			this.inGrace = true;
 			this.push({factor: {value: 0}, tickBias: -term.body.durationMagnitude});
 			this.execute(term.grace);
 			this.pop();
+			this.inGrace = false;
 
 			this.processGrace(term.grace);
 		}
