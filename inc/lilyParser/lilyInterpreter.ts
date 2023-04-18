@@ -640,7 +640,7 @@ export class TrackContext {
 
 
 	get measureIndexBias (): number {
-		if (this.tickInMeasure + this.tickBias < 0)
+		if (this.tickInMeasure + this.tickBias < -1)
 			return -1;
 
 		return 0;

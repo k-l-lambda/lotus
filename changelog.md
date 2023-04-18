@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2023.4.18
+
+	+	lilyInterpreter.ts: fixed measureIndexBias for fractional time warp terms.
+
+
 *	2022.11.30
 
 	+	organizeTokens.ts: fixed empty system error.
