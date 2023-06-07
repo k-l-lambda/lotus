@@ -17,6 +17,7 @@
 
 *	2023.6.7
 
+	+	lilyTerms.ts: added method of Repeat.singleTremolo.
 	+	lilyTerms.ts: added method of Repeat.sumDuration.
 
 

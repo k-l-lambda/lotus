@@ -852,7 +852,7 @@ export class Repeat extends Command {
 	// for tremolo
 	get sumDuration (): Duration {
 		if (this.bodyBlock instanceof MusicEvent)
-			return this.args[2].duration;
+			return Duration.fromMagnitude(this.args[2].durationMagnitude * this.times);
 		else if (this.bodyBlock instanceof MusicBlock) {
 			const events = this.bodyBlock.body.filter(term => term instanceof MusicEvent);
 			const magnitude = events.reduce((m, event) => m + event.durationMagnitude, 0) * this.times;
@@ -861,6 +861,21 @@ export class Repeat extends Command {
 		}
 
 		return null;
+	}
+
+
+	get singleTremolo (): boolean {
+		if (this.type === "tremolo") {
+			if (this.bodyBlock instanceof MusicEvent)
+				return true;
+
+			if (this.bodyBlock instanceof MusicBlock) {
+				const events = this.bodyBlock.body.filter(term => term instanceof MusicEvent);
+				return events.length === 1;
+			}
+		}
+
+		return false;
 	}
 
 
