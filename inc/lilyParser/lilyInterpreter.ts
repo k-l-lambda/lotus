@@ -21,6 +21,7 @@ import {MeasureLayout, BlockMLayout, SingleMLayout} from "../measureLayout";
 interface DurationContextStackStatus {
 	factor?: {value: number};
 	tickBias?: number;
+	tremoloDuration?: Duration;
 };
 
 
@@ -29,6 +30,14 @@ type MusicListener = (music: BaseTerm, context: TrackContext) => void;
 
 
 type ContextDict = {[key: string]: string};
+
+
+export enum TremoloType {
+	None,
+	Single,
+	Pitcher,
+	Catcher,
+};
 
 
 interface PitchContextTerm {
@@ -565,6 +574,8 @@ export class TrackContext {
 	stemDirection: string = null;
 	beamOn: boolean = false;
 
+	tremoloType: TremoloType = TremoloType.None;
+
 
 	constructor (track = new MusicTrack, {transformer = null, listener = null, contextDict = null}:
 		{
@@ -622,6 +633,17 @@ export class TrackContext {
 			const status = this.stack[i];
 			if (status.factor)
 				return status.factor;
+		}
+
+		return null;
+	}
+
+
+	get tremoloDuration (): Duration {
+		for (let i = this.stack.length - 1; i >= 0; i--) {
+			const status = this.stack[i];
+			if (status.tremoloDuration)
+				return status.tremoloDuration;
 		}
 
 		return null;
@@ -837,8 +859,10 @@ export class TrackContext {
 
 				break;
 			case "tremolo":
-				this.push({factor: {value: term.times}});
+				this.push({factor: {value: term.times}, tremoloDuration: term.sumDuration});
+				this.tremoloType = term.singleTremolo ? TremoloType.Single : TremoloType.Pitcher;
 				this.execute(term.bodyBlock);
+				this.tremoloType = TremoloType.None;
 				this.pop();
 
 				break;
@@ -952,6 +976,9 @@ export class TrackContext {
 
 		if (this.listener)
 			this.listener(term, this);
+
+		if (term instanceof MusicEvent && this.tremoloType === TremoloType.Pitcher)
+			this.tremoloType = TremoloType.Catcher;
 	}
 
 

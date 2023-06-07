@@ -17,6 +17,8 @@
 
 *	2023.6.7
 
+	+	lilyInterpreter.ts: tremoloType & tremoloDuration on TrackContext added.
+
 	+	lilyTerms.ts: added method of Repeat.singleTremolo.
 	+	lilyTerms.ts: added method of Repeat.sumDuration.
 

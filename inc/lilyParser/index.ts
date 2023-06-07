@@ -1,7 +1,7 @@
 
 import {termDictionary, getDurationSubdivider, BaseTerm, MusicEvent} from "./lilyTerms";
 import LilyDocument from "./lilyDocument";
-import LilyInterpreter, {MusicTrack, TrackContext} from "./lilyInterpreter";
+import LilyInterpreter, {MusicTrack, TrackContext, TremoloType} from "./lilyInterpreter";
 export * from "./utils";
 
 import * as measures from "./measures";
@@ -18,6 +18,7 @@ export {
 	LilyInterpreter,
 	MusicTrack,
 	TrackContext,
+	TremoloType,
 	BaseTerm,
 	MusicEvent,
 	LilyTerms,
