@@ -849,6 +849,21 @@ export class Repeat extends Command {
 	}
 
 
+	// for tremolo
+	get sumDuration (): Duration {
+		if (this.bodyBlock instanceof MusicEvent)
+			return this.args[2].duration;
+		else if (this.bodyBlock instanceof MusicBlock) {
+			const events = this.bodyBlock.body.filter(term => term instanceof MusicEvent);
+			const magnitude = events.reduce((m, event) => m + event.durationMagnitude, 0) * this.times;
+
+			return Duration.fromMagnitude(magnitude);
+		}
+
+		return null;
+	}
+
+
 	// \repeat {body} \alternative {{alter1} {alter2}}		=> body alter1 body alter2
 	getUnfoldTerms (): BaseTerm[] {
 		const completeAlternativeBlocks = this.completeAlternativeBlocks;

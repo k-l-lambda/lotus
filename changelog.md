@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2023.6.7
+
+	+	lilyTerms.ts: added method of Repeat.sumDuration.
+
+
 *	2023.4.18
 
 	+	lilyInterpreter.ts: fixed measureIndexBias for fractional time warp terms.
