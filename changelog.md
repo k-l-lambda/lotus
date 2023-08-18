@@ -17,6 +17,8 @@
 
 *	2023.8.18
 
+	+	lilypond.jison: fixed comment grammar line number problem.
+
 	+	*! Jison library in nodejs & browser has line number discrepancy on comment parsing.
 			Nodejs version may count an additional line. Reason?
 

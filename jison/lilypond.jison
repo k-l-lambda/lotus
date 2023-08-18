@@ -197,7 +197,7 @@ PITCH				{PHONET}(([i][s])*|([e][s])*|[s][e][s]|[s]*|[f]*)(?=[\W\d_])
 
 \s+									{}	// spaces
 \%\{(.|\n)*?\%\}					yy.$lotusComments = yy.$lotusComments || []; yy.$lotusComments.push({text: yytext, loc: yylloc, scoped: true});	// scoped comments
-\%[^\n]*(?=\n)						yy.$lotusComments = yy.$lotusComments || []; yy.$lotusComments.push({text: yytext, loc: yylloc});	// scoped comments
+\%.*								yy.$lotusComments = yy.$lotusComments || []; yy.$lotusComments.push({text: yytext, loc: yylloc});	// scoped comments
 \"(\\\"|[^"])*\"					return 'STRING';
 
 //{EXTENDER}							return 'EXTENDER';
