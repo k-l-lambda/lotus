@@ -15,6 +15,12 @@
 			chord mode symbol affiliation
 
 
+*	2023.8.18
+
+	+	*! Jison library in nodejs & browser has line number discrepancy on comment parsing.
+			Nodejs version may count an additional line. Reason?
+
+
 *	2023.6.7
 
 	+	lilyInterpreter.ts: tremoloType & tremoloDuration on TrackContext added.
