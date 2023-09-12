@@ -1435,7 +1435,10 @@ export class MusicBlock extends BaseTerm {
 
 
 	clearPitchCache () {
-		this.forEachTerm(ChordElement, pitch => pitch._absolutePitch = null);
+		this.forEachTerm(ChordElement, pitch => {
+			pitch._absolutePitch = null;
+			pitch._previous = null;
+		});
 	}
 
 

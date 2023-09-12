@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2023.9.12
+
+	+	lilyTerms.ts: fixed MusicBlock.clearPitchCache.
+
+
 *	2023.8.18
 
 	+	lilypond.jison: fixed comment grammar line number problem.
