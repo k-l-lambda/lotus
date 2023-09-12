@@ -17,7 +17,7 @@
 
 *	2023.9.12
 
-	+	lilyTerms.ts: fixed MusicBlock.clearPitchCache.
+	+	lilyInterpreter.ts: fixed MusicTrack.spreadRelativeBlocks.
 
 
 *	2023.8.18

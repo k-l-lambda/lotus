@@ -966,8 +966,10 @@ export class Relative extends Command {
 		}
 
 		const music = this.music;
-		if (music instanceof MusicBlock)
+		if (music instanceof MusicBlock) {
+			//music.clearPitchCache();
 			return music.body;
+		}
 
 		return [music];
 	}
@@ -1437,7 +1439,7 @@ export class MusicBlock extends BaseTerm {
 	clearPitchCache () {
 		this.forEachTerm(ChordElement, pitch => {
 			pitch._absolutePitch = null;
-			pitch._previous = null;
+			//pitch._previous = null;
 		});
 	}
 
@@ -2322,7 +2324,7 @@ export class Chord extends MusicEvent {
 
 
 	shiftAnchor (newAnchor: ChordElement) {
-		//console.log("shiftAnchor:", this.join(), newAnchor.join(), this.absolutePitch.pitchValue, newAnchor.pitchValue, this.anchorPitch.pitchValue);
+		//console.warn("shiftAnchor:", this.join(), newAnchor.join(), this.absolutePitch.pitchValue, newAnchor.pitchValue, this.anchorPitch.pitchValue);
 		const _location = this.basePitch._location;
 		const shift = idioms.phonetDifferToShift(this.basePitch.phonetStep - newAnchor.phonetStep);
 		const relativeOctave = this.basePitch.absoluteOctave(this.anchorPitch) - newAnchor.octave - shift;
@@ -2336,6 +2338,10 @@ export class Chord extends MusicEvent {
 
 		this.pitches[0]._location = _location;
 		this.pitches[0]._parent = this;
+
+		this.connectPitches();
+
+		//console.log("shiftAnchor.1:", this.join(), this.absolutePitch.pitchValue, {relativeOctave, shift, "newAnchor.octave": newAnchor.octave});
 	}
 
 

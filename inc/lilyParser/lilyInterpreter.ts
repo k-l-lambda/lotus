@@ -350,7 +350,8 @@ export class MusicTrack {
 					tempBlock.body = terms;
 					const head = tempBlock.findFirst(Chord);
 					if (head)
-						head._anchorPitch = this.anchorPitch;
+						//head._anchorPitch = this.anchorPitch;
+						head._anchorPitch = context.pitch;
 				}
 
 				return terms;
