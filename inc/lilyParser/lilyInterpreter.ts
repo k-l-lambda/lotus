@@ -58,6 +58,7 @@ interface PitchContextTerm {
 	pitches?: ChordElement[];
 	tickBias?: number;
 	rest?: boolean;
+	tremoloType?: TremoloType;
 };
 
 
@@ -107,6 +108,8 @@ class LilyStaffContext extends StaffContext {
 			const event = term.event;
 			const contextIndex = this.snapshot({tick: event._tick});
 
+			const implicitType = event.implicitType || (term.tremoloType ? LilyNotation.ImplicitType.Tremolo : LilyNotation.ImplicitType.None);
+
 			this.notes.push(...term.pitches.map((pitch, index) => ({
 				track: term.track,
 				channel: this.channelMap[term.track] || 0,
@@ -123,7 +126,7 @@ class LilyStaffContext extends StaffContext {
 				tied: !!pitch._tied,
 				rest: event.isRest,
 				afterGrace: !!term.tickBias,
-				implicitType: event.implicitType,
+				implicitType,
 				staffTrack: this.staffTrack,
 				contextIndex,
 				// TODO: consider connected arpeggio & downward arpeggio
@@ -498,6 +501,8 @@ export class MusicTrack {
 
 				if (track.tickBias)
 					pcTerm.tickBias = track.tickBias;
+
+				pcTerm.tremoloType = track.tremoloType;
 
 				commitTerm();
 			}

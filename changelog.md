@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2023.10.8
+
+	+	lilypondInterpreter.ts: added note implicitType of tremolo.
+
+
 *	2023.9.12
 
 	+	lilyInterpreter.ts: fixed MusicTrack.spreadRelativeBlocks.
