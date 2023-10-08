@@ -512,7 +512,9 @@ export class Notation {
 				}];
 			}
 			else {
-				const sn0 = snotes[0];
+				const referenceTick = measure.tick + mn.tick;
+				//const referenceTick = snotes[0].startTick;
+				//console.log("mn bias:", mn.id, measure.tick + mn.tick - snotes[0].startTick);
 
 				mn.subNotes = snotes.map(sn => {
 					velocities[sn.track] = sn.velocity;
@@ -526,8 +528,8 @@ export class Notation {
 
 					return {
 						//track: sn.track,
-						startTick: Math.round(sn.startTick - sn0.startTick + bias),
-						endTick: Math.round(sn.endTick - sn0.startTick),
+						startTick: Math.round(sn.startTick - referenceTick + bias),
+						endTick: Math.round(sn.endTick - referenceTick),
 						pitch: sn.pitch,
 						velocity: sn.velocity,
 					};
