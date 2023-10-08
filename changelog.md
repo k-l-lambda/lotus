@@ -17,6 +17,8 @@
 
 *	2023.10.8
 
+	*	Nested contexted music may result in tremolo pitcher notes matching failure.
+
 	+	lilypondInterpreter.ts: added note implicitType of tremolo.
 
 
