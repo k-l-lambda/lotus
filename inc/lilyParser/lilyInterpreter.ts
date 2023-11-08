@@ -676,7 +676,7 @@ export class TrackContext {
 
 
 	get factorValue (): number {
-		return this.factor ? this.factor.value : 1;
+		return this.factor && Number.isFinite(this.factor.value) ? this.factor.value : 1;
 	}
 
 

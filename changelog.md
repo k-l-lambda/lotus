@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2023.11.8
+
+	+	lilypondInterpreter.ts: added number finite protection for TrackContext.factorValue.
+
+
 *	2023.10.8
 
 	*	Nested contexted music may result in tremolo pitcher notes matching failure.
