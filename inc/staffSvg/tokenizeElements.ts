@@ -1,10 +1,9 @@
 
-import _ from "lodash";
-
 import {POS_PRECISION, SIZE_PRECISION, STROKE_PRECISION, roundNumber, sizeToStrokeWidth1, sizeToStrokeWidth2} from "./utils";
 import {identityHash, symbolize} from "./svgSymbols";
 import StaffToken from "./staffToken";
 import LogRecorder from "../logRecorder";
+import pick from "../pick";
 
 
 
@@ -187,7 +186,7 @@ const tokenizeElements = (elements: StaffElement[], attributes: StaffAttributes,
 	const nonsymbolTokens = tokens
 		.filter(token => !token.symbol)
 		.map(token => ({
-			..._.pick(token, ["x", "y", "rx", "ry", "sw", "href"]),
+			...pick(token, ["x", "y", "rx", "ry", "sw", "href"]),
 			identity: hashTable[token.hash],
 		}));
 	if (nonsymbolTokens.length)

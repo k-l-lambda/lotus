@@ -1,11 +1,10 @@
 
-import _ from "lodash";
-
 import {WHOLE_DURATION_MAGNITUDE, FractionNumber, lcmMulti, gcd, MAIN_SCORE_NAME} from "./utils";
 import * as idioms from "./idioms";
 import {LILYPOND_VERSION} from "../constants";
 import * as measureLayout from "../measureLayout";
 import ImplicitType from "../lilyNotation/implicitType";
+import pick from "../pick";
 
 
 
@@ -477,7 +476,7 @@ export class BaseTerm {
 	toJSON () {
 		// exlude meta fields in JSON
 		const fields = Object.keys(this).filter(key => !/^_/.test(key));
-		const data = _.pick(this, fields);
+		const data = pick(this, fields);
 
 		Object.entries(data).forEach(([key, value]) => {
 			if (value && typeof value === "object" && !Array.isArray(value) && !(value instanceof BaseTerm))

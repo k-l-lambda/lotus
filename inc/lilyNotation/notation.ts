@@ -1,6 +1,4 @@
 
-import _ from "lodash";
-
 import {MusicNotation, MIDI} from "@k-l-lambda/music-widgets";
 
 import {WHOLE_DURATION_MAGNITUDE} from "../lilyParser/utils";
@@ -9,6 +7,7 @@ import {MatcherResult} from "./matcher";
 import {MeasureLayout, LayoutType} from "../measureLayout";
 import ImplicitType from "./implicitType";
 import npmPackage from "../../package.json";
+import pick from "../pick";
 
 
 
@@ -123,7 +122,7 @@ export class Notation {
 			const mnotes = notes.filter(note => note.measure === i + 1).map(note => ({
 				tick: note.startTick - tick,
 				duration: note.endTick - note.startTick,
-				..._.pick(note, COMMON_NOTE_FIELDS),
+				...pick(note, COMMON_NOTE_FIELDS),
 				subNotes: [],
 			} as MeasureNote));
 
@@ -252,7 +251,7 @@ export class Notation {
 					duration: mnote.duration,
 					measure: index,
 					outMeasure,
-					..._.pick(mnote, COMMON_NOTE_FIELDS),
+					...pick(mnote, COMMON_NOTE_FIELDS),
 				} as Note;
 			});
 
@@ -609,7 +608,7 @@ export class Notation {
 
 export const assignNotationEventsIds = (midiNotation: MusicNotation.NotationData, fields = ["ids"]) => {
 	const events = midiNotation.notes.reduce((events, note) => {
-		const dict = _.pick(note, fields);
+		const dict = pick(note, fields);
 		events.push({ticks: note.startTick, subtype: "noteOn", channel: note.channel, pitch: note.pitch, dict});
 		events.push({ticks: note.endTick, subtype: "noteOff", channel: note.channel, pitch: note.pitch, dict});
 
@@ -670,7 +669,7 @@ const assignNotationNoteDataFromEvents = (midiNotation: MusicNotation.NotationDa
 			console.assert(!!note, "cannot find note of", id);
 
 			if (note)
-				Object.assign(note, _.pick(event.data, fields));
+				Object.assign(note, pick(event.data, fields));
 		}
 	});
 };

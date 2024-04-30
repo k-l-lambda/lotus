@@ -1,5 +1,4 @@
 
-import _ from "lodash";
 import {Matcher} from "@k-l-lambda/music-widgets";
 // eslint-disable-next-line
 import {MusicNotation} from "@k-l-lambda/music-widgets";
@@ -10,6 +9,7 @@ import {fuzzyMatchNotations, assignNotationEventsIds} from "../lilyNotation";
 import {StaffContext} from "../pitchContext";
 // eslint-disable-next-line
 import {PitchContext} from "../pitchContext";
+import pick from "../pick";
 
 
 
@@ -164,7 +164,7 @@ const parseNotationFromSheetDocument = (document, {logger = new LogRecorder()} =
 	contexts.forEach((context, t) => context.track.notes.forEach(note => note.track = t));
 	const notes = [].concat(...contexts.map(context => context.track.notes)).sort((n1, n2) => (n1.time - n2.time) + (n1.pitch - n2.pitch) * -1e-3);
 
-	logger.append("notesBeforeClusterize", notes.map(note => _.pick(note, ["time", "pitch"])));
+	logger.append("notesBeforeClusterize", notes.map(note => pick(note, ["time", "pitch"])));
 
 	clusterizeNotes(notes);
 

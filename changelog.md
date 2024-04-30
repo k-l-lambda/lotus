@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2024.4.30
+
+	+	Removed unnecessary lodash importing.
+
+
 *	2023.11.8
 
 	+	lilypondInterpreter.ts: added number finite protection for TrackContext.factorValue.

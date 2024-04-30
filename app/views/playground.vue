@@ -364,7 +364,7 @@
 </template>
 
 <script>
-	import _ from "lodash";
+	//import _ from "lodash";
 	import resize from "vue-resize-directive";
 	import {MIDI, MidiAudio, MidiUtils, MusicNotation} from "@k-l-lambda/music-widgets";
 

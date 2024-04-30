@@ -1,6 +1,4 @@
 
-import _ from "lodash";
-
 import TextSource from "../textSource";
 import {LILY_STAFF_SIZE_DEFAULT} from "../constants";
 import {

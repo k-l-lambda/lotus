@@ -1,5 +1,4 @@
 
-import _ from "lodash";
 import {DOMParser, XMLSerializer} from "xmldom";
 import {MusicNotation} from "@k-l-lambda/music-widgets";
 import {MIDI} from "@k-l-lambda/music-widgets";

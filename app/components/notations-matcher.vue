@@ -36,13 +36,14 @@
 </template>
 
 <script>
-	import _ from "lodash";
 	import {SvgPianoRoll} from "@k-l-lambda/music-widgets";
+
+	import pick from "../../inc/pick";
 
 
 
 	const copyNotation = notation => ({
-		notes: notation.notes.map(note => _.pick(note, ["startTick", "endTick", "softIndex", "duration", "classes", "pitch", "index", "id"])),
+		notes: notation.notes.map(note => pick(note, ["startTick", "endTick", "softIndex", "duration", "classes", "pitch", "index", "id"])),
 	});
 
 

@@ -1,8 +1,7 @@
 
-import _ from "lodash";
-
 import {constants, roundNumber} from "./utils";
 import {Glyph, slashGlyphName, GlyphUnicode} from "./glyph";
+import pick from "../pick";
 
 
 
@@ -62,7 +61,7 @@ export default class StaffToken {
 		return {
 			__prototype: "StaffToken",
 			x, y,
-			..._.pick(this, ["index", "rx", "ry", "sw", "start", "target", "source", "tied",
+			...pick(this, ["index", "rx", "ry", "sw", "start", "target", "source", "tied",
 				"symbol", "hash", "href", "scale", "scaleX", "width", "height", "text", "stemX", "stemUp",
 				"track", "tick", "pitch", "glyph", "stems", "stem", "beam", "division"]),
 		};

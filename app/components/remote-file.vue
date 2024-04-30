@@ -6,7 +6,7 @@
 </template>
 
 <script>
-	import _ from "lodash";
+	import debounce from "lodash/debounce";
 	import {RemoteFile} from "@k-l-lambda/web-editor";
 
 
@@ -70,7 +70,7 @@
 
 
 		watch: {
-			content: _.debounce(function (value) {
+			content: debounce(function (value) {
 				if (this.remoteFile.connected && value !== this.remoteFile.content)
 					this.remoteFile.content = value;
 			}, 1e+3),

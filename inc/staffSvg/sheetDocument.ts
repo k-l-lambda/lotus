@@ -1,6 +1,4 @@
 
-import _ from "lodash";
-
 import {CM_TO_PX} from "../constants";
 import {roundNumber} from "./utils";
 
@@ -8,6 +6,7 @@ import {roundNumber} from "./utils";
 import StaffToken from "./staffToken";
 // eslint-disable-next-line
 import * as LilyNotation from "../lilyNotation";
+import pick from "../pick";
 
 
 
@@ -581,7 +580,7 @@ class SheetDocument {
 							end: round(measure.noteRange.end),
 						};
 
-						measure.tokens = measure.matchedTokens.map(token => new StaffToken(_.pick(token, [
+						measure.tokens = measure.matchedTokens.map(token => new StaffToken(pick(token, [
 							"x", "y", "symbol", "href", "scale", "tied",
 						])));
 						delete measure.matchedTokens;
