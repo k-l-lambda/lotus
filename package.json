@@ -68,5 +68,16 @@
     "vue-template-compiler": "^2.6.11",
     "yaml": "^1.10.0",
     "yargs": "^15.3.1"
+  },
+  "resolutions": {
+    "@types/node": "22.6.1",
+    "@vue/babel-preset-app": "4.5.19",
+    "@vue/compiler-ssr": "3.5.8",
+    "@babel/parser": "7.25.6",
+    "caniuse-lite": "1.0.30001663",
+    "v8-compile-cache": "2.4.0",
+    "pump": "3.0.2",
+    "split-string": "3.1.0",
+    "psl": "1.9.0"
   }
 }
