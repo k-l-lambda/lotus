@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2024.11.22
+
+	+	Dockerfile created.
+
+
 *	2024.4.30
 
 	+	Removed unnecessary lodash importing.
