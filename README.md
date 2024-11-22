@@ -3,6 +3,14 @@
 **Lotus** is a sheet music toolset, an enhancement of [LilyPond](http://lilypond.org/).
 
 
+## [Online demo]((https://huggingface.co/spaces/k-l-lambda/lotus))
+
+Thanks to 🤗HuggingFace Spaces,
+the online demo is available at [Lotus Space](https://huggingface.co/spaces/k-l-lambda/lotus).
+
+This is an online Lilypond editor and player.
+
+
 ## Local Enviroment Variables
 
 Edit local enviroment variables in file `.env.local`.
