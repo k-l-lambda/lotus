@@ -1,9 +1,15 @@
 
+const fs = require("fs");
+
+
 const htmlCommonTemplate = "./app/html/CommonTemplate.html";
 
 
 if (process.env.SOURCE_EDITOR_DIR)
 	process.env.VUE_APP_USE_SOURCE_EDITOR = true;
+
+if (fs.existsSync("./demo.local.ly"))
+	process.env.VUE_APP_DEMO_SCORE = fs.readFileSync("./demo.local.ly", "utf8");
 
 
 

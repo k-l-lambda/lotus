@@ -404,6 +404,9 @@
 
 
 
+	const INIT_LILY = process.env.VUE_APP_DEMO_SCORE || "";
+
+
 
 	export default {
 		name: "playground",
@@ -448,7 +451,7 @@
 				},
 				dragHover: null,
 				sourceDragHover: false,
-				lilySource: "",
+				lilySource: INIT_LILY,
 				converting: false,
 				engraving: false,
 				svgDocuments: null,

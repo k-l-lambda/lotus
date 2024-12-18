@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2024.12.18
+
+	+	vue.config.js: added demo score file for playground page.
+
+
 *	2024.11.22
 
 	+	Dockerfile created.
