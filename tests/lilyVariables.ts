@@ -2,7 +2,7 @@
 import fs from "fs";
 import {argv} from "yargs";
 
-import "../env.js";
+import "../env";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import walkDir from "../backend/walkDir";
 import {LilyDocument} from "../inc/lilyParser";

@@ -1,5 +1,5 @@
 
-import "../env.js";
+import "../env";
 
 import fs from "fs";
 import {DOMParser} from "xmldom";

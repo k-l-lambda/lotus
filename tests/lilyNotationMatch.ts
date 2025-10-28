@@ -5,7 +5,7 @@ import JSZip from "jszip";
 import YAML from "yaml";
 import {MIDI, MidiUtils} from "@k-l-lambda/music-widgets";
 
-import "../env.js";
+import "../env";
 
 import {makeMIDI, makeArticulatedMIDI} from "../backend/scoreMaker";
 import {emptyCache} from "../backend/lilyCommands";

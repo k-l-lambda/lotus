@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import yargs from "yargs";
 
-import "../env.js";
+import "../env";
 import walkDir from "../backend/walkDir";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import {LilyDocument, LilyTerms} from "../inc/lilyParser";

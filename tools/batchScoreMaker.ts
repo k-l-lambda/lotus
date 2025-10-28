@@ -5,7 +5,7 @@ import yargs from "yargs";
 import YAML from "yaml";
 import {MIDI} from "@k-l-lambda/music-widgets";
 
-import "../env.js";
+import "../env";
 import {setEnvironment} from "../backend";
 import * as ScoreMaker from "../backend/scoreMaker";
 import walkDir from "../backend/walkDir";

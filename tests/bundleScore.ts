@@ -1,7 +1,7 @@
 
 import fs from "fs";
 
-import "../env.js";
+import "../env";
 import {makeScore} from "../backend/scoreMaker";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import LogRecorder from "../inc/logRecorder";

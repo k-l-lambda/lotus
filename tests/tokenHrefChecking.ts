@@ -2,7 +2,7 @@
 import fs from "fs";
 import {DOMParser} from "xmldom";
 
-import "../env.js";
+import "../env";
 
 import {engraveSvg, emptyCache} from "../backend/lilyCommands";
 import loadLilyParser from "../backend/loadLilyParserNode";

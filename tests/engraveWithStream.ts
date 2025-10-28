@@ -1,7 +1,7 @@
 
 import fs from "fs";
 
-import "../env.js";
+import "../env";
 import {engraveSvgWithStream, setEnvironment} from "../backend/lilyCommands";
 
 

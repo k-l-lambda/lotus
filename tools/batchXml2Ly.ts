@@ -1,5 +1,5 @@
 
-import "../env.js";
+import "../env";
 
 import child_process from "child-process-promise";
 

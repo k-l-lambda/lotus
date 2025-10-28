@@ -4,7 +4,7 @@ import {argv} from "yargs";
 import YAML from "yaml";
 import {MIDI, MusicNotation, Matcher} from "@k-l-lambda/music-widgets";
 
-import "../env.js";
+import "../env";
 import * as ScoreMaker from "../backend/scoreMaker";
 import loadLilyParser from "../backend/loadLilyParserNode";
 import walkDir from "../backend/walkDir";

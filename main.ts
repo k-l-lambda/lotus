@@ -3,7 +3,7 @@ import express from "express";
 import http from "http";
 import * as webEditor from "@k-l-lambda/web-editor";
 
-import "./env.js";
+import "./env";
 import {service, setEnvironment} from "./backend";
 import * as dirServer from "./backend/dirServer";
 

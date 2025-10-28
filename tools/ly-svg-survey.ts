@@ -1,5 +1,5 @@
 
-import "../env.js";
+import "../env";
 
 import * as lilyCommands from "../backend/lilyCommands";
 

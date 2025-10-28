@@ -5,7 +5,7 @@ import {loadImage, createCanvas} from "canvas";
 import {PNGStream} from "canvas";
 import JSZip from "jszip";
 
-import "../env.js";
+import "../env";
 import {engraveSvg} from "../backend/lilyCommands";
 import {setTimeout} from "timers";
 
