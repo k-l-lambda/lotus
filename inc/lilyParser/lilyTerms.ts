@@ -169,7 +169,7 @@ export class BaseTerm {
 
 	constructor (data: object) {
 		//Object.assign(this, data);
-		for (const key in data) 
+		for (const key in data)
 			this[key] = parseRaw(data[key]);
 	}
 
@@ -519,7 +519,7 @@ export class BaseTerm {
 
 
 export class Root extends BaseTerm {
-	sections: BaseTerm[];
+	declare sections: BaseTerm[];
 
 
 	serialize () {
@@ -528,7 +528,7 @@ export class Root extends BaseTerm {
 
 
 	get entries (): BaseTerm[] {
-		return this.sections;
+		return this.sections || [];
 	}
 
 
@@ -582,7 +582,7 @@ export class Root extends BaseTerm {
 
 
 export class Primitive extends BaseTerm {
-	exp: string | number;
+	declare exp: string | number;
 
 
 	serialize () {
@@ -592,7 +592,7 @@ export class Primitive extends BaseTerm {
 
 
 export class LiteralString extends BaseTerm {
-	exp: string
+	declare exp: string
 
 
 	static fromString (content: string): LiteralString {
@@ -618,8 +618,8 @@ export class LiteralString extends BaseTerm {
 
 
 export class Command extends BaseTerm {
-	cmd: string;
-	args: any[];
+	declare cmd: string;
+	declare args: any[];
 
 
 	static createSet (key: string|BaseTerm, value: BaseTerm): Command {
@@ -726,7 +726,7 @@ export class Command extends BaseTerm {
 
 
 export class Variable extends Command {
-	name: string
+	declare name: string
 
 
 	constructor ({name}) {
@@ -1170,9 +1170,9 @@ export class Change extends Command {
 
 
 export class Block extends BaseTerm {
-	block: string;
-	head: (string|string[]);
-	body: BaseTerm[];
+	declare block: string;
+	declare head: (string|string[]);
+	declare body: BaseTerm[];
 
 
 	constructor (data) {
@@ -1227,7 +1227,7 @@ export class InlineBlock extends Block {
 
 
 export class MusicBlock extends BaseTerm {
-	body: BaseTerm[];
+	declare body: BaseTerm[];
 
 
 	static fromTerms (terms: BaseTerm[]): MusicBlock {
@@ -1739,7 +1739,7 @@ export class MusicBlock extends BaseTerm {
 
 
 export class SimultaneousList extends BaseTerm {
-	list: BaseTerm[];
+	declare list: BaseTerm[];
 
 
 	serialize () {
@@ -1788,9 +1788,9 @@ export class SimultaneousList extends BaseTerm {
 
 
 export class ContextedMusic extends BaseTerm {
-	head: Command;
-	body: BaseTerm;
-	lyrics?: BaseTerm;
+	declare head: Command;
+	declare body: BaseTerm;
+	declare lyrics?: BaseTerm;
 
 
 	serialize () {
@@ -1868,7 +1868,7 @@ export class Divide extends BaseTerm {
 
 
 export class Scheme extends BaseTerm {
-	exp: (boolean|BaseTerm);
+	declare exp: (boolean|BaseTerm);
 
 
 	serialize () {
@@ -1900,8 +1900,8 @@ export class Scheme extends BaseTerm {
 
 
 export class SchemeFunction extends BaseTerm {
-	func: (string | BaseTerm);
-	args: (boolean | string | BaseTerm)[];
+	declare func: (string | BaseTerm);
+	declare args: (boolean | string | BaseTerm)[];
 
 
 	serialize () {
@@ -1946,8 +1946,8 @@ export class SchemeFunction extends BaseTerm {
 
 
 export class SchemePair extends BaseTerm {
-	left: any;
-	right: any;
+	declare left: any;
+	declare right: any;
 
 
 	serialize () {
@@ -1961,7 +1961,7 @@ export class SchemePair extends BaseTerm {
 
 
 export class SchemePointer extends BaseTerm {
-	value: any;
+	declare value: any;
 
 
 	serialize () {
@@ -1983,7 +1983,7 @@ export class SchemePointer extends BaseTerm {
 
 
 export class SchemeEmbed extends BaseTerm {
-	value: Root;
+	declare value: Root;
 
 
 	serialize () {
@@ -1997,8 +1997,8 @@ export class SchemeEmbed extends BaseTerm {
 
 
 export class Assignment extends BaseTerm {
-	key: (string|any[]);
-	value: any;
+	declare key: (string|any[]);
+	declare value: any;
 
 
 	constructor (data) {
@@ -2048,8 +2048,8 @@ export class Assignment extends BaseTerm {
 
 
 export class MusicEvent extends BaseTerm {
-	duration?: Duration;
-	post_events?: (string | PostEvent)[];
+	declare duration?: Duration;
+	declare post_events?: (string | PostEvent)[];
 
 	declare _previous?: MusicEvent;
 	//_anchorPitch?: ChordElement;
@@ -2183,8 +2183,8 @@ export class MusicEvent extends BaseTerm {
 
 
 export class Chord extends MusicEvent {
-	pitches: (ChordElement | Command)[];
-	options: {
+	declare pitches: (ChordElement | Command)[];
+	declare options: {
 		exclamations?: string[],
 		questions?: string[],
 		rest?: string,
@@ -2361,7 +2361,7 @@ export class Chord extends MusicEvent {
 
 
 export class Rest extends MusicEvent {
-	name: string;
+	declare name: string;
 
 
 	serialize () {
@@ -2389,8 +2389,8 @@ export class Rest extends MusicEvent {
 
 
 export class ChordElement extends BaseTerm {
-	pitch: string;
-	options: {
+	declare pitch: string;
+	declare options: {
 		exclamations?: string[],
 		questions?: string[],
 		post_events?: PostEvent[],
@@ -2398,11 +2398,11 @@ export class ChordElement extends BaseTerm {
 
 	declare _parent?: Chord;
 	declare _previous?: ChordElement;
-	_tied?: MusicEvent;
-	_transposition?: number;
+	declare _tied?: MusicEvent;
+	declare _transposition?: number;
 
 	// cache for property of absolutePitch
-	_absolutePitch?: ChordElement;
+	declare _absolutePitch?: ChordElement;
 
 
 	static from ({phonet, alters = "", octave, options = {}}): ChordElement {

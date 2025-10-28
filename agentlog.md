@@ -37,3 +37,25 @@ Fixes:
 - Converted several value imports to `import type` (e.g., `ScoreJSON`, `SheetMeasure`).
 - Replaced Vue 2‑only patterns (v‑model on props) with `update:x` emit.
 </details>
+
+---
+
+> The root cause of problem in `BaseTerm` is derived class's member initializer will overwrite that field which assigned in base class, fix this by append `declare` like what I do in `class Command`.
+
+<details>
+<summary>Vue 3 compat + parser/runtime fixes</summary>
+
+Milestone: Vue 3 compatibility fixes
+- Replaced remaining Vue 2 patterns: fixed `v-model` on child prop in `app/components/remote-file.vue` to use `update:filePath`.
+- Switched client env to Vite: replaced `process.env.VUE_APP_*` with `import.meta.env.VITE_*`.
+- Converted value imports to `import type` (e.g., `ScoreJSON`, `SheetMeasure`).
+
+Milestone: Jison parser loading reliability
+- Stopped browser Jison compilation; load prebuilt CommonJS parsers from `public/lib/*`.
+- Hardened client loader to fetch + evaluate CommonJS modules and detect HTML responses.
+
+Milestone: Lily terms construction robustness
+- Root cause: subclass field initializers overwrote BaseTerm assignments.
+- Applied `declare` to all derived class fields in `inc/lilyParser/lilyTerms.ts` to avoid runtime initializers.
+- Made `entries` getters return safe arrays (`[]`) across base and root.
+</details>

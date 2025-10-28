@@ -8,7 +8,7 @@
   "browser": "lib.browser/lotus.umd.js",
   "scripts": {
     "start": "ts-node --project ./tsconfig.node.json ./main.ts",
-    "dev": "vite",
+    "dev": "ts-node-dev --project ./tsconfig.node.json ./main.ts",
     "dev:inspect": "ts-node-dev --project ./tsconfig.node.json --inspect -- ./main.ts",
     "serve": "vite",
     "build": "vite build",
