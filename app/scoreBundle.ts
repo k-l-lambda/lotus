@@ -1,6 +1,8 @@
 
 import {MusicNotation} from "@k-l-lambda/music-widgets";
 
+import type ScoreJSON from "../inc/scoreJSON";
+
 import npmPackage from "../package.json";
 import {recoverJSON} from "../inc/jsonRecovery";
 import {StaffToken, SheetDocument} from "../inc/staffSvg";
@@ -8,7 +10,6 @@ import {PitchContextTable, PitchContext} from "../inc/pitchContext";
 import * as LilyNotation from "../inc/lilyNotation";
 import * as SheetBaker from "./sheetBaker";
 import DictArray from "../inc/DictArray";
-import ScoreJSON from "../inc/scoreJSON";
 
 
 

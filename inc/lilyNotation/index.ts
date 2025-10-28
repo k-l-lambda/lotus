@@ -1,5 +1,7 @@
 
-import {Note, Notation, assignNotationEventsIds} from "./notation";
+import type {Note} from "./notation";
+
+import {Notation, assignNotationEventsIds} from "./notation";
 import {fuzzyMatchNotations} from "./fuzzyMatch";
 import {matchWithMIDI, matchWithExactMIDI} from "./matcher";
 import Scheduler from "./scheduler";

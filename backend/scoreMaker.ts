@@ -5,6 +5,8 @@ import {MIDI} from "@k-l-lambda/music-widgets";
 import {Readable} from "stream";
 import CRC32 from "crc-32";
 
+import type ScoreJSON from "../inc/scoreJSON";
+
 import npmPackage from "../package.json";
 import {xml2ly, engraveSvg, LilyProcessOptions} from "./lilyCommands";
 import {LilyDocument, LilyTerms, docLocationSet} from "../inc/lilyParser";
@@ -13,7 +15,6 @@ import {SingleLock} from "../inc/mutex";
 import * as LilyNotation from "../inc/lilyNotation";
 import {svgToPng} from "./canvas";
 import LogRecorder from "../inc/logRecorder";
-import ScoreJSON from "../inc/scoreJSON";
 import {LilyDocumentAttributeReadOnly} from "../inc/lilyParser/lilyDocument";
 import {Block} from "../inc/lilyParser/lilyTerms";
 

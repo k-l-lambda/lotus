@@ -1,4 +1,6 @@
 
+import type ScoreJSON from "./inc/scoreJSON";
+
 import npmPackage from "./package.json";
 import * as staffSvg from "./inc/staffSvg";
 import * as lilyParser from "./inc/lilyParser";
@@ -8,7 +10,6 @@ import * as constants from "./inc/constants";
 import * as LilyNotation from "./inc/lilyNotation";
 import {recoverJSON} from "./inc/jsonRecovery";
 import {PitchContextTable, PitchContext} from "./inc/pitchContext";
-import ScoreJSON from "./inc/scoreJSON";
 import * as measureLayout from "./inc/measureLayout";
 
 
@@ -29,5 +30,8 @@ export {
 	measureLayout,
 	PitchContextTable,
 	PitchContext,
-	ScoreJSON,
 };
+
+
+
+export type { ScoreJSON };

@@ -1,6 +1,10 @@
 
+import type {HashTable, StaffAttributes} from "./tokenizeElements";
+import type {LilyDocumentAttribute, LilyDocumentAttributeReadOnly} from "../lilyParser/lilyDocument";
+import type {SheetPage, SheetSystem, SheetStaff, SheetMeasure} from "./sheetDocument";
+
 import {svgToElements} from "./svgParser";
-import tokenizeElements, {StaffAttributes, HashTable} from "./tokenizeElements";
+import tokenizeElements from "./tokenizeElements";
 import organizeTokens from "./organizeTokens";
 import LogRecorder from "../logRecorder";
 import StaffToken from "./staffToken";
@@ -9,10 +13,8 @@ import * as StaffNotation from "./staffNotation";
 import TextSource from "../textSource";
 import * as domUtils from "../domUtils";
 import LilyDocument from "../lilyParser/lilyDocument";
-import {LilyDocumentAttribute, LilyDocumentAttributeReadOnly} from "../lilyParser/lilyDocument";
 import {docLocationSet} from "../lilyParser";
 import {Scheme, SchemePair} from "../lilyParser/lilyTerms";
-import {SheetPage, SheetSystem, SheetStaff, SheetMeasure} from "./sheetDocument";
 import * as glyph from "./glyph";
 
 

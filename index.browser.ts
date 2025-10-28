@@ -1,4 +1,6 @@
 
+import type ScoreJSON from "./inc/scoreJSON";
+
 import npmPackage from "./package.json";
 import * as staffSvg from "./inc/staffSvg";
 import * as staffNotation from "./inc/staffSvg/staffNotation";
@@ -9,7 +11,6 @@ import * as constants from "./inc/constants";
 import * as LilyNotation from "./inc/lilyNotation";
 import StreamParser from "./inc/streamParser";
 import {PitchContextTable, PitchContext} from "./inc/pitchContext";
-import ScoreJSON from "./inc/scoreJSON";
 import * as measureLayout from "./inc/measureLayout";
 
 import SheetLive from "./app/components/sheet-live.vue";
@@ -40,5 +41,6 @@ export {
 	ScoreBundle,
 	PitchContextTable,
 	PitchContext,
-	ScoreJSON,
 };
+
+export type { ScoreJSON };

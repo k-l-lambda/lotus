@@ -1,7 +1,7 @@
 <template>
 	<span :class="{connected: remoteFile.connected}">
 		<button class="link" :class="{on: remoteFile.connected}" @click="onLink" :disabled="!host || !filePath">&#x1f517;</button>
-		<input class="file-path" type="text" v-model="filePath" :readonly="filePathReadOnly" />
+		<input class="file-path" type="text" :value="filePath" :readonly="filePathReadOnly" @input="$emit('update:filePath', $event.target.value)" />
 	</span>
 </template>
 

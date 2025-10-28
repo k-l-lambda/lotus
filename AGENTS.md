@@ -16,6 +16,7 @@
 - `yarn start` — run `main.ts` once (no watch).
 - `yarn build` — build the Vue app.
 - `yarn build:lib` — build browser UMD and Node library, then generate parsers.
+ - `yarn build:lib` — build Node library and prebuild Jison parsers into `lib/`. Required before running the app.
 - Lint: use your editor’s ESLint integration; Vue CLI tooling removed.
 
 ## Coding Style & Naming Conventions
