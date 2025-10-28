@@ -1,10 +1,2 @@
 
-import Vue from "vue";
-
-import App from "./index.vue";
-
-
-
-new Vue({
-	render: h => h(App),
-}).$mount("body");
+// Legacy Vue 2 entry kept for reference; migrated to Vite in app/main-vite.ts

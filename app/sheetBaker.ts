@@ -1,5 +1,5 @@
 
-import Vue from "vue";
+import { createApp } from "vue";
 
 import SheetLive from "./components/sheet-live.vue";
 import SheetSigns from "./components/sheet-signs.vue";
@@ -12,8 +12,12 @@ import {SVG_DTD} from "../inc/constants";
 declare class SheetDocument {};
 
 
-const SheetLiveComponent = Vue.extend(SheetLive);
-const SheetSignsComponent = Vue.extend(SheetSigns);
+const mountTemp = (Comp: any) => {
+	const container = document.createElement("div");
+	const app = createApp(Comp);
+	const inst = app.mount(container) as any;
+	return { app, inst, container };
+};
 
 
 const rasterizeSvg = async (svg, canvas) => {
@@ -122,21 +126,15 @@ const bakeLiveSheetGen = async function* ({sheetDocument, signs, hashTable, matc
 	console.assert(!!canvas, "canvas is null.");
 	console.assert(signs || hashTable, "signs & hashTable is both null.");
 
-	const sheet = new SheetLiveComponent({
-		propsData: {
-			doc: sheetDocument,
-			partialVisible: false,
-		},
-	}).$mount(document.createElement("div"));
+	const { app: sheetApp, inst: sheet } = mountTemp(SheetLive);
+	sheet.doc = sheetDocument;
+	sheet.partialVisible = false;
 
-	await sheet.$nextTick();
+	await Promise.resolve();
 
 	if (!signs) {
-		signs = new SheetSignsComponent({
-			propsData: {
-				hashTable,
-			},
-		}).$mount(document.createElement("div"));
+		signs = mountTemp(SheetSigns).inst;
+		signs.hashTable = hashTable;
 	}
 
 	const defs = signs.$el.children[0];

@@ -118,7 +118,6 @@
 </template>
 
 <script>
-	import Vue from "vue";
 	import {MidiPlayer} from "@k-l-lambda/music-widgets";
 
 	import SheetScheduler from "../../inc/lilyNotation/scheduler.ts";
@@ -422,7 +421,7 @@
 						const tokenMap = this.doc && this.doc.getTokenMap();
 						if (tokenMap) {
 							for (const token of tokenMap.values())
-								Vue.set(token, "on", token.on || false);
+								token.on = token.on || false;
 
 							const scheduler = SheetScheduler.createFromNotation(this.midiNotation, tokenMap);
 							this.$emit("update:scheduler", scheduler);
@@ -604,7 +603,7 @@
 					const page = this.shownPages[i];
 					const hidden = rect.top > window.innerHeight || rect.bottom < 0 || rect.left > window.innerWidth || rect.right < 0;
 					if (!!page.hidden !== hidden)
-						Vue.set(page, "hidden", hidden);
+						page.hidden = hidden;
 						//if (!hidden)
 						//	dirtyPages.push(pageElem);
 					

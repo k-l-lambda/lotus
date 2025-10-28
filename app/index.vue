@@ -1,25 +1,10 @@
 <template>
-	<body>
+	<div>
 		<component v-if="view" :is="view"></component>
-	</body>
+	</div>
 </template>
 
 <script>
-	import Vue from "vue";
-
-
-
-	const components = [
-		"playground",
-		"profiler",
-		"flex-engraver",
-	];
-
-
-	components.forEach(name => Vue.component(name, () => import(`./views/${name}.vue`)));
-
-
-
 	export default {
 		name: "lotus",
 

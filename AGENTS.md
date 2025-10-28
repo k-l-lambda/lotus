@@ -10,16 +10,16 @@
 - Entrypoints: `main.ts` (node), `index.ts` (lib), `index.browser.ts` (UMD).
 
 ## Build, Test, and Development Commands
-- `npm install` — install dependencies.
-- `npm run serve` — run Vue dev server (defaults to `HOST:PORT` from `.env.local`).
-- `npm run dev` — run `main.ts` with hot-reload via ts-node-dev.
-- `npm start` — run `main.ts` once (no watch).
-- `npm run build` — build the Vue app.
-- `npm run build:lib` — build browser UMD and Node library, then generate parsers.
-- Lint: `npx vue-cli-service lint` (if needed).
+- `yarn` — install dependencies.
+- `yarn serve` — run Vite dev server (`HOST:PORT` from `.env.local`).
+- `yarn dev` — run `main.ts` with hot‑reload via ts-node-dev.
+- `yarn start` — run `main.ts` once (no watch).
+- `yarn build` — build the Vue app.
+- `yarn build:lib` — build browser UMD and Node library, then generate parsers.
+- Lint: use your editor’s ESLint integration; Vue CLI tooling removed.
 
 ## Coding Style & Naming Conventions
-- TypeScript and Vue 2; 2-space indentation; prefer explicit types; avoid `any`.
+- TypeScript and Vue 2; use tabs for indentation; prefer explicit types; avoid `any`.
 - Names: camelCase for variables/functions, PascalCase for classes/types and Vue component names, kebab-case for `.vue` filenames.
 - Keep modules focused; avoid large files; colocate helpers under the relevant folder.
 

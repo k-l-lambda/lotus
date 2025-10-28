@@ -38,8 +38,8 @@
 	</svg>	
 </template>
 
+
 <script>
-	import Vue from "vue";
 	import {MIDI, MusicNotation} from "@k-l-lambda/music-widgets";
 
 	import SvgPianoRoll from "./svg-piano-roll.vue";
@@ -197,7 +197,7 @@
 
 				const valid = Number.isFinite(this.progressTime);
 				for (const note of this.notation.notes)
-					Vue.set(note, "on", valid && (note.start < this.progressTime) && (note.start + note.duration > this.progressTime));
+					note.on = valid && (note.start < this.progressTime) && (note.start + note.duration > this.progressTime);
 			},
 
 

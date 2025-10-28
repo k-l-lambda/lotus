@@ -1,5 +1,5 @@
 
-import jisonWrapperWorker from "comlink-loader!../inc/jisonWrapper";
+import {Parser as JisonParser} from "../inc/jisonWrapper";
 
 
 
@@ -13,14 +13,10 @@ export default async function load (grammarModule) {
 
 		const {default: grammarURL} = await grammarModule;
 		const grammar = await (await fetch(grammarURL)).text();
-		//console.log("grammar:", grammar);
 
 		const t1 = performance.now();
 
-		const jisonWrapper = new jisonWrapperWorker();
-
-		parsers.set(grammarModule, await new jisonWrapper.Parser(grammar));
-		//console.log("parser:", parser, parser.parse);
+		parsers.set(grammarModule, new JisonParser(grammar));
 
 		const t2 = performance.now();
 		console.debug("Jison parser loading cost:", t1 - t0, t2 - t1);
