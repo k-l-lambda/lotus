@@ -59,3 +59,20 @@ Milestone: Lily terms construction robustness
 - Applied `declare` to all derived class fields in `inc/lilyParser/lilyTerms.ts` to avoid runtime initializers.
 - Made `entries` getters return safe arrays (`[]`) across base and root.
 </details>
+
+---
+
+<details>
+<summary>Submodule + Dev Link, Backend Fixes</summary>
+
+Milestone: Add and link submodule
+- Added `third-party/music-widgets` submodule (develop) per `.gitmodules`.
+- Installed deps with proxy, built library, and ran `yarn link` in submodule.
+- Linked in main repo via `yarn link @k-l-lambda/music-widgets`.
+
+Milestone: Backend server compatibility
+- Avoided package root import that re-exports browser-only `MidiAudio`.
+- Backend now imports Node-safe modules directly: `@k-l-lambda/music-widgets/source/inc/MIDI`.
+- Enabled ts-node flags: `TS_NODE_SKIP_IGNORE=1` and `TS_NODE_TRANSPILE_ONLY=1` for smoother TypeScript interop.
+- Identified remaining transitive imports (e.g., `inc/staffSvg/staffNotation.ts`) that should use source/inc paths to prevent browser code on server.
+</details>
