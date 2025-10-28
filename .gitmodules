@@ -1,0 +1,4 @@
+[submodule "third-party/music-widgets"]
+	path = third-party/music-widgets
+	url = git@github.com:k-l-lambda/web-widgets.git
+	branch = develop
