@@ -404,7 +404,7 @@
 
 
 
-	const INIT_LILY = process.env.VUE_APP_DEMO_SCORE || "";
+	const INIT_LILY = import.meta.env.VITE_DEMO_SCORE || "";
 
 
 
@@ -508,7 +508,7 @@
 				loadingLilyParser: false,
 				enabledPointer: false,
 				pointerData: null,
-				sourceEditorEnabled: !!process.env.VUE_APP_USE_SOURCE_EDITOR,
+				sourceEditorEnabled: !!import.meta.env.VITE_USE_SOURCE_EDITOR,
 				showSourceDir: false,
 				sourceEditorHost: `ws://${location.host}`,
 				sourceEditorFilePath: null,

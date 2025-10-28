@@ -174,7 +174,7 @@
 	};
 
 
-	const DEFAULT_WATERMARK = process.env.VUE_APP_DEFAULT_WATERMARK;
+	const DEFAULT_WATERMARK = import.meta.env.VITE_DEFAULT_WATERMARK;
 
 
 
