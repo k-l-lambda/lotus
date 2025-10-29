@@ -118,7 +118,7 @@
 					@clickCNote="onClickMatcherNote"
 					@clickSNote="onClickMatcherNote"
 				/>
-				<div class="sheet-container" ref="sheetContainer" v-resize="onResize"
+				<div class="sheet-container" ref="sheetContainer"
 					:style="{'--music-font-family': 'Emmentaler-26', '--music-font-size': '4px'}"
 				>
 					<SheetSimple v-if="svgDocuments && !tokenizeStaff"
@@ -365,7 +365,7 @@
 
 <script>
 	//import _ from "lodash";
-	import resize from "vue-resize-directive";
+	import { useResizeObserver } from "@vueuse/core";
 	import {MIDI, MidiAudio, MidiUtils, MusicNotation} from "@k-l-lambda/music-widgets";
 
 	import {downloadUrl} from "../utils.js";
@@ -410,11 +410,6 @@
 
 	export default {
 		name: "playground",
-
-
-		directives: {
-			resize,
-		},
 
 
 		mixins: [
@@ -640,19 +635,23 @@
 			document.addEventListener("keydown", keyDownHandler);
 			this.appendCleaner(() => document.removeEventListener("keydown", keyDownHandler));
 
-			await this.$nextTick();
-			this.watchEngrave();
-		},
+		// Setup resize observer for sheetContainer
+		const stopSheetObserver = useResizeObserver(this.$refs.sheetContainer, (entries) => {
+			const entry = entries[0];
+			const { width, height } = entry.contentRect;
+			this.buildContainerSize.width = this.$refs.buildContainer.clientWidth;
+			this.buildContainerSize.height = this.$refs.buildContainer.clientHeight;
+			this.sheetContainerSize.width = width;
+			this.sheetContainerSize.height = height;
+		});
+		this.appendCleaner(stopSheetObserver);
+
+		await this.$nextTick();
+		this.watchEngrave();
+	},
 
 
 		methods: {
-			onResize () {
-				this.buildContainerSize.width = this.$refs.buildContainer.clientWidth;
-				this.buildContainerSize.height = this.$refs.buildContainer.clientHeight;
-
-				this.sheetContainerSize.width = this.$refs.sheetContainer.clientWidth;
-				this.sheetContainerSize.height = this.$refs.sheetContainer.clientHeight;
-			},
 
 
 			onDragOver (event) {

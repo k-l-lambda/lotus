@@ -21,6 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@k-l-lambda/music-widgets": "^1.0.0",
+    "@vueuse/core": "^14.0.0",
     "codejar": "^4.3.0",
     "crc-32": "^1.2.0",
     "jison": "^0.4.18",
@@ -66,7 +67,6 @@
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.8.3",
     "vite": "^5.4.0",
-    "vue-resize-directive": "^1.2.0",
     "yaml": "^1.10.0",
     "yargs": "^15.3.1"
   },

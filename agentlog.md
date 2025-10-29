@@ -463,3 +463,38 @@ Benefits:
 - Keeps LilyPond syntax highlighting via prismjs/components/prism-lilypond
 - Line numbers with proper alignment and scrolling synchronization
 </details>
+
+---
+
+> Replace vue-resize-directive with @vueuse/core
+
+<details>
+<summary>Migrated to VueUse ResizeObserver</summary>
+
+Milestone: Replace vue-resize-directive with modern ResizeObserver API
+- vue-resize-directive v1.2.0 uses deprecated Vue 2 `inserted` hook (renamed to `mounted` in Vue 3)
+- Caused CUSTOM_DIR deprecation warnings
+- Replaced with @vueuse/core's `useResizeObserver` composable
+- Modern approach using native browser ResizeObserver API
+
+Changes made:
+- `app/views/playground.vue`:
+  - Removed `import resize from "vue-resize-directive"`
+  - Added `import { useResizeObserver } from "@vueuse/core"`
+  - Removed `directives: { resize }` registration
+  - Removed `v-resize="onResize"` directive from template
+  - Added `useResizeObserver` setup in `mounted()` hook
+  - Removed obsolete `onResize()` method
+  - Cleanup handled automatically via `appendCleaner(stopSheetObserver)`
+- `package.json`: Removed vue-resize-directive, added @vueuse/core dependency
+- `app/main-vite.ts`: Added `CUSTOM_DIR: "suppress-warning"` temporarily (now removed since package replaced)
+
+Benefits:
+- Eliminates CUSTOM_DIR deprecation warning
+- Uses native browser ResizeObserver API (more efficient)
+- Element-specific observation vs window-level events
+- Automatic cleanup on component unmount
+- Industry-standard VueUse library with TypeScript support
+- Tree-shakeable, only imports what's used
+- Future-proof with Composition API compatibility
+</details>
