@@ -565,3 +565,34 @@ Benefits:
 - No more reliance on deprecated Vue 2 syntax
 - Explicit event handling is clearer and more maintainable
 </details>
+
+---
+
+> Fix engrave service MIDI data parsing
+
+<details>
+<summary>Handle both base64 and parsed MIDI formats</summary>
+
+Issue: Engrave service returning MIDI as JSON object instead of base64 string
+- Error: "The first argument must be of type string or an instance of Buffer...Received an instance of Object"
+- The `engraveSvgService` function expected MIDI data as base64 string
+- But the service was returning already-parsed MIDI data as JSON object
+
+Root cause:
+- Line 427 in `backend/lilyCommands.ts`: `Buffer.from(midiData, "base64")` expected string
+- Service response had `"midi": {"header": {...}, "tracks": [...]}`  instead of base64
+
+Fix applied:
+- `backend/lilyCommands.ts`: Added type checking for midiData (lines 427-438)
+  - Check if `midiData` is a string (base64) or object (parsed)
+  - If string: decode base64 and parse as before
+  - If object: use directly as `MIDI.MidiData`
+  - Added null-safe call to `onMidiRead` callback
+
+Benefits:
+- Works with both base64-encoded and parsed MIDI formats
+- Handles different engrave service implementations
+- No more Buffer.from() errors
+- Backwards compatible with base64 format
+- Type-safe MIDI data handling
+</details>

@@ -424,9 +424,18 @@ const engraveSvgService = async (source: string,
 
 					let midi: MIDI.MidiData | undefined = undefined;
 					if (midiData) {
-						const midiBuffer = Buffer.from(midiData, "base64");
-						midi = MIDI.parseMidiData(midiBuffer);
-						await onMidiRead && onMidiRead(midi);
+						// Check if midiData is already a parsed object or a base64 string
+						if (typeof midiData === "string") {
+							// Base64 encoded MIDI data
+							const midiBuffer = Buffer.from(midiData, "base64");
+							midi = MIDI.parseMidiData(midiBuffer);
+						} else if (typeof midiData === "object") {
+							// Already parsed MIDI data from service
+							midi = midiData as MIDI.MidiData;
+						}
+						if (midi && onMidiRead) {
+							await onMidiRead(midi);
+						}
 					}
 
 					const processedSvgs = [];
