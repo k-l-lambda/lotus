@@ -15,6 +15,11 @@
 			chord mode symbol affiliation
 
 
+*	2025.10.29
+
+	+	Use dynamic import for canvas package in backend.
+
+
 *	2024.12.18
 
 	+	vue.config.js: added demo score file for playground page.

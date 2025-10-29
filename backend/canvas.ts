@@ -1,14 +1,14 @@
 
 //import {loadImage, createCanvas} from "canvas";
-import {PNGStream} from "canvas";
-
-const {loadImage, createCanvas}: any = !process.env.MOBILE_MODE ? require("canvas") : {};
+import type {PNGStream} from "canvas";
 
 
 
 const svgToPng = async (sourceURL: string|Buffer): Promise<PNGStream> => {
 	if (process.env.MOBILE_MODE)
-		return;
+		return Promise.reject(new Error("svgToPng is not supported in mobile mode."));
+
+	const {loadImage, createCanvas} = await import("canvas");
 
 	const image = await loadImage(sourceURL);
 
