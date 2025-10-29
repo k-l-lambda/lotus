@@ -422,3 +422,44 @@ Benefits:
 - More explicit and clear about what's happening with data flow
 - Handles `v-model.number` by explicitly converting with `Number($event)`
 </details>
+
+---
+
+> Suppress Vue compat deprecation warnings globally and replace vue-prism-editor with CodeJar
+
+<details>
+<summary>Global compat suppression + CodeJar migration</summary>
+
+Milestone: Suppress remaining Vue compat warnings
+- Components were reverted to use Vue 2 v-model pattern (`value` prop, `input` event)
+- Added global `configureCompat` suppressions for third-party library warnings
+- Suppressed `COMPONENT_V_MODEL` for Vue 2 v-model pattern across the app
+- Suppressed `RENDER_FUNCTION` for vue-prism-editor's Vue 2 render functions
+
+Changes made:
+- `app/main-vite.ts`: Added `COMPONENT_V_MODEL` and `RENDER_FUNCTION` to configureCompat suppressions
+
+Milestone: Replace vue-prism-editor with CodeJar + PrismJS
+- vue-prism-editor v1.x uses deprecated Vue 2 APIs and has no stable Vue 3 version
+- Replaced with CodeJar (2KB, framework-agnostic) + PrismJS for syntax highlighting
+- Implemented custom line numbers with synchronized scrolling
+- Maintains all existing functionality: LilyPond syntax highlighting, line numbers, readonly state
+
+Changes made:
+- `app/components/source-editor.vue`: Complete rewrite using CodeJar
+  - Removed PrismEditor component and vue-prism-editor imports
+  - Added CodeJar integration with PrismJS highlighter
+  - Implemented line numbers column with `updateLineNumbers()` method
+  - Added `syncScroll()` for synchronized scrolling between line numbers and code
+  - Kept same component API (`source` and `disabled` props, `update:source` event)
+  - Maintained original styling and layout
+- `package.json`: Removed vue-prism-editor, added codejar dependency
+
+Benefits:
+- Eliminates GLOBAL_EXTEND and RENDER_FUNCTION warnings from third-party library
+- Lighter bundle size (CodeJar is 2KB vs larger vue-prism-editor)
+- Future-proof with framework-agnostic editor
+- No Vue version compatibility issues
+- Keeps LilyPond syntax highlighting via prismjs/components/prism-lilypond
+- Line numbers with proper alignment and scrolling synchronization
+</details>
