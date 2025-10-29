@@ -182,6 +182,7 @@
 		resize: horizontal;
 		width: 50em;
 		height: 100%;
+		box-sizing: border-box;
 		font-family: monospace;
 		font-size: 16px;
 		line-height: 19px;
