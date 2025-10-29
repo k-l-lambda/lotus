@@ -94,3 +94,58 @@ Current blocker
 - Native `canvas` module binary mismatch (NODE_MODULE_VERSION 72 vs 120). Backend fails to start.
 - Next: rebuild `canvas` for current Node (e.g., `yarn add --force canvas` or `npm rebuild canvas`).
 </details>
+
+---
+
+## 2025/10/29
+
+
+> Refactor `backend/lilyCommands.ts`, when an env variable `ENGRAVE_SERVICE_BASE` set, pipe the engraving request to that service instead of local lilypond process.
+> So there are 3 modes in total now: engrave service, lilypond addon, lilypond CLI.
+
+<details>
+<summary>Dynamic import for canvas + External engraving service support</summary>
+
+Milestone: Convert canvas to dynamic import
+- Changed `backend/canvas.ts` to use dynamic import for the `canvas` module.
+- Import only happens when `svgToPng` is called and not in MOBILE_MODE.
+- Converted `PNGStream` import to type-only import to avoid runtime loading.
+- Improves bundle size and startup time by loading canvas on-demand.
+
+Milestone: Three-mode engraving architecture
+- Added HTTP/HTTPS support for external engraving service requests.
+- Implemented `engraveSvgService` function to POST engraving requests to remote service.
+- Implemented `engraveSvgWithStreamService` for streaming SVG output from service.
+- Updated routing logic with priority: Service mode → Addon mode → CLI mode.
+- Service mode activates when `ENGRAVE_SERVICE_BASE` environment variable is set.
+- Service expects JSON response with `logs`, `svgs`, `midi` (base64), and `errorLevel`.
+- Maintains compatibility with existing callbacks (`onMidiRead`, `onSvgRead`, `onProcStart`).
+
+Supported modes:
+1. **Engrave Service**: External HTTP/HTTPS service (when `ENGRAVE_SERVICE_BASE` set)
+2. **LilyPond Addon**: Native addon (when `LILYPOND_ADDON` set)
+3. **LilyPond CLI**: Command-line lilypond process (default)
+</details>
+
+> Write a curl test case for `/engrave` handler, refer to use case in `app/views/playground.vue`.
+> The example lilypond code: `\relative c' { \key g \major \time 3/4 \ottava #0 \clef "treble" \stemDown d'4 ( \p \stemUp g,8 [ a8 b8 c8 ]  }`
+
+<details>
+<summary>Engrave endpoint test script</summary>
+
+Milestone: Curl test cases for /engrave endpoint
+- Created `test-engrave.sh` bash script with three test scenarios.
+- Test 1: Basic engrave without tokenization (returns logs, svgs, midi).
+- Test 2: Engrave with tokenization (adds doc and hashTable to response).
+- Test 3: Engrave with logging enabled (includes logger data).
+- All tests use the provided G major example LilyPond source.
+- Script saves responses to `/tmp/` for inspection.
+- Created `test-engrave.README.md` with usage documentation.
+- Script supports custom HOST environment variable for testing different servers.
+
+Test execution:
+```bash
+./test-engrave.sh              # Test against localhost:3000
+HOST=http://service:8080 ./test-engrave.sh  # Test against custom host
+```
+</details>

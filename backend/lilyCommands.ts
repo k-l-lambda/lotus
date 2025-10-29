@@ -5,6 +5,8 @@ import path from "path";
 import child_process from "child-process-promise";
 import {MIDI} from "@k-l-lambda/music-widgets";
 import {Writable} from "stream";
+import http from "http";
+import https from "https";
 
 import asyncCall from "../inc/asyncCall";
 import {SingleLock} from "../inc/mutex";
@@ -383,6 +385,154 @@ const engraveSvgWithStreamCli = async (source: string, output: Writable, {includ
 };
 
 
+const engraveSvgService = async (source: string,
+	{onProcStart, onMidiRead, onSvgRead, includeFolders = []}: EngraverOptions = {},
+): Promise<Partial<EngraverResult>> => {
+	const serviceUrl = new URL("/engrave", env.ENGRAVE_SERVICE_BASE);
+	const protocol = serviceUrl.protocol === "https:" ? https : http;
+
+	return new Promise((resolve, reject) => {
+		const payload = JSON.stringify({
+			source,
+			includeFolders,
+		});
+
+		const options = {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"Content-Length": Buffer.byteLength(payload),
+			},
+		};
+
+		const req = protocol.request(serviceUrl, options, (res) => {
+			let data = "";
+
+			res.on("data", (chunk) => {
+				data += chunk;
+			});
+
+			res.on("end", async () => {
+				if (res.statusCode !== 200) {
+					reject(new Error(`Service returned status ${res.statusCode}: ${data}`));
+					return;
+				}
+
+				try {
+					const response = JSON.parse(data);
+					const {logs, svgs, midi: midiData, errorLevel} = response;
+
+					let midi: MIDI.MidiData | undefined = undefined;
+					if (midiData) {
+						const midiBuffer = Buffer.from(midiData, "base64");
+						midi = MIDI.parseMidiData(midiBuffer);
+						await onMidiRead && onMidiRead(midi);
+					}
+
+					const processedSvgs = [];
+					if (svgs && Array.isArray(svgs)) {
+						for (let i = 0; i < svgs.length; i++) {
+							const svg = postProcessSvg(svgs[i]);
+							processedSvgs[i] = svg;
+							await onSvgRead && onSvgRead(i, svg);
+						}
+					}
+
+					resolve({
+						logs,
+						svgs: processedSvgs,
+						midi,
+						errorLevel,
+					});
+				} catch (error) {
+					reject(new Error(`Failed to parse service response: ${(error as Error).message}`));
+				}
+			});
+		});
+
+		req.on("error", (error) => {
+			reject(new Error(`Service request failed: ${error.message}`));
+		});
+
+		// Call onProcStart before sending the request
+		if (onProcStart) {
+			const startPromise = onProcStart();
+			if (startPromise instanceof Promise) {
+				startPromise.then(() => {
+					req.write(payload);
+					req.end();
+				}).catch(reject);
+			} else {
+				req.write(payload);
+				req.end();
+			}
+		} else {
+			req.write(payload);
+			req.end();
+		}
+	});
+};
+
+
+const engraveSvgWithStreamService = async (source: string, output: Writable, {includeFolders = []}: {includeFolders?: string[]} = {}) => {
+	const serviceUrl = new URL("/engrave", env.ENGRAVE_SERVICE_BASE);
+	const protocol = serviceUrl.protocol === "https:" ? https : http;
+
+	return new Promise((resolve, reject) => {
+		const payload = JSON.stringify({
+			source,
+			includeFolders,
+		});
+
+		const options = {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"Content-Length": Buffer.byteLength(payload),
+			},
+		};
+
+		const req = protocol.request(serviceUrl, options, (res) => {
+			let data = "";
+
+			res.on("data", (chunk) => {
+				data += chunk;
+			});
+
+			res.on("end", () => {
+				if (res.statusCode !== 200) {
+					reject(new Error(`Service returned status ${res.statusCode}: ${data}`));
+					return;
+				}
+
+				try {
+					const response = JSON.parse(data);
+					const {svgs} = response;
+
+					if (svgs && Array.isArray(svgs)) {
+						for (const svg of svgs) {
+							output.write(svg);
+							output.write("\n\n\n\n");
+						}
+					}
+
+					resolve(response);
+				} catch (error) {
+					reject(new Error(`Failed to parse service response: ${(error as Error).message}`));
+				}
+			});
+		});
+
+		req.on("error", (error) => {
+			reject(new Error(`Service request failed: ${error.message}`));
+		});
+
+		req.write(payload);
+		req.end();
+	});
+};
+
+
 const engraveScm = async (source: string, {onProcStart, includeFolders = []}: {
 	onProcStart?: () => void|Promise<void>,
 	includeFolders?: string[],	// include folder path should be relative to TEMP_DIR
@@ -415,12 +565,20 @@ const engraveScm = async (source: string, {onProcStart, includeFolders = []}: {
 };
 
 
-const engraveSvg = async (source: string, options: EngraverOptions = {}): Promise<Partial<EngraverResult>> =>
-	(env.LILYPOND_ADDON ? lilyAddon.engraveSvg : engraveSvgCli)(source, options);
+const engraveSvg = async (source: string, options: EngraverOptions = {}): Promise<Partial<EngraverResult>> => {
+	if (env.ENGRAVE_SERVICE_BASE)
+		return engraveSvgService(source, options);
+
+	return (env.LILYPOND_ADDON ? lilyAddon.engraveSvg : engraveSvgCli)(source, options);
+};
 
 
-const engraveSvgWithStream = async (source: string, output: Writable, options: {includeFolders?: string[]} = {}) =>
-	(env.LILYPOND_ADDON ? lilyAddon.engraveSvgWithStream : engraveSvgWithStreamCli)(source, output, options);
+const engraveSvgWithStream = async (source: string, output: Writable, options: {includeFolders?: string[]} = {}) => {
+	if (env.ENGRAVE_SERVICE_BASE)
+		return engraveSvgWithStreamService(source, output, options);
+
+	return (env.LILYPOND_ADDON ? lilyAddon.engraveSvgWithStream : engraveSvgWithStreamCli)(source, output, options);
+};
 
 
 
