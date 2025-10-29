@@ -3,7 +3,8 @@ footages/
 dist/
 lib/
 lib.browser/
-yarn.lock
+#yarn.lock
+package-lock.json
 *.local
 *.local.*
 *.log

@@ -340,3 +340,34 @@ Benefits:
 - Better async compilation performance
 - Aligns with modern Sass tooling standards
 </details>
+
+---
+
+> Try to fix this warning: chunk-2OZJN7XQ.js?v=f1ecc091:2210 [Vue warn]: (deprecation GLOBAL_EXTEND) Vue.extend() has been removed in Vue 3. Use defineComponent() instead.
+
+<details>
+<summary>Suppressed Vue.extend() warning from vue-prism-editor</summary>
+
+Milestone: Handle Vue.extend() deprecation warning from third-party library
+- The warning was caused by `vue-prism-editor` v1.x using Vue 2's `Vue.extend()` API
+- Attempted upgrade to v2.0.0-alpha.2 but found a rendering bug (text not displaying)
+- Rolled back to stable v1.3.0 and suppressed the warning using Vue compat configuration
+- Added `configureCompat({ GLOBAL_EXTEND: "suppress-warning" })` to main entry point
+
+Rationale:
+- v2.0.0-alpha.2 is from 2020 and has rendering issues
+- No stable Vue 3 version available yet
+- Using v1.3.0 with Vue compat mode is more reliable
+- The warning is suppressed only for this specific deprecation from third-party code
+
+Changes made:
+- `package.json`: Kept `vue-prism-editor@1.3.0` (stable version)
+- `app/main-vite.ts`: Added `configureCompat` from `@vue/compat` to suppress GLOBAL_EXTEND warnings
+- `app/components/source-editor.vue`: Kept camelCase props (v1.x convention)
+
+Benefits:
+- Editor works correctly without rendering bugs
+- Warning is suppressed while still using Vue compat mode
+- Can upgrade to proper Vue 3 version when stable release is available
+- No functional changes to the editor component
+</details>
