@@ -15,7 +15,7 @@ export default {
 	},
 
 
-	beforeDestroy () {
+	beforeUnmount () {
 		this.quitClear();
 	},
 };

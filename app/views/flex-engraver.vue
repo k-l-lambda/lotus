@@ -182,7 +182,7 @@
 		},
 
 
-		beforeDestroy () {
+		beforeUnmount () {
 			this.checkAndSaveSource();
 		},
 

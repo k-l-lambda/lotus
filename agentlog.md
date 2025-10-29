@@ -371,3 +371,25 @@ Benefits:
 - Can upgrade to proper Vue 3 version when stable release is available
 - No functional changes to the editor component
 </details>
+
+---
+
+> No, don't suppress this time, fix this: main-vite.ts:26 [Vue warn]: (deprecation OPTIONS_BEFORE_DESTROY) `beforeDestroy` has been renamed to `beforeUnmount`.
+
+<details>
+<summary>Renamed beforeDestroy to beforeUnmount</summary>
+
+Milestone: Fix OPTIONS_BEFORE_DESTROY deprecation warning
+- Vue 3 renamed the `beforeDestroy` lifecycle hook to `beforeUnmount`
+- Found and renamed 2 occurrences across the codebase
+
+Changes made:
+- `app/mixins/quit-cleaner.ts`: Renamed `beforeDestroy` → `beforeUnmount`
+- `app/views/flex-engraver.vue`: Renamed `beforeDestroy` → `beforeUnmount`
+
+Benefits:
+- Eliminates OPTIONS_BEFORE_DESTROY deprecation warning
+- Uses proper Vue 3 lifecycle hook naming
+- Maintains exact same functionality (hook behavior is identical)
+- Future-proof for when Vue compat mode is fully removed
+</details>
