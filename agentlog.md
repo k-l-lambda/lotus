@@ -596,3 +596,38 @@ Benefits:
 - Backwards compatible with base64 format
 - Type-safe MIDI data handling
 </details>
+
+---
+
+> Fix measure layout bug when measures.length is 1
+
+<details>
+<summary>Fixed empty seq array for single-measure layout</summary>
+
+Issue: When measures.length is 1, measureLayout.seq returns empty array
+- `lilyNotation.measureLayout.seq` was empty when there was only one measure
+- Expected: array with 1 element representing the measure
+- Actual: empty array `[]`
+
+Root cause:
+- In `BlockMLayout.trimSeq()` at line 106 in `inc/measureLayout.ts`
+- Variable `measure` was initialized to `null`
+- When checking `layout.measure > measure` for measure 0:
+  - JavaScript coerces `null` to `0` in numeric comparison
+  - So `0 > null` becomes `0 > 0` which is `false`
+  - Measure 0 is not added to the result array
+
+Fix applied:
+- Changed `let measure = null;` to `let measure = -1;` at line 106
+- Now `0 > -1` evaluates to `true`, so measure 0 is correctly added
+- Works for all measure numbers >= 0
+
+Benefits:
+- Single-measure scores now have correct measureLayout.seq
+- Measure 0 (if used) is properly handled
+- No breaking changes for multi-measure scenarios
+- Fixes edge case in measure layout serialization
+
+Changes made:
+- `inc/measureLayout.ts` line 106: Initialize `measure` to `-1` instead of `null`
+</details>

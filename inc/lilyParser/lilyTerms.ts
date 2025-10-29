@@ -153,18 +153,18 @@ export const constructMusicFromMeasureLayout = (layout: measureLayout.MeasureLay
 
 
 export class BaseTerm {
-	_location?: Location;
-	_measure?: number;
-	_tick?: number;
-	_previous?: BaseTerm;
-	_anchorPitch?: ChordElement;
-	_parent?: BaseTerm;
+	declare _location?: Location;
+	declare _measure?: number;
+	declare _tick?: number;
+	declare _previous?: BaseTerm;
+	declare _anchorPitch?: ChordElement;
+	declare _parent?: BaseTerm;
 
-	_headComment: Comment;
-	_tailComment: Comment;
+	declare _headComment: Comment;
+	declare _tailComment: Comment;
 
 	// lotus extensional function modifier
-	_functional: string;
+	declare _functional: string;
 
 
 	constructor (data: object) {
@@ -2584,9 +2584,9 @@ export class ChordElement extends BaseTerm {
 
 
 export class Duration extends BaseTerm {
-	number: string;
-	dots: number;
-	multipliers?: string[];
+	declare number: string;
+	declare dots: number;
+	declare multipliers?: string[];
 
 
 	static _default: Duration;
@@ -2691,8 +2691,8 @@ interface BriefChordBody {
 
 
 export class BriefChord extends BaseTerm {
-	body: BriefChordBody;
-	post_events: any[];
+	declare body: BriefChordBody;
+	declare post_events: any[];
 
 
 	constructor (data: object) {
@@ -2728,8 +2728,8 @@ export class BriefChord extends BaseTerm {
 
 
 export class NumberUnit extends BaseTerm {
-	number: number;
-	unit: string;
+	declare number: number;
+	declare unit: string;
 
 
 	serialize () {
@@ -2747,9 +2747,9 @@ export class NumberUnit extends BaseTerm {
 
 
 export class Tempo extends BaseTerm {
-	beatsPerMinute?: number;
-	unit?: Duration;
-	text?: string;
+	declare beatsPerMinute?: number;
+	declare unit?: Duration;
+	declare text?: string;
 
 
 	static fromNoteBpm (note: number, bpm: number): Tempo {
@@ -2780,8 +2780,8 @@ const DIRECTION_CHAR = {
 
 
 export class PostEvent extends BaseTerm {
-	direction: string;
-	arg: string | BaseTerm;
+	declare direction: string;
+	declare arg: string | BaseTerm;
 
 
 	serialize () {
@@ -2818,7 +2818,7 @@ export class PostEvent extends BaseTerm {
 
 
 export class Fingering extends BaseTerm {
-	value: number;
+	declare value: number;
 
 
 	serialize () {
@@ -2828,8 +2828,8 @@ export class Fingering extends BaseTerm {
 
 
 export class Markup extends BaseTerm {
-	head: any[];
-	body: (string|BaseTerm);
+	declare head: any[];
+	declare body: (string|BaseTerm);
 
 
 	serialize () {
@@ -2842,7 +2842,7 @@ export class Markup extends BaseTerm {
 
 
 export class Lyric extends MusicEvent {
-	content: string | LiteralString;
+	declare content: string | LiteralString;
 
 
 	serialize () {
@@ -2856,8 +2856,8 @@ export class Lyric extends MusicEvent {
 
 
 export class Comment extends BaseTerm {
-	text: string;
-	scoped: boolean;
+	declare text: string;
+	declare scoped: boolean;
 
 
 	serialize () {

@@ -17,6 +17,8 @@
 
 *	2025.10.29
 
+	+	Fixed measure layout issue by append 'declare' for lily term classes.
+
 	+	Use dynamic import for canvas package in backend.
 
 

@@ -56,7 +56,7 @@ class SingleMLayout extends SimpleClass implements MeasureLayout {
 	static className = "SingleMLayout";
 
 
-	measure: number;
+	declare measure: number;
 
 
 	static from (measure: number) {
@@ -87,7 +87,7 @@ class BlockMLayout extends SimpleClass implements MeasureLayout {
 	static className = "BlockMLayout";
 
 
-	seq: MeasureSeq;
+	declare seq: MeasureSeq;
 
 
 	static trimSeq (seq: MeasureSeq): MeasureSeq {
@@ -103,7 +103,7 @@ class BlockMLayout extends SimpleClass implements MeasureLayout {
 
 		// reduce duplicated or backwards single measures
 		const seq3 = [];
-		let measure = null;
+		let measure = -1;  // Initialize to -1 to handle measure 0 correctly
 		for (const layout of seq2) {
 			if (layout instanceof SingleMLayout) {
 				if (layout.measure > measure) {
@@ -142,9 +142,9 @@ class VoltaMLayout extends SimpleClass implements MeasureLayout {
 	static className = "VoltaMLayout";
 
 
-	times: number;
-	body: MeasureSeq;
-	alternates: MeasureSeq[];
+	declare times: number;
+	declare body: MeasureSeq;
+	declare alternates: MeasureSeq[];
 
 
 	serialize (type: LayoutType): number[] {
@@ -221,8 +221,8 @@ class ABAMLayout extends SimpleClass implements MeasureLayout {
 	static className = "ABAMLayout";
 
 
-	main: MeasureLayout;
-	rest: MeasureSeq;
+	declare main: MeasureLayout;
+	declare rest: MeasureSeq;
 
 
 	serialize (type: LayoutType): number[] {
