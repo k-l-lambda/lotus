@@ -54,10 +54,6 @@
 				const code = editor.textContent;
 				editor.innerHTML = highlight(code, languages.lilypond, "lilypond");
 
-				// Update line numbers after highlighting
-				this.$nextTick(() => {
-					this.updateLineNumbers();
-				});
 			},
 
 
@@ -107,7 +103,7 @@
 				// Listen to changes
 				this.jar.onUpdate(code => {
 					this.updateLineNumbers();
-					if (!this.isUpdatingFromProp && this.source !== code) {
+					if (!this.isUpdatingFromProp) {
 						this.$emit("update:source", code);
 					}
 				});

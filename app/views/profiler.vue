@@ -18,7 +18,7 @@
 				:doc="sheetDocument"
 				:midiNotation="midiNotation"
 				:pitchContextGroup="pitchContextGroup"
-				:midiPlayer.sync="midiPlayer"
+				:midiPlayer="midiPlayer" @update:midiPlayer="midiPlayer = $event"
 				:scheduler="scheduler"
 				:showCursor="showCursor"
 				:noteHighlight="noteHighlight"

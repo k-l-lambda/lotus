@@ -28,7 +28,7 @@
 			</div>
 		</header>
 		<main>
-			<SourceEditor v-if="currentSource" :source.sync="currentSource.content" />
+			<SourceEditor v-if="currentSource" :source="currentSource.content" @update:source="currentSource.content = $event" />
 			<div class="viewer">
 				<div class="sheet-container" ref="sheetContainer"
 					:style="{

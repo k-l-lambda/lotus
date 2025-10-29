@@ -87,7 +87,7 @@
 				@drop.prevent.stop="onDropFile($event, {source: true})"
 				@focusin="showSourceDir = false"
 			>
-				<SourceEditor ref="sourceEditor" :source.sync="lilySource" :disabled="sourceIsLoading" />
+				<SourceEditor ref="sourceEditor" :source="lilySource" @update:source="lilySource = $event" :disabled="sourceIsLoading" />
 				<span class="corner">
 					<button class="inspect" @click="inspectLily">&#x1f4d5;</button>
 					<button class="log" :class="engraverLogStatus" v-show="engraverLogStatus"
@@ -133,13 +133,13 @@
 						:doc="sheetDocument"
 						:midiNotation="midiNotation"
 						:pitchContextGroup="pitchContextGroup"
-						:midiPlayer.sync="midiPlayer"
+						:midiPlayer="midiPlayer" @update:midiPlayer="midiPlayer = $event"
 						:showMark="true"
 						:enablePointer="enabledPointer"
 						:showCursor="showCursor"
 						:bakingMode="bakingSheet"
 						:backgroundImages="hideBakingImages ? null : bakingImages"
-						:scheduler.sync="scheduler"
+						:scheduler="scheduler" @update:scheduler="scheduler = $event"
 						:enabledFont="enabledMusicFont"
 						:highlightSymbol="highlightSymbol && highlightSymbol.toUpperCase()"
 						@midi="onMidi"
@@ -222,20 +222,20 @@
 					:host="sourceEditorHost"
 					:filePath="sourceEditorFilePath"
 					:filePathReadOnly="true"
-					:content.sync="lilySource"
-					:connected.sync="sourceEditorConnected"
-					:loading.sync="sourceEditorLoading"
+					:content="lilySource" @update:content="lilySource = $event"
+					:connected="sourceEditorConnected" @update:connected="sourceEditorConnected = $event"
+					:loading="sourceEditorLoading" @update:loading="sourceEditorLoading = $event"
 				/>
 				<DirBrowser ref="sourceDir"
 					homeURL="/source-dir/"
-					:shown.sync="showSourceDir"
+					:shown="showSourceDir" @update:shown="showSourceDir = $event"
 					:handlePattern="/\.ly$/"
 					:compactFolders="true"
 					@pickFile="onSourceDirPick"
 				/>
 			</div>
 		</main>
-		<Dialog :visible.sync="settingPanelVisible">
+		<Dialog :visible="settingPanelVisible" @update:visible="settingPanelVisible = $event">
 			<datalist id="lily-markups">
 				<option v-for="(method, i) of lilyMarkupMethods" :key="i" :value="method" />
 			</datalist>

@@ -498,3 +498,70 @@ Benefits:
 - Tree-shakeable, only imports what's used
 - Future-proof with Composition API compatibility
 </details>
+
+---
+
+> Fix CodeJar editor height overflow issue
+
+<details>
+<summary>Fixed box-sizing for CodeJar editor</summary>
+
+Issue: `.code-editor-wrapper` height exceeded parent container height
+- The code editor div was expanding beyond `.editor-with-lines` container
+- Content with padding caused height calculation issues
+
+Root cause: Missing `box-sizing: border-box`
+- Default `box-sizing: content-box` adds padding to element's width/height
+- With `padding: 10px`, the total height = 100% + 20px (top + bottom padding)
+- This caused the editor to overflow its parent container
+
+Fix applied:
+- `app/components/source-editor.vue`: Added `box-sizing: border-box;` to `.code-editor-wrapper` (line 185)
+- Now padding is included in the 100% height calculation
+- Total height stays within container bounds
+
+Benefits:
+- Editor properly constrained to parent container height
+- No overflow beyond `.editor-with-lines`
+- Padding included in height calculation
+- Maintains proper flexbox layout behavior
+</details>
+
+---
+
+> Fix Vue 3 .sync modifier compatibility issues
+
+<details>
+<summary>Replaced .sync with explicit event bindings</summary>
+
+Issue: CodeJar editor changes not updating parent component
+- Root cause: `.sync` modifier was removed in Vue 3
+- While Vue compat mode provides some backwards compatibility, `.sync` on custom components doesn't work properly
+- Found 9 instances across 3 files
+
+Changes made:
+- `app/views/playground.vue`: Fixed 7 `.sync` usages
+  - `:source.sync="lilySource"` → `:source="lilySource" @update:source="lilySource = $event"`
+  - `:midiPlayer.sync="midiPlayer"` → `:midiPlayer="midiPlayer" @update:midiPlayer="midiPlayer = $event"`
+  - `:scheduler.sync="scheduler"` → `:scheduler="scheduler" @update:scheduler="scheduler = $event"`
+  - `:content.sync="lilySource"` → `:content="lilySource" @update:content="lilySource = $event"`
+  - `:connected.sync="sourceEditorConnected"` → `:connected="sourceEditorConnected" @update:connected="sourceEditorConnected = $event"`
+  - `:loading.sync="sourceEditorLoading"` → `:loading="sourceEditorLoading" @update:loading="sourceEditorLoading = $event"`
+  - `:shown.sync="showSourceDir"` → `:shown="showSourceDir" @update:shown="showSourceDir = $event"`
+  - `:visible.sync="settingPanelVisible"` → `:visible="settingPanelVisible" @update:visible="settingPanelVisible = $event"`
+- `app/views/flex-engraver.vue`: Fixed 1 `.sync` usage
+  - `:source.sync="currentSource.content"` → `:source="currentSource.content" @update:source="currentSource.content = $event"`
+- `app/views/profiler.vue`: Fixed 1 `.sync` usage
+  - `:midiPlayer.sync="midiPlayer"` → `:midiPlayer="midiPlayer" @update:midiPlayer="midiPlayer = $event"`
+- `app/components/source-editor.vue`: Removed source comparison check in onUpdate callback
+  - Changed from: `if (!this.isUpdatingFromProp && this.source !== code)`
+  - Changed to: `if (!this.isUpdatingFromProp)`
+
+Benefits:
+- Two-way binding now works correctly in Vue 3
+- CodeJar editor properly updates parent component state
+- Engrave requests use updated source code
+- All child component updates properly propagate to parent
+- No more reliance on deprecated Vue 2 syntax
+- Explicit event handling is clearer and more maintainable
+</details>
