@@ -1641,10 +1641,10 @@
 </script>
 
 <style lang="scss">
-	@import "../styles/common.scss";
-	@import "../styles/chromatic.scss";
+	@use "../styles/common.scss";
+	@use "../styles/chromatic.scss";
 
-	@import "../styles/emmentaler-font.scss";
+	@use "../styles/emmentaler-font.scss";
 
 
 	.drag-hover

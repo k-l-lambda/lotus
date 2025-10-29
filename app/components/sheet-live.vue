@@ -662,7 +662,7 @@
 </script>
 
 <style lang="scss" scoped>
-	@import "../styles/sheetConstants.css";
+	@use "../styles/sheetConstants.css";
 
 
 	.sheet
@@ -731,10 +731,10 @@
 </style>
 
 <style>
-	@import "../styles/music-font.css";
+	@use "../styles/music-font.css";
 </style>
 <style lang="scss">
-	@import "../styles/sheetConstants.css";
+	@use "../styles/sheetConstants.css";
 
 
 	.sheet

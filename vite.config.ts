@@ -46,6 +46,13 @@ export default defineConfig({
 		__VUE_OPTIONS_API__: true,
 		__VUE_PROD_DEVTOOLS__: false,
 	},
+	css: {
+		preprocessorOptions: {
+			scss: {
+				api: "modern-compiler", // Use modern Sass API instead of legacy
+			},
+		},
+	},
 	build: {
 		outDir: "dist",
 	},

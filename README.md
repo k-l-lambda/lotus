@@ -43,12 +43,12 @@ This is an online Lilypond editor and player.
     ENGRAVE_SERVICE_BASE=http://localhost:8133
     ```
 
-1. Run backend
+1. Run backend:
     ```sh
     yarn dev
     ```
 
-1. Check availibility:
+1. Check API availibility:
     ```sh
     curl -X POST http://localhost:8130/engrave \
       -F "source=\relative c' { \key g \major \time 3/4 \ottava #0 \clef treble \stemDown d'4 ( \p \stemUp g,8 [ a8 b8 c8 ] }" \

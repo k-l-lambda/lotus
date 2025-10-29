@@ -347,7 +347,7 @@
 </script>
 
 <style lang="scss">
-	@import "../styles/common.scss";
+	@use "../styles/common.scss";
 
 
 	header

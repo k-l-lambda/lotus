@@ -149,3 +149,194 @@ Test execution:
 HOST=http://service:8080 ./test-engrave.sh  # Test against custom host
 ```
 </details>
+
+---
+
+> Got error in browser: Uncaught (in promise) SyntaxError: The requested module '/third-party/music-widgets/dist/musicWidgetsBrowser.umd.js' does not provide an export named 'MusicNotation'
+
+<details>
+<summary>Fixed music-widgets browser export issue</summary>
+
+Milestone: Fix MusicNotation named export in browser build
+- Root cause: `vue.config.js` had conflicting `pages` configuration interfering with library build.
+- Removed `pages` config from `vue.config.js` to allow proper library build mode.
+- Added default export to `index.browser.js` alongside named exports for better compatibility.
+- Changed package.json `"browser"` field from `"dist/musicWidgetsBrowser.umd.js"` to `"index.browser.js"`.
+- Browser field now points to ES module with proper named exports instead of UMD bundle.
+- Rebuilt library with `npm run build` in third-party/music-widgets.
+- Vite can now properly resolve named exports (MIDI, MusicNotation, MidiAudio, etc.) when importing in browser context.
+
+Changes made:
+- `third-party/music-widgets/vue.config.js`: Removed `pages` configuration
+- `third-party/music-widgets/index.browser.js`: Added default export
+- `third-party/music-widgets/package.json`: Changed browser field to point to ES module
+</details>
+
+> Now got error: Uncaught (in promise) SyntaxError: The requested module '/third-party/music-widgets/lib/MusicNotation.js' does not provide an export named 'Notation' (at midi-roll.vue:43:11)
+
+<details>
+<summary>Fixed midi-roll.vue CommonJS import issue</summary>
+
+Milestone: Fix Notation import in midi-roll.vue
+- Root cause: `midi-roll.vue` was importing from CommonJS modules (`lib/`) using ES6 named import syntax
+- CommonJS modules use `exports.Notation = ...` which requires namespace import or destructuring from default
+- Changed import strategy in `source/views/midi-roll.vue` to import modules as namespace, then destruct
+- Before: `import { Notation } from "../../lib/MusicNotation.js"` (doesn't work with CommonJS)
+- After: `import * as MusicNotation from "../../lib/MusicNotation.js"; const { Notation } = MusicNotation;`
+- Added webpack resolve configuration to `vue.config.js` for TypeScript extension resolution
+- Successfully rebuilt library with proper CommonJS interop
+
+Changes made:
+- `third-party/music-widgets/source/views/midi-roll.vue`: Changed to namespace imports from CommonJS modules
+- `third-party/music-widgets/vue.config.js`: Added `configureWebpack.resolve.extensions` for TS support
+</details>
+
+> Got error in browser: index.browser.js:4 Uncaught (in promise) SyntaxError: The requested module '/third-party/music-widgets/lib/MidiPlayer.js' does not provide an export named 'default' (at index.browser.js:4:8)
+
+<details>
+<summary>Fixed MidiPlayer CommonJS default export</summary>
+
+Milestone: Fix MidiPlayer default export in index.browser.js
+- Root cause: MidiPlayer.js uses CommonJS `module.exports = MidiPlayer` which doesn't work with ES6 default import in browser
+- Similar to previous issue - CommonJS modules need namespace imports
+- Changed `index.browser.js` to import MidiPlayer as namespace, then extract the class
+- Before: `import MidiPlayer from "./lib/MidiPlayer.js"` (doesn't work)
+- After: `import * as MidiPlayerModule from "./lib/MidiPlayer.js"; const MidiPlayer = MidiPlayerModule.default || MidiPlayerModule;`
+- The fallback `|| MidiPlayerModule` handles cases where the module.exports is the entire namespace
+
+Changes made:
+- `third-party/music-widgets/index.browser.js`: Changed MidiPlayer import to namespace import with fallback
+</details>
+
+> Can we refactor index.browser.js to a .ts file?
+
+<details>
+<summary>Refactored index.browser.js to TypeScript</summary>
+
+Milestone: Convert browser entry point to TypeScript
+- Renamed `index.browser.js` to `index.browser.ts` for better type safety
+- Added TypeScript type assertion `(MidiPlayerModule as any).default` for CommonJS interop
+- Updated package.json build script to reference `index.browser.ts`
+- Updated package.json "browser" field to point to `index.browser.ts`
+- Added ts-loader configuration to `vue.config.js` for webpack to handle TypeScript files
+- Installed `ts-loader` as dev dependency (version 9.5.4)
+- Configured ts-loader with `transpileOnly: true` for faster builds
+- Successfully built with TypeScript entry point
+
+Benefits:
+- Better type safety for the browser entry point
+- Consistent with the rest of the TypeScript codebase
+- Type checking during development
+- Can leverage TypeScript features in entry file
+
+Changes made:
+- `third-party/music-widgets/index.browser.js` → `index.browser.ts`: Renamed and added type assertions
+- `third-party/music-widgets/package.json`: Updated build script and browser field to reference .ts file
+- `third-party/music-widgets/vue.config.js`: Added ts-loader webpack configuration
+- `third-party/music-widgets/package.json`: Added ts-loader dev dependency
+</details>
+
+> Can we replace vue-cli-service by vite?
+
+<details>
+<summary>Migrated from vue-cli-service to Vite</summary>
+
+Milestone: Replace vue-cli-service with Vite for library building
+- Created new `vite.config.ts` with library build configuration
+- Configured library entry point as `index.browser.ts` with ES and UMD output formats
+- Externalized Vue dependency to avoid bundling in library
+- Updated `package.json`:
+  - Changed `browser` field from `index.browser.ts` to `dist/musicWidgetsBrowser.es.js`
+  - Added `module` field pointing to `dist/musicWidgetsBrowser.es.js`
+  - Replaced `@vue/cli-*` dependencies with `vite` and `@vitejs/plugin-vue`
+  - Updated build script: `"tsc && vite build"`
+  - Updated watch script: `"vite build --watch"`
+- Fixed import paths in `source/views/midi-roll.vue` to use source TypeScript files (`../inc/MIDI`, `../inc/MusicNotation`)
+- Successfully built with both ES module (68.90 kB) and UMD (51.34 kB) formats
+- Build includes sourcemaps and CSS extraction for Vue components
+
+Benefits:
+- Faster build times with Vite's optimized bundling
+- Native ES module support without webpack configuration
+- Simpler configuration with `vite.config.ts`
+- Better development experience with faster rebuilds in watch mode
+- Modern build tooling aligned with Vue 3 ecosystem
+
+Changes made:
+- `third-party/music-widgets/vite.config.ts`: Created new Vite configuration
+- `third-party/music-widgets/package.json`: Updated dependencies, scripts, and entry points
+- `third-party/music-widgets/source/views/midi-roll.vue`: Fixed imports to use source paths
+- Note: `vue.config.js` can now be removed (replaced by vite.config.ts)
+</details>
+
+---
+
+> Configure music-widgets' vite to copy `source/MidiAudio` into `lib` when build.
+
+<details>
+<summary>Added MidiAudio copy plugin to Vite build</summary>
+
+Milestone: Automatic MidiAudio directory copying during build
+- Created custom Vite plugin `copyMidiAudioPlugin` that copies `source/MidiAudio` to `lib/MidiAudio`
+- Plugin uses the `closeBundle` hook to run after Vite finishes bundling
+- Implements recursive directory copying with `fs` module functions
+- Handles subdirectories (like `Window/`) and all file types
+- Added console confirmation message when copying completes
+- Replaces the manual `cp -r source/MidiAudio lib/` step from the old build script
+
+Benefits:
+- Automated copying integrated into build process
+- No need for manual copy command in package.json scripts
+- Works consistently across platforms (no shell-specific commands)
+- Runs after both TypeScript compilation and Vite bundling
+
+Changes made:
+- `third-party/music-widgets/vite.config.ts`: Added `copyMidiAudioPlugin` with recursive copy logic
+</details>
+
+---
+
+> What does this mean, can we improve it: Deprecation Warning [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+<details>
+<summary>Migrated Sass @import to @use</summary>
+
+Milestone: Modernize Sass imports to use @use instead of deprecated @import
+- Replaced all `@import` statements with `@use` in Vue single-file components
+- Dart Sass is deprecating `@import` in favor of `@use` and `@forward` for better module encapsulation
+- `@use` provides namespaced imports and loads modules once per file (better performance)
+- `@import` loads everything into global namespace which can cause naming conflicts
+
+Changes made:
+- `app/views/playground.vue`: Changed 3 @import statements to @use (common.scss, chromatic.scss, emmentaler-font.scss)
+- `app/views/profiler.vue`: Changed @import to @use (common.scss)
+- `app/components/sheet-live.vue`: Changed 3 @import statements to @use (sheetConstants.css x2, music-font.css)
+- `app/components/sheet-token.vue`: Changed @import to @use (sheetConstants.css)
+
+Benefits:
+- Eliminates deprecation warnings from Dart Sass
+- Future-proof for Sass 3.0.0 (where @import will be removed)
+- Better module encapsulation and namespace management
+- Improved build performance (modules loaded once vs. every import)
+</details>
+
+> And what about this: Deprecation Warning [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+<details>
+<summary>Configured Vite to use modern Sass API</summary>
+
+Milestone: Switch from legacy Sass JS API to modern compiler API
+- Added `css.preprocessorOptions.scss.api: "modern-compiler"` to Vite configuration
+- The legacy JS API uses synchronous compilation (deprecated)
+- The modern compiler API uses asynchronous compilation (future-proof)
+- Eliminates the "legacy-js-api" deprecation warning from Dart Sass
+
+Changes made:
+- `vite.config.ts`: Added `css.preprocessorOptions.scss` configuration with `api: "modern-compiler"`
+
+Benefits:
+- Eliminates legacy-js-api deprecation warnings
+- Future-proof for Dart Sass 2.0.0 (where legacy API will be removed)
+- Better async compilation performance
+- Aligns with modern Sass tooling standards
+</details>
