@@ -75,4 +75,22 @@ Milestone: Backend server compatibility
 - Backend now imports Node-safe modules directly: `@k-l-lambda/music-widgets/source/inc/MIDI`.
 - Enabled ts-node flags: `TS_NODE_SKIP_IGNORE=1` and `TS_NODE_TRANSPILE_ONLY=1` for smoother TypeScript interop.
 - Identified remaining transitive imports (e.g., `inc/staffSvg/staffNotation.ts`) that should use source/inc paths to prevent browser code on server.
+ </details>
+
+---
+
+<details>
+<summary>Submodule build + local link; backend run status</summary>
+
+Milestone: Build and link `@k-l-lambda/music-widgets`
+- Built submodule to `lib/` and `dist/`; adjusted `index.ts` for CJS default export of `MidiPlayer`.
+- Linked submodule into main project via `yarn link`.
+
+Milestone: Backend compatibility with linked package
+- Continued to avoid browser-only imports; backend uses `source/inc/MIDI` only.
+- Note: `inc/staffSvg/staffNotation.ts` still imports package root; plan to point it to `source/inc/*` to avoid loading `MidiAudio` on server.
+
+Current blocker
+- Native `canvas` module binary mismatch (NODE_MODULE_VERSION 72 vs 120). Backend fails to start.
+- Next: rebuild `canvas` for current Node (e.g., `yarn add --force canvas` or `npm rebuild canvas`).
 </details>
