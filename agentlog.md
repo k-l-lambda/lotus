@@ -393,3 +393,32 @@ Benefits:
 - Maintains exact same functionality (hook behavior is identical)
 - Future-proof for when Vue compat mode is fully removed
 </details>
+
+---
+
+> Fix this: playground.vue:10 [Vue warn]: (deprecation COMPONENT_V_MODEL) v-model usage on component has changed in Vue 3.
+
+<details>
+<summary>Updated components to use Vue 3 v-model pattern</summary>
+
+Milestone: Fix COMPONENT_V_MODEL deprecation warnings
+- Vue 3 changed v-model to use `modelValue` prop and `update:modelValue` event instead of `value` prop and `input` event
+- Updated all custom components that implement v-model to use the new pattern
+
+Changes made:
+- `app/components/store-input.vue`: Changed `value` prop → `modelValue`, `input` event → `update:modelValue`
+- `app/components/bool-store-input.vue`: Changed `value` prop → `modelValue`, `input` event → `update:modelValue`, and used explicit `:modelValue` + `@update:modelValue` binding for child StoreInput instead of `v-model`
+- `app/components/check-button.vue`: Changed `value` prop → `modelValue`, `input` event → `update:modelValue`
+- `app/views/playground.vue`: Replaced all `v-model` usages on custom components with explicit `:modelValue` + `@update:modelValue` syntax
+- `app/views/profiler.vue`: Replaced all `v-model` usages on custom components with explicit syntax
+- `app/views/flex-engraver.vue`: Replaced all `v-model` usages on custom components with explicit syntax
+
+Benefits:
+- Eliminates all COMPONENT_V_MODEL deprecation warnings
+- Uses proper Vue 3 v-model API
+- No need for `compatConfig` - uses explicit binding syntax
+- Maintains exact same functionality (parent components using v-model work the same)
+- Makes components fully Vue 3 compliant
+- More explicit and clear about what's happening with data flow
+- Handles `v-model.number` by explicitly converting with `Number($event)`
+</details>
