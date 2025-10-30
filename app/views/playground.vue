@@ -12,17 +12,17 @@
 				<span v-if="title" class="title">{{title}}</span>
 			</fieldset>
 			<fieldset>
-				<button @click="saveSource" title="save source">&#x1f4be;</button>
-				<button @click="settingPanelVisible = true">&#x2699;</button>
-				<button :class="{'hidden-but-hold-place': !lilyMarkups.enabled}" @click="markupSource" title="markup lilypond source" :disabled="loadingLilyParser">{}</button>
+				<button @click="saveSource" title="save source"><Icon name="save" /></button>
+				<button @click="settingPanelVisible = true" title="settings"><Icon name="settings" /></button>
+				<button :class="{'hidden-but-hold-place': !lilyMarkups.enabled}" @click="markupSource" title="markup lilypond source" :disabled="loadingLilyParser"><Icon name="markup" /></button>
 			</fieldset>
 			<fieldset>
 				<BoolStoreInput v-show="false" v-model="autoEngrave" sessionKey="lotus-autoEngrave" />
-				<CheckButton content="&#x21bb;" v-model="autoEngrave" title="auto engrave" />
+				<CheckButton icon="auto" v-model="autoEngrave" title="auto engrave" />
 				<button @click="engrave" :class="{working: engraving}" style="zoom: 160%" title="engrave (F8)">
-					<span class="dirty-badge" :class="{dirty: engraverDirty}"></span>&#x1f3bc;
+					<span class="dirty-badge" :class="{dirty: engraverDirty}"></span><Icon name="engrave" />
 				</button>
-				<button :disabled="!sheetDocument" @click="exportScore">&#x1f4e6;</button>
+				<button :disabled="!sheetDocument" @click="exportScore" title="export score package"><Icon name="export" /></button>
 			</fieldset>
 			<fieldset>
 				<BoolStoreInput v-show="false" v-model="tokenizeStaff" sessionKey="lotus-tokenizeStaff" />
@@ -31,30 +31,30 @@
 				<BoolStoreInput v-show="false" v-model="enabledMidiAudio" sessionKey="lotus-enabledMidiAudio" />
 				<BoolStoreInput v-show="false" v-model="showCursor" sessionKey="lotus-playground.showCursor" />
 				<StoreInput v-show="false" v-model="chromaticMode" localKey="lotus-playground.chromaticMode" />
-				<CheckButton content="&#x1f3b9;" v-model="tokenizeStaff" title="live staff" />
+				<CheckButton icon="live" v-model="tokenizeStaff" title="toggle live staff view" />
 				<fieldset :class="{'hidden-but-hold-place': !tokenizeStaff}">
-					<CheckButton content="&#x1f3a8;" v-model="enabledChromatic" :disabled="!sheetDocument" title="chromatic mode" />
-					<select :class="{'hidden-but-hold-place': !enabledChromatic}" v-model="chromaticMode">
+					<CheckButton icon="chromatic" v-model="enabledChromatic" :disabled="!sheetDocument" title="enable chromatic mode" />
+					<select :class="{'hidden-but-hold-place': !enabledChromatic}" v-model="chromaticMode" title="chromatic mode type">
 						<option value="symbols">symbols</option>
 						<option value="pitch">pitch</option>
 						<option value="track">track</option>
 					</select>
-					<CheckButton content="&#x2633;" v-model="rollVisible" :disabled="!midiPlayer" title="show MIDI roll" />
-					<CheckButton content="c|s" v-model="showNotationsMatcher" :disabled="!matcherNotations" title="show notations matcher" />
-					<CheckButton content="&#x1f50a;" v-model="enabledMidiAudio" title="MIDI Audio" />
-					<CheckButton content="&#xa56f;" v-model="showCursor" title="show cursor" />
-					<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
+					<CheckButton icon="roll" v-model="rollVisible" :disabled="!midiPlayer" title="toggle MIDI roll view" />
+					<CheckButton icon="matcher" v-model="showNotationsMatcher" :disabled="!matcherNotations" title="show notations matcher" />
+					<CheckButton icon="audio" v-model="enabledMidiAudio" title="toggle MIDI audio playback" />
+					<CheckButton icon="cursor" v-model="showCursor" title="toggle playback cursor" />
+					<button @click="togglePlayer" :disabled="!midiPlayer" title="play/pause MIDI"><Icon :name="midiPlayer && midiPlayer.isPlaying ? 'pause' : 'play'" /></button>
 				</fieldset>
 			</fieldset>
 			<fieldset :class="{'hidden-but-hold-place': !tokenizeStaff}">
 				<BoolStoreInput v-show="false" v-model="bakingSheet" sessionKey="lotus-bakingSheet" />
-				<CheckButton content="&#x5b57;" v-model="enabledMusicFont" title="enabled music font" />
-				<CheckButton content="&#x1f35e;" v-model="bakingSheet" title="baking sheet" />
-				<CheckButton :class="{'hidden-but-hold-place': !bakingSheet}" content="&#x1f9b2;" v-model="hideBakingImages" title="hide baking images" />
+				<CheckButton icon="font" v-model="enabledMusicFont" title="enable music font rendering" />
+				<CheckButton icon="baking" v-model="bakingSheet" title="enable sheet baking mode" />
+				<CheckButton :class="{'hidden-but-hold-place': !bakingSheet}" icon="hide" v-model="hideBakingImages" title="hide baking background images" />
 			</fieldset>
 			<fieldset :class="{'hidden-but-hold-place': !tokenizeStaff}">
 				<BoolStoreInput v-show="false" v-model="enabledPointer" sessionKey="lotus-enabledPointer" />
-				<CheckButton content="&#x2196;" v-model="enabledPointer" />
+				<CheckButton icon="pointer" v-model="enabledPointer" title="enable pointer tracking" />
 				<span class="pointer-info" v-if="enabledPointer">
 					<span v-if="pointerData">
 						<span>m: <em>{{pointerData.measureIndex}}</em></span>
@@ -63,21 +63,22 @@
 				</span>
 			</fieldset>
 			<fieldset>
-				<button @click="updateMeasureLayoutCode" title="update measure layout code" :disabled="loadingLilyParser">*[]</button>
+				<button @click="updateMeasureLayoutCode" title="update measure layout code" :disabled="loadingLilyParser"><Icon name="measure" /></button>
 				<input v-if="measureLayoutCode || measureLayoutCode===''" class="measure-layout-code" type="text"
 					:class="{error: measureLayoutCodeError, dirty: measureLayoutCodeDirty}"
 					v-model="measureLayoutCode"
-					:title="measureLayoutCodeError"
+					:title="measureLayoutCodeError || 'measure layout code'"
 					@input="validateMeasureLayoutCode"
 					@change="measureLayoutCodeDirty = true"
 				/>
 				<button v-if="measureLayoutCodeDirty && !measureLayoutCodeError" class="apply"
 					:disabled="loadingLilyParser"
 					@click="applyUpdateMeasureLayoutCode"
+					title="apply measure layout changes"
 				>apply</button>
 			</fieldset>
 			<fieldset>
-				<input class="hightlight-symbol" type="text" v-model="highlightSymbol" title="hight symbol" />
+				<input class="hightlight-symbol" type="text" v-model="highlightSymbol" title="highlight symbol (case insensitive)" />
 			</fieldset>
 		</header>
 		<main>
@@ -89,7 +90,7 @@
 			>
 				<SourceEditor ref="sourceEditor" :source="lilySource" @update:source="lilySource = $event" :disabled="sourceIsLoading" />
 				<span class="corner">
-					<button class="inspect" @click="inspectLily">&#x1f4d5;</button>
+					<button class="inspect" @click="inspectLily" title="inspect lily document"><Icon name="inspect" /></button>
 					<button class="log" :class="engraverLogStatus" v-show="engraverLogStatus"
 						:title="engraverLogs"
 						@click="showEngraverLog"
@@ -215,7 +216,7 @@
 				<Loading v-show="engraving" />
 			</div>
 			<div class="source-editor-controls" v-if="sourceEditorEnabled">
-				<button class="folder" @click="showSourceDir = !showSourceDir; $refs.sourceDir.reload()">{{"\ud83d\udcc1"}}</button>
+				<button class="folder" @click="showSourceDir = !showSourceDir; $refs.sourceDir.reload()" title="browse source files"><Icon name="folder" :size="24" /></button>
 				<StoreInput v-show="false" v-model="sourceEditorHost" localKey="lotus-sourceEditorHost" />
 				<StoreInput v-show="false" v-model="sourceEditorFilePath" sessionKey="lotus-sourceEditorFilePath" />
 				<RemoteFile v-show="sourceEditorFilePath" ref="remoteFile"
@@ -399,6 +400,7 @@
 	import Dialog from "../components/dialog.vue";
 	import RemoteFile from "../components/remote-file.vue";
 	import DirBrowser from "../components/dir-browser.vue";
+	import Icon from "../components/icon.vue";
 
 	import QuitClearner from "../mixins/quit-cleaner";
 
@@ -431,6 +433,7 @@
 			Dialog,
 			RemoteFile,
 			DirBrowser,
+			Icon,
 		},
 
 

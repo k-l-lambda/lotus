@@ -1171,3 +1171,259 @@ Files modified:
 
 ---
 
+> Replace Unicode icons with SVG icons
+
+<details>
+<summary>Created custom SVG icon system for controls</summary>
+
+**User Request**: Design a set of SVG icons to replace Unicode icons on controls.
+
+**Implementation**:
+
+1. **Created Icon Component** (`app/components/icon.vue`):
+   - Reusable SVG icon component with 24x24 viewBox
+   - 20 custom-designed icons in Feather Icons style
+   - Uses `currentColor` for automatic color inheritance
+   - Configurable size prop (default: 18px)
+   - Clean, minimal stroke-based design
+
+2. **Icon Set Includes**:
+   - `save` - Save icon (floppy disk outline)
+   - `settings` - Settings gear with 8 spokes
+   - `markup` - Code braces `< >`
+   - `auto` - Circular refresh arrow
+   - `engrave` - Music notes on staff
+   - `export` - Download arrow
+   - `live` - Piano keys
+   - `chromatic` - Color palette
+   - `roll` - Sliders/faders
+   - `matcher` - Git compare nodes
+   - `audio` - Speaker with sound waves
+   - `cursor` - Crosshair target
+   - `play` / `pause` - Playback controls
+   - `font` - Typography "T"
+   - `baking` - Stacked layers
+   - `hide` - Eye with slash
+   - `pointer` - Mouse pointer arrow
+   - `measure` - Grid layout
+   - `inspect` - Magnifying glass
+   - `folder` - File folder
+
+3. **Updated CheckButton Component** (`app/components/check-button.vue`):
+   - Added `icon` prop to support Icon component
+   - Maintains backward compatibility with `content` prop
+   - Conditionally renders Icon or HTML content
+
+4. **Updated Playground Controls** (`app/views/playground.vue`):
+   - Replaced all Unicode character icons with `<Icon name="..." />`
+   - Updated all CheckButton usages to use `icon` prop
+   - Dynamic play/pause icon based on player state
+   - Consistent 18px icon size throughout
+
+**Design Principles**:
+- **Consistent style** - All icons follow Feather Icons aesthetic (2px stroke, rounded caps/joins)
+- **Scalable** - SVG format scales perfectly at any size
+- **Themeable** - Uses `currentColor` to inherit text color
+- **Accessible** - Clear, recognizable shapes with proper titles
+- **Lightweight** - Simple path-based design, minimal file size
+
+**Benefits**:
+- No more Unicode rendering inconsistencies across platforms
+- Better visual clarity and alignment
+- Easier to customize colors and sizes
+- Professional, modern appearance
+- Consistent design language
+
+Build Status: ✓ Successfully built (4.98s)
+
+Files created:
+- `app/components/icon.vue` (SVG icon component)
+
+Files modified:
+- `app/components/check-button.vue` (added icon prop support)
+- `app/views/playground.vue` (replaced all Unicode icons)
+</details>
+
+---
+
+> Enhance button on/off state visibility
+
+<details>
+<summary>Added clear visual distinction for CheckButton on/off states</summary>
+
+**User Request**: Make button on/off colors more apparent.
+
+**Changes Made** (`app/components/check-button.vue`):
+
+Added comprehensive styling for `.on` and `.off` states:
+
+**Off State (Default)**:
+```scss
+.check-button.off
+{
+	background: white;
+	color: #586069;
+}
+
+.check-button.off:hover:not(:disabled)
+{
+	background: #f6f8fa;
+	color: #24292e;
+}
+```
+
+**On State (Active)**:
+```scss
+.check-button.on
+{
+	background: #0969da;      // GitHub blue
+	color: white;
+	border-color: #0860ca;
+}
+
+.check-button.on:hover:not(:disabled)
+{
+	background: #0860ca;      // Darker blue on hover
+	border-color: #0757ba;
+}
+
+.check-button.on:active:not(:disabled)
+{
+	background: #0757ba;      // Even darker when pressed
+}
+```
+
+**Key Improvements**:
+1. **Clear contrast** - Off state: white/gray, On state: blue/white
+2. **Instant recognition** - Active buttons are immediately obvious with blue background
+3. **Smooth transitions** - 0.2s transition for all state changes
+4. **Interactive feedback** - Hover and active states provide clear visual feedback
+5. **Consistent design** - Uses GitHub's blue color palette (#0969da)
+
+**Visual States**:
+- **Off (inactive)** - White background, gray icon
+- **Off hover** - Light gray background, darker icon
+- **On (active)** - Blue background, white icon
+- **On hover** - Darker blue background
+- **On active** - Even darker blue when clicked
+
+This makes toggle state immediately apparent without having to look closely at each button.
+
+Build Status: ✓ Successfully built (5.00s)
+
+Files modified:
+- `app/components/check-button.vue` (added on/off state styles)
+</details>
+
+---
+
+> Complete tooltip annotations for all controls
+
+<details>
+<summary>Added comprehensive tooltips to all interactive controls</summary>
+
+**User Request**: Complete tooltip annotations for all controls.
+
+**Changes Made** (`app/views/playground.vue`):
+
+Added or improved `title` attributes on all buttons, CheckButtons, and inputs:
+
+**Header Controls**:
+- Line 16: Settings button - "settings"
+- Line 25: Export button - "export score package"
+- Line 34: Live staff - "toggle live staff view"
+- Line 36: Chromatic - "enable chromatic mode"
+- Line 37: Chromatic select - "chromatic mode type"
+- Line 42: MIDI roll - "toggle MIDI roll view"
+- Line 44: MIDI audio - "toggle MIDI audio playback"
+- Line 45: Playback cursor - "toggle playback cursor"
+- Line 46: Play/pause - "play/pause MIDI"
+- Line 51: Music font - "enable music font rendering"
+- Line 52: Baking - "enable sheet baking mode"
+- Line 53: Hide images - "hide baking background images"
+- Line 57: Pointer - "enable pointer tracking"
+- Line 70: Measure layout input - "measure layout code" (or error message)
+- Line 77: Apply button - "apply measure layout changes"
+- Line 81: Highlight symbol - "highlight symbol (case insensitive)"
+
+**Source Editor Corner**:
+- Line 93: Inspect button - "inspect lily document"
+
+**File Browser**:
+- Line 219: Folder button - "browse source files"
+
+**Tooltip Guidelines Applied**:
+1. **Action-oriented** - Use verbs (toggle, enable, apply, browse)
+2. **Clear purpose** - Describe what the control does
+3. **Keyboard shortcuts** - Included where applicable (e.g., "engrave (F8)")
+4. **Dynamic tooltips** - Measure layout shows error or default description
+5. **Consistent terminology** - "toggle" for on/off, "enable" for modes, "show" for views
+
+**Benefits**:
+- **Improved discoverability** - Users can understand controls by hovering
+- **Reduced learning curve** - No need to guess what each icon does
+- **Accessibility** - Screen readers can announce button purposes
+- **Professional UX** - Complete, polished interface
+- **Context-sensitive** - Error messages shown in tooltips when applicable
+
+All interactive controls now have descriptive, helpful tooltips that explain their purpose and function.
+
+Build Status: ✓ Successfully built (4.88s)
+
+Files modified:
+- `app/views/playground.vue` (added/improved tooltips throughout)
+</details>
+
+---
+
+> Refine the icon for cursor
+
+<details>
+<summary>Refined cursor icon to represent playback position</summary>
+
+**User Request**: Refine the cursor icon design for better visual representation.
+
+**Changes Made** (`app/components/icon.vue`):
+
+**Before** (lines 84-90):
+```vue
+<!-- Show cursor (crosshair) -->
+<g v-if="name === 'cursor'">
+	<circle cx="12" cy="12" r="10"/>
+	<line x1="12" y1="8" x2="12" y2="12"/>
+	<line x1="12" y1="16" x2="12" y2="12"/>
+	<line x1="8" y1="12" x2="12" y2="12"/>
+	<line x1="16" y1="12" x2="12" y2="12"/>
+</g>
+```
+
+**After** (lines 84-88):
+```vue
+<!-- Show cursor (playback cursor) -->
+<g v-if="name === 'cursor'">
+	<rect x="10.5" y="3" width="3" height="18" rx="1.5"/>
+	<path d="M7 3L10.5 6M17 3L13.5 6M7 21L10.5 18M17 21L13.5 18"/>
+</g>
+```
+
+**Design Details**:
+1. **Vertical bar** - Rounded rectangle (3×18) centered at x=12, spanning from y=3 to y=21
+2. **Corner arrows** - Four directional indicators at top-left, top-right, bottom-left, bottom-right pointing toward the bar
+3. **Rounded edges** - `rx="1.5"` for smooth corners
+4. **Playback cursor metaphor** - Represents position indicator/scrubber like in audio/video players
+
+**Key Improvements**:
+- Changed from crosshair/target design to vertical playback cursor bar
+- More intuitive representation of playback position tracking
+- Better aligned with the feature's purpose (showing cursor position during playback)
+- Maintains consistent 2px stroke width and Feather Icons style
+- Uses `currentColor` for automatic theme color inheritance
+
+Build Status: ✓ Successfully built (5.00s)
+
+Files modified:
+- `app/components/icon.vue` (cursor icon redesign)
+</details>
+
+---
+
