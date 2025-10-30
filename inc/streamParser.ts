@@ -4,7 +4,7 @@ import {EventEmitter} from "events";
 
 
 export default class StreamParser extends EventEmitter {
-	reader: ReadableStreamReader<Uint8Array>;
+	reader: ReadableStreamDefaultReader<Uint8Array>;
 	separator: string;
 
 
