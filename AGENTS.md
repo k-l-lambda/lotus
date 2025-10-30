@@ -49,5 +49,6 @@
 **Important constraints to remember**:
 1. Learn the development history from `agentlog.md` firstly.
 1. Update `agentlog.md` when a mini-milestone is accomplished.
+    agentlog should include both user's prompt and agent's response, and that should be summarized concisely if the original text is too redundance.
 1. Use tabs for indentation for all code file formats.
 1. Following further instuctions in `AGENTS.local.md` if present.

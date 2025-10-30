@@ -167,7 +167,8 @@
 
 
 		created () {
-			this.load();
+			// Defer load to avoid null reference errors during initial render
+			this.$nextTick(() => this.load());
 		},
 
 
@@ -179,7 +180,7 @@
 					this.notation = this.player.notation;
 
 					this.updateNoteStatus();
-					this.$forceUpdate();
+					// Remove $forceUpdate() - Vue 3 handles reactivity automatically
 				}
 				else if (this.midiURL) {
 					const buffer = await (await fetch(this.midiURL)).arrayBuffer();
