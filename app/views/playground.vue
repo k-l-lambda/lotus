@@ -374,7 +374,6 @@
 </template>
 
 <script>
-	//import _ from "lodash";
 	import { useResizeObserver } from "@vueuse/core";
 	import {MIDI, MidiAudio, MidiUtils, MusicNotation} from "@k-l-lambda/music-widgets";
 

@@ -2,3 +2,6 @@
 	path = third-party/music-widgets
 	url = git@github.com:k-l-lambda/web-widgets.git
 	branch = develop
+[submodule "third-party/web-editor"]
+	path = third-party/web-editor
+	url = git@github.com:k-l-lambda/web-editor.git
