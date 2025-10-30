@@ -77,5 +77,12 @@
     "pump": "3.0.2",
     "split-string": "3.1.0",
     "psl": "1.9.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/k-l-lambda/lotus.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }
