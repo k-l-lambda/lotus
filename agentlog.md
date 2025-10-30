@@ -2021,3 +2021,71 @@ Files modified:
 
 ---
 
+> Fix parser name detection in loadJisonParser.js to handle production URLs with Vite hash suffixes
+
+<details>
+<summary>Fixed Jison parser loading for production environment</summary>
+
+**User Report**: Production URLs like `http://192.168.106.242:8133/assets/lilypond-McRWYSMJ.jison` fail to load parsers due to Vite hash suffixes.
+
+**Root Cause**:
+The original parser name detection used a simple regex pattern that didn't account for Vite's production asset naming:
+```javascript
+const key = /lilypond/.test(grammarURL) ? "lilypond" : "measureLayout";
+```
+
+This approach failed when Vite added hash suffixes to filenames during production builds (e.g., `lilypond-McRWYSMJ.jison`).
+
+**Solution** (`app/loadJisonParser.js`):
+
+Created sophisticated `extractParserName()` function to handle all URL formats:
+```javascript
+function extractParserName(grammarURL) {
+	// Extract filename from URL (handle full URLs and relative paths)
+	const filename = grammarURL.split('/').pop();
+
+	// Remove extension (.jison)
+	const basename = filename.replace(/\.jison$/, '');
+
+	// Remove Vite hash suffix (e.g., "-McRWYSMJ")
+	// Hash format: dash followed by 8 alphanumeric characters
+	const nameWithoutHash = basename.replace(/-[a-zA-Z0-9]{8}$/, '');
+
+	return nameWithoutHash;
+}
+```
+
+Updated load function to use new extraction:
+```javascript
+const parserName = extractParserName(grammarURL);
+const key = parserName === "lilypond" ? "lilypond" : "measureLayout";
+```
+
+**URL Handling Examples**:
+- Development: `../../jison/lilypond.jison` → `"lilypond"`
+- Production relative: `/assets/lilypond-McRWYSMJ.jison` → `"lilypond"`
+- Production absolute: `http://192.168.106.242:8133/assets/lilypond-McRWYSMJ.jison` → `"lilypond"`
+- Measure layout: `/assets/measureLayout-abc123.jison` → `"measureLayout"`
+
+**Key Improvements**:
+1. **Path handling** - Splits URL by `/` and takes last segment (works with full URLs and relative paths)
+2. **Extension removal** - Strips `.jison` extension cleanly
+3. **Hash removal** - Removes Vite's 8-character alphanumeric hash suffix with regex
+4. **Documentation** - Added comprehensive JSDoc with examples
+5. **Debug logging** - Improved console message to show parsed parser name
+
+**Benefits**:
+- Works in both development and production environments
+- Handles Vite's asset hashing automatically
+- Supports full URLs with domains
+- Future-proof for different build configurations
+- Clear documentation with usage examples
+
+Build Status: ✓ Successfully built (5.05s)
+
+Files modified:
+- `app/loadJisonParser.js` (added extractParserName function lines 22-44, updated load function lines 46-62)
+</details>
+
+---
+

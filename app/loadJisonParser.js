@@ -19,15 +19,43 @@ async function loadPrebuiltParser(key) {
 	return parser;
 }
 
+/**
+ * Extracts the parser name from a grammar URL.
+ * Handles both development and production URLs with hash suffixes.
+ *
+ * Examples:
+ * - "../../jison/lilypond.jison" → "lilypond"
+ * - "/assets/lilypond-McRWYSMJ.jison" → "lilypond"
+ * - "http://host:port/assets/lilypond-McRWYSMJ.jison" → "lilypond"
+ * - "/assets/measureLayout-abc123.jison" → "measureLayout"
+ */
+function extractParserName(grammarURL) {
+	// Extract filename from URL (handle full URLs and relative paths)
+	const filename = grammarURL.split('/').pop();
+
+	// Remove extension (.jison)
+	const basename = filename.replace(/\.jison$/, '');
+
+	// Remove Vite hash suffix (e.g., "-McRWYSMJ")
+	// Hash format: dash followed by 8 alphanumeric characters
+	const nameWithoutHash = basename.replace(/-[a-zA-Z0-9]{8}$/, '');
+
+	return nameWithoutHash;
+}
+
 export default async function load(grammarModule) {
 	if (!parsers.get(grammarModule)) {
 		const { default: grammarURL } = await grammarModule;
-		const key = /lilypond\.jison$/.test(grammarURL) ? "lilypond" : "measureLayout";
+		const parserName = extractParserName(grammarURL);
+
+		// Map parser name to key used in loadPrebuiltParser
+		const key = parserName;
+
 		const t0 = performance.now();
 		const parser = await loadPrebuiltParser(key);
 		parsers.set(grammarModule, parser);
 		const t1 = performance.now();
-		console.debug("Prebuilt parser load cost:", t1 - t0);
+		console.debug(`Prebuilt parser "${parserName}" load cost:`, t1 - t0);
 	}
 
 	return parsers.get(grammarModule);
