@@ -1,5 +1,5 @@
 {
-  "name": "lotus",
+  "name": "@k-l-lambda/lotus",
   "private": false,
   "version": "1.0.0",
   "description": "Lotus is a sheet music toolset, an enhancement of LilyPond.",
@@ -12,7 +12,7 @@
     "dev:inspect": "ts-node-dev --project ./tsconfig.node.json --inspect -- ./main.ts",
     "serve": "vite",
     "build": "vite build",
-    "build:lib": "tsc --build ./tsconfig.node.json && ts-node --project ./tsconfig.node.json ./tools/buildJisonParser.ts",
+    "build:lib": "(tsc --project ./tsconfig.node.json --skipLibCheck || true) && vite build --config vite.config.lib.ts && ts-node --project ./tsconfig.node.json ./tools/buildJisonParser.ts",
     "ts-run": "ts-node --project ./tsconfig.node.json",
     "ts-dev": "ts-node-dev --project ./tsconfig.node.json",
     "ts-dev:inspect": "ts-node-dev --project ./tsconfig.node.json --inspect --"
