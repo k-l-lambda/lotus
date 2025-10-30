@@ -12,17 +12,17 @@
 				<span v-if="title" class="title">{{title}}</span>
 			</fieldset>
 			<fieldset>
-				<button @click="saveSource" title="save source"><Icon name="save" /></button>
-				<button @click="settingPanelVisible = true" title="settings"><Icon name="settings" /></button>
-				<button :class="{'hidden-but-hold-place': !lilyMarkups.enabled}" @click="markupSource" title="markup lilypond source" :disabled="loadingLilyParser"><Icon name="markup" /></button>
+				<button @click="saveSource" title="save source"><Icon name="floppy" /></button>
+				<button @click="settingPanelVisible = true" title="settings"><Icon name="gear" /></button>
+				<button :class="{'hidden-but-hold-place': !lilyMarkups.enabled}" @click="markupSource" title="markup lilypond source" :disabled="loadingLilyParser"><Icon name="code" /></button>
 			</fieldset>
 			<fieldset>
 				<BoolStoreInput v-show="false" v-model="autoEngrave" sessionKey="lotus-autoEngrave" />
-				<CheckButton icon="auto" v-model="autoEngrave" title="auto engrave" />
+				<CheckButton icon="refresh" v-model="autoEngrave" title="auto engrave when dirty" />
 				<button @click="engrave" :class="{working: engraving}" style="zoom: 160%" title="engrave (F8)">
-					<span class="dirty-badge" :class="{dirty: engraverDirty}"></span><Icon name="engrave" />
+					<span class="dirty-badge" :class="{dirty: engraverDirty}"></span><Icon name="music" />
 				</button>
-				<button :disabled="!sheetDocument" @click="exportScore" title="export score package"><Icon name="export" /></button>
+				<button :disabled="!sheetDocument" @click="exportScore" title="export score package"><Icon name="download" /></button>
 			</fieldset>
 			<fieldset>
 				<BoolStoreInput v-show="false" v-model="tokenizeStaff" sessionKey="lotus-tokenizeStaff" />
@@ -31,30 +31,30 @@
 				<BoolStoreInput v-show="false" v-model="enabledMidiAudio" sessionKey="lotus-enabledMidiAudio" />
 				<BoolStoreInput v-show="false" v-model="showCursor" sessionKey="lotus-playground.showCursor" />
 				<StoreInput v-show="false" v-model="chromaticMode" localKey="lotus-playground.chromaticMode" />
-				<CheckButton icon="live" v-model="tokenizeStaff" title="toggle live staff view" />
+				<CheckButton icon="piano" v-model="tokenizeStaff" title="toggle live staff view" />
 				<fieldset :class="{'hidden-but-hold-place': !tokenizeStaff}">
-					<CheckButton icon="chromatic" v-model="enabledChromatic" :disabled="!sheetDocument" title="enable chromatic mode" />
+					<CheckButton icon="palette" v-model="enabledChromatic" :disabled="!sheetDocument" title="enable chromatic mode" />
 					<select :class="{'hidden-but-hold-place': !enabledChromatic}" v-model="chromaticMode" title="chromatic mode type">
 						<option value="symbols">symbols</option>
 						<option value="pitch">pitch</option>
 						<option value="track">track</option>
 					</select>
-					<CheckButton icon="roll" v-model="rollVisible" :disabled="!midiPlayer" title="toggle MIDI roll view" />
-					<CheckButton icon="matcher" v-model="showNotationsMatcher" :disabled="!matcherNotations" title="show notations matcher" />
-					<CheckButton icon="audio" v-model="enabledMidiAudio" title="toggle MIDI audio playback" />
-					<CheckButton icon="cursor" v-model="showCursor" title="toggle playback cursor" />
-					<button @click="togglePlayer" :disabled="!midiPlayer" title="play/pause MIDI"><Icon :name="midiPlayer && midiPlayer.isPlaying ? 'pause' : 'play'" /></button>
+					<CheckButton icon="sliders" v-model="rollVisible" :disabled="!midiPlayer" title="toggle MIDI roll view" />
+					<CheckButton icon="git-branch" v-model="showNotationsMatcher" :disabled="!matcherNotations" title="show notations matcher" />
+					<CheckButton icon="speaker" v-model="enabledMidiAudio" title="toggle MIDI audio playback" />
+					<CheckButton icon="playbar" v-model="showCursor" title="toggle playback cursor" />
+					<button @click="togglePlayer" :disabled="!midiPlayer" title="play/pause MIDI"><Icon :name="midiPlayer && midiPlayer.isPlaying ? 'bars' : 'triangle-right'" /></button>
 				</fieldset>
 			</fieldset>
 			<fieldset :class="{'hidden-but-hold-place': !tokenizeStaff}">
 				<BoolStoreInput v-show="false" v-model="bakingSheet" sessionKey="lotus-bakingSheet" />
-				<CheckButton icon="font" v-model="enabledMusicFont" title="enable music font rendering" />
-				<CheckButton icon="baking" v-model="bakingSheet" title="enable sheet baking mode" />
-				<CheckButton :class="{'hidden-but-hold-place': !bakingSheet}" icon="hide" v-model="hideBakingImages" title="hide baking background images" />
+				<CheckButton icon="type" v-model="enabledMusicFont" title="enable music font rendering" />
+				<CheckButton icon="layers" v-model="bakingSheet" title="enable sheet baking mode" />
+				<CheckButton :class="{'hidden-but-hold-place': !bakingSheet}" icon="eye-off" v-model="hideBakingImages" title="hide baking background images" />
 			</fieldset>
 			<fieldset :class="{'hidden-but-hold-place': !tokenizeStaff}">
 				<BoolStoreInput v-show="false" v-model="enabledPointer" sessionKey="lotus-enabledPointer" />
-				<CheckButton icon="pointer" v-model="enabledPointer" title="enable pointer tracking" />
+				<CheckButton icon="cursor-arrow" v-model="enabledPointer" title="enable pointer tracking" />
 				<span class="pointer-info" v-if="enabledPointer">
 					<span v-if="pointerData">
 						<span>m: <em>{{pointerData.measureIndex}}</em></span>
@@ -63,7 +63,7 @@
 				</span>
 			</fieldset>
 			<fieldset>
-				<button @click="updateMeasureLayoutCode" title="update measure layout code" :disabled="loadingLilyParser"><Icon name="measure" /></button>
+				<button @click="updateMeasureLayoutCode" title="update measure layout code" :disabled="loadingLilyParser"><Icon name="brackets" /></button>
 				<input v-if="measureLayoutCode || measureLayoutCode===''" class="measure-layout-code" type="text"
 					:class="{error: measureLayoutCodeError, dirty: measureLayoutCodeDirty}"
 					v-model="measureLayoutCode"
@@ -90,7 +90,7 @@
 			>
 				<SourceEditor ref="sourceEditor" :source="lilySource" @update:source="lilySource = $event" :disabled="sourceIsLoading" />
 				<span class="corner">
-					<button class="inspect" @click="inspectLily" title="inspect lily document"><Icon name="inspect" /></button>
+					<button class="inspect" @click="inspectLily" title="inspect lily document"><Icon name="book" /></button>
 					<button class="log" :class="engraverLogStatus" v-show="engraverLogStatus"
 						:title="engraverLogs"
 						@click="showEngraverLog"

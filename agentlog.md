@@ -1727,3 +1727,297 @@ Files modified:
 
 ---
 
+> Refine icon of measure layout to a pair of square brackets
+
+<details>
+<summary>Refined measure layout icon to square brackets</summary>
+
+**User Request**: Refine the measure layout icon to be a pair of square brackets.
+
+**Rationale**: Square brackets better represent the bracket notation commonly used in measure layout code (e.g., `s: 1 n*[x]`), making the icon more semantically meaningful than the previous grid design.
+
+**Changes Made** (`app/components/icon.vue`, lines 126-129):
+
+**Before**:
+```vue
+<!-- Measure layout (grid) -->
+<g v-if="name === 'measure'">
+	<rect x="3" y="3" width="18" height="18" rx="2"/>
+	<line x1="9" y1="3" x2="9" y2="21"/>
+	<line x1="15" y1="3" x2="15" y2="21"/>
+	<line x1="3" y1="9" x2="21" y2="9"/>
+	<line x1="3" y1="15" x2="21" y2="15"/>
+</g>
+```
+
+**After**:
+```vue
+<!-- Measure layout (square brackets) -->
+<g v-if="name === 'measure'">
+	<path d="M9 4H6v16h3M15 4h3v16h-3"/>
+</g>
+```
+
+**Design Details**:
+- Left bracket: vertical line from (6,4) to (6,20) with horizontal segments at top and bottom extending to x=9
+- Right bracket: vertical line from (18,4) to (18,20) with horizontal segments at top and bottom extending to x=15
+- Simplified from 7 SVG elements (1 rect + 6 lines) to 1 path element
+- Maintains consistent 2px stroke width and Feather Icons style
+- Uses `currentColor` for automatic theme color inheritance
+
+**Benefits**:
+- More intuitive representation of measure layout notation
+- Cleaner, simpler SVG code (1 element vs 7)
+- Better semantic connection to the feature's purpose
+- Maintains visual consistency with other icons
+
+Build Status: ✓ Successfully built (5.02s)
+
+Files modified:
+- `app/components/icon.vue` (measure icon redesign, lines 126-129)
+</details>
+
+---
+
+> Rename icons by their shape, not by function
+
+<details>
+<summary>Renamed all icons using shape-based naming instead of function-based</summary>
+
+**User Request**: Rename icons by their shape, not by function.
+
+**Rationale**: Shape-based naming makes the icon component more reusable and semantically clearer. Icons represent visual forms, not specific application functions. This separation of concerns allows the same icon to be reused in different contexts without naming conflicts.
+
+**Icon Name Mapping**:
+
+| Old (Function) | New (Shape) | Visual Description |
+|----------------|-------------|-------------------|
+| `save` | `floppy` | Floppy disk |
+| `settings` | `gear` | Gear/cog |
+| `markup` | `code` | Angle brackets `< >` |
+| `auto` | `refresh` | Circular arrow |
+| `engrave` | `music` | Music notes |
+| `export` | `download` | Download arrow |
+| `live` | `piano` | Piano keys |
+| `chromatic` | `palette` | Color palette |
+| `roll` | `sliders` | Vertical sliders |
+| `matcher` | `git-branch` | Branch nodes |
+| `audio` | `speaker` | Speaker with waves |
+| `cursor` | `playbar` | Vertical bar with arrows |
+| `play` | `triangle-right` | Right-pointing triangle |
+| `pause` | `bars` | Two vertical bars |
+| `font` | `type` | Typography "T" |
+| `baking` | `layers` | Stacked layers |
+| `hide` | `eye-off` | Eye with slash |
+| `pointer` | `cursor-arrow` | Mouse pointer arrow |
+| `measure` | `brackets` | Square brackets `[ ]` |
+| `inspect` | `search` | Magnifying glass |
+| `folder` | `folder` | Folder (already shape-based) |
+
+**Changes Made**:
+
+1. **`app/components/icon.vue`**: Renamed all icon `v-if` conditions and updated comments to reflect shapes:
+   - Line 4: `name === 'floppy'` (was `'save'`)
+   - Line 11: `name === 'gear'` (was `'settings'`)
+   - Line 17: `name === 'code'` (was `'markup'`)
+   - Line 22: `name === 'refresh'` (was `'auto'`)
+   - Line 28: `name === 'music'` (was `'engrave'`)
+   - Line 35: `name === 'download'` (was `'export'`)
+   - Line 42: `name === 'piano'` (was `'live'`)
+   - Line 49: `name === 'palette'` (was `'chromatic'`)
+   - Line 58: `name === 'sliders'` (was `'roll'`)
+   - Line 71: `name === 'git-branch'` (was `'matcher'`)
+   - Line 79: `name === 'speaker'` (was `'audio'`)
+   - Line 85: `name === 'playbar'` (was `'cursor'`)
+   - Line 91: `name === 'triangle-right'` (was `'play'`)
+   - Line 96: `name === 'bars'` (was `'pause'`)
+   - Line 102: `name === 'type'` (was `'font'`)
+   - Line 109: `name === 'layers'` (was `'baking'`)
+   - Line 116: `name === 'eye-off'` (was `'hide'`)
+   - Line 122: `name === 'cursor-arrow'` (was `'pointer'`)
+   - Line 127: `name === 'brackets'` (was `'measure'`)
+   - Line 132: `name === 'search'` (was `'inspect'`)
+
+2. **`app/views/playground.vue`**: Updated all icon references:
+   - Line 15: `<Icon name="floppy" />` (save button)
+   - Line 16: `<Icon name="gear" />` (settings button)
+   - Line 17: `<Icon name="code" />` (markup button)
+   - Line 21: `icon="refresh"` (auto engrave CheckButton)
+   - Line 23: `<Icon name="music" />` (engrave button)
+   - Line 25: `<Icon name="download" />` (export button)
+   - Line 34: `icon="piano"` (live staff CheckButton)
+   - Line 36: `icon="palette"` (chromatic CheckButton)
+   - Line 42: `icon="sliders"` (MIDI roll CheckButton)
+   - Line 43: `icon="git-branch"` (matcher CheckButton)
+   - Line 44: `icon="speaker"` (audio CheckButton)
+   - Line 45: `icon="playbar"` (cursor CheckButton)
+   - Line 46: Dynamic icon - `midiPlayer.isPlaying ? 'bars' : 'triangle-right'` (play/pause button)
+   - Line 51: `icon="type"` (music font CheckButton)
+   - Line 52: `icon="layers"` (baking CheckButton)
+   - Line 53: `icon="eye-off"` (hide images CheckButton)
+   - Line 57: `icon="cursor-arrow"` (pointer CheckButton)
+   - Line 66: `<Icon name="brackets" />` (measure layout button)
+   - Line 93: `<Icon name="search" />` (inspect button)
+   - Line 219: `<Icon name="folder" />` (folder button - unchanged)
+
+**Benefits**:
+- **Semantic clarity** - Icon names describe visual appearance, not application logic
+- **Reusability** - Same icon can be used for different functions without confusion
+- **Maintainability** - Icon component is decoupled from application-specific concepts
+- **Consistency** - All icons follow shape-based naming convention
+- **Documentation** - Comments now accurately describe what each icon looks like
+
+**Example Usage**:
+```vue
+<!-- Shape-based naming is clearer -->
+<Icon name="floppy" />        <!-- Instead of "save" -->
+<Icon name="gear" />           <!-- Instead of "settings" -->
+<Icon name="brackets" />       <!-- Instead of "measure" -->
+```
+
+Build Status: ✓ Successfully built (4.97s)
+
+Files modified:
+- `app/components/icon.vue` (renamed all 20 icons)
+- `app/views/playground.vue` (updated all icon references)
+</details>
+
+---
+
+> Design a new icon for inspect button
+
+<details>
+<summary>Designed eye icon for inspect button</summary>
+
+**User Request**: Design a new icon for inspect button.
+
+**Rationale**: The previous magnifying glass icon (search) didn't accurately represent the "inspect" function. Inspecting a lily document is about viewing/examining its internal structure, not searching. An eye icon is the universal symbol for viewing/inspecting, making it far more intuitive.
+
+**Design Details** (`app/components/icon.vue`, lines 137-141):
+
+**New Eye Icon**:
+```vue
+<!-- Eye (inspect/view) -->
+<g v-if="name === 'eye'">
+	<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+	<circle cx="12" cy="12" r="3"/>
+</g>
+```
+
+**Icon Structure**:
+- Outer eye shape: Almond-shaped path representing the eye outline
+- Inner pupil: Circle (r=3) at center (12,12)
+- Path uses smooth curves to create realistic eye shape
+- Maintains consistent 2px stroke width with Feather Icons style
+- Uses `currentColor` for automatic theme color inheritance
+
+**Visual Design**:
+- Clean, recognizable eye symbol
+- Works at small sizes (18px default)
+- Clear distinction from `eye-off` icon (which has a slash through it)
+- Professional appearance matching other icons
+
+**Usage Update** (`app/views/playground.vue`, line 93):
+```vue
+<!-- Before -->
+<Icon name="search" />
+
+<!-- After -->
+<Icon name="eye" />
+```
+
+**Icon Comparison**:
+- **search** (magnifying glass) - Still available for actual search functionality
+- **eye** - New icon specifically for inspect/view operations
+- **eye-off** - Existing icon for hiding/concealing (has slash)
+
+**Benefits**:
+- More semantically accurate for "inspect" function
+- Universally recognized symbol for viewing/examining
+- Clear visual distinction from search functionality
+- Consistent with common UI patterns (eye = view/inspect)
+- Professional appearance matching the modern design
+
+Build Status: ✓ Successfully built (5.05s)
+
+Files modified:
+- `app/components/icon.vue` (added eye icon, lines 137-141)
+- `app/views/playground.vue` (updated inspect button to use eye icon, line 93)
+</details>
+
+---
+
+> Design a book icon for inspect button
+
+<details>
+<summary>Designed book icon for inspect button</summary>
+
+**User Request**: Design a book icon for inspect button.
+
+**Rationale**: A book icon is more appropriate for inspecting document content than an eye icon. Books universally represent documentation, reading, and structured content - making it the perfect metaphor for examining a lily document's structure and contents.
+
+**Design Details** (`app/components/icon.vue`, lines 143-147):
+
+**New Book Icon**:
+```vue
+<!-- Book (open book) -->
+<g v-if="name === 'book'">
+	<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+	<path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+</g>
+```
+
+**Icon Structure**:
+- **Left page**: Path starting from (2,3) with curved binding edge, representing left page of open book
+- **Right page**: Path starting from (22,3) with curved binding edge, representing right page of open book
+- **Center spine**: Created by the meeting of the two curved paths at x=12
+- **Perspective**: Slight 3D effect with pages curving outward from the spine
+- Maintains consistent 2px stroke width with Feather Icons style
+- Uses `currentColor` for automatic theme color inheritance
+
+**Visual Design**:
+- Clean open book symbol with two visible pages
+- Symmetric design centered at x=12
+- Works well at small sizes (18px default)
+- Recognizable book shape with curved pages
+- Professional appearance matching other icons
+- Clear distinction from folder icon
+
+**Usage Update** (`app/views/playground.vue`, line 93):
+```vue
+<!-- Previous -->
+<Icon name="eye" />
+
+<!-- Current -->
+<Icon name="book" />
+```
+
+**Icon Semantic Meaning**:
+- **book** - Open book represents reading/inspecting document content
+- **eye** - Still available for general view/visibility operations
+- **folder** - Represents file/directory navigation
+- **search** - Magnifying glass for search operations
+
+**Benefits**:
+- Perfect metaphor for document inspection and reading
+- Universally recognized symbol for documentation
+- Clear semantic connection to lily document structure
+- Distinguishes document inspection from general viewing
+- Consistent with documentation/reference UI patterns
+- Professional appearance matching the modern design
+
+**Design Comparison**:
+- Book icon emphasizes the document/textual nature of lily source
+- More specific than generic eye icon (viewing)
+- Better represents the action of inspecting structured content
+- Aligns with developer tools conventions (documentation icons)
+
+Build Status: ✓ Successfully built (5.04s)
+
+Files modified:
+- `app/components/icon.vue` (added book icon, lines 143-147)
+- `app/views/playground.vue` (updated inspect button to use book icon, line 93)
+</details>
+
+---
+
