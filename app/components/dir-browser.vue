@@ -14,7 +14,7 @@
 </template>
 
 <script>
-	import debounce from "lodash/debounce";
+	import { useDebounceFn } from "@vueuse/core";
 
 
 
@@ -36,6 +36,15 @@
 				href: this.homeURL,
 				hover: false,
 			};
+		},
+
+
+		created () {
+			// Create debounced auto-hide function
+			this.debouncedAutoHide = useDebounceFn(() => {
+				if (!this.hover)
+					this.hide();
+			}, 1e+3);
 		},
 
 
@@ -81,10 +90,7 @@
 
 			hover (value) {
 				if (!value && this.autoHide) {
-					debounce(() => {
-						if (!this.hover)
-							this.hide();
-					}, 1e+3)();
+					this.debouncedAutoHide();
 				}
 			},
 		},

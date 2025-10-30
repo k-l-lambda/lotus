@@ -34,7 +34,7 @@
 
 <script>
 	import url from "url";
-	import debounce from "lodash/debounce";
+	import { useDebounceFn } from "@vueuse/core";
 
 	import "../utils.js";
 	import {animationDelay} from "../delay.js";
@@ -93,6 +93,11 @@
 
 			this.watchFps();
 
+			// Create debounced scroll handler
+			this.onScroll = useDebounceFn(() => {
+				this.$refs.sheet.updatePageVisibility();
+			}, 60);
+
 			const hash = url.parse(location.hash.substr(1), true);
 			if (hash.query.score) {
 				this.disableStore = true;
@@ -117,12 +122,6 @@
 
 				return this.loadScoreFile(file);
 			},
-
-
-			onScroll: debounce(function () {
-				//console.log("onScroll", this);
-				this.$refs.sheet.updatePageVisibility();
-			}, 60, {leading: true}),
 
 
 			async loadScoreFile (file) {

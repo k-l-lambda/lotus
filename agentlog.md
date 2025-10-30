@@ -2194,3 +2194,66 @@ Files modified:
 
 ---
 
+> Refactor reference of lodash/debounce by best practice in Vue 3.
+
+<details>
+<summary>Replaced lodash/debounce with VueUse useDebounceFn</summary>
+
+**User Request**: Refactor lodash/debounce usage to follow Vue 3 best practices.
+
+**Motivation**: Replace lodash utility with VueUse composables for better Vue 3 integration and consistency.
+
+**Implementation**:
+
+Found 3 files using lodash/debounce:
+1. **app/views/profiler.vue** - Scroll handler with 60ms delay and leading option
+2. **app/components/remote-file.vue** - Content watcher with 1000ms delay
+3. **app/components/dir-browser.vue** - Hover watcher with inline execution
+
+**Pattern Applied** (Options API):
+1. Replace `import debounce from "lodash/debounce"` with `import { useDebounceFn } from "@vueuse/core"`
+2. Create debounced function in `created()` lifecycle hook using `useDebounceFn`
+3. Assign to component instance (`this.functionName`)
+4. Call from methods or watchers
+
+**Changes Made**:
+
+1. **app/views/profiler.vue**:
+   - Line 37: Updated import to use @vueuse/core
+   - Lines 96-99: Created `this.onScroll` debounced function in `created()` hook with 60ms delay
+   - Removed old `onScroll` method from methods object (was lines 127-130)
+   - Note: Dropped `leading: true` option as useDebounceFn doesn't support it
+
+2. **app/components/remote-file.vue**:
+   - Line 9: Updated import to use @vueuse/core
+   - Lines 49-53: Created `this.debouncedContentUpdate` in `created()` hook with 1000ms delay
+   - Lines 79-81: Updated content watcher to call debounced function
+
+3. **app/components/dir-browser.vue**:
+   - Line 17: Updated import to use @vueuse/core
+   - Lines 42-48: Added `created()` hook with `this.debouncedAutoHide` debounced function (1000ms delay)
+   - Lines 91-95: Simplified hover watcher to call debounced function
+
+**Key Differences from lodash/debounce**:
+- VueUse's `useDebounceFn` doesn't support `leading` option (profiler.vue previously had `{leading: true}`)
+- Cleaner integration with Vue 3 lifecycle and reactivity system
+- Lighter bundle size (already using @vueuse/core v14.0.0 in project)
+- Consistent with Vue 3 Composition API patterns
+
+**Benefits**:
+- Removed lodash/debounce dependency
+- Modern Vue 3 approach using VueUse ecosystem
+- Better integration with Vue's reactivity system
+- Maintains all original functionality (except leading option)
+- Code is more maintainable and follows current best practices
+
+Build Status: ✓ Successfully built (4.90s)
+
+Files modified:
+- `app/views/profiler.vue` (import line 37, created() lines 96-99, removed onScroll method)
+- `app/components/remote-file.vue` (import line 9, created() lines 49-53, watcher lines 79-81)
+- `app/components/dir-browser.vue` (import line 17, added created() lines 42-48, watcher lines 91-95)
+</details>
+
+---
+

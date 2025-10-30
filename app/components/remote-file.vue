@@ -6,7 +6,7 @@
 </template>
 
 <script>
-	import debounce from "lodash/debounce";
+	import { useDebounceFn } from "@vueuse/core";
 	import {RemoteFile} from "@k-l-lambda/web-editor";
 
 
@@ -45,6 +45,12 @@
 
 				this.$emit("update:connected", false);
 			});
+
+			// Create debounced content watcher
+			this.debouncedContentUpdate = useDebounceFn((value) => {
+				if (this.remoteFile.connected && value !== this.remoteFile.content)
+					this.remoteFile.content = value;
+			}, 1e+3);
 		},
 
 
@@ -70,10 +76,9 @@
 
 
 		watch: {
-			content: debounce(function (value) {
-				if (this.remoteFile.connected && value !== this.remoteFile.content)
-					this.remoteFile.content = value;
-			}, 1e+3),
+			content (value) {
+				this.debouncedContentUpdate(value);
+			},
 
 
 			loading (value) {
