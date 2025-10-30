@@ -1,6 +1,6 @@
 <template>
 	<dialog :open="visible" @click="close">
-		<main @click.stop="">
+		<main @click.stop>
 			<slot />
 		</main>
 	</dialog>
@@ -32,24 +32,40 @@
 		height: 100%;
 		left: 0;
 		width: 100%;
-		background-color: #ccca;
+		background-color: #0008;
 		cursor: pointer;
 		margin: 0;
 		padding: 0;
 		border: 0;
+		overflow: auto;
+		z-index: 1000;
+
+		&:not([open])
+		{
+			display: none;
+		}
+
+		&[open]
+		{
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
 
 		main
 		{
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
+			position: relative;
+			max-width: 90vw;
+			max-height: 90vh;
+			height: 90vh;
 			background-color: #fff;
-			border-radius: 2em;
-			padding: 2em;
+			border-radius: 12px;
+			padding: 0;
 			cursor: default;
-			text-align: center;
-			padding: 2em;
+			box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
 		}
 	}
 </style>

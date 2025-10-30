@@ -237,129 +237,138 @@
 			</div>
 		</main>
 		<Dialog :visible="settingPanelVisible" @update:visible="settingPanelVisible = $event">
-			<datalist id="lily-markups">
-				<option v-for="(method, i) of lilyMarkupMethods" :key="i" :value="method" />
-			</datalist>
-			<table class="settings">
-				<tbody>
-					<tr>
-						<th>MusicXML to Lilypond</th>
-						<td><hr /></td>
-					</tr>
-					<tr>
-						<td>Remove Breaks</td>
-						<td><BoolStoreInput v-model="xml2lyOptions.removeBreaks" localKey="lotus-xml2lyOptions.removeBreaks" /></td>
-					</tr>
-					<tr>
-						<td>Remove Staff Group</td>
-						<td><BoolStoreInput v-model="xml2lyOptions.removeStaffGroup" localKey="lotus-xml2lyOptions.removeStaffGroup" /></td>
-					</tr>
-					<tr>
-						<td>Merge Continuous Graces</td>
-						<td><BoolStoreInput v-model="xml2lyOptions.mergeContinuousGraces" localKey="lotus-xml2lyOptions.mergeContinuousGraces" /></td>
-					</tr>
-					<tr>
-						<td>Exclude Chord Tracks from MIDI</td>
-						<td><BoolStoreInput v-model="xml2lyOptions.excludeChordTracksFromMIDI" localKey="lotus-xml2lyOptions.excludeChordTracksFromMIDI" /></td>
-					</tr>
-					<tr>
-						<td>Use MIDI Instrument as Channel Mapping</td>
-						<td><BoolStoreInput v-model="xml2lyOptions.midiChannelMapping" localKey="lotus-xml2lyOptions.midiChannelMapping" /></td>
-					</tr>
-					<tr>
-						<td>Remove Trill Spans</td>
-						<td><button @click="removeTrillSpans" :disabled="loadingLilyParser">remove</button></td>
-					</tr>
-					<tr>
-						<td>Prune Stem Directions</td>
-						<td><button @click="executeMarkup('pruneStemDirections')" :disabled="loadingLilyParser">prune</button></td>
-					</tr>
-					<tr>
-						<td>Redivide Measures</td>
-						<td><button @click="redivideLilyDocument" :disabled="loadingLilyParser">redivide</button></td>
-					</tr>
-					<tr>
-						<th>Engrave</th>
-						<td><hr /></td>
-					</tr>
-					<tr>
-						<td>Logger Recorder</td>
-						<td><BoolStoreInput v-model="engraveWithLogs" localKey="lotus-engraveWithLogs" /></td>
-					</tr>
-					<tr>
-						<td>Use Sheet Notation</td>
-						<td><BoolStoreInput v-model="enabledSheetNotation" localKey="lotus-enabledSheetNot" /></td>
-					</tr>
-					<tr v-show="enabledSheetNotation">
-						<td>Fuzzy Notation Matcher</td>
-						<td><BoolStoreInput v-model="enabledFuzzyMatcher" localKey="lotus-enabledFuzzyMatcher" /></td>
-					</tr>
-					<tr>
-						<td>Measure Repeat Type</td>
-						<td>
-							<StoreInput v-show="false" v-model="measureLayoutType" localKey="lotus-measureLayoutType" />
-							<select v-model="measureLayoutType">
-								<option value="ordinary">Ordinary</option>
-								<option value="full">Full</option>
-								<option value="conservative">Conservative</option>
-								<option value="once">Once</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>Articulate MIDI</td>
-						<td>
-							<BoolStoreInput v-model="articulateMIDI" localKey="lotus-articulateMIDI" />
-						</td>
-					</tr>
-					<tr>
-						<th>Lilypond Markups</th>
-						<td><hr /></td>
-					</tr>
-					<tr>
-						<td>Enabled</td>
-						<td><BoolStoreInput v-model="lilyMarkups.enabled" localKey="lotus-lilyMarkups.enabled" /></td>
-					</tr>
-					<tr>
-						<td>Staff Size</td>
-						<td><StoreInput type="number" v-model.number="lilyMarkups.staffSize" localKey="lotus-lilyMarkups.staffSize" /></td>
-					</tr>
-					<tr>
-						<td>Auto Paper Size</td>
-						<td><BoolStoreInput v-model="lilyMarkups.autoPaperSize" localKey="lotus-lilyMarkups.autoPaperSize" /></td>
-					</tr>
-					<tr>
-						<td>Page Count</td>
-						<td><StoreInput type="number" v-model.number="lilyMarkups.pageCount" localKey="lotus-lilyMarkups.pageCount" /></td>
-					</tr>
-					<tr>
-						<td>System-System Spacing</td>
-						<td><StoreInput type="number" v-model.number="lilyMarkups.systemSpacing" localKey="lotus-lilyMarkups.systemSpacing" /></td>
-					</tr>
-					<tr>
-						<td>Top Markup Spacing</td>
-						<td><StoreInput type="number" v-model.number="lilyMarkups.topMarkupSpacing" localKey="lotus-lilyMarkups.topMarkupSpacing" /></td>
-					</tr>
-					<tr>
-						<td>Ragged Last</td>
-						<td><BoolStoreInput v-model="lilyMarkups.raggedLast" localKey="lotus-lilyMarkups.raggedLast" /></td>
-					</tr>
-					<tr>
-						<td>Export a Markup File</td>
-						<td><button @click="exportMarkupLily">export .ly</button></td>
-					</tr>
-					<tr>
-						<td>Execute Function</td>
-						<td>
-							<input type="text" list="lily-markups" v-model="chosenLilyMarkupMethod" />
-							<button @click="executeMarkup(chosenLilyMarkupMethod); chosenLilyMarkupMethod = null" :disabled="!chosenLilyMarkupMethod">
-								{{chosenLilyMarkupMethod ? "Call" : "Done"}}
-							</button>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+			<div class="settings-panel">
+				<header class="settings-header">
+					<h2>Settings</h2>
+					<button class="close-btn" @click.stop="settingPanelVisible = false" title="close">×</button>
+				</header>
+				<div class="settings-content">
+					<datalist id="lily-markups">
+						<option v-for="(method, i) of lilyMarkupMethods" :key="i" :value="method" />
+					</datalist>
+
+					<section class="settings-section">
+						<h3>MusicXML to Lilypond</h3>
+						<div class="settings-grid">
+							<label>
+								<span>Remove Breaks</span>
+								<BoolStoreInput v-model="xml2lyOptions.removeBreaks" localKey="lotus-xml2lyOptions.removeBreaks" />
+							</label>
+							<label>
+								<span>Remove Staff Group</span>
+								<BoolStoreInput v-model="xml2lyOptions.removeStaffGroup" localKey="lotus-xml2lyOptions.removeStaffGroup" />
+							</label>
+							<label>
+								<span>Merge Continuous Graces</span>
+								<BoolStoreInput v-model="xml2lyOptions.mergeContinuousGraces" localKey="lotus-xml2lyOptions.mergeContinuousGraces" />
+							</label>
+							<label>
+								<span>Exclude Chord Tracks from MIDI</span>
+								<BoolStoreInput v-model="xml2lyOptions.excludeChordTracksFromMIDI" localKey="lotus-xml2lyOptions.excludeChordTracksFromMIDI" />
+							</label>
+							<label>
+								<span>Use MIDI Instrument as Channel Mapping</span>
+								<BoolStoreInput v-model="xml2lyOptions.midiChannelMapping" localKey="lotus-xml2lyOptions.midiChannelMapping" />
+							</label>
+							<label>
+								<span>Remove Trill Spans</span>
+								<button @click="removeTrillSpans" :disabled="loadingLilyParser">Remove</button>
+							</label>
+							<label>
+								<span>Prune Stem Directions</span>
+								<button @click="executeMarkup('pruneStemDirections')" :disabled="loadingLilyParser">Prune</button>
+							</label>
+							<label>
+								<span>Redivide Measures</span>
+								<button @click="redivideLilyDocument" :disabled="loadingLilyParser">Redivide</button>
+							</label>
+						</div>
+					</section>
+
+					<section class="settings-section">
+						<h3>Engrave</h3>
+						<div class="settings-grid">
+							<label>
+								<span>Logger Recorder</span>
+								<BoolStoreInput v-model="engraveWithLogs" localKey="lotus-engraveWithLogs" />
+							</label>
+							<label>
+								<span>Use Sheet Notation</span>
+								<BoolStoreInput v-model="enabledSheetNotation" localKey="lotus-enabledSheetNot" />
+							</label>
+							<label v-show="enabledSheetNotation">
+								<span>Fuzzy Notation Matcher</span>
+								<BoolStoreInput v-model="enabledFuzzyMatcher" localKey="lotus-enabledFuzzyMatcher" />
+							</label>
+							<label>
+								<span>Measure Repeat Type</span>
+								<div class="input-group">
+									<StoreInput v-show="false" v-model="measureLayoutType" localKey="lotus-measureLayoutType" />
+									<select v-model="measureLayoutType">
+										<option value="ordinary">Ordinary</option>
+										<option value="full">Full</option>
+										<option value="conservative">Conservative</option>
+										<option value="once">Once</option>
+									</select>
+								</div>
+							</label>
+							<label>
+								<span>Articulate MIDI</span>
+								<BoolStoreInput v-model="articulateMIDI" localKey="lotus-articulateMIDI" />
+							</label>
+						</div>
+					</section>
+
+					<section class="settings-section">
+						<h3>Lilypond Markups</h3>
+						<div class="settings-grid">
+							<label>
+								<span>Enabled</span>
+								<BoolStoreInput v-model="lilyMarkups.enabled" localKey="lotus-lilyMarkups.enabled" />
+							</label>
+							<label>
+								<span>Staff Size</span>
+								<StoreInput type="number" v-model.number="lilyMarkups.staffSize" localKey="lotus-lilyMarkups.staffSize" />
+							</label>
+							<label>
+								<span>Auto Paper Size</span>
+								<BoolStoreInput v-model="lilyMarkups.autoPaperSize" localKey="lotus-lilyMarkups.autoPaperSize" />
+							</label>
+							<label>
+								<span>Page Count</span>
+								<StoreInput type="number" v-model.number="lilyMarkups.pageCount" localKey="lotus-lilyMarkups.pageCount" />
+							</label>
+							<label>
+								<span>System-System Spacing</span>
+								<StoreInput type="number" v-model.number="lilyMarkups.systemSpacing" localKey="lotus-lilyMarkups.systemSpacing" />
+							</label>
+							<label>
+								<span>Top Markup Spacing</span>
+								<StoreInput type="number" v-model.number="lilyMarkups.topMarkupSpacing" localKey="lotus-lilyMarkups.topMarkupSpacing" />
+							</label>
+							<label>
+								<span>Ragged Last</span>
+								<BoolStoreInput v-model="lilyMarkups.raggedLast" localKey="lotus-lilyMarkups.raggedLast" />
+							</label>
+							<label>
+								<span>Export a Markup File</span>
+								<button @click="exportMarkupLily">Export .ly</button>
+							</label>
+							<label class="full-width">
+								<span>Execute Function</span>
+								<div class="input-group">
+									<input type="text" list="lily-markups" v-model="chosenLilyMarkupMethod" placeholder="Choose method..." />
+									<button @click="executeMarkup(chosenLilyMarkupMethod); chosenLilyMarkupMethod = null" :disabled="!chosenLilyMarkupMethod">
+										{{chosenLilyMarkupMethod ? "Call" : "Done"}}
+									</button>
+								</div>
+							</label>
+						</div>
+					</section>
+				</div>
+			</div>
 		</Dialog>
+
 		<canvas v-show="false" ref="canvas" />
 	</div>
 </template>
@@ -2205,32 +2214,212 @@
 			}
 		}
 
-		.settings
+		.settings-panel
 		{
-			font-family: Verdana, Arial;
-			font-size: 20px;
+			width: 700px;
+			max-width: 90vw;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-			hr
+			.settings-header
 			{
-				border-width: .2px;
-			}
+				flex-shrink: 0;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 1.5em 2em;
+				border-bottom: 1px solid #e1e4e8;
+				background: linear-gradient(to bottom, #fafbfc 0%, #f6f8fa 100%);
 
-			th
-			{
-				text-transform: uppercase;
-				padding: 1em;
-				font-size: 120%;
-			}
-
-			td
-			{
-				text-align: left;
-				padding: .2em 1em;
-				white-space: nowrap;
-
-				&:first-child
+				h2
 				{
-					text-align: right;
+					margin: 0;
+					font-size: 20px;
+					font-weight: 600;
+					color: #24292e;
+				}
+
+				.close-btn
+				{
+					background: none;
+					border: none;
+					font-size: 32px;
+					line-height: 1;
+					color: #586069;
+					cursor: pointer;
+					padding: 0;
+					width: 32px;
+					height: 32px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					border-radius: 4px;
+					transition: all 0.15s;
+
+					&:hover
+					{
+						background: #e1e4e8;
+						color: #24292e;
+					}
+
+					&:active
+					{
+						background: #d1d5da;
+					}
+				}
+			}
+
+			.settings-content
+			{
+				flex: 1 1 auto;
+				padding: 1.5em 2em 2em;
+				overflow-y: auto;
+				min-height: 0;
+			}
+
+			.settings-section
+			{
+				margin-bottom: 2em;
+
+				&:last-child
+				{
+					margin-bottom: 0;
+				}
+
+				h3
+				{
+					font-size: 14px;
+					font-weight: 600;
+					text-transform: uppercase;
+					letter-spacing: 0.5px;
+					color: #586069;
+					margin: 0 0 1em 0;
+					padding-bottom: 0.5em;
+					border-bottom: 1px solid #e1e4e8;
+				}
+			}
+
+			.settings-grid
+			{
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1em;
+
+				label
+				{
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					padding: 0.75em;
+					background: #f6f8fa;
+					border-radius: 6px;
+					border: 1px solid #e1e4e8;
+					transition: all 0.15s;
+					min-height: 48px;
+
+					&:hover
+					{
+						background: #fff;
+						border-color: #d1d5da;
+						box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+					}
+
+					&.full-width
+					{
+						grid-column: 1 / -1;
+					}
+
+					span
+					{
+						font-size: 13px;
+						color: #24292e;
+						font-weight: 500;
+						margin-right: 1em;
+						flex-shrink: 0;
+					}
+
+					input[type="checkbox"]
+					{
+						flex-shrink: 0;
+					}
+
+					input[type="number"],
+					input[type="text"],
+					select
+					{
+						padding: 0.4em 0.6em;
+						border: 1px solid #d1d5da;
+						border-radius: 4px;
+						font-size: 13px;
+						background: white;
+						min-width: 0;
+						flex-shrink: 1;
+
+						&:focus
+						{
+							outline: 2px solid #0969da;
+							outline-offset: 0;
+							border-color: #0969da;
+						}
+					}
+
+					input[type="number"]
+					{
+						width: 80px;
+					}
+
+					input[type="text"]
+					{
+						flex: 1;
+						min-width: 0;
+					}
+
+					select
+					{
+						min-width: 120px;
+					}
+
+					button
+					{
+						padding: 0.4em 1em;
+						border: 1px solid #d1d5da;
+						border-radius: 4px;
+						background: white;
+						color: #24292e;
+						font-size: 12px;
+						font-weight: 500;
+						cursor: pointer;
+						transition: all 0.15s;
+						white-space: nowrap;
+
+						&:hover:not(:disabled)
+						{
+							background: #f6f8fa;
+							border-color: #b1b5ba;
+						}
+
+						&:active:not(:disabled)
+						{
+							background: #e9ecef;
+						}
+
+						&:disabled
+						{
+							opacity: 0.5;
+							cursor: not-allowed;
+						}
+					}
+
+					.input-group
+					{
+						display: flex;
+						gap: 0.5em;
+						align-items: center;
+						flex: 1;
+						min-width: 0;
+					}
 				}
 			}
 		}

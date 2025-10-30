@@ -51,5 +51,6 @@
 1. Update `agentlog.md` when a mini-milestone is accomplished.
     agentlog should include both user's prompt and agent's response, agent's response should be enclosed inside a foldable `<details>`.
     The content should be summarized concisely if the original text is too redundance.
+    Fix typos in prompt text if present.
 1. Use tabs for indentation for all code file formats.
 1. Following further instuctions in `AGENTS.local.md` if present.

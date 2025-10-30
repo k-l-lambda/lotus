@@ -1427,3 +1427,303 @@ Files modified:
 
 ---
 
+> Refactor the UI of settings panel, the current one may display incomplete.
+
+<details>
+<summary>Refactored settings panel with modern grid layout</summary>
+
+**User Request**: Refactor the settings panel UI because the current one may display incomplete.
+
+**Problem Analysis**:
+- Old table-based layout with large font size (20px) was difficult to fit on screen
+- Dialog component lacked scrolling support
+- Settings table could be cut off on smaller screens
+- No visual hierarchy or organization
+
+**Changes Made**:
+
+1. **Dialog Component Improvements** (`app/components/dialog.vue`):
+   - Added flexbox layout with centering for proper modal positioning
+   - Changed `max-width: 90vw` and `max-height: 90vh` to constrain dialog size
+   - Added `overflow: auto` to dialog main content for scrolling
+   - Improved backdrop: darker overlay (#0008) with better shadow
+   - Added `z-index: 1000` for proper stacking
+   - Removed `padding: 2em` from main (moved to content wrapper)
+
+2. **Settings Panel Structure** (`app/views/playground.vue`):
+
+   **Before**: Single table with all settings mixed together
+   ```html
+   <table class="settings">
+     <tbody>
+       <tr><th>Section</th><td><hr /></td></tr>
+       <tr><td>Label</td><td><input /></td></tr>
+       ...
+     </tbody>
+   </table>
+   ```
+
+   **After**: Organized sections with modern grid layout
+   ```html
+   <div class="settings-panel">
+     <header class="settings-header">
+       <h2>Settings</h2>
+       <button class="close-btn">×</button>
+     </header>
+     <div class="settings-content">
+       <section class="settings-section">
+         <h3>Section Name</h3>
+         <div class="settings-grid">
+           <label>
+             <span>Label</span>
+             <input />
+           </label>
+         </div>
+       </section>
+     </div>
+   </div>
+   ```
+
+3. **New Design Features**:
+   - **Fixed width**: 700px (was unbound table width)
+   - **Header bar**: Title + close button, subtle gradient background
+   - **Scrollable content**: `max-height: calc(90vh - 100px)` with overflow
+   - **Three organized sections**: "MusicXML to Lilypond", "Engrave", "Lilypond Markups"
+   - **2-column grid**: Responsive layout with 1em gap
+   - **Card-based labels**: Each setting in a bordered card with hover effect
+   - **Proper spacing**: Consistent padding, margins, and gaps
+   - **Modern typography**: System font stack, 13-14px sizes
+   - **Interactive feedback**: Hover states, focus outlines, transitions
+
+4. **Styling Improvements** (`app/views/playground.vue`):
+   - Grid layout: `grid-template-columns: 1fr 1fr`
+   - Card style: Light gray background (#f6f8fa), rounded corners (6px)
+   - Hover effect: White background with subtle shadow
+   - Section headers: Uppercase, letter-spaced, with bottom border
+   - Input consistency: All inputs styled uniformly (13px, #d1d5da borders)
+   - Focus states: Blue outline (#0969da) on all inputs
+   - Button styling: Compact (12px font), proper hover/active/disabled states
+   - Close button: Large × icon (32px) with hover background
+
+5. **Responsive Features**:
+   - `.full-width` class for items spanning both columns (Execute Function)
+   - `.input-group` for inline button + input combinations
+   - Flexbox labels: Space-between layout for label text and controls
+   - Min-width constraints on number inputs (80px), selects (120px)
+
+**Key Improvements**:
+- All settings now visible and accessible with scrolling
+- Better visual organization with clear sections
+- Modern, professional appearance consistent with rest of UI
+- Easier to scan and find specific settings
+- Responsive to different screen sizes
+- Improved accessibility with proper label associations
+
+Build Status: ✓ Successfully built (5.01s)
+
+Files modified:
+- `app/components/dialog.vue` (scrolling support, better layout)
+- `app/views/playground.vue` (complete settings panel redesign)
+</details>
+
+---
+
+> Now the settings panel cannot be closed.
+
+<details>
+<summary>Fixed settings panel close button</summary>
+
+**User Report**: Settings panel cannot be closed after refactoring.
+
+**Root Cause**:
+The Dialog component's `<main>` element had `@click.stop=""` which should be `@click.stop` (without empty string). Additionally, the close button needed `.stop` modifier to prevent event bubbling.
+
+**Fix Applied**:
+
+1. **Dialog Component** (`app/components/dialog.vue`, line 3):
+   ```vue
+   <!-- Before -->
+   <main @click.stop="">
+
+   <!-- After -->
+   <main @click.stop>
+   ```
+   - Removed incorrect empty string from `@click.stop` directive
+   - Proper event.stopPropagation() now works correctly
+
+2. **Close Button** (`app/views/playground.vue`, line 243):
+   ```vue
+   <!-- Before -->
+   <button class="close-btn" @click="settingPanelVisible = false">
+
+   <!-- After -->
+   <button class="close-btn" @click.stop="settingPanelVisible = false">
+   ```
+   - Added `.stop` modifier to prevent click event from propagating to parent handlers
+   - Ensures only the button's handler executes, not the Dialog's backdrop click
+
+**How It Works Now**:
+- Click on close button → `.stop` prevents propagation → sets `settingPanelVisible = false` → dialog closes
+- Click on backdrop → Dialog's `@click="close"` → emits `update:visible` with false → dialog closes
+- Click inside settings panel → `@click.stop` on main prevents propagation → dialog stays open
+
+Build Status: ✓ Successfully built (4.99s)
+
+Files modified:
+- `app/components/dialog.vue` (fixed click.stop directive)
+- `app/views/playground.vue` (added .stop to close button)
+</details>
+
+---
+
+> There is a bug, inner element's height out of main of dialog, and don't use scrollbar for main.
+
+<details>
+<summary>Fixed dialog overflow and scrollbar layout</summary>
+
+**User Report**: Settings panel content overflows the dialog's main element without proper scrollbar.
+
+**Root Cause**:
+The dialog layout wasn't using flexbox properly, causing child elements to overflow without respecting the `max-height: 90vh` constraint. The settings-content had a hardcoded `max-height: calc(90vh - 100px)` which didn't work correctly.
+
+**Fix Applied**:
+
+1. **Dialog Component** (`app/components/dialog.vue`, lines 56-58):
+   ```scss
+   main
+   {
+       // ... existing styles
+       display: flex;
+       flex-direction: column;
+       overflow: hidden;
+   }
+   ```
+   - Added flexbox layout to main element
+   - `overflow: hidden` prevents content from spilling out
+   - Allows children to use flex properties properly
+
+2. **Settings Panel Structure** (`app/views/playground.vue`):
+
+   **Settings Panel** (lines 2217-2221):
+   ```scss
+   .settings-panel
+   {
+       width: 700px;
+       max-width: 90vw;
+       height: 100%;                    // NEW: Fill parent height
+       display: flex;                   // NEW: Flexbox container
+       flex-direction: column;          // NEW: Stack vertically
+       font-family: ...;
+   }
+   ```
+
+   **Header** (line 2224):
+   ```scss
+   .settings-header
+   {
+       flex-shrink: 0;                  // NEW: Don't shrink header
+       display: flex;
+       // ... rest of styles
+   }
+   ```
+
+   **Content** (lines 2270-2275):
+   ```scss
+   .settings-content
+   {
+       flex: 1 1 auto;                  // NEW: Take remaining space
+       padding: 1.5em 2em 2em;
+       overflow-y: auto;                // Scrollbar here
+       min-height: 0;                   // NEW: Allow flex shrinking
+   }
+   ```
+   - Removed hardcoded `max-height: calc(90vh - 100px)`
+   - Uses flex to automatically calculate available height
+
+**How It Works Now**:
+```
+Dialog main (max-height: 90vh, flex column, overflow: hidden)
+  └─ settings-panel (height: 100%, flex column)
+      ├─ settings-header (flex-shrink: 0) — fixed height
+      └─ settings-content (flex: 1, overflow-y: auto) — scrollable
+```
+
+**Key Improvements**:
+- Header stays fixed at top
+- Content area takes remaining space and scrolls independently
+- Respects 90vh maximum height constraint
+- No content overflow outside dialog boundaries
+- Proper scrollbar appears only on content area when needed
+- Works responsively with any content size
+
+Build Status: ✓ Successfully built (4.95s)
+
+Files modified:
+- `app/components/dialog.vue` (added flexbox layout to main)
+- `app/views/playground.vue` (fixed settings panel flex layout)
+</details>
+
+---
+
+> `display: flex;` of dialog broke the function of `open` of dialog, fix this.
+
+<details>
+<summary>Fixed dialog open attribute with conditional display</summary>
+
+**User Report**: Adding `display: flex` to the dialog element broke the `open` attribute functionality.
+
+**Root Cause**:
+The HTML `<dialog>` element has special behavior with the `open` attribute - browsers automatically hide dialogs without the `open` attribute by setting `display: none`. When we unconditionally set `display: flex` in CSS, it overrides this native behavior, making the dialog always visible regardless of the `open` attribute state.
+
+**Fix Applied** (`app/components/dialog.vue`, lines 44-54):
+
+**Before**:
+```scss
+dialog
+{
+    // ... other styles
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // ...
+}
+```
+
+**After**:
+```scss
+dialog
+{
+    // ... other styles
+    overflow: auto;
+    z-index: 1000;
+
+    &:not([open])
+    {
+        display: none;
+    }
+
+    &[open]
+    {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+```
+
+**How It Works**:
+1. **`&:not([open])`** - Dialogs without the `open` attribute get `display: none` (hidden)
+2. **`&[open]`** - Dialogs with the `open` attribute get `display: flex` with centering (visible)
+3. Preserves native `<dialog>` element behavior while adding flexbox layout when open
+
+**Additional Cleanup**:
+- Removed debug `console.log("visible:", this.visible)` from the close method
+
+Build Status: ✓ Successfully built (5.40s)
+
+Files modified:
+- `app/components/dialog.vue` (conditional display based on open attribute)
+</details>
+
+---
+
