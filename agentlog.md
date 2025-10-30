@@ -1143,3 +1143,31 @@ Files modified:
 
 ---
 
+> Improve dirty state visibility on build-container
+
+<details>
+<summary>Increased dirty border thickness for better visibility</summary>
+
+**User Feedback**: The dirty style on sheet-container was not visible enough.
+
+**Change Made**:
+Increased the inset box-shadow border width from 2px to 3px (line 2060):
+
+```scss
+&.dirty
+{
+	box-shadow: inset 0 0 0 3px #fb8500;  // was 2px
+	background-color: #fff5e6;
+}
+```
+
+The orange border around the build-container is now more prominent and easier to see when `engraverDirty` is true, providing clearer visual feedback that there are unsaved changes.
+
+Build Status: ✓ Successfully built (4.95s)
+
+Files modified:
+- `app/views/playground.vue` (styles line 2060)
+</details>
+
+---
+

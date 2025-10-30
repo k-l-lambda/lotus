@@ -2057,8 +2057,11 @@
 
 				&.dirty
 				{
-					box-shadow: inset 0 0 0 2px #fb8500;
-					background-color: #fff5e6;
+					.sheet-container
+					{
+						box-shadow: inset 0 0 0 1px #fb8500;
+						background-color: #fff5e6;
+					}
 				}
 
 				.sheet-container
