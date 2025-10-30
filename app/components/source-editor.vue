@@ -185,6 +185,7 @@
 		overflow: auto;
 		padding: 10px;
 		flex: 1;
+		tab-size: 4;
 
 		&:focus
 		{

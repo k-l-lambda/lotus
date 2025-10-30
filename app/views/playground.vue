@@ -14,14 +14,14 @@
 			<fieldset>
 				<button @click="saveSource" title="save source">&#x1f4be;</button>
 				<button @click="settingPanelVisible = true">&#x2699;</button>
-				<button v-show="lilyMarkups.enabled" @click="markupSource" title="markup lilypond source" :disabled="loadingLilyParser">{}</button>
+				<button :class="{'hidden-but-hold-place': !lilyMarkups.enabled}" @click="markupSource" title="markup lilypond source" :disabled="loadingLilyParser">{}</button>
 			</fieldset>
 			<fieldset>
-				<span>
-					<BoolStoreInput v-model="autoEngrave" sessionKey="lotus-autoEngrave" />auto
-				</span>
-				<span class="dirty-badge" :class="{dirty: engraverDirty}"></span>
-				<button @click="engrave" :class="{working: engraving}" style="zoom: 160%" title="engrave (F8)">&#x1f3bc;</button>
+				<BoolStoreInput v-show="false" v-model="autoEngrave" sessionKey="lotus-autoEngrave" />
+				<CheckButton content="&#x21bb;" v-model="autoEngrave" title="auto engrave" />
+				<button @click="engrave" :class="{working: engraving}" style="zoom: 160%" title="engrave (F8)">
+					<span class="dirty-badge" :class="{dirty: engraverDirty}"></span>&#x1f3bc;
+				</button>
 				<button :disabled="!sheetDocument" @click="exportScore">&#x1f4e6;</button>
 			</fieldset>
 			<fieldset>
@@ -32,9 +32,9 @@
 				<BoolStoreInput v-show="false" v-model="showCursor" sessionKey="lotus-playground.showCursor" />
 				<StoreInput v-show="false" v-model="chromaticMode" localKey="lotus-playground.chromaticMode" />
 				<CheckButton content="&#x1f3b9;" v-model="tokenizeStaff" title="live staff" />
-				<fieldset v-show="tokenizeStaff">
+				<fieldset :class="{'hidden-but-hold-place': !tokenizeStaff}">
 					<CheckButton content="&#x1f3a8;" v-model="enabledChromatic" :disabled="!sheetDocument" title="chromatic mode" />
-					<select v-show="enabledChromatic" v-model="chromaticMode">
+					<select :class="{'hidden-but-hold-place': !enabledChromatic}" v-model="chromaticMode">
 						<option value="symbols">symbols</option>
 						<option value="pitch">pitch</option>
 						<option value="track">track</option>
@@ -46,13 +46,13 @@
 					<button @click="togglePlayer" :disabled="!midiPlayer">{{midiPlayer && midiPlayer.isPlaying ? "&#x23f8;" : "&#x25b6;"}}</button>
 				</fieldset>
 			</fieldset>
-			<fieldset v-show="tokenizeStaff">
+			<fieldset :class="{'hidden-but-hold-place': !tokenizeStaff}">
 				<BoolStoreInput v-show="false" v-model="bakingSheet" sessionKey="lotus-bakingSheet" />
 				<CheckButton content="&#x5b57;" v-model="enabledMusicFont" title="enabled music font" />
 				<CheckButton content="&#x1f35e;" v-model="bakingSheet" title="baking sheet" />
-				<CheckButton v-show="bakingSheet" content="&#x1f9b2;" v-model="hideBakingImages" title="hide baking images" />
+				<CheckButton :class="{'hidden-but-hold-place': !bakingSheet}" content="&#x1f9b2;" v-model="hideBakingImages" title="hide baking images" />
 			</fieldset>
-			<fieldset v-show="tokenizeStaff">
+			<fieldset :class="{'hidden-but-hold-place': !tokenizeStaff}">
 				<BoolStoreInput v-show="false" v-model="enabledPointer" sessionKey="lotus-enabledPointer" />
 				<CheckButton content="&#x2196;" v-model="enabledPointer" />
 				<span class="pointer-info" v-if="enabledPointer">
@@ -1667,6 +1667,11 @@
 		}
 	}
 
+	.hidden-but-hold-place
+	{
+		visibility: hidden;
+	}
+
 	.playground
 	{
 		position: absolute;
@@ -1762,6 +1767,8 @@
 
 				button
 				{
+					position: relative;
+
 					&.working
 					{
 						background: #d4edda;
@@ -1863,24 +1870,19 @@
 
 			.dirty-badge
 			{
-				display: inline-block;
-				width: 1.2em;
-				height: 1.2em;
-				line-height: 1.2em;
-				text-align: center;
+				position: absolute;
+				top: 1px;
+				right: 1px;
+				width: 0.6em;
+				height: 0.6em;
 				border-radius: 50%;
-				font-size: 14px;
-				font-weight: bold;
+				font-size: 10px;
+				pointer-events: none;
 
 				&.dirty
 				{
 					background: #fb8500;
-					color: white;
-
-					&::before
-					{
-						content: "*";
-					}
+					box-shadow: 0 0 0 1px white;
 				}
 			}
 		}

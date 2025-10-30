@@ -861,3 +861,285 @@ Files modified:
 
 ---
 
+> Make hidden controls on controls bar just invisible, but hold its place.
+
+<details>
+<summary>Changed conditional hidden controls to use visibility: hidden</summary>
+
+**User Request**: Make hidden controls in the controls bar invisible but hold their place in the layout.
+
+**Clarification**: Only change **conditional** `v-show` attributes (like `v-show="tokenizeStaff"`), keep **unconditional** `v-show="false"` unchanged.
+
+**Problem**: Conditional `v-show` uses `display: none/block`, which can cause layout shifts when elements appear/disappear. Need to use `visibility: hidden/visible` instead to maintain layout stability.
+
+**Solution**:
+1. Keep `v-show="false"` unchanged (these are hidden storage inputs that should be removed from layout)
+2. Replace conditional `v-show` with `:class` binding using `visibility: hidden`
+
+**Changes Made**:
+
+1. **Added CSS class** (app/views/playground.vue, lines 1670-1673):
+   ```scss
+   .hidden-but-hold-place {
+       visibility: hidden;
+   }
+   ```
+
+2. **Updated conditional controls** (app/views/playground.vue):
+   - Line 17: Button with `v-show="lilyMarkups.enabled"` → `:class="{'hidden-but-hold-place': !lilyMarkups.enabled}"`
+   - Line 35: Fieldset with `v-show="tokenizeStaff"` → `:class="{'hidden-but-hold-place': !tokenizeStaff}"`
+   - Line 37: Select with `v-show="enabledChromatic"` → `:class="{'hidden-but-hold-place': !enabledChromatic}"`
+   - Line 49: Fieldset with `v-show="tokenizeStaff"` → `:class="{'hidden-but-hold-place': !tokenizeStaff}"`
+   - Line 53: CheckButton with `v-show="bakingSheet"` → `:class="{'hidden-but-hold-place': !bakingSheet}"`
+   - Line 55: Fieldset with `v-show="tokenizeStaff"` → `:class="{'hidden-but-hold-place': !tokenizeStaff}"`
+
+3. **Kept unchanged** (lines 10, 28-33, 50, 56):
+   - All `v-show="false"` on StoreInput and BoolStoreInput components remain as-is
+   - These are hidden storage inputs that don't need to hold space
+
+**Why This Works**:
+- `visibility: hidden` keeps the element in the layout flow but makes it invisible
+- Parent fieldset widths remain stable when conditional children are hidden
+- Layout doesn't shift when controls toggle visibility
+- Storage inputs with `v-show="false"` correctly use `display: none` (removed from layout)
+
+Build Status: ✓ Successfully built (4.89s)
+
+Files modified:
+- `app/views/playground.vue` (template lines 17, 35, 37, 49, 53, 55; styles lines 1670-1673)
+</details>
+
+---
+
+> Redesign the control of `auto` as a compact icon.
+
+<details>
+<summary>Redesigned auto-engrave control with compact icon</summary>
+
+**User Request**: Redesign the "auto" control to be a compact icon instead of text.
+
+**Changes Made**:
+
+**Before** (lines 20-22):
+```vue
+<span>
+    <BoolStoreInput v-model="autoEngrave" sessionKey="lotus-autoEngrave" />auto
+</span>
+```
+
+**After** (line 20):
+```vue
+<BoolStoreInput v-model="autoEngrave" sessionKey="lotus-autoEngrave" title="auto engrave">&#x21bb;</BoolStoreInput>
+```
+
+**Key Improvements**:
+1. **Removed wrapper span** - simplified structure
+2. **Replaced text "auto" with icon** - Used ↻ (&#x21bb;) circular arrow symbol representing automatic/refresh
+3. **Added tooltip** - `title="auto engrave"` provides context on hover
+4. **More compact** - Takes less horizontal space while maintaining clear functionality
+5. **Consistent with other controls** - Matches the icon-based design pattern used throughout the controls bar
+
+**Icon Choice**: The circular anticlockwise arrow (↻) is commonly used to represent automatic refresh/reload functionality, making it intuitive for users to understand this toggles automatic engraving.
+
+Build Status: ✓ Successfully built (5.13s)
+
+Files modified:
+- `app/views/playground.vue` (template lines 20-22 → line 20)
+</details>
+
+---
+
+<summary>Redesigned auto-engrave control with compact icon</summary>
+
+**User Request**: Redesign the "auto" control to be a compact icon instead of text.
+
+**Changes Made**:
+
+**Before** (lines 20-22):
+```vue
+<span>
+    <BoolStoreInput v-model="autoEngrave" sessionKey="lotus-autoEngrave" />auto
+</span>
+```
+
+**After** (line 20):
+```vue
+<BoolStoreInput v-model="autoEngrave" sessionKey="lotus-autoEngrave" title="auto engrave">&#x21bb;</BoolStoreInput>
+```
+
+**Key Improvements**:
+1. **Removed wrapper span** - simplified structure
+2. **Replaced text "auto" with icon** - Used ↻ (&#x21bb;) circular arrow symbol representing automatic/refresh
+3. **Added tooltip** - `title="auto engrave"` provides context on hover
+4. **More compact** - Takes less horizontal space while maintaining clear functionality
+5. **Consistent with other controls** - Matches the icon-based design pattern used throughout the controls bar
+
+**Icon Choice**: The circular anticlockwise arrow (↻) is commonly used to represent automatic refresh/reload functionality, making it intuitive for users to understand this toggles automatic engraving.
+
+Build Status: ✓ Successfully built (5.13s)
+
+Files modified:
+- `app/views/playground.vue` (template lines 20-22 → line 20)
+</details>
+
+---
+
+
+> You should use CheckButton replace BoolStoreInput for auto engrave control.
+
+<details>
+<summary>Replaced BoolStoreInput with CheckButton for auto-engrave control</summary>
+
+**User Correction**: Use CheckButton instead of BoolStoreInput for the auto-engrave control UI.
+
+**Changes Made**:
+
+**After previous change** (line 20):
+```vue
+<BoolStoreInput v-model="autoEngrave" sessionKey="lotus-autoEngrave" title="auto engrave">&#x21bb;</BoolStoreInput>
+```
+
+**After this fix** (lines 20-21):
+```vue
+<BoolStoreInput v-show="false" v-model="autoEngrave" sessionKey="lotus-autoEngrave" />
+<CheckButton content="&#x21bb;" v-model="autoEngrave" title="auto engrave" />
+```
+
+**Pattern Applied**:
+This follows the consistent pattern used throughout the controls bar:
+1. **Hidden BoolStoreInput** (`v-show="false"`) - handles session storage persistence
+2. **Visible CheckButton** - provides the UI control with icon
+
+This pattern is used for all other toggleable controls (tokenizeStaff, rollVisible, showNotationsMatcher, etc.)
+
+**Benefits**:
+- Consistent with the rest of the codebase
+- Separates storage logic from UI presentation
+- CheckButton provides better visual feedback for toggle state
+- Maintains session persistence through BoolStoreInput
+
+Build Status: ✓ Successfully built (5.11s)
+
+Files modified:
+- `app/views/playground.vue` (template line 20 → lines 20-21)
+</details>
+
+---
+
+> Move dirty-badge inside engrave button
+
+<details>
+<summary>Relocated dirty-badge indicator inside engrave button element</summary>
+
+**User Request**: Move the dirty-badge inside the engrave button for better visual integration.
+
+**Changes Made**:
+
+**Before** (lines 22-23):
+```vue
+<span class="dirty-badge" :class="{dirty: engraverDirty}"></span>
+<button @click="engrave" :class="{working: engraving}" style="zoom: 160%" title="engrave (F8)">&#x1f3bc;</button>
+```
+
+**After** (lines 22-24):
+```vue
+<button @click="engrave" :class="{working: engraving}" style="zoom: 160%" title="engrave (F8)">
+	<span class="dirty-badge" :class="{dirty: engraverDirty}"></span>&#x1f3bc;
+</button>
+```
+
+**Key Improvements**:
+1. **Integrated indicator** - Dirty badge now appears within the button bounds
+2. **Better visual grouping** - State indicator is directly associated with the action button
+3. **Cleaner layout** - Reduces horizontal spacing between controls
+4. **Contextual feedback** - Users can see the dirty state directly on the engrave button
+
+The dirty-badge continues to show an orange dot when `engraverDirty` is true, but now positioned as part of the engrave button's visual design.
+
+Build Status: ✓ Successfully built (4.95s)
+
+Files modified:
+- `app/views/playground.vue` (template lines 22-24)
+</details>
+
+---
+
+> Redesign dirty-badge as corner indicator
+
+<details>
+<summary>Made dirty-badge smaller and positioned in button corner</summary>
+
+**User Request**: Make the dirty-badge smaller and position it in the corner of the engrave button without taking up text space.
+
+**Changes Made**:
+
+1. **Button positioning** (line 1770):
+   - Added `position: relative;` to button elements to contain the absolutely positioned badge
+
+2. **Dirty-badge styling** (lines 1871-1887):
+   
+**Before**:
+```scss
+.dirty-badge
+{
+	display: inline-block;
+	width: 1.2em;
+	height: 1.2em;
+	line-height: 1.2em;
+	text-align: center;
+	border-radius: 50%;
+	font-size: 14px;
+	font-weight: bold;
+
+	&.dirty
+	{
+		background: #fb8500;
+		color: white;
+
+		&::before
+		{
+			content: "*";
+		}
+	}
+}
+```
+
+**After**:
+```scss
+.dirty-badge
+{
+	position: absolute;
+	top: -2px;
+	right: -2px;
+	width: 0.6em;
+	height: 0.6em;
+	border-radius: 50%;
+	font-size: 10px;
+	pointer-events: none;
+
+	&.dirty
+	{
+		background: #fb8500;
+		box-shadow: 0 0 0 1px white;
+	}
+}
+```
+
+**Key Improvements**:
+1. **Smaller size** - Reduced from 1.2em to 0.6em (50% smaller)
+2. **Corner positioning** - Absolutely positioned at top-right corner (-2px offset)
+3. **No text space** - Removed from layout flow, doesn't affect button icon position
+4. **Visual clarity** - White border shadow makes orange dot stand out
+5. **Simpler design** - Pure dot indicator instead of asterisk character
+6. **Non-interactive** - `pointer-events: none` allows clicking through to button
+
+The dirty-badge now appears as a small orange dot in the top-right corner of the engrave button when `engraverDirty` is true, similar to notification badges in mobile apps.
+
+Build Status: ✓ Successfully built (4.92s)
+
+Files modified:
+- `app/views/playground.vue` (styles lines 1770, 1871-1887)
+</details>
+
+---
+
