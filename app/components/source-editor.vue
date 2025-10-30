@@ -165,8 +165,8 @@
 		padding: 10px 8px;
 		text-align: right;
 		font-family: monospace;
-		font-size: 16px;
-		line-height: 19px;
+		font-size: 14px;
+		line-height: 17px;
 		overflow: hidden;
 		user-select: none;
 		border-right: 1px solid #ddd;
@@ -180,8 +180,8 @@
 		height: 100%;
 		box-sizing: border-box;
 		font-family: monospace;
-		font-size: 16px;
-		line-height: 19px;
+		font-size: 14px;
+		line-height: 17px;
 		overflow: auto;
 		padding: 10px;
 		flex: 1;

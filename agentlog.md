@@ -813,3 +813,51 @@ Files modified:
 ---
 
 
+
+
+> There is a problem for position of .corner
+>
+> The problem is .source-container width is less that its children.
+
+<details>
+<summary>Fixed .corner positioning and .source-container width issues</summary>
+
+**User Reports**:
+1. Position of `.corner` element was problematic
+2. `.source-container` width is less than its children, causing overflow
+
+**Fixes Applied**:
+
+1. **Fixed .corner Positioning** (app/views/playground.vue, lines 1929-1974):
+   - Removed problematic gradient background: `linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.9) 40%)`
+   - Changed positioning from `top: 0; right: 0;` to `top: 0.3em; right: 0.3em;` for proper edge spacing
+   - Removed container padding and border-radius
+   - Added `box-shadow: 0 1px 3px rgba(0,0,0,0.1)` to buttons for better depth
+   - Increased `.inspect` button opacity from `0.3` to `0.4` for better visibility
+   - Enhanced hover effects with shadow transitions
+
+2. **Fixed .source-container Width Issue** (app/views/playground.vue, lines 1906-1918):
+   - Added `min-width: 0` to allow flex shrinking below content size
+   - Added `overflow: hidden` to contain child content
+   - Added `width: 100%` to child divs to respect parent width constraint
+
+**Root Cause**:
+- The `.source-container` had `width: 40%` but no `min-width` or `overflow` handling
+- In flexbox layout, without `min-width: 0`, the container won't shrink below its content's intrinsic width
+- Child elements (like SourceEditor) were expanding beyond the 40% constraint
+- The gradient background on `.corner` created visual positioning issues
+
+**Why the Fix Works**:
+- `min-width: 0` allows flexbox items to shrink below content size
+- `overflow: hidden` clips content that exceeds the container bounds
+- `width: 100%` on children ensures they respect parent constraints
+- Simplified `.corner` styling with proper spacing and shadows provides clean appearance
+
+Build Status: ✓ Successfully built (4.90s)
+
+Files modified:
+- `app/views/playground.vue` (lines 1906-1974)
+</details>
+
+---
+

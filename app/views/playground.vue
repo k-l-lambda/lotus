@@ -1650,17 +1650,20 @@
 	{
 		&[data-hover-type="text/x-lilypond"], &[data-hover-type="text/lilypond-source"]
 		{
-			background-color: #cfc;
+			background-color: #e8f5e8;
+			box-shadow: inset 0 0 0 3px #6c6;
 		}
 
 		&[data-hover-type="text/xml"]
 		{
-			background-color: #ffc;
+			background-color: #ffefc8;
+			box-shadow: inset 0 0 0 3px #fc6;
 		}
 
 		&[data-hover-type="audio/midi"], &[data-hover-type="audio/mid"]
 		{
-			background-color: #cff;
+			background-color: #e0f2f7;
+			box-shadow: inset 0 0 0 3px #69f;
 		}
 	}
 
@@ -1674,56 +1677,211 @@
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
+		background: #fafbfc;
 
 		header
 		{
+			background: linear-gradient(to bottom, #fff 0%, #f8f9fa 100%);
+			border-bottom: 1px solid #e1e4e8;
+			box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+			padding: 0.5em 0.8em;
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: center;
+			gap: 0.3em;
+			transition: background-color 0.2s;
+
 			.title
 			{
-				font-weight: bold;
+				font-weight: 600;
+				font-size: 15px;
+				color: #24292e;
+				margin-right: 0.5em;
 			}
 
 			&.buzy
 			{
-				background-color: #ffc;
+				background: linear-gradient(to bottom, #fffacd 0%, #fff9b8 100%);
+				border-bottom-color: #f0e68c;
+			}
+
+			fieldset
+			{
+				display: inline-flex;
+				align-items: center;
+				gap: 0.3em;
+				border: 0;
+				padding: 0 0.6em;
+				margin: 0;
+				border-left: 1px solid #e1e4e8;
+
+				&:first-of-type
+				{
+					border-left: 0;
+					padding-left: 0;
+				}
+
+				& > span
+				{
+					display: inline-flex;
+					align-items: center;
+					gap: 0.25em;
+					font-size: 13px;
+					color: #586069;
+				}
+
+				button, select, input[type="text"]
+				{
+					font-size: 18px;
+					padding: 0.25em 0.5em;
+					border: 1px solid #d1d5da;
+					border-radius: 4px;
+					background: white;
+					cursor: pointer;
+					transition: all 0.15s;
+
+					&:hover:not(:disabled)
+					{
+						background: #f6f8fa;
+						border-color: #b1b5ba;
+					}
+
+					&:active:not(:disabled)
+					{
+						background: #e9ecef;
+					}
+
+					&:disabled
+					{
+						opacity: 0.5;
+						cursor: not-allowed;
+						background: #f1f3f5;
+					}
+				}
+
+				button
+				{
+					&.working
+					{
+						background: #d4edda;
+						border-color: #95c7a3;
+						animation: pulse 1.5s ease-in-out infinite;
+					}
+
+					@keyframes pulse
+					{
+						0%, 100% { opacity: 1; }
+						50% { opacity: 0.8; }
+					}
+				}
+
+				select
+				{
+					padding: 0.2em 0.4em;
+					font-size: 13px;
+				}
 			}
 
 			.pointer-info
 			{
 				display: inline-block;
-				width: 8em;
+				min-width: 8em;
+				font-size: 13px;
+				color: #586069;
+				background: #f6f8fa;
+				padding: 0.3em 0.6em;
+				border-radius: 4px;
+				border: 1px solid #e1e4e8;
 
-				& > span > span + span
+				& > span > span
 				{
 					display: inline-block;
-					margin-left: .6em;
+
+					& + span
+					{
+						margin-left: 0.6em;
+					}
+
+					em
+					{
+						font-style: normal;
+						font-weight: 600;
+						color: #24292e;
+					}
 				}
 			}
 
 			.measure-layout-code
 			{
-				width: 22em;
-				font-size: 20px;
+				width: 18em;
+				font-size: 13px;
+				font-family: 'Consolas', 'Monaco', monospace;
+				padding: 0.3em 0.6em;
+				border: 1px solid #d1d5da;
+				border-radius: 4px;
+				transition: all 0.2s;
 
 				&.error
 				{
-					border: red 1px solid;
-					background-color: #fcc;
+					border-color: #f85149;
+					background-color: #ffeef0;
+					box-shadow: 0 0 0 2px #ffdbde;
 				}
 
 				&.dirty
 				{
-					outline: black 2px solid;
+					border-color: #0969da;
+					background: #eff6ff;
+					box-shadow: 0 0 0 2px #d8e6f7;
 				}
 			}
 
 			.apply
 			{
-				font-size: 70%;
+				font-size: 12px;
+				padding: 0.3em 0.7em;
+				background: #0969da;
+				color: white;
+				border: 0;
+				font-weight: 600;
+
+				&:hover:not(:disabled)
+				{
+					background: #0860ca;
+				}
 			}
 
 			.hightlight-symbol
 			{
-				border: #4441 1px solid;
+				border: 1px solid #d1d5da;
+				width: 3em;
+				text-align: center;
+				font-family: 'Consolas', 'Monaco', monospace;
+				font-size: 13px;
+			}
+
+			.dirty-badge
+			{
+				display: inline-block;
+				width: 1.2em;
+				height: 1.2em;
+				line-height: 1.2em;
+				text-align: center;
+				border-radius: 50%;
+				font-size: 14px;
+				font-weight: bold;
+
+				&.dirty
+				{
+					background: #fb8500;
+					color: white;
+
+					&::before
+					{
+						content: "*";
+					}
+				}
 			}
 		}
 
@@ -1735,15 +1893,21 @@
 			width: 100%;
 			display: flex;
 			flex-direction: row;
+			gap: 1px;
+			background: #e1e4e8;
 
 			& > *
 			{
 				height: 100%;
 				position: relative;
+				background: white;
 			}
 
 			.source-container
 			{
+				box-shadow: 2px 0 4px rgba(0,0,0,0.04);
+				z-index: 1;
+
 				& > div
 				{
 					height: 100%;
@@ -1751,14 +1915,25 @@
 
 				&.drag-hover
 				{
-					outline: 4px #4f4 dashed;
+					background-color: #e8f5e8;
+					box-shadow: inset 0 0 0 2px #6c6;
+				}
+
+				&.loading
+				{
+					filter: blur(5px);
+					opacity: 0.7;
 				}
 
 				.corner
 				{
 					position: absolute;
-					top: .2em;
-					right: .2em;
+					top: 0.3em;
+					right: 0.3em;
+					z-index: 100;
+					display: flex;
+					gap: 0.3em;
+					align-items: center;
 
 					button
 					{
@@ -1766,56 +1941,85 @@
 						outline: 0;
 						cursor: pointer;
 						vertical-align: top;
+						transition: all 0.15s;
 					}
 
 					.inspect
 					{
-						background: transparent;
-						font-size: 200%;
-						opacity: .01;
+						padding: 0.2em 0.4em;
+						font-size: 16px;
+						border: 1px solid #d1d5da;
+						background: white;
+						border-radius: 4px;
+						opacity: 0.4;
+						box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 
 						&:hover
 						{
 							opacity: 1;
+							background: #f6f8fa;
+							box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 						}
 					}
 
 					.log
 					{
-						border-radius: 1em;
+						font-size: 20px;
+						border: 1px solid;
+						border-radius: 4px;
+						padding: 0.2em 0.4em;
+						line-height: 1;
 						font-weight: bold;
+						box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 
 						&.info
 						{
-							color: green;
+							color: #059669;
+							background: #d1fae5;
+							border-color: #34d399;
 
 							&::before
 							{
 								content: "\24d8";
 							}
+
+							&:hover
+							{
+								background: #a7f3d0;
+							}
 						}
 
 						&.warning
 						{
-							font-size: 160%;
-							color: darkorange;
-							background: lightyellow;
+							color: #d97706;
+							background: #fef3c7;
+							border-color: #fbbf24;
 
 							&::before
 							{
 								content: "\26a0";
 							}
+
+							&:hover
+							{
+								background: #fde68a;
+							}
 						}
 
 						&.error
 						{
-							font-size: 160%;
-							color: red;
-							background: pink;
+							color: #dc2626;
+							background: #fee2e2;
+							border-color: #f87171;
 
 							&::before
 							{
 								content: "\24d4";
+							}
+
+							&:hover
+							{
+								background: #fecaca;
 							}
 						}
 					}
@@ -1823,9 +2027,10 @@
 
 				&.connected
 				{
-					.source-editor 
+					.source-editor
 					{
-						outline: 2px solid #0006;
+						outline: 2px solid #10b981;
+						background: #f0fdf4;
 
 						.prism-editor-wrapper
 						{
@@ -1844,13 +2049,14 @@
 
 				&.loading > .sheet-container
 				{
-					filter: blur(8px);
+					filter: blur(6px);
+					opacity: 0.8;
 				}
 
 				&.dirty
 				{
-					outline: #fc0a 1px solid;
-					background-color: #fc01;
+					box-shadow: inset 0 0 0 2px #fb8500;
+					background-color: #fff5e6;
 				}
 
 				.sheet-container
@@ -1858,6 +2064,7 @@
 					flex: 1 1 0;
 					overflow: auto;
 					width: 100%;
+					background: #f6f8fa;
 				}
 
 				// sheet custom styles
@@ -1870,8 +2077,15 @@
 					{
 						display: inline-block;
 						margin: 1em;
-						background: #f6fffa;
-						border-radius: 1em;
+						background: white;
+						border-radius: 8px;
+						box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+						transition: box-shadow 0.2s;
+
+						&:hover
+						{
+							box-shadow: 0 4px 12px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.08);
+						}
 					}
 
 					.cursor
