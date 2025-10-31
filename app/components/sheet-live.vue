@@ -665,7 +665,7 @@
 	@use "../styles/sheetConstants.css";
 
 
-	.sheet
+	.sheet :deep(.page)
 	{
 		.mark
 		{

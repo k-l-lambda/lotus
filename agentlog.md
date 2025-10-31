@@ -2257,3 +2257,161 @@ Files modified:
 
 ---
 
+
+## 2025/10/31
+
+
+> There is a bug, it seems style of .sheet .mark .locator text not take effects.
+
+<details>
+<summary>Fixed .locator text styles with Vue :deep() selector</summary>
+
+**User Report**: Styles for `.sheet .mark .locator text` are not taking effect.
+
+**Root Cause**:
+The `.locator` elements are rendered from parent component (`playground.vue`) through slots:
+```vue
+<template v-slot:system="slot">
+	<g class="locator">
+		<text>...</text>
+	</g>
+</template>
+```
+
+In `sheet-live.vue`, the `<style lang="scss" scoped>` attribute causes Vue to add scoped data attributes. However, slotted content from parent components doesn't receive these scoped attributes, breaking the style selector `.mark .locator text`.
+
+**Solution**: Use Vue 3's `:deep()` pseudo-selector to style slotted content and child elements.
+
+**Fix Applied** (`app/components/sheet-live.vue`, line 675):
+
+**Before**:
+```scss
+.mark {
+	.locator {
+		text {
+			font-size: 2px;
+			text-anchor: start;
+			pointer-events: none;
+		}
+	}
+}
+```
+
+**After**:
+```scss
+.mark {
+	:deep(.locator) {
+		text {
+			font-size: 2px;
+			text-anchor: start;
+			pointer-events: none;
+		}
+	}
+}
+```
+
+**How It Works**:
+- `:deep()` (formerly `::v-deep`) is Vue 3's deep selector for scoped styles
+- Allows parent component's scoped styles to penetrate into slotted child content
+- Properly targets SVG `<text>` elements inside `.locator` regardless of scoping
+- Maintains style encapsulation while allowing targeted deep styling
+
+**Benefits**:
+- Fixes broken styles for `.locator text` elements
+- Proper Vue 3 scoped styles pattern for slotted content
+- Maintains component style encapsulation
+- Works with SVG elements passed through slots
+
+Build Status: ✓ Successfully built (4.90s)
+
+Files modified:
+- `app/components/sheet-live.vue` (line 675: changed `.locator` to `:deep(.locator)`)
+</details>
+
+---
+
+> Got error: Debug Failure. False expression: Non-string value passed to `ts.resolveTypeReferenceDirective`
+
+<details>
+<summary>Fixed ts-node compatibility and canvas optional dependency</summary>
+
+**User Report**: Backend dev server fails to start with error:
+```
+Error: Debug Failure. False expression: Non-string value passed to `ts.resolveTypeReferenceDirective`,
+likely by a wrapping package working with an outdated `resolveTypeReferenceDirectives` signature.
+```
+
+**Root Cause**:
+The project had very outdated TypeScript tooling that was incompatible:
+- `ts-node`: ^8.7.0 (from 2020)
+- `ts-node-dev`: ^1.0.0-pre.44 (pre-release from 2020)
+- `typescript`: ^4.9.5
+
+ts-node version 8.7.0 uses an outdated API that's incompatible with TypeScript 4.9.5.
+
+**Additional Issue**: User removed the `canvas` package (optional dependency), but `backend/canvas.ts` had a type-only import causing TypeScript compilation errors even though canvas was only loaded dynamically at runtime.
+
+**Solutions Applied**:
+
+1. **Updated ts-node packages** (`package.json`, lines 61-62):
+   ```json
+   "ts-node": "^10.9.2",
+   "ts-node-dev": "^2.0.0",
+   ```
+
+2. **Fixed canvas optional dependency** (`backend/canvas.ts`):
+   - Commented out type import: `//import type {PNGStream} from "canvas";`
+   - Changed return type to `Promise<any>` (line 7)
+   - Added `@ts-ignore` directive before dynamic import (line 11) with comment explaining canvas is optional
+
+**Changes Made**:
+
+`package.json`:
+```diff
+- "ts-node": "^8.7.0",
+- "ts-node-dev": "^1.0.0-pre.44",
++ "ts-node": "^10.9.2",
++ "ts-node-dev": "^2.0.0",
+```
+
+`backend/canvas.ts`:
+```typescript
+// Before
+import type {PNGStream} from "canvas";
+const svgToPng = async (sourceURL: string|Buffer): Promise<PNGStream> => {
+	const {loadImage, createCanvas} = await import("canvas");
+	...
+}
+
+// After
+//import type {PNGStream} from "canvas";
+const svgToPng = async (sourceURL: string|Buffer): Promise<any> => {
+	// @ts-ignore - canvas is optional dependency, loaded dynamically
+	const {loadImage, createCanvas} = await import("canvas");
+	...
+}
+```
+
+**Installation Note**: Installed dependencies with `yarn install --ignore-scripts` to skip canvas build scripts (per user instruction).
+
+**Why This Works**:
+- ts-node 10.9.2 has the updated API that works with TypeScript 4.9.5
+- `@ts-ignore` allows TypeScript to skip checking the dynamic import
+- Canvas is only loaded at runtime when `svgToPng()` is called and not in MOBILE_MODE
+- Return type `Promise<any>` avoids needing canvas type declarations
+
+**Benefits**:
+- Backend dev server starts successfully
+- Modern, maintained ts-node versions
+- Canvas remains optional without causing compilation errors
+- Proper support for TypeScript 4.9.5
+
+Dev Server Status: ✓ Running on http://0.0.0.0:8130
+
+Files modified:
+- `package.json` (lines 61-62: updated ts-node packages)
+- `backend/canvas.ts` (lines 3, 7, 11-12: commented type import, changed return type, added @ts-ignore)
+</details>
+
+---
+
