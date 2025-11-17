@@ -12,9 +12,9 @@ import {SVG_DTD} from "../inc/constants";
 declare class SheetDocument {};
 
 
-const mountTemp = (Comp: any) => {
+const mountTemp = (Comp: any, props = {}) => {
 	const container = document.createElement("div");
-	const app = createApp(Comp);
+	const app = createApp(Comp, props);
 	const inst = app.mount(container) as any;
 	return { app, inst, container };
 };
@@ -126,15 +126,17 @@ const bakeLiveSheetGen = async function* ({sheetDocument, signs, hashTable, matc
 	console.assert(!!canvas, "canvas is null.");
 	console.assert(signs || hashTable, "signs & hashTable is both null.");
 
-	const { app: sheetApp, inst: sheet } = mountTemp(SheetLive);
-	sheet.doc = sheetDocument;
-	sheet.partialVisible = false;
+	const { app: sheetApp, inst: sheet } = mountTemp(SheetLive, {
+		doc: sheetDocument,
+		partialVisible: false,
+	});
 
 	await Promise.resolve();
 
 	if (!signs) {
-		signs = mountTemp(SheetSigns).inst;
-		signs.hashTable = hashTable;
+		signs = mountTemp(SheetSigns, {
+			hashTable: hashTable,
+		}).inst;
 	}
 
 	const defs = signs.$el.children[0];
