@@ -2415,3 +2415,245 @@ Files modified:
 
 ---
 
+## 2025-11-17
+
+
+> Fix CSS styles not working when lotus library is used as npm package in other projects (klstudio)
+
+<details>
+<summary>Fixed cross-project CSS compatibility and documented library CSS import requirements</summary>
+
+**User Report**: CSS styles not working when `@k-l-lambda/lotus` library (built with `yarn build:lib`) is used in klstudio project. Specifically, styles under `.sheet.live .page .mark` (especially `rect { fill: transparent }`) were not taking effect.
+
+**Investigation Process**:
+
+1. **Initial Check**: Compared CSS output from both `yarn build` and `yarn build:lib`
+   - Found both generated identical CSS with scoped attributes: `.sheet.live[data-v-9e0b0f69] .page .mark`
+   - Both had 8 identical `.sheet.live` selectors
+   - CSS content was byte-for-byte identical
+
+2. **Clarification**: User explained that both builds have `data-v-*` attributes, but when library is used as a component in other projects, styles under `.sheet.live :deep(.page)` don't work.
+
+3. **Root Cause Discovery**: Vue scoped styles with `:deep()` don't work correctly across project boundaries. Scoped attributes (`data-v-*`) are compile-time generated and specific to each build/project. When a library is built separately and used in another project, the scoped attributes don't match, breaking the styles.
+
+**Solution Attempts**:
+
+**Attempt 1**: Use `.sheet.live :deep(.page)` with scoped styles
+- Result: Failed in cross-project usage
+- Generated: `.sheet.live[data-v-9e0b0f69] .page`
+- Problem: Scoped attributes don't work across project boundaries
+
+**Attempt 2**: Remove scoped styles, move to non-scoped block
+- Changed `app/components/sheet-live.vue` to use non-scoped `<style>` block
+- Moved all `.page` child styles from scoped section to non-scoped section
+- Result: Still didn't work initially
+
+**Attempt 3**: Add `!important` to specific style
+- User reported `rect { fill: transparent }` still not working
+- Added `fill: transparent !important;` to ensure priority
+- Result: Still didn't work
+
+**Attempt 4**: Check consuming project file
+- Inspected `/home/camus/work/klstudio/app/components/lotus-player.vue`
+- **Critical Discovery**: The file was importing the JS but NOT the CSS!
+- Found: `import * as lotus from "@k-l-lambda/lotus";` (line 27)
+- Missing: CSS import statement
+
+**Final Solution**:
+
+1. **Changed library component to use non-scoped styles** (`app/components/sheet-live.vue`):
+   ```scss
+   <style lang="scss" scoped>
+       @use "../styles/sheetConstants.css";
+       // Empty scoped block for future scoped styles
+   </style>
+
+   <style lang="scss">
+       // Non-scoped styles for cross-project library compatibility
+       // When this component is used as a library in other projects,
+       // Vue scoped styles and :deep() don't work correctly across project boundaries
+       .sheet.live {
+           .page {
+               .mark {
+                   opacity: 0;
+
+                   .locator {
+                       text {
+                           font-size: 2px;
+                           text-anchor: start;
+                           pointer-events: none;
+                       }
+                   }
+
+                   rect {
+                       fill: transparent !important;
+                   }
+               }
+
+               .wm, .cursor {
+                   pointer-events: none;
+               }
+
+               .bake {
+                   font-family: var(--music-font-family);
+
+                   .token {
+                       text {
+                           user-select: none;
+                           pointer-events: none;
+                           font-size: var(--music-font-size);
+                       }
+                   }
+               }
+
+               .markings {
+                   text {
+                       font-family: var(--music-font-family);
+                       user-select: none;
+                       font-size: var(--music-font-size);
+                   }
+
+                   .alter {
+                       text-anchor: end;
+                   }
+               }
+           }
+       }
+   </style>
+   ```
+
+2. **Added CSS import to consuming project** (`/home/camus/work/klstudio/app/components/lotus-player.vue`, line 28):
+   ```javascript
+   import * as lotus from "@k-l-lambda/lotus";
+   import "@k-l-lambda/lotus/lib.browser/style.css";  // ← Critical addition!
+   import {MidiAudio} from "@k-l-lambda/music-widgets";
+   ```
+
+3. **Added modern Sass API configuration** (`vite.config.lib.ts`, lines 13-19):
+   ```typescript
+   css: {
+       preprocessorOptions: {
+           scss: {
+               api: "modern-compiler", // Use modern Sass API instead of legacy
+           },
+       },
+   },
+   ```
+
+**Why CSS Must Be Imported Separately**:
+
+**User Question**: Is separate CSS import a Vue 3 feature? Didn't need it before?
+
+**Answer**: This is NOT a Vue 3 feature but standard library packaging practice:
+
+| Reference Method | CSS Handling | Requires Import? |
+|-----------------|--------------|-----------------|
+| Source import (git submodule, direct path) | CSS auto-handled by app's build system | No |
+| npm package (library build) | CSS extracted to separate file | Yes |
+
+**Why Library Builds Separate CSS**:
+- Avoid style conflicts between different component versions
+- Reduce JavaScript bundle size
+- Support tree-shaking and selective loading
+- Give consumers control over CSS loading order
+- Standard practice for ALL major Vue libraries
+
+**Examples from Major Libraries**:
+
+**Element Plus (Vue 3)**:
+```javascript
+import { ElButton } from 'element-plus'
+import 'element-plus/dist/index.css'
+```
+
+**Ant Design Vue (Vue 3)**:
+```javascript
+import { Button } from 'ant-design-vue'
+import 'ant-design-vue/dist/antd.css'
+```
+
+**Vuetify (Vue 2)**:
+```javascript
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
+```
+
+**lotus (Now)**:
+```javascript
+import { SheetLive } from '@k-l-lambda/lotus'
+import '@k-l-lambda/lotus/lib.browser/style.css'  // Required!
+```
+
+**Technical Explanation**:
+
+**Application Build** (`yarn build`):
+- Vite/Webpack automatically extracts all `<style>` tags from Vue components
+- Packages everything into the application's CSS bundle
+- Automatically injects CSS into HTML
+- All components are part of the same build context
+
+**Library Build** (`yarn build:lib`):
+- CSS extracted to `lib.browser/style.css` as a separate file
+- Not automatically injected (to avoid conflicts)
+- Consumers must explicitly import the CSS file
+- Gives consumers more control over CSS loading
+
+**Generated CSS Output**:
+```css
+/* lib.browser/style.css */
+.sheet.live .page .mark{opacity:0}
+.sheet.live .page .mark .locator text{font-size:2px;text-anchor:start;pointer-events:none}
+.sheet.live .page .mark rect{fill:transparent!important}
+.sheet.live .page .wm,.sheet.live .page .cursor{pointer-events:none}
+.sheet.live .page .bake{font-family:var(--music-font-family)}
+```
+
+Note: No `[data-v-*]` attributes in final version - pure CSS selectors for cross-project compatibility.
+
+**Key Improvements**:
+- Styles now work correctly when library is used in other projects
+- No dependency on Vue scoped attribute system
+- High specificity selectors (`.sheet.live .page .mark rect`) provide sufficient CSS isolation
+- Standard library packaging pattern that all major UI libraries follow
+- Clear documentation for library consumers
+
+**Benefits**:
+- Cross-project CSS compatibility fixed
+- Library follows standard npm packaging practices
+- Consumers have explicit control over CSS loading
+- No scoped attribute conflicts
+- Works consistently across different build systems
+- Maintains style isolation through selector specificity
+
+Build Status: ✓ Successfully built (4.95s)
+
+Files modified:
+- `app/components/sheet-live.vue` (moved `.page` styles from scoped to non-scoped block, added `!important` to rect fill)
+- `vite.config.lib.ts` (added modern Sass API configuration)
+- `/home/camus/work/klstudio/app/components/lotus-player.vue` (added CSS import statement)
+
+**Documentation for Library Consumers**:
+
+When using `@k-l-lambda/lotus` as an npm package, you MUST import the CSS file:
+
+```javascript
+// Import the library
+import * as lotus from "@k-l-lambda/lotus";
+// Import the CSS (REQUIRED!)
+import "@k-l-lambda/lotus/lib.browser/style.css";
+
+// Or with named imports
+import { SheetLive, SheetSigns, ScoreBundle } from "@k-l-lambda/lotus";
+import "@k-l-lambda/lotus/lib.browser/style.css";
+```
+
+Alternatively, add to your main entry file (e.g., `main.ts` or `App.vue`):
+```javascript
+import "@k-l-lambda/lotus/lib.browser/style.css";
+```
+
+This is the standard way all Vue component libraries work. If CSS is not imported, components will render without proper styling.
+</details>
+
+---
+
