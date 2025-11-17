@@ -10,6 +10,13 @@ export default defineConfig({
 		},
 		extensions: [".ts", ".js", ".vue", ".json"],
 	},
+	css: {
+		preprocessorOptions: {
+			scss: {
+				api: "modern-compiler", // Use modern Sass API instead of legacy
+			},
+		},
+	},
 	build: {
 		lib: {
 			entry: resolve(__dirname, "index.browser.ts"),
