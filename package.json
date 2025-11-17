@@ -37,7 +37,6 @@
     "@vue/eslint-config-standard": "^8.0.1",
     "@vue/eslint-config-typescript": "^13.0.0",
     "@vueuse/core": "^14.0.0",
-    "canvas": "^3.2.0",
     "child-process-promise": "^2.2.1",
     "codejar": "^4.3.0",
     "comlink-loader": "^2.0.0",
