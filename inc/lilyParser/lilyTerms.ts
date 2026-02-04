@@ -2855,6 +2855,21 @@ export class Lyric extends MusicEvent {
 };
 
 
+/**
+ * ChordSymbol: inline chord symbol for lilylet extension
+ * Syntax: \chords "text"
+ */
+export class ChordSymbol extends BaseTerm {
+	declare text: string | LiteralString;
+
+
+	serialize () {
+		const textStr = this.text instanceof LiteralString ? this.text.exp : `"${this.text}"`;
+		return [`\\chords ${textStr}`];
+	}
+};
+
+
 export class Comment extends BaseTerm {
 	declare text: string;
 	declare scoped: boolean;
@@ -2939,6 +2954,7 @@ export const termDictionary = {
 	Fingering,
 	Markup,
 	Lyric,
+	ChordSymbol,
 	Primitive,
 	Comment,
 };

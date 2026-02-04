@@ -94,6 +94,9 @@
 
 	const comment = ({loc, ...data}) => ({proto: "Comment", _location: location(loc, loc), ...data});
 
+	// Inline chord symbol (lilylet extension: \chords "text")
+	const chordSymbol = (text, {locations} = {}) => ({proto: "ChordSymbol", text, _location: locations ? location(...locations) : null});
+
 
 	let lineHeadTable = {};
 	let lineTailTable = {};
@@ -1924,6 +1927,9 @@ music_identifier
 		{$$ = command($1, $2);}
 	| CMD_BAR string
 		{$$ = command($1, $2);}
+	// Inline chord symbol (lilylet extension: \chords "text")
+	| CHORDS literal_string
+		{$$ = chordSymbol($2, {locations: [@1, @2]});}
 	| CMD_OMIT property_path
 		{$$ = command($1, $2);}
 	| CMD_OTTAVA property_path
