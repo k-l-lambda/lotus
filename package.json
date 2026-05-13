@@ -20,7 +20,7 @@
   "author": "K.L.",
   "license": "ISC",
   "dependencies": {
-    "@k-l-lambda/music-widgets": "^1.0.1"
+    "@k-l-lambda/music-widgets": "1.0.7"
   },
   "devDependencies": {
     "@k-l-lambda/web-editor": "^0.1.3",
